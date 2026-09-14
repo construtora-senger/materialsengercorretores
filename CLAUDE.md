@@ -349,9 +349,14 @@ até alguém informar o novo valor.
   **RESOLVIDO em 14/09/2026 (v303).** O dono confirmou: **342,50 m²** — nem os
   342 do cadastro nem os 340 da folha. É o único lote com área fracionada, e o
   site escreve "342,5 m²".
-- **Continua em aberto:** as ruas do 145/10 e do 145/18 (Nova Vila Rica I & II)
-  estão **trocadas** entre o cadastro e a folha de preços — um diz Acácia onde o
-  outro diz Figueira. Rua é o que o cliente lê; perguntar antes de mexer.
+- ~~**As ruas do 145/10 e do 145/18**~~ — **RESOLVIDO em 14/09/2026 (v305).**
+  O dono mandou a **planta de retificação do loteamento I e II** e ela decide:
+  o **10** é o lote de esquina da quadra 145, com frente para a **Figueira**; o
+  **18** está na fileira que dá para a **Acácia**. O cadastro tinha as duas
+  trocadas. A planta também mostra as áreas reais (403,65 m² e 302,70 m²), mas
+  o cadastro segue com 400 e 300, que vêm da folha de preços do dono e são
+  menores que o real — a regra do site é nunca anunciar área maior que a
+  verdadeira, então não foram mexidas sem ele pedir.
 
 - ~~**Botão "voltar" em todas as telas do painel**~~ — **FEITO na v301.** Um
   "← Voltar para <tela anterior>" no alto de toda tela que não seja a Visão
