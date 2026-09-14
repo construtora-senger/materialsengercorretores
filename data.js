@@ -1436,6 +1436,7 @@ const EMPREENDIMENTOS = [
     outros: [
       {
         nome: "Residencial Gabro",
+        preco: 475000,
         local: "Centro de Santa Maria/RS",
         descricao:
           "Apto 604 — 2 dormitórios, sala de estar com sacada, cozinha integrada com lavanderia, churrasqueira e box de garagem nº 38. Posição lateral com sol da manhã.",
@@ -1445,6 +1446,7 @@ const EMPREENDIMENTOS = [
       },
       {
         nome: "Edifício Campos Elísios",
+        preco: 495000,
         local: "Centro de Carazinho/RS",
         descricao:
           "3 dormitórios (1 suíte com closet), 2 banheiros, 3 sacadas, copa, cozinha, churrasqueira e despensa. Edifício de esquina, excelente localização, a uma quadra da avenida. Box duplo.",
@@ -1454,6 +1456,7 @@ const EMPREENDIMENTOS = [
       },
       {
         nome: "Terreno Loteamento Jardim América",
+        preco: 148000,
         local: "Não-Me-Toque/RS",
         descricao:
           "Em frente à Stara, saída para Lagoa dos 3 Cantos. Na 2ª quadra, com linda vista do alto do loteamento. Quadra 490, Lote 241, 16m x 24,75m.",
@@ -1462,6 +1465,7 @@ const EMPREENDIMENTOS = [
       },
       {
         nome: "Terreno Bairro Vila Aurora",
+        preco: 135000,
         local: "Carazinho/RS",
         descricao:
           "Altos da Princesa com Vila Rica, a uma quadra da Siqueira Campos, perto do posto de combustível. Fundos e uma das laterais já com muro. Rua do Carmo, 13m x 33m.",
