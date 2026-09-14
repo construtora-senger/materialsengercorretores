@@ -344,9 +344,14 @@ até alguém informar o novo valor.
 
 - ~~**Conferir a área do lote 98 da quadra 77 (Nova Vila Rica III)**~~ —
   **RESOLVIDO em 14/09/2026 (v302).** O dono confirmou: são **290 m²**, não 348.
-  Corrigido no cadastro. (Continuam em aberto, sem fonte conclusiva, o lote
-  77/50 — 342 m² no cadastro × 340 m² na folha — e as ruas trocadas dos lotes
-  145/10 e 145/18 do Nova Vila Rica I & II.)
+  Corrigido no cadastro.
+- ~~**Conferir a área do lote 50 da quadra 77 (Nova Vila Rica II)**~~ —
+  **RESOLVIDO em 14/09/2026 (v303).** O dono confirmou: **342,50 m²** — nem os
+  342 do cadastro nem os 340 da folha. É o único lote com área fracionada, e o
+  site escreve "342,5 m²".
+- **Continua em aberto:** as ruas do 145/10 e do 145/18 (Nova Vila Rica I & II)
+  estão **trocadas** entre o cadastro e a folha de preços — um diz Acácia onde o
+  outro diz Figueira. Rua é o que o cliente lê; perguntar antes de mexer.
 
 - ~~**Botão "voltar" em todas as telas do painel**~~ — **FEITO na v301.** Um
   "← Voltar para <tela anterior>" no alto de toda tela que não seja a Visão

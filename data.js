@@ -1451,7 +1451,7 @@ const EMPREENDIMENTOS = [
       { lote: "Nova Vila Rica I", quadra: "146", numero: "01", rua: "Figueira", area: 385, preco: 95000 },
       { lote: "Nova Vila Rica I", quadra: "147", numero: "09", rua: "Alberto Graeff", area: 300, preco: 95000 },
       { lote: "Nova Vila Rica I", quadra: "147", numero: "05", rua: "Alberto Graeff", area: 300, preco: 95000 },
-      { lote: "Nova Vila Rica II", quadra: "77", numero: "50", rua: "Acácia", area: 342, preco: 100000 },
+      { lote: "Nova Vila Rica II", quadra: "77", numero: "50", rua: "Acácia", area: 342.5, preco: 100000 },
       { lote: "Nova Vila Rica II", quadra: "77", numero: "51", rua: "Acácia", area: 300, status: "vendido" },
       { lote: "Nova Vila Rica II", quadra: "145", numero: "10", rua: "Acácia", area: 400, preco: 95000 },
       { lote: "Nova Vila Rica II", quadra: "145", numero: "18", rua: "Figueira", area: 300, preco: 95000 },
