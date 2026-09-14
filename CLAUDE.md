@@ -192,6 +192,12 @@ desejada e margem** — e nada mais. **Nunca grave custo no `data.js` ou em outr
 arquivo público do repositório.** O painel permite importar/exportar um JSON de
 backup.
 
+**Terreno não tem móveis (v264).** A v263 pôs o campo "+ móveis" em toda
+linha, e ele apareceu também nos lotes dos loteamentos — lote é chão, não há o
+que mobiliar. Agora o campo **não existe na linha do terreno**, e
+`moveisInterno` devolve nulo para qualquer chave de terreno (`<emp>:t:...`),
+então nenhuma conta do painel soma mobília em lote, venha o valor de onde vier.
+
 **Móveis entram no custo (v263).** Alguns apartamentos foram entregues
 mobiliados e o dono quer esse investimento dentro do custo. Cada linha tem o
 campo **"+ móveis"** embaixo do nome, vazio na maioria; o campo Custo continua
