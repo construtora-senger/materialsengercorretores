@@ -1170,14 +1170,14 @@ const EMPREENDIMENTOS = [
         area: "57 m² global · 43 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-57",
-        unidades: [{ apto: "802A", preco: 403400, status: "disponivel" }],
+        unidades: [{ apto: "802A", preco: 403370, status: "disponivel" }],
       },
       {
         tipo: "2 dormitórios c/ móveis",
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-69",
-        unidades: [{ apto: "701B", preco: 497400, status: "alugado" }],
+        unidades: [{ apto: "701B", preco: 497420, status: "alugado" }],
       },
       {
         tipo: "2 dormitórios — já alugados",
@@ -1186,8 +1186,8 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-69",
         obs: "Aluguel R$ 1.400,00 · Condomínio e IPTU por conta do inquilino.",
         unidades: [
-          { apto: "301B", preco: 470600, status: "alugado" },
-          { apto: "601B", preco: 497400, status: "alugado" },
+          { apto: "301B", preco: 479930, status: "alugado" },
+          { apto: "601B", preco: 506770, status: "alugado" },
         ],
       },
       {
@@ -1197,9 +1197,9 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-3d",
         obs: "Aluguel R$ 1.600,00 · Condomínio e IPTU por conta do inquilino.",
         unidades: [
-          { apto: "501A", preco: 618300, status: "alugado" },
-          { apto: "601A", preco: 618300, status: "alugado" },
-          { apto: "801A", preco: 637000, status: "alugado" },
+          { apto: "501A", preco: 618310, status: "alugado" },
+          { apto: "601A", preco: 618310, status: "alugado" },
+          { apto: "801A", preco: 637010, status: "alugado" },
         ],
       },
       {
@@ -1209,8 +1209,8 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-3d",
         unidades: [
           { apto: "201A", preco: 562100, status: "disponivel" },
-          { apto: "401A", preco: 618300, status: "disponivel", tags: ["Semimobiliado"] },
-          { apto: "701A", preco: 637000, status: "disponivel" },
+          { apto: "401A", preco: 618310, status: "disponivel", tags: ["Semimobiliado"] },
+          { apto: "701A", preco: 637010, status: "disponivel" },
         ],
       },
     ],
