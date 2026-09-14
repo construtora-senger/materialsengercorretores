@@ -1,0 +1,102 @@
+{
+  "renaissance": {
+    "hero": "assets/ren-hero.webp",
+    "logo": "assets/ren-logo.webp",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 19,
+    "diferenciais": 9,
+    "plantas": 9
+  },
+  "evolutti": {
+    "hero": "assets/evo-hero.webp",
+    "logo": "",
+    "folder": "assets/folder-evolutti.pdf",
+    "video": "",
+    "mapa": "",
+    "galeria": 13,
+    "diferenciais": 6,
+    "plantas": 5
+  },
+  "premium-office": {
+    "hero": "assets/po-render-3.webp",
+    "logo": "",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 21,
+    "diferenciais": 8,
+    "plantas": 12
+  },
+  "boulevard": {
+    "hero": "assets/bv-hero.webp",
+    "logo": "",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 17,
+    "diferenciais": 3,
+    "plantas": 4
+  },
+  "personalite": {
+    "hero": "assets/perso-1.webp",
+    "logo": "",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 8,
+    "diferenciais": 4,
+    "plantas": 1
+  },
+  "prime": {
+    "hero": "assets/prime-hero.webp",
+    "logo": "",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 7,
+    "diferenciais": 4,
+    "plantas": 1
+  },
+  "quality": {
+    "hero": "assets/qual-1.webp",
+    "logo": "",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 14,
+    "diferenciais": 6,
+    "plantas": 5
+  },
+  "nova-vila-rica-iii": {
+    "hero": "assets/aerial-vilarica.webp",
+    "logo": "assets/nvr3-logo.webp",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 3,
+    "diferenciais": 0,
+    "plantas": 0
+  },
+  "nova-vila-rica": {
+    "hero": "assets/aerial-vilarica-i-ii.webp",
+    "logo": "",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 0,
+    "diferenciais": 0,
+    "plantas": 0
+  },
+  "outros": {
+    "hero": "assets/gabro-predio.webp",
+    "logo": "",
+    "folder": "",
+    "video": "",
+    "mapa": "",
+    "galeria": 0,
+    "diferenciais": 0,
+    "plantas": 0
+  }
+}

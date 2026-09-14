@@ -1,7 +1,14 @@
 // ============================================================
 //  Construtora Senger — Tabela de Preços e Disponibilidade
-//  Dados consolidados a partir da Lista Senger de 10.07.26
-//  Status da tabela: Julho / 2026
+//
+//  A FONTE DA TABELA ATUAL É O META, LOGO ABAIXO: mesTabela, dataTabela,
+//  incc e historicoIncc. Não escreva aqui um mês ou uma "lista de origem":
+//  o cadastro é corrigido item a item pelo painel administrativo e este
+//  cabeçalho envelhecia sozinho, dizendo julho quando o site já estava em
+//  setembro. Quem quiser saber de quando é a tabela lê o META.
+//
+//  O cadastro nasceu da Lista Senger de 10.07.26 e, desde então, cada preço,
+//  status e correção de INCC veio do painel — o histórico está no git.
 // ============================================================
 
 const META = {
@@ -31,16 +38,27 @@ const EMPREENDIMENTOS = [
   {
     id: "renaissance",
     nome: "Renaissance",
-    // So aqui o box e venda separada, com valor proprio. Em todos os outros
-    // empreendimentos o box ja esta dentro do preco do apartamento — por isso
-    // eles nao entram como item na tabela de custos do painel.
+    // GARAGEM DO RENAISSANCE — REGRA ATUAL, NAO MEXER SEM O DONO PEDIR:
+    // os box do Renaissance ESTAO INCLUIDOS no valor dos apartamentos,
+    // conforme a composicao de garagem de cada unidade (vagasPorTipologia,
+    // logo abaixo). O box NUNCA e apresentado ao cliente como valor a mais.
+    // Ele continua no cadastro (emp.boxes) so para controle interno: vinculo
+    // com o apartamento, conferencia de vagas e area. O site nao le `boxes`.
+    //
+    // Ate a v245 o box aqui era venda separada, com valor proprio e a marca
+    // `boxSeparado: true`. Isso ACABOU na v246, quando o dono embutiu o valor
+    // do box no custo de cada apartamento. Todo texto que ainda diga "venda
+    // separada" ou "valor proprio" para o Renaissance e resquicio daquela
+    // epoca e esta errado.
     confirmado: true,
     cidade: "Carazinho/RS",
     categoria: "residencial",
     status: "obra",
     statusLabel: "Pré-lançamento",
     entrega: "Pré-lançamento com entrega em 5 anos",
-    ri: [],
+    // Mesmo numero do Evolutti (RI n 11-47.935) — confirmado pelo dono em
+    // 14/09/2026. Nao "corrigir" nenhum dos dois por acharem que e engano.
+    ri: ["RI nº 11-47.935"],
     // Quantos box cada tipologia leva. O painel usa isso para conferir se as
     // vagas fecham com o que ha em estoque. O site nao le este campo.
     vagasPorTipologia: {
@@ -756,16 +774,31 @@ const EMPREENDIMENTOS = [
       { src: "assets/bv-6.webp", legenda: "Espaço pub" },
       { src: "assets/bv-7.webp", legenda: "Salão de festas" },
       { src: "assets/bv-8.webp", legenda: "Espaço kids" },
-      { src: "assets/bv-planta.webp", legenda: "Planta — pavimento" },
-      { src: "assets/bv-planta-lazer.webp", legenda: "Planta — área de lazer" },
-      { src: "assets/bv-folder.webp", legenda: "Folder do empreendimento" },
+      // Uma planta por final. A prancha do pavimento (bv-planta.webp) mostra os
+      // quatro tipos de uma vez: quem recebe o link do apartamento 501 nao pode
+      // ver a planta dos outros tres junto. Os recortes saem da propria prancha
+      // — nada foi redesenhado, so separado. A prancha inteira continua logo
+      // abaixo, para a apresentacao geral do predio.
+      { src: "assets/bv-planta-tipo1.webp", legenda: "Planta — Tipo 1 · 3 suítes · final 01", secao: "unidade" },
+      { src: "assets/bv-planta-tipo2.webp", legenda: "Planta — Tipo 2 · 3 suítes · final 02", secao: "unidade" },
+      { src: "assets/bv-planta-tipo3.webp", legenda: "Planta — Tipo 3 · 2 dormitórios (1 suíte) · final 03", secao: "unidade" },
+      { src: "assets/bv-planta-tipo4.webp", legenda: "Planta — Tipo 4 · 2 suítes · final 04", secao: "unidade" },
+      { src: "assets/bv-planta.webp", legenda: "Planta — pavimento tipo (os quatro finais)", secao: "pavimento" },
+      // A planta do lazer e do predio, nao do apartamento: fica em secao
+      // propria para nunca ser lida como a planta da unidade enviada.
+      { src: "assets/bv-planta-lazer.webp", legenda: "Planta — área de lazer", secao: "lazer" },
+      { src: "assets/bv-folder.webp", legenda: "Capa do folder impresso" },
       { src: "assets/bv-map.webp", legenda: "Rua Getúlio Vargas — frente à Praça Gen. Osório" },
     ],
     grupos: [
       {
         tipo: "3 suítes + lavabo",
+        sufixo: "final 01",
         area: "212 m² global · 149 m² privativo",
         garagem: "1 box duplo",
+        // Tipo 1 da prancha. O final 02 e a planta espelhada deste — por isso
+        // os dois finais sao grupos separados e cada um tem a sua planta.
+        planta: "bv-planta-tipo1",
         unidades: [
           { apto: "301", status: "vendido" },
           { apto: "401", status: "vendido" },
@@ -782,8 +815,10 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "3 suítes + lavabo",
+        sufixo: "final 02",
         area: "212 m² global · 149 m² privativo",
         garagem: "1 box duplo",
+        planta: "bv-planta-tipo2",
         unidades: [
           { apto: "302", status: "vendido" },
           { apto: "402", status: "vendido" },
@@ -800,8 +835,10 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 suítes + lavabo",
+        sufixo: "final 04",
         area: "131 m² global · 93 m² privativo",
         garagem: "1 box simples",
+        planta: "bv-planta-tipo4",
         unidades: [
           { apto: "304", preco: 918100, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "165 m² global · 121 m² privativo" },
           { apto: "404", preco: 891900, status: "disponivel" },
@@ -818,8 +855,10 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios (1 suíte)",
+        sufixo: "final 03",
         area: "127 m² global · 91 m² privativo",
         garagem: "1 box simples",
+        planta: "bv-planta-tipo3",
         // Falta o 303 neste final: ele nao esta no estoque e nenhum box vendido
         // aponta para ele, entao nao da para dizer se foi vendido ou se ainda
         // esta a venda. Fica de fora ate a construtora confirmar.

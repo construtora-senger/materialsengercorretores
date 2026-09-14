@@ -11,6 +11,271 @@ que ele quer, pergunte antes em vez de adivinhar e entregar as duas coisas.
 Site de portfólio dos empreendimentos da Construtora Senger (Carazinho/RS), com
 um painel administrativo que o dono usa pelo celular.
 
+---
+
+# REGRAS ATUAIS — PREVALECEM SOBRE O HISTÓRICO
+
+**Este arquivo é longo e tem memória de mais de 290 versões. Muita coisa ali
+embaixo descreve comportamento que já foi abandonado.** Quando o histórico
+contradisser esta seção, **esta seção ganha** — e, mais importante: *nunca
+ressuscite* um comportamento só porque um parágrafo antigo o descreve. Trechos
+já substituídos estão marcados com **REGRA ANTIGA — substituída por…**; se você
+encontrar um que contradiga o que está aqui e não esteja marcado, marque-o.
+
+## O que este produto é (e o que não é)
+
+**Não é um portal imobiliário público.** É (1) uma ferramenta de trabalho do
+corretor da Senger e (2) uma apresentação privada e dirigida, enviada a um lead
+que **já demonstrou interesse**. Daí decorre tudo:
+
+- **não** criar navegação aberta para o lead, formulário de captação, chatbot,
+  pop-up agressivo ou "funcionalidade porque todo site imobiliário tem";
+- **não** mostrar contagem de estoque ao cliente ("restam 3", "12 unidades") —
+  decisão comercial firme desde a v107;
+- o corretor escolhe o que mostrar; o cliente recebe **exatamente aquilo**;
+- modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
+  Não é a mesma interface servindo aos dois.
+
+## Dinheiro: custo, preço e arredondamento (v301)
+
+**O custo é sempre EXATO — nunca arredondado.** Vale para o custo digitado, o
+custo importado de backup e o custo corrigido pelo INCC. Duas casas decimais,
+ponto final.
+
+**Quem é arredondado é o PREÇO DE VENDA**, e só ele: a venda desejada vira o
+preço do site arredondada para os **R$ 100 mais próximos** (padrão; o seletor na
+tela do INCC oferece outras opções). A função é `precoDeVenda()`, e
+`vendaVaiParaOSite()` usa a mesma conta — a faixa amarela da linha e o botão
+"Publicar no site" nunca podem discordar.
+
+Trava herdada da v207: **o arredondamento jamais pode deixar o preço abaixo do
+custo.** Se encostar, sobe para o degrau seguinte.
+
+> **REGRA ANTIGA — substituída pela de cima:** a v254 arredondava *o custo e a
+> margem* e deixava o preço sair redondo por consequência. Foi invertido a
+> pedido do dono em 14/09/2026: *"quando importar a tabela com os custos, devem
+> ser exatas, e não arredondado — arredondar somente 100,00 mais próximos no
+> preço de venda, não custo."*
+
+**Desfazer custo digitado por engano (v301).** O rascunho do financeiro é
+gravado a cada tecla, então recarregar a página não desfaz nada. O **Descartar**
+agora volta custo, móveis e margem ao último valor **guardado**
+(`descartarFinanceiro`), e o botão aparece mesmo quando não há preço na fila —
+antes, mexer só num custo deixava o dono sem nenhum botão para clicar.
+
+## Garagem do Renaissance (v246, reafirmada na v301)
+
+**Os boxes do Renaissance estão incluídos no valor dos apartamentos, conforme a
+composição de garagem de cada unidade.** O box nunca é apresentado ao cliente
+como valor adicional. Ele continua no cadastro (`emp.boxes`) apenas para
+controle interno: vínculo com o apartamento, conferência de vagas e área.
+
+`boxSeparado` **não existe mais** em empreendimento nenhum, e `tools/validar.js`
+falha se alguém recriar a marca.
+
+> **REGRA ANTIGA — substituída pela de cima:** até a v245 o Renaissance era o
+> único com `boxSeparado: true`, box com preço próprio e venda à parte. Todo
+> texto que ainda disser "venda separada" ou "valor próprio" para o Renaissance
+> é resquício e está errado.
+
+## Registro de incorporação
+
+- Renaissance: **RI nº 11-47.935** (cadastrado na v301).
+- Evolutti: **RI nº 11-47.935** — o **mesmo número**, confirmado pelo dono em
+  14/09/2026. **Não "corrija" nenhum dos dois** por achar que é engano.
+- Boulevard Residence: **RI nº 1-50.267** — já estava certo, não mexer.
+
+## Materiais comerciais: o que existe de verdade (auditado na v301)
+
+Varredura completa do histórico do git (`--diff-filter=A` em todos os commits de
+todas as branches): **o único PDF que já existiu no repositório é
+`assets/folder-evolutti.pdf`**, e **nenhum vídeo ou URL de vídeo jamais esteve
+no `data.js`**. Os campos vazios não são perda — nunca foram preenchidos.
+
+`assets/bv-folder.webp` é a **capa** do folder impresso do Boulevard (uma página
+de marca, sem conteúdo), não o folder em PDF.
+
+**Não invente folder, não invente URL de vídeo, não substitua material que falta
+por conteúdo genérico.** Falta de folder/vídeo é *material complementar*, não
+erro de cadastro (ver a hierarquia de pendências abaixo).
+
+**Guarda contra regressão (v301).** Uma publicação que apague `hero`, `logo`,
+`folder`, `video`, `mapa`, fotos da galeria, diferenciais, vínculos de planta ou
+o RI que já estavam no ar **pede confirmação nominal** antes de gravar
+(`perdasDeMaterial`, em `admin/index.html`). O `tools/validar.js` faz a mesma
+conferência contra o retrato em `tools/materiais.json`.
+
+## Plantas do Boulevard por final (v301)
+
+A prancha `assets/bv-planta.webp` mostra os quatro tipos de uma vez. Quem recebe
+o link do apartamento 501 não pode ver a planta dos outros três junto. Então:
+
+| final | tipo da prancha | produto | arquivo |
+|---|---|---|---|
+| 01 | Tipo 1 | 3 suítes, 150 m² priv. | `bv-planta-tipo1.webp` |
+| 02 | Tipo 2 | 3 suítes, 150 m² priv. (espelhado) | `bv-planta-tipo2.webp` |
+| 03 | Tipo 3 | 2 dorm. (1 suíte), 91 m² priv. | `bv-planta-tipo3.webp` |
+| 04 | Tipo 4 | 2 suítes, 93 m² priv. | `bv-planta-tipo4.webp` |
+
+Os quatro arquivos são **recortes da própria prancha** — nada foi redesenhado.
+Os originais separados **não existem em nenhuma versão do repositório**
+(histórico varrido). Se o dono mandar os originais em alta, é só trocar os
+arquivos: os nomes e os vínculos ficam.
+
+Os grupos do `data.js` ganharam `sufixo: "final 01"`…`"final 04"`. **O sufixo é
+obrigatório aqui**: sem ele, a junção de tipologias iguais (v213) fundiria os
+finais 01 e 02 num quadro só e a planta espelhada se perderia.
+
+A prancha completa e a planta do lazer continuam na apresentação geral, cada uma
+na sua seção (`secao: "pavimento"` e `secao: "lazer"` no item da galeria). **A
+planta do lazer nunca aparece como planta da unidade.**
+
+## A ficha da unidade no link do cliente (v301)
+
+`?cliente&u=<código>` deixou de ser "a ficha do prédio com uma linha destacada"
+e passou a ser **a ficha daquela unidade**. A ordem do conteúdo muda:
+
+1. identificação (nome do empreendimento + unidade, no hero);
+2. **ficha** — tipologia, dormitórios/suítes, área privativa, área global,
+   garagem, andar, entrega, pagamento, RI, características especiais e o valor
+   em destaque (`fichaDaUnidade`, no `app.js`);
+3. planta **daquela** unidade;
+4. fotos;
+5. diferenciais;
+6. vídeo e folder, se existirem;
+7. CTA "Falar com o corretor" (fixo).
+
+A tabela de unidades **sai** quando é uma unidade só — com uma linha ela repetia
+o que a ficha diz melhor. Link de empreendimento e link de seleção continuam
+exploratórios, com a vitrine de sempre.
+
+**Nada é inventado:** cada linha da ficha só aparece se o campo existir no
+cadastro. Sem área global, não há linha de área global.
+
+## Modo cliente: o que nunca pode vazar
+
+Os botões da equipe **não são mais escritos no HTML** no modo cliente — antes
+eram sempre escritos e escondidos pelo CSS (`.client-mode`), o que deixava a
+ferramenta interna alcançável por teclado e por leitor de tela, e à vista se a
+folha de estilo falhasse. O CSS continua como segunda barreira.
+
+O lead não vê: compartilhar, selecionar, gerar PDF, enviar link, versão do site,
+"Meu contato", painel, dado financeiro, nem unidade vendida.
+
+## Hierarquia das pendências do painel (v301)
+
+Três níveis, nesta ordem, e **folder/vídeo não são nível 1**:
+
+1. **Dado comercial** (`NIVEL.critico`) — se estiver errado, o corretor vende
+   errado: unidade à venda sem preço, vendida ainda com preço de tabela,
+   tipologia sem metragem, sem garagem informada, sem RI, sem foto de capa,
+   folder cadastrado que não é PDF, box vendido sem a unidade que o levou.
+2. **Atenção** (`NIVEL.atencao`) — informação incompleta ou genérica: planta
+   genérica no lugar da específica, tipologia sem regra de box, box sem área.
+3. **Material complementar** (`NIVEL.material`) — falta material, nada do que
+   existe está errado: folder, vídeo, fotos adicionais.
+
+## Publicação em um commit só (v301)
+
+`publicarEmUmCommit()` monta blobs → árvore → commit → move a branch uma vez.
+`data.js`, `index.html`, `sw.js` e os arquivos anexados entram **juntos**: ou
+tudo, ou nada. Antes eram três PUT separados e uma queda no meio deixava o site
+com preço novo e versão velha. O caminho antigo continua como **plano B**, para
+a conta que não alcance a API de dados do git; chave recusada (401) não tenta o
+plano B, porque o problema é permissão, não método.
+
+## Segurança: o que protege e o que não protege
+
+- **A senha do painel não é segurança de verdade.** É uma página estática no
+  GitHub Pages: a comparação de hash roda no navegador do visitante. Ela esconde
+  a tela de quem abrir o endereço por acaso, e só. **Não construa autenticação
+  falsa por cima disso**; resolver de verdade exigiria um backend, que este
+  projeto não tem.
+- **Quem protege é a chave do GitHub.** Sem ela ninguém publica nem abre o cofre
+  dos custos. Ela fica no `localStorage` **daquele aparelho**, nunca no
+  `data.js`, nunca numa URL, nunca em log, nunca no HTML que o cliente recebe —
+  e `tools/validar.js` falha se isso mudar.
+- **A chave precisa dos DOIS repositórios:** `materialsengercorretores` (o site)
+  e `senger-financeiro` (o cofre privado dos custos). Chave só com o primeiro
+  publica mas nunca guarda custo. Permissão necessária: **Contents: Read and
+  write**, nada além disso.
+- **Validade de 90 dias, não "No expiration".** Chave sem vencimento vale para
+  sempre mesmo se o aparelho se perder. O painel avisa aos 75 dias e oferece
+  **Apagar a chave deste aparelho**.
+
+## Validação e testes (v301)
+
+Dois comandos, sem dependência nenhuma de instalar:
+
+```
+node tools/validar.js          # cadastro, arquivos, pontes, segredos, versões
+node tools/testar-navegador.js # site, modo cliente, painel e PWA no Chromium
+node tools/gerar-pontes.js     # depois de acrescentar/remover unidade
+```
+
+`tools/validar.js --gravar-retrato` atualiza `tools/materiais.json`, que é a
+referência da guarda de regressão de materiais. **Rode os dois antes de
+publicar.**
+
+## O que mudou na v301 (rodada de 14/09/2026)
+
+Uma rodada de correção, melhoria e testes pedida pelo dono. O que entrou:
+
+**Corrigido de verdade (bugs que existiam):**
+- **o custo digitado por engano não voltava atrás.** O rascunho é gravado a cada
+  tecla, o "Descartar" só limpava as alterações de site, e com apenas um custo
+  mexido o botão nem aparecia. Agora o Descartar devolve custo, móveis e margem
+  ao último valor guardado, e aparece sempre que há algo a desfazer.
+- **a publicação podia ficar pela metade** — três PUT separados. Agora é um
+  commit só.
+- **a planta do lazer do Boulevard** ficava junto das plantas de apartamento,
+  como se fosse a planta da unidade enviada.
+- **o Renaissance estava sem RI** no cadastro; a ficha e o PDF saíam com
+  "Não informado".
+- **`boxSeparado` continuava vivo no código** (`semValor: !emp.boxSeparado`)
+  depois de a regra ter acabado na v246 — convite a ressuscitá-la.
+- **o cabeçalho do `data.js` dizia "Julho / 2026"** com o META em setembro, e o
+  comentário do topo do `admin/index.html` anunciava "v173" com o painel na
+  v264. Os dois foram corrigidos para apontar para a fonte certa.
+- **voltar da ficha jogava o corretor para o topo da lista**, mesmo tendo rolado
+  até o fim da vitrine.
+- **os botões da equipe iam para o HTML do cliente** e eram só escondidos pelo
+  CSS.
+
+**Mudanças de regra pedidas pelo dono nesta rodada:**
+- custo sempre exato; arredondamento só no preço de venda (ver REGRAS ATUAIS);
+- boxes do Renaissance inclusos no valor do apartamento — correção documental;
+- RI nº 11-47.935 no Renaissance, sem tocar no Evolutti.
+
+**UX:**
+- *cliente*: a ficha da unidade (item próprio em REGRAS ATUAIS);
+- *corretor*: a posição na lista volta como estava; as quatro plantas do
+  Boulevard separadas por final;
+- *painel*: Visão geral > Estoque geral refeita, pendências em três níveis,
+  "← Voltar" em toda tela, guarda de regressão de material na publicação.
+
+**Limitações conhecidas, que ficam:**
+- as quatro plantas do Boulevard são recortes de uma prancha de 800 px — ficam
+  legíveis, mas os originais em alta resolução dariam melhor. Trocar os arquivos
+  pelos mesmos nomes resolve, sem mexer em código;
+- folder e vídeo continuam faltando em nove de dez empreendimentos: **não
+  existem no repositório e nunca existiram** (histórico varrido). Só o dono pode
+  fornecê-los;
+- a senha do painel não é segurança de verdade e não tem como ser, sem backend;
+- divergências de cadastro deixadas **de propósito**, por falta de fonte
+  conclusiva: o lote 98 da quadra 77 (348 m² no cadastro, 290 m² na tabela do
+  dono), o lote 77/50 (342 m² × 340 m²) e as ruas trocadas dos lotes 145/10 e
+  145/18 do Nova Vila Rica I & II. **Não resolver no chute** — são rua e área, o
+  que o cliente lê.
+
+---
+
+# HISTÓRICO — leia com a seção acima na mão
+
+O que vem abaixo é o registro das decisões, versão a versão. É útil para
+entender *por que* as coisas são como são. **Não é a especificação do estado
+atual** — quando divergir da seção "REGRAS ATUAIS", a de cima vale.
+
 ## Como o dono trabalha
 
 - **Publique sempre ao terminar, sem perguntar.** Ao final de uma tarefa: commit
@@ -35,6 +300,13 @@ um painel administrativo que o dono usa pelo celular.
   A interface usa navegação lateral em acordeão/colapsável (v173), com módulos separados e a paleta original do painel. Preços e margem é um módulo próprio desde a v210. Configurações não é um módulo: a chave do GitHub fica recolhida em Publicação > Acesso técnico.
 - `sw.js` — service worker. Navegação e arquivos do site são buscados da rede
   primeiro, então o painel nunca fica preso em cache.
+- `tools/validar.js` — confere o cadastro, os arquivos, as pontes, os segredos e
+  as versões. **Rode antes de publicar.**
+- `tools/testar-navegador.js` — abre o Chromium e exercita o site, o modo
+  cliente, o painel e o PWA. **Rode antes de publicar.**
+- `tools/materiais.json` — o retrato dos materiais de cada empreendimento. É a
+  referência da guarda de regressão; atualize com
+  `node tools/validar.js --gravar-retrato` depois de acrescentar material.
 - `l/` — as **páginas-ponte**, geradas por `tools/gerar-pontes.js`. Uma por
   empreendimento (`l/renaissance/`) e uma por unidade (`l/renaissance/u/501/`).
   Existem porque o robô do WhatsApp não roda JavaScript: sem elas a prévia de
@@ -77,19 +349,22 @@ até alguém informar o novo valor.
   indica que o certo é 290. **Não foi mexido**: mudar área sem ele confirmar é
   anunciar outra coisa ao cliente. Perguntar e corrigir.
 
-- **Botão "voltar" em todas as telas do painel** (pedido em 10/09/2026), não só
-  em Preços e margem. As telas são longas e não há como subir nem sair de
-  nenhuma delas sem rolar tudo.
-- **Embutir o valor do box no custo do Renaissance**, como foi feito no
-  Boulevard (pedido em 10/09/2026). Lá o box é venda separada e os custos ainda
-  estão sem ele.
-- **Refazer a apresentação de Visão geral > Estoque geral** (pedido em
-  14/09/2026). A v262 pôs os empreendimentos em cascata — uma faixa por
-  empreendimento, resumo e garagem à esquerda, "Garagem por unidade" à direita
-  em colunas — e o dono disse que continua *"péssimo de entender"*. Ele não
-  detalhou o que confunde e deixou para depois (*"agora a prioridade é
-  outra"*): **lembrá-lo disso** quando a prioridade do momento terminar e
-  perguntar o que ele quer ver ali antes de mexer.
+- ~~**Botão "voltar" em todas as telas do painel**~~ — **FEITO na v301.** Um
+  "← Voltar para <tela anterior>" no alto de toda tela que não seja a Visão
+  geral (que é o início, e não tem para onde voltar). Guarda a trilha das telas
+  por onde o dono passou; nada do que ele digitou se perde, porque trocar de
+  módulo só mostra e esconde seções.
+- ~~**Embutir o valor do box no custo do Renaissance**~~ — **FEITO na v246.**
+  Os boxes do Renaissance já estão no valor dos apartamentos. Ver
+  "Garagem do Renaissance", em REGRAS ATUAIS.
+- ~~**Refazer a apresentação de Visão geral > Estoque geral**~~ — **FEITO na
+  v301.** Dois degraus: uma faixa de cima que responde em dois segundos
+  (quantos à venda, quantos vendidos, que tipo de imóvel, barra de quanto já foi
+  vendido) e, embaixo, três colunas de mesmo peso — estoque por tipologia,
+  garagem e situação do cadastro. A lista "Garagem por unidade" continua
+  inteira, dentro de uma gaveta fechada, e cada empreendimento tem atalhos para
+  Ver unidades, Preços e margem e O que falta. **Confirmar com o dono se agora
+  está claro** — ele nunca chegou a detalhar o que o confundia na v262.
 ### São três Casas Suspensas, não duas (v252)
 
 O dono fala delas separadas — **2 suítes**, **3 suítes frente** e
@@ -175,7 +450,9 @@ site" grava. Como a linha do item pode não ter mais o campo `preco`,
 `aplicarPreco` **acrescenta** o campo quando ele não existe (antes do `status:`)
 em vez de falhar, e `precosDesejadosPendentes` deixou de exigir um preço atual.
 
-**O INCC corrige custo, não preço (v225).** *"Nessa tela tem que aparecer o
+**O INCC corrige custo, não preço (v225)** — continua valendo. O que mudou na
+v301 é que o custo corrigido fica **exato**, sem arredondamento.
+ *"Nessa tela tem que aparecer o
 custo e não venda — INCC corrige custo; venda e margem é outra coisa."* A
 pré-visualização lista **Custo atual → Custo novo** dos custos guardados, o
 "Aplicar correção" sobe todos na hora, e o "Publicar no site" grava só o mês, a
@@ -343,8 +620,9 @@ página de painel mais nova.
 **O "Todos" conta em apartamento, não em box (v234).** A soma do chip incluía a
 garagem e dava 638 — só no Renaissance são 65 box para 43 apartamentos. Agora o
 `todos` pula `item.tipo === "box"` (270 no cadastro de setembro). Os outros três
-chips continuam contando box de propósito: no Renaissance o box é venda separada
-e precisa de custo, e é por "Falta custo" que se vê isso.
+chips continuam contando box de propósito. (A justificativa original era que no
+Renaissance o box era venda separada e precisava de custo próprio — **isso
+acabou na v246**; os chips seguem contando box para a conferência de cadastro.)
 
 **Três filtros e uma busca (v210)**: `Falta custo`, `Vai mudar de preço` e
 `Abaixo do custo`, cada um com a contagem ao lado, refeita a cada tecla
@@ -448,6 +726,11 @@ situação e o aviso "já incluso no preço do apartamento". Pedir custo ali era
 convidar a contar a garagem duas vezes. Se algum box tiver custo guardado de
 outra época, ele aparece como texto, para não ficar preso invisível.
 
+> **REGRA ANTIGA — substituída por "Garagem do Renaissance", em REGRAS ATUAIS.**
+> Desde a v246 NENHUM empreendimento vende box à parte: no Renaissance o valor
+> do box foi embutido no custo do apartamento e `boxSeparado` não existe mais.
+> Leia o parágrafo abaixo como história, não como instrução.
+
 **Os box entram na tabela financeira (v180), só onde são venda separada (v185).** No **Renaissance** o box tem valor próprio e é vendido à parte — lá o `data.js` marca `boxSeparado: true` no empreendimento e guarda `preco` no box (interno; o site não lê `boxes`), e a tabela financeira lista unidades **e** box, com coluna **Situação** e a marca simples/duplo. Em **todos os outros empreendimentos o box já está dentro do preço do apartamento**: ele aparece na tabela (v187) depois das unidades, com a situação Disponível/Vendido e a frase "Já incluso no preço do apartamento" no lugar dos valores — assim o dono acompanha o que está livre sem que a garagem entre duas vezes na conta. Esses box ficam fora de `X de Y itens com custo`, e o cabeçalho do empreendimento os anuncia à parte: "14 itens à venda · 19 vendidos · 36 box no preço".
 
 **A tipologia aparece embaixo do nome (v205).** Na tabela financeira, cada
@@ -459,7 +742,8 @@ não recebe tipologia, continua com a marca simples/duplo.
 
 **Quem levou qual box (v188).** Na tabela financeira, embaixo do nome, a unidade lista os box que foram com ela ("Apto 803 · Box 104") e o box mostra a unidade que o levou ("Box 104 · Apto 803"). A ligação vem do campo `apto` do box no `data.js` — vale para vendidos e disponíveis, e sai sozinha quando o campo está vazio. **O Evolutti é o único sem esses vínculos preenchidos.**
 
-**Importar backup** reconhece a linha pelo código interno e, se ele mudou, pelo nome da unidade — sempre **dentro do mesmo empreendimento e do mesmo tipo** (`u`, `b`, `t`, `o`), para o Box 101 nunca virar o Apto 101 nem o 401 de outro prédio. A importação só preenche a tela (fica "Alterações não salvas"); quem grava é o dono, no botão. Embaixo dos botões fica uma linha fixa dizendo quantos custos entraram, quantos não têm correspondência, ou o motivo da falha.
+**Importar backup** entra com o **custo exato**, no centavo, sem arredondar
+nada (regra do dono, 14/09/2026). Ele reconhece a linha pelo código interno e, se ele mudou, pelo nome da unidade — sempre **dentro do mesmo empreendimento e do mesmo tipo** (`u`, `b`, `t`, `o`), para o Box 101 nunca virar o Apto 101 nem o 401 de outro prédio. A importação só preenche a tela (fica "Alterações não salvas"); quem grava é o dono, no botão. Embaixo dos botões fica uma linha fixa dizendo quantos custos entraram, quantos não têm correspondência, ou o motivo da falha.
 
 **A venda desejada vira o preço do site (v202).** Custo e margem são internos e
 não vão para lugar nenhum. A **venda desejada**, porém, é preço: toda vez que ela
@@ -741,7 +1025,13 @@ acusar desatualizado sem motivo.
 
 ## Testar o painel
 
-Não há suíte de testes. Para exercitar o painel sem token de verdade, carregue
+> **REGRA ANTIGA — substituída por "Validação e testes", em REGRAS ATUAIS.**
+> Desde a v301 há, sim, duas suítes: `node tools/validar.js` e
+> `node tools/testar-navegador.js`. O parágrafo abaixo descreve o arranjo
+> manual que elas automatizaram — continua útil para entender como o painel é
+> exercitado sem token de verdade.
+
+Não havia suíte de testes. Para exercitar o painel sem token de verdade, carregue
 `admin/index.html` no Chromium (Playwright) interceptando `https://api.github.com/**`
 e devolvendo os arquivos locais em base64, com
 `sessionStorage["senger-admin-ok"]="1"` e um token qualquer no `localStorage`.
@@ -779,6 +1069,13 @@ painel.
 
 
 ### INCC e histórico (v173)
+
+> **REGRA ANTIGA — substituída por "Dinheiro: custo, preço e arredondamento",
+> em REGRAS ATUAIS.** Os dois itens abaixo descrevem o arredondamento incidindo
+> sobre o CUSTO. Desde a v301 é o contrário: **custo sempre exato, e o
+> arredondamento vale só para o preço de venda.** Não reviva o comportamento
+> antigo.
+
 - **O arredondamento voltou, e o padrão é o R$ 100 mais próximo (v254).** O dono
   pediu de volta ("quero de volta aquele negócio de arredondar para os 100,00
   mais próximo"): o seletor, escondido na v225, reaparece na tela do INCC com

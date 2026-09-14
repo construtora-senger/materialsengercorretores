@@ -989,7 +989,27 @@
     return EMPREENDIMENTOS.find((emp) => emp.id === id);
   }
 
+  // v301 — ONDE O CORRETOR ESTAVA NA LISTA.
+  //
+  // A vitrine tem dez empreendimentos e a lista de unidades passa de duzentas
+  // linhas. Abrir o Quality, conferir uma metragem e voltar jogava o corretor
+  // de volta ao TOPO — com o cliente no telefone, ele tinha de rolar tudo de
+  // novo para chegar ao proximo imovel. Os filtros ja sobreviviam (moram no
+  // `state`); o que faltava era a posicao.
+  let rolagemDaLista = 0;
+
+  // A altura e guardada AQUI, e nao em navigateToEnterprise: o cartao da
+  // vitrine abre o empreendimento por um link de endereco
+  // (<a href="#emp-...">), sem passar por funcao nenhuma. Guardando no momento
+  // em que a lista sai da tela, todo caminho de abertura fica coberto — o
+  // cartao, a lista de unidades e o endereco colado direto no navegador.
+  function lembrarRolagemDaLista() {
+    const catalogo = document.getElementById("catalogo");
+    if (catalogo && !catalogo.hidden) rolagemDaLista = window.scrollY;
+  }
+
   function navigateToEnterprise(id) {
+    lembrarRolagemDaLista();
     if (location.hash === `#emp-${id}`) renderRoute();
     else location.hash = `emp-${id}`;
   }
@@ -1019,6 +1039,93 @@
     cta.hidden = false;
   }
 
+  // v301 — A FICHA DA UNIDADE (so no link do cliente, e so quando ele recebeu
+  // UMA unidade). Quem abre esse link nao esta pesquisando o mercado: recebeu
+  // aquele imovel porque ja ha interesse nele. Entao a pagina responde, de
+  // cima para baixo, as perguntas que ele faz nessa ordem — o que e, qual
+  // unidade, que tamanho, quantos dormitorios, qual garagem, quanto custa,
+  // quando entrega — em vez de repetir o resumo generico do predio.
+  //
+  // Nada aqui e inventado: cada linha so aparece quando o campo existe no
+  // cadastro. Sem area global, nao ha linha de area global.
+
+  // "3 suites + lavabo" -> "3 suites"; "2 dormitorios (1 suite)" -> "2 dormitorios · 1 suite".
+  // E leitura do que o dono escreveu na tipologia, nunca conta nova.
+  function dormitoriosTexto(tipo = "") {
+    const texto = String(tipo);
+    const dorm = texto.match(/(\d+)\s*dormit/i);
+    const suite = texto.match(/(\d+)\s*su[ií]te/i);
+    const partes = [];
+    if (dorm) partes.push(`${dorm[1]} ${Number(dorm[1]) === 1 ? "dormitório" : "dormitórios"}`);
+    if (suite) partes.push(`${suite[1]} ${Number(suite[1]) === 1 ? "suíte" : "suítes"}`);
+    return partes.join(" · ");
+  }
+
+  // "212 m² global · 149 m² privativo" -> { global: "212 m²", privativa: "149 m²" }
+  function areasDe(area = "") {
+    const g = String(area).match(/([\d.,]+)\s*m²\s*global/i);
+    const p = String(area).match(/([\d.,]+)\s*m²\s*privativ/i);
+    // Area escrita sem rotulo ("325 m²", dos lotes) conta como a area do imovel.
+    const solta = (!g && !p) ? String(area).trim() : "";
+    return { global: g ? `${g[1]} m²` : "", privativa: p ? `${p[1]} m²` : "", solta };
+  }
+
+  // As caracteristicas que mudam a unidade, nao o predio: Casa Suspensa,
+  // decorado, mobiliado, e o "alugado" (que continua na oferta — e o produto
+  // pronto para o investidor, que compra com o inquilino dentro).
+  function caracteristicasDe(item) {
+    const lista = (item.tags || []).map((t) => (isCasaSuspensa(t) ? CASA_SUSPENSA : t));
+    if (item.status === "alugado") lista.push("Alugado — com inquilino");
+    return lista;
+  }
+
+  function fichaDaUnidade(emp, item) {
+    const linhas = [];
+    const linha = (rotulo, valor) => { if (valor) linhas.push({ rotulo, valor }); };
+
+    if (item.kind === "unit") {
+      const tipo = [item.group?.tipo, item.group?.sufixo].filter(Boolean).join(" · ");
+      linha("Tipologia", tipo);
+      linha("Dormitórios", dormitoriosTexto(item.group?.tipo || ""));
+    }
+    if (item.kind === "land") {
+      linha("Quadra e lote", `Quadra ${item.quadra} · Lote ${item.numero}`);
+      linha("Rua", item.rua);
+      linha("Loteamento", item.lote);
+    }
+    const areas = areasDe(item.area || "");
+    linha("Área privativa", areas.privativa);
+    linha("Área global", areas.global);
+    linha("Área", areas.solta);
+    // "Box opcional (consultar)" nao e garagem incluida: fica de fora da ficha
+    // para o cliente nao contar com o que ainda depende de negociacao.
+    if (item.garage && !/opcional|consultar/i.test(item.garage)) linha("Garagem", item.garage);
+    const andar = item.kind === "unit" ? andarDe(item.code) : null;
+    if (andar) linha("Andar", `${andar}º`);
+    linha("Entrega", emp.id === "outros" ? "" : (emp.entrega || emp.statusLabel || ""));
+    linha("Pagamento", condicoesDe(emp));
+    linha("Registro", (emp.ri || []).join(" · "));
+
+    const caracteristicas = caracteristicasDe(item);
+    const observacao = item.notes || item.description || "";
+
+    return `
+      <article class="info-card ficha-unidade">
+        <p class="eyebrow dark">${emp.id === "outros" ? "Seu imóvel" : "Sua unidade"}</p>
+        <h2>${escapeHtml(emp.id === "outros" ? itemLabel(item) : `${emp.nome} — ${itemLabel(item)}`)}</h2>
+        ${caracteristicas.length ? `<p class="ficha-marcas">${caracteristicas.map((t) => `<span>${escapeHtml(t)}</span>`).join("")}</p>` : ""}
+        <div class="ficha-valor">
+          <span>Valor</span>
+          <strong class="price-value">${item.pricePrefix ? `${escapeHtml(item.pricePrefix)} ` : ""}${money(item.price)}</strong>
+        </div>
+        <dl class="ficha-dados">
+          ${linhas.map(({ rotulo, valor }) => `<div><dt>${escapeHtml(rotulo)}</dt><dd>${escapeHtml(valor)}</dd></div>`).join("")}
+        </dl>
+        ${observacao ? `<p class="ficha-obs">${escapeHtml(observacao)}</p>` : ""}
+      </article>
+    `;
+  }
+
   let ultimoAberto = null;
 
   function renderRoute() {
@@ -1033,7 +1140,7 @@
     }
     const match = location.hash.match(/^#emp-([\w-]+)/);
     const emp = match ? findEnterprise(match[1]) : null;
-    if (emp) renderDetail(emp);
+    if (emp) { lembrarRolagemDaLista(); renderDetail(emp); }
     else renderHome();
   }
 
@@ -1054,7 +1161,15 @@
     state.foco = null;
     ultimoAberto = null;
     renderCorretorCta(vitrineCliente ? "os imóveis que você me enviou" : "");
-    window.scrollTo({ top: 0, behavior: "auto" });
+    // De volta a lista, na altura em que ele estava. No modo cliente a vitrine
+    // e sempre curta e recem-aberta: ali o topo e o certo.
+    //
+    // A altura NAO se zera aqui: renderRoute roda duas vezes no mesmo clique
+    // (hashchange e popstate), e zerar na primeira faria a segunda passada
+    // jogar a pagina para o topo de novo — exatamente o que este conserto
+    // veio evitar. O valor e reescrito toda vez que um empreendimento e
+    // aberto, entao nunca fica velho.
+    window.scrollTo({ top: CLIENT_MODE ? 0 : rolagemDaLista, behavior: "auto" });
   }
 
   function renderDetail(emp) {
@@ -1142,8 +1257,24 @@
         plantFiles = [];
       }
     }
-    const humanizedPlants = plantImages.filter((item) => !item.tecnica);
-    const technicalPlants = plantImages.filter((item) => item.tecnica);
+    // v301 — a planta ganhou secao. Antes havia so "humanizada" e "tecnica", e
+    // a planta da area de lazer do Boulevard caia junto das plantas de
+    // apartamento, como se fosse a planta da unidade enviada. Agora o cadastro
+    // diz de que a planta e (`secao` no item da galeria) e cada grupo tem
+    // titulo proprio.
+    const SECOES_DE_PLANTA = [
+      ["unidade", "Planta da unidade"],
+      ["humanizada", "Planta humanizada"],
+      ["pavimento", "Planta do pavimento"],
+      ["lazer", "Área de lazer"],
+      ["tecnica", "Planta técnica"],
+    ];
+    const secaoDaPlanta = (item) => item.secao || (item.tecnica ? "tecnica" : "humanizada");
+    // Sem foco a ordem e a das secoes acima; com foco, sobrou so a planta da
+    // unidade, entao a ordem nao muda nada.
+    const plantasPorSecao = SECOES_DE_PLANTA
+      .map(([chave, titulo]) => ({ titulo, itens: plantImages.filter((item) => secaoDaPlanta(item) === chave) }))
+      .filter(({ itens }) => itens.length);
 
     const THUMB_W = 84;
     const THUMB_GAP = 10;
@@ -1188,25 +1319,24 @@
         <div class="section-title-row"><h2>Plantas</h2></div>
         ${plantaNota ? `<p class="section-note">${escapeHtml(plantaNota)}</p>` : ""}
         ${(plantImages.length || plantFiles.length) ? `
-        <div class="plant-viewer">
+        <div class="plant-viewer${plantImages.length === 1 && !plantFiles.length ? " planta-unica" : ""}">
           <div class="plant-viewer-list">
-            ${(plantFiles.length || technicalPlants.length) ? `
+            ${plantFiles.length ? `
               <div class="plant-link-group">
-                <h3>Planta técnica</h3>
+                <h3>Arquivo da planta</h3>
                 <div class="plant-link-list">
                   ${plantFiles.map((item) => `<a class="plant-link" href="${escapeHtml(assetUrl(item.src))}" target="_blank" rel="noopener">${escapeHtml(item.legenda || "Planta técnica")}</a>`).join("")}
-                  ${technicalPlants.map((item) => plantButton(item, "Planta técnica")).join("")}
                 </div>
               </div>
             ` : ""}
-            ${humanizedPlants.length ? `
+            ${plantasPorSecao.map(({ titulo, itens }) => `
               <div class="plant-link-group">
-                <h3>Planta humanizada</h3>
+                <h3>${escapeHtml(titulo)}</h3>
                 <div class="plant-link-list">
-                  ${humanizedPlants.map((item) => plantButton(item, "Planta humanizada")).join("")}
+                  ${itens.map((item) => plantButton(item, titulo)).join("")}
                 </div>
               </div>
-            ` : ""}
+            `).join("")}
           </div>
           ${plantImages.length ? `
             <div class="plant-viewer-preview" data-plant-open role="button" tabindex="0" aria-label="Abrir a planta em tela cheia">
@@ -1219,37 +1349,27 @@
       </section>
     ` : "";
 
-    detail.innerHTML = `
-      <section class="detail-hero">
-        <img class="detail-hero-image" src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}">
-        <div class="shell detail-hero-content">
-          <button class="button detail-back" type="button" id="detail-back">← Voltar ao portfólio</button>
-          <div class="detail-title-row">
-            <div>
-              <div class="detail-badges">
-                <span class="badge badge-stage ${statusClass}">${escapeHtml(emp.statusLabel || emp.entrega || "")}</span>
-                <span class="badge">${escapeHtml(emp.cidade)}</span>
-                <span class="badge">${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria)}</span>
-              </div>
-              <h1>${escapeHtml(emp.nome)}${focusItem ? ` — ${escapeHtml(itemLabel(focusItem))}` : ""}</h1>
-              <p>${escapeHtml(emp.tagline || emp.entrega || "Consulte informações e disponibilidade.")}</p>
-              <div class="detail-actions">
+    // v301 — os botoes da equipe nao vao mais para o HTML do cliente. Ate aqui
+    // eles eram escritos sempre e escondidos pelo CSS (.client-mode): o botao
+    // continuava no documento, alcancavel por teclado e por leitor de tela, e
+    // uma folha de estilo que nao carregasse deixava a ferramenta interna a
+    // vista de quem recebeu o link.
+    const acoesDaEquipe = CLIENT_MODE ? "" : `
                 <button class="button button-primary" type="button" id="share-emp-prices">WhatsApp com preços</button>
                 <button class="button button-outline" type="button" id="share-emp-no-prices">WhatsApp sem preços</button>
                 <button class="button button-outline" type="button" id="share-emp-link">Enviar link</button>
-                <button class="button button-outline" type="button" id="print-detail">Gerar PDF</button>
+                <button class="button button-outline" type="button" id="print-detail">Gerar PDF</button>`;
+    // Material comercial: so aparece quando existe mesmo. Sem folder nao ha
+    // botao de folder — nada de "em breve" ocupando lugar.
+    const acoesDeMaterial = `
                 ${local.mapsUrl ? `<a class="button button-outline" href="${escapeHtml(local.mapsUrl)}" target="_blank" rel="noopener">Ver localização</a>` : ""}
                 ${emp.video ? `<button class="button button-outline" type="button" id="watch-video">Assistir vídeo</button>` : ""}
-                ${emp.folder ? `<a class="button button-outline" href="${escapeHtml(assetUrl(emp.folder))}" target="_blank" rel="noopener">Baixar folder</a>` : ""}
-              </div>
-            </div>
-            ${emp.logo ? `<img class="detail-brand-logo" src="${escapeHtml(assetUrl(emp.logo))}" alt="Logo ${escapeHtml(emp.nome)}">` : ""}
-          </div>
-        </div>
-      </section>
+                ${emp.folder ? `<a class="button button-outline" href="${escapeHtml(assetUrl(emp.folder))}" target="_blank" rel="noopener">${CLIENT_MODE ? "Ver apresentação completa" : "Baixar folder"}</a>` : ""}`;
+    // O "voltar" so faz sentido para quem tem para onde voltar: a equipe, e o
+    // cliente que recebeu uma LISTA de empreendimentos.
+    const podeVoltar = !CLIENT_MODE || Boolean(CLIENT_LIST_IDS);
 
-      <div class="shell detail-content">
-        <div class="detail-summary-grid">
+    const apresentacao = `
           <article class="info-card">
             <p class="eyebrow dark">Apresentação</p>
             <h2>Sobre o empreendimento</h2>
@@ -1265,16 +1385,15 @@
                 `).join("")}
               </div>
             ` : ""}
-          </article>
+          </article>`;
+
+    const resumoComercial = `
           <article class="info-card">
             <p class="eyebrow dark">Resumo comercial</p>
             <h2>Informações principais</h2>
             <div class="fact-grid">
               <div class="fact-card"><span>Etapa</span><strong>${escapeHtml(emp.entrega || emp.statusLabel || "—")}</strong></div>
-              ${focusItem ? `
-                <div class="fact-card"><span>Área</span><strong>${escapeHtml(focusItem.area || "—")}</strong></div>
-                <div class="fact-card destaque"><span>Valor</span><strong class="price-value">${money(focusItem.price)}</strong></div>
-              ` : focusRange ? `
+              ${focusRange ? `
                 <div class="fact-card"><span>Unidades selecionadas</span><strong>${focusItems.length}</strong></div>
                 <div class="fact-card destaque"><span>Valores</span><strong class="price-value">${focusRange}</strong></div>
               ` : `
@@ -1282,20 +1401,67 @@
               `}
               <div class="fact-card"><span>Registro</span><strong>${escapeHtml((emp.ri || []).join(" · ") || "Não informado")}</strong></div>
             </div>
-          </article>
+          </article>`;
+
+    // UMA unidade enviada ao cliente: a pagina e a ficha dela. A ordem muda —
+    // identificacao e resumo, planta DAQUELA unidade, fotos, diferenciais,
+    // video e folder — e a tabela de unidades sai, porque com uma linha so ela
+    // repetia o que a ficha ja diz melhor. O link do empreendimento inteiro
+    // continua exploratorio, com a vitrine de sempre.
+    const miolo = focusItem ? `
+        <div class="detail-summary-grid ficha-grid">
+          ${fichaDaUnidade(emp, focusItem)}
+        </div>
+        ${plantSection}
+        ${gallery}
+        <div class="detail-summary-grid">${apresentacao}</div>
+        ${videoSection}
+    ` : `
+        <div class="detail-summary-grid">
+          ${apresentacao}
+          ${resumoComercial}
         </div>
         ${inventory}
         ${gallery}
         ${videoSection}
         ${plantSection}
-      </div>
     `;
 
-    document.getElementById("detail-back").addEventListener("click", navigateHome);
-    document.getElementById("share-emp-prices").addEventListener("click", () => shareEnterprise(emp, true));
-    document.getElementById("share-emp-no-prices").addEventListener("click", () => shareEnterprise(emp, false));
-    document.getElementById("share-emp-link").addEventListener("click", () => shareClientLink(emp));
-    document.getElementById("print-detail").addEventListener("click", (event) => printEnterprise(emp, event));
+    detail.innerHTML = `
+      <section class="detail-hero">
+        <img class="detail-hero-image" src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}">
+        <div class="shell detail-hero-content">
+          ${podeVoltar ? `<button class="button detail-back" type="button" id="detail-back">← ${CLIENT_MODE ? "Voltar aos imóveis" : "Voltar ao portfólio"}</button>` : ""}
+          <div class="detail-title-row">
+            <div>
+              <div class="detail-badges">
+                <span class="badge badge-stage ${statusClass}">${escapeHtml(emp.statusLabel || emp.entrega || "")}</span>
+                <span class="badge">${escapeHtml(emp.cidade)}</span>
+                <span class="badge">${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria)}</span>
+              </div>
+              <h1>${escapeHtml(emp.nome)}${focusItem ? ` — ${escapeHtml(itemLabel(focusItem))}` : ""}</h1>
+              <p>${escapeHtml(emp.tagline || emp.entrega || "Consulte informações e disponibilidade.")}</p>
+              <div class="detail-actions">${acoesDaEquipe}${acoesDeMaterial}
+              </div>
+            </div>
+            ${emp.logo ? `<img class="detail-brand-logo" src="${escapeHtml(assetUrl(emp.logo))}" alt="Logo ${escapeHtml(emp.nome)}">` : ""}
+          </div>
+        </div>
+      </section>
+
+      <div class="shell detail-content">${miolo}</div>
+    `;
+
+    // Cada botao so existe no modo a que pertence: liga o que estiver na tela.
+    const aoClicar = (id, acao) => {
+      const alvo = document.getElementById(id);
+      if (alvo) alvo.addEventListener("click", acao);
+    };
+    aoClicar("detail-back", navigateHome);
+    aoClicar("share-emp-prices", () => shareEnterprise(emp, true));
+    aoClicar("share-emp-no-prices", () => shareEnterprise(emp, false));
+    aoClicar("share-emp-link", () => shareClientLink(emp));
+    aoClicar("print-detail", (event) => printEnterprise(emp, event));
     const watchVideo = document.getElementById("watch-video");
     if (watchVideo) watchVideo.addEventListener("click", () => {
       const section = detail.querySelector("[data-video-section]");
