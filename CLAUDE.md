@@ -158,6 +158,21 @@ desejada e margem** — e nada mais. **Nunca grave custo no `data.js` ou em outr
 arquivo público do repositório.** O painel permite importar/exportar um JSON de
 backup.
 
+**Móveis entram no custo (v263).** Alguns apartamentos foram entregues
+mobiliados e o dono quer esse investimento dentro do custo. Cada linha tem o
+campo **"+ móveis"** embaixo do nome, vazio na maioria; o campo Custo continua
+sendo o custo da obra. **Margem %, Margem, Custo − 5%/− 10% e Venda desejada
+são contados sobre o total (obra + móveis)**, e uma nota embaixo do custo diz
+"= 1.313.900,00 com móveis". O valor mora no mapa `moveis`, ao lado de
+`custos` e `margensDesejadas`, em todo lugar: aparelho, rascunho, cofre e
+backup (backup antigo sem `moveis` continua importável). Por decisão do dono,
+**o INCC corrige os móveis junto** — obra e móveis arredondados cada um por si,
+e a pré-visualização mostra o total com a marca "com móveis". "Apagar tudo" e
+"Apagar tudo do <nome>" limpam os móveis também. Sem custo da obra não há custo
+total: móveis sozinhos não precificam nada (`comMoveis`). Quem lê custo para
+conta tem de usar `custoTotalInterno`/`comMoveis`, nunca `custoInterno` —
+este é só o custo da obra, que vai no campo.
+
 **Não existe mais coluna "Preço no site" (v217).** *"Quero que 'preço no site'
 não exista mais, somente venda desejada — que é o que vai pro site."* A
 **Venda desejada é o preço**. O preço publicado continua guardado na linha
