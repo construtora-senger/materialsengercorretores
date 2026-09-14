@@ -948,7 +948,7 @@ const EMPREENDIMENTOS = [
         garagem: "1 box duplo",
         unidades: [
           { apto: "602", preco: 1390300, status: "disponivel" },
-          { apto: "902", preco: 1427700, status: "disponivel", tags: ["Semimobiliado"] },
+          { apto: "902", preco: 1543618, status: "disponivel", tags: ["Semimobiliado"] },
         ],
       },
     ],
@@ -1066,7 +1066,7 @@ const EMPREENDIMENTOS = [
         planta: "prime-planta",
         area: "124 m² global · 96 m² privativo",
         garagem: "1 box duplo",
-        unidades: [{ apto: "303", preco: 1054200, status: "disponivel", tags: ["Decorado"] }],
+        unidades: [{ apto: "303", preco: 1183278, status: "disponivel", tags: ["Decorado"] }],
       },
     ],
     // Box de garagem do terreo (101 a 118) e do subsolo (201 a 222), pela
