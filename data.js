@@ -1341,6 +1341,12 @@ const EMPREENDIMENTOS = [
       { src: "assets/nvr3-mapa.webp", legenda: "Mapa de lotes e disponibilidade" },
       { src: "assets/nvr3-urb.webp", legenda: "Projeto de urbanismo" },
       { src: "assets/nvr3-planta.webp", legenda: "Planta de lotes" },
+      // A planta oficial do loteamento, em PDF (o arquivo do projeto de
+      // urbanismo, out/2022, rev. 06 de 20/04/2023). O app trata planta em PDF
+      // como arquivo para abrir, nao como imagem do visor: e ela que o cliente
+      // consegue ampliar de verdade para achar o lote dele. As imagens acima
+      // continuam sendo o que se ve de relance.
+      { src: "assets/nvr3-planta-lotes.pdf", legenda: "Planta geral dos lotes (PDF, tamanho real)" },
     ],
     terrenos: [
       { quadra: "77", numero: "89", rua: "Laranjeira", area: 348, status: "vendido" },
