@@ -1203,7 +1203,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 263;
+  const VERSAO_PAINEL = 264;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3758,7 +3758,16 @@
 
   // Moveis: o que foi investido em mobilia naquela unidade (v263). So existe
   // onde o dono informou; na maioria das linhas fica vazio.
+  // Terreno nao tem moveis — lote e chao, nao ha o que mobiliar. A chave do
+  // terreno e "<emp>:t:<quadra>:<numero>", entao ela nunca devolve mobilia: com
+  // isso nenhuma conta do painel soma movel em lote, venha o valor de onde
+  // vier (v264).
+  function ehTerreno(chave) {
+    return String(chave).split(":")[1] === "t";
+  }
+
   function moveisInterno(chave) {
+    if (ehTerreno(chave)) return null;
     const n = Number(moveisInternos[chave]);
     return Number.isFinite(n) && n > 0 ? n : null;
   }
@@ -4037,7 +4046,7 @@
               <div>
                 <span class="nome">${escapeHtml(item.rotulo)}</span>${marcaBox}
                 <span class="preco-sub"><span class="st-${situacao}"><span class="bolinha"></span>${escapeHtml(STATUS_LABEL[situacao] || situacao)}</span>${detalhe ? " · " + escapeHtml(detalhe) : ""}</span>
-                ${semValor ? "" : `<label class="preco-moveis"><span>+ móveis</span><input class="moveis-input" inputmode="decimal" data-moveis-chave="${escapeHtml(chave)}" value="${moveis ? escapeHtml(dinheiroDaLinha(moveis)) : ""}" placeholder="0,00" aria-label="Valor dos móveis de ${escapeHtml(item.rotulo)}"></label>`}
+                ${semValor || item.tipo === "terreno" ? "" : `<label class="preco-moveis"><span>+ móveis</span><input class="moveis-input" inputmode="decimal" data-moveis-chave="${escapeHtml(chave)}" value="${moveis ? escapeHtml(dinheiroDaLinha(moveis)) : ""}" placeholder="0,00" aria-label="Valor dos móveis de ${escapeHtml(item.rotulo)}"></label>`}
               </div>
             </div>
             <div class="preco-campo">
