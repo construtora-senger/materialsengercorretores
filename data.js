@@ -396,11 +396,11 @@ const EMPREENDIMENTOS = [
         area: "99 m² global · 73 m² privativo",
         garagem: "1 box simples",
         unidades: [
-          { apto: "404", preco: 781300, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "135 m² global · 104 m² privativo" },
-          { apto: "504", preco: 730000, status: "disponivel" },
-          { apto: "604", preco: 730000, status: "disponivel" },
-          { apto: "704", preco: 730000, status: "disponivel" },
-          { apto: "804", preco: 727000, status: "disponivel" },
+          { apto: "404", preco: 730000, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "135 m² global · 104 m² privativo" },
+          { apto: "504", preco: 690000, status: "disponivel" },
+          { apto: "604", preco: 700000, status: "disponivel" },
+          { apto: "704", preco: 710000, status: "disponivel" },
+          { apto: "804", preco: 720000, status: "disponivel" },
         ],
       },
       {
@@ -410,10 +410,10 @@ const EMPREENDIMENTOS = [
         garagem: "1 box simples",
         unidades: [
           { apto: "403", status: "vendido", tags: ["Casa Suspensa"], areaUnit: "149 m² global · 116 m² privativo" },
-          { apto: "503", preco: 749400, status: "disponivel" },
+          { apto: "503", preco: 740000, status: "disponivel" },
           { apto: "603", status: "vendido" },
-          { apto: "703", preco: 749400, status: "disponivel" },
-          { apto: "803", preco: 749400, status: "disponivel" },
+          { apto: "703", preco: 760000, status: "disponivel" },
+          { apto: "803", preco: 770000, status: "disponivel" },
         ],
       },
       {
@@ -423,9 +423,9 @@ const EMPREENDIMENTOS = [
         garagem: "1 box simples",
         unidades: [
           { apto: "401", status: "vendido", tags: ["Casa Suspensa"], areaUnit: "215 m² global · 169 m² privativo" },
-          { apto: "402", preco: 820600, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "173 m² global · 133 m² privativo" },
+          { apto: "402", preco: 850000, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "173 m² global · 133 m² privativo" },
           { apto: "501", status: "vendido" },
-          { apto: "502", preco: 800800, status: "disponivel" },
+          { apto: "502", preco: 800000, status: "disponivel" },
           { apto: "601", status: "vendido" },
           { apto: "602", status: "vendido" },
           { apto: "701", status: "vendido" },
@@ -455,13 +455,13 @@ const EMPREENDIMENTOS = [
         garagem: "1 box duplo",
         unidades: [
           { apto: "1001", status: "vendido" },
-          { apto: "1002", preco: 1199100, status: "disponivel" },
+          { apto: "1002", preco: 1120000, status: "disponivel" },
           { apto: "1101", status: "vendido" },
-          { apto: "1102", preco: 1199100, status: "disponivel" },
+          { apto: "1102", preco: 1130000, status: "disponivel" },
           { apto: "1201", status: "vendido" },
-          { apto: "1202", preco: 1211500, status: "disponivel" },
+          { apto: "1202", preco: 1140000, status: "disponivel" },
           { apto: "1301", status: "vendido" },
-          { apto: "1302", preco: 1236600, status: "disponivel" },
+          { apto: "1302", preco: 1150000, status: "disponivel" },
         ],
       },
     ],
@@ -586,9 +586,9 @@ const EMPREENDIMENTOS = [
         estoque: "Sala 2º pavimento",
         planta: "po-planta-2pav",
         unidades: [
-          { apto: "201", preco: 1169200, status: "disponivel", areaUnit: "160 m² global · 90 m² privativo" },
-          { apto: "202", preco: 1015500, status: "disponivel", areaUnit: "139 m² global · 78 m² privativo" },
-          { apto: "203", preco: 644500, status: "disponivel", areaUnit: "88 m² global · 49 m² privativo" },
+          { apto: "201", preco: 1140000, status: "disponivel", areaUnit: "160 m² global · 90 m² privativo" },
+          { apto: "202", preco: 1010000, status: "disponivel", areaUnit: "139 m² global · 78 m² privativo" },
+          { apto: "203", preco: 660000, status: "disponivel", areaUnit: "88 m² global · 49 m² privativo" },
         ],
       },
       // Do 4o ao 8o pavimento a planta e a mesma: cinco salas, finais 01 a 05.
@@ -609,7 +609,7 @@ const EMPREENDIMENTOS = [
           { apto: "501", status: "vendido" },
           { apto: "601", status: "vendido" },
           { apto: "701", status: "vendido" },
-          { apto: "801", preco: 824400, status: "disponivel" },
+          { apto: "801", preco: 850000, status: "disponivel" },
         ],
       },
       {
@@ -619,7 +619,7 @@ const EMPREENDIMENTOS = [
         garagem: "1 box simples",
         estoque: "Sala 122 a 129 m²",
         planta: "po-planta",
-        unidades: [{ apto: "802", preco: 835700, status: "disponivel" }],
+        unidades: [{ apto: "802", preco: 880000, status: "disponivel" }],
       },
       // As outras salas de final 02 tem cada uma a sua area; contam junto com a
       // 802 no estoque do painel e ja estao todas vendidas.
@@ -651,7 +651,7 @@ const EMPREENDIMENTOS = [
           { apto: "503", status: "vendido" },
           { apto: "603", status: "vendido" },
           { apto: "703", status: "vendido" },
-          { apto: "803", preco: 404700, status: "disponivel" },
+          { apto: "803", preco: 480000, status: "disponivel" },
         ],
       },
       {
@@ -662,12 +662,12 @@ const EMPREENDIMENTOS = [
         estoque: "Sala 72 m²",
         planta: "po-planta",
         unidades: [
-          { apto: "304", preco: 562100, status: "disponivel", planta: "po-planta-3pav" },
+          { apto: "304", preco: 560000, status: "disponivel", planta: "po-planta-3pav" },
           { apto: "404", status: "vendido" },
           { apto: "504", status: "vendido" },
           { apto: "604", status: "vendido" },
           { apto: "704", status: "vendido" },
-          { apto: "804", preco: 562100, status: "disponivel" },
+          { apto: "804", preco: 600000, status: "disponivel" },
         ],
       },
       {
@@ -682,7 +682,7 @@ const EMPREENDIMENTOS = [
           { apto: "405", status: "vendido" },
           { apto: "505", status: "vendido" },
           { apto: "605", status: "vendido" },
-          { apto: "705", preco: 562100, status: "disponivel" },
+          { apto: "705", preco: 600000, status: "disponivel" },
           { apto: "805", status: "vendido" },
         ],
       },
@@ -986,8 +986,8 @@ const EMPREENDIMENTOS = [
         area: "172 m² global · 132 m² privativo",
         garagem: "1 box duplo",
         unidades: [
-          { apto: "602", preco: 1390300, status: "disponivel" },
-          { apto: "902", preco: 1543618, status: "disponivel", tags: ["Semimobiliado"] },
+          { apto: "602", preco: 1310000, status: "disponivel" },
+          { apto: "902", preco: 1450000, status: "disponivel", tags: ["Semimobiliado"] },
         ],
       },
     ],
@@ -1105,7 +1105,7 @@ const EMPREENDIMENTOS = [
         planta: "prime-planta",
         area: "124 m² global · 96 m² privativo",
         garagem: "1 box duplo",
-        unidades: [{ apto: "303", preco: 1183278, status: "disponivel", tags: ["Decorado"] }],
+        unidades: [{ apto: "303", preco: 1180000, status: "disponivel", tags: ["Decorado"] }],
       },
     ],
     // Box de garagem do terreo (101 a 118) e do subsolo (201 a 222), pela
@@ -1209,14 +1209,14 @@ const EMPREENDIMENTOS = [
         area: "57 m² global · 43 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-57",
-        unidades: [{ apto: "802A", preco: 427906, status: "disponivel" }],
+        unidades: [{ apto: "802A", preco: 430000, status: "disponivel" }],
       },
       {
         tipo: "2 dormitórios c/ móveis",
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-69",
-        unidades: [{ apto: "701B", preco: 497420, status: "alugado" }],
+        unidades: [{ apto: "701B", preco: 510000, status: "alugado" }],
       },
       {
         tipo: "2 dormitórios — já alugados",
@@ -1225,8 +1225,8 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-69",
         obs: "Aluguel R$ 1.400,00 · Condomínio e IPTU por conta do inquilino.",
         unidades: [
-          { apto: "301B", preco: 479930, status: "alugado" },
-          { apto: "601B", preco: 506770, status: "alugado" },
+          { apto: "301B", preco: 470000, status: "alugado" },
+          { apto: "601B", preco: 490000, status: "alugado" },
         ],
       },
       {
@@ -1236,9 +1236,9 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-3d",
         obs: "Aluguel R$ 1.600,00 · Condomínio e IPTU por conta do inquilino.",
         unidades: [
-          { apto: "501A", preco: 630310, status: "alugado" },
-          { apto: "601A", preco: 630310, status: "alugado" },
-          { apto: "801A", preco: 649010, status: "alugado" },
+          { apto: "501A", preco: 580000, status: "alugado" },
+          { apto: "601A", preco: 590000, status: "alugado" },
+          { apto: "801A", preco: 610000, status: "alugado" },
         ],
       },
       {
@@ -1247,9 +1247,9 @@ const EMPREENDIMENTOS = [
         garagem: "1 box simples",
         planta: "qual-planta-3d",
         unidades: [
-          { apto: "201A", preco: 562100, status: "disponivel" },
-          { apto: "401A", preco: 630310, status: "disponivel", tags: ["Semimobiliado"] },
-          { apto: "701A", preco: 637010, status: "disponivel" },
+          { apto: "201A", preco: 550000, status: "disponivel" },
+          { apto: "401A", preco: 580000, status: "disponivel", tags: ["Semimobiliado"] },
+          { apto: "701A", preco: 590000, status: "disponivel" },
         ],
       },
     ],

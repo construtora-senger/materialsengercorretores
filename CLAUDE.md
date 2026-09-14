@@ -36,7 +36,7 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## Dinheiro: custo, preço e arredondamento (v291)
+## Dinheiro: custo, preço e arredondamento (v301)
 
 **O custo é sempre EXATO — nunca arredondado.** Vale para o custo digitado, o
 custo importado de backup e o custo corrigido pelo INCC. Duas casas decimais,
@@ -57,13 +57,13 @@ custo.** Se encostar, sobe para o degrau seguinte.
 > ser exatas, e não arredondado — arredondar somente 100,00 mais próximos no
 > preço de venda, não custo."*
 
-**Desfazer custo digitado por engano (v291).** O rascunho do financeiro é
+**Desfazer custo digitado por engano (v301).** O rascunho do financeiro é
 gravado a cada tecla, então recarregar a página não desfaz nada. O **Descartar**
 agora volta custo, móveis e margem ao último valor **guardado**
 (`descartarFinanceiro`), e o botão aparece mesmo quando não há preço na fila —
 antes, mexer só num custo deixava o dono sem nenhum botão para clicar.
 
-## Garagem do Renaissance (v246, reafirmada na v291)
+## Garagem do Renaissance (v246, reafirmada na v301)
 
 **Os boxes do Renaissance estão incluídos no valor dos apartamentos, conforme a
 composição de garagem de cada unidade.** O box nunca é apresentado ao cliente
@@ -80,12 +80,12 @@ falha se alguém recriar a marca.
 
 ## Registro de incorporação
 
-- Renaissance: **RI nº 11-47.935** (cadastrado na v291).
+- Renaissance: **RI nº 11-47.935** (cadastrado na v301).
 - Evolutti: **RI nº 11-47.935** — o **mesmo número**, confirmado pelo dono em
   14/09/2026. **Não "corrija" nenhum dos dois** por achar que é engano.
 - Boulevard Residence: **RI nº 1-50.267** — já estava certo, não mexer.
 
-## Materiais comerciais: o que existe de verdade (auditado na v291)
+## Materiais comerciais: o que existe de verdade (auditado na v301)
 
 Varredura completa do histórico do git (`--diff-filter=A` em todos os commits de
 todas as branches): **o único PDF que já existiu no repositório é
@@ -99,13 +99,13 @@ de marca, sem conteúdo), não o folder em PDF.
 por conteúdo genérico.** Falta de folder/vídeo é *material complementar*, não
 erro de cadastro (ver a hierarquia de pendências abaixo).
 
-**Guarda contra regressão (v291).** Uma publicação que apague `hero`, `logo`,
+**Guarda contra regressão (v301).** Uma publicação que apague `hero`, `logo`,
 `folder`, `video`, `mapa`, fotos da galeria, diferenciais, vínculos de planta ou
 o RI que já estavam no ar **pede confirmação nominal** antes de gravar
 (`perdasDeMaterial`, em `admin/index.html`). O `tools/validar.js` faz a mesma
 conferência contra o retrato em `tools/materiais.json`.
 
-## Plantas do Boulevard por final (v291)
+## Plantas do Boulevard por final (v301)
 
 A prancha `assets/bv-planta.webp` mostra os quatro tipos de uma vez. Quem recebe
 o link do apartamento 501 não pode ver a planta dos outros três junto. Então:
@@ -130,7 +130,7 @@ A prancha completa e a planta do lazer continuam na apresentação geral, cada u
 na sua seção (`secao: "pavimento"` e `secao: "lazer"` no item da galeria). **A
 planta do lazer nunca aparece como planta da unidade.**
 
-## A ficha da unidade no link do cliente (v291)
+## A ficha da unidade no link do cliente (v301)
 
 `?cliente&u=<código>` deixou de ser "a ficha do prédio com uma linha destacada"
 e passou a ser **a ficha daquela unidade**. A ordem do conteúdo muda:
@@ -162,7 +162,7 @@ folha de estilo falhasse. O CSS continua como segunda barreira.
 O lead não vê: compartilhar, selecionar, gerar PDF, enviar link, versão do site,
 "Meu contato", painel, dado financeiro, nem unidade vendida.
 
-## Hierarquia das pendências do painel (v291)
+## Hierarquia das pendências do painel (v301)
 
 Três níveis, nesta ordem, e **folder/vídeo não são nível 1**:
 
@@ -175,7 +175,7 @@ Três níveis, nesta ordem, e **folder/vídeo não são nível 1**:
 3. **Material complementar** (`NIVEL.material`) — falta material, nada do que
    existe está errado: folder, vídeo, fotos adicionais.
 
-## Publicação em um commit só (v291)
+## Publicação em um commit só (v301)
 
 `publicarEmUmCommit()` monta blobs → árvore → commit → move a branch uma vez.
 `data.js`, `index.html`, `sw.js` e os arquivos anexados entram **juntos**: ou
@@ -203,7 +203,7 @@ plano B, porque o problema é permissão, não método.
   sempre mesmo se o aparelho se perder. O painel avisa aos 75 dias e oferece
   **Apagar a chave deste aparelho**.
 
-## Validação e testes (v291)
+## Validação e testes (v301)
 
 Dois comandos, sem dependência nenhuma de instalar:
 
@@ -217,7 +217,7 @@ node tools/gerar-pontes.js     # depois de acrescentar/remover unidade
 referência da guarda de regressão de materiais. **Rode os dois antes de
 publicar.**
 
-## O que mudou na v291 (rodada de 14/09/2026)
+## O que mudou na v301 (rodada de 14/09/2026)
 
 Uma rodada de correção, melhoria e testes pedida pelo dono. O que entrou:
 
@@ -349,7 +349,7 @@ até alguém informar o novo valor.
   indica que o certo é 290. **Não foi mexido**: mudar área sem ele confirmar é
   anunciar outra coisa ao cliente. Perguntar e corrigir.
 
-- ~~**Botão "voltar" em todas as telas do painel**~~ — **FEITO na v291.** Um
+- ~~**Botão "voltar" em todas as telas do painel**~~ — **FEITO na v301.** Um
   "← Voltar para <tela anterior>" no alto de toda tela que não seja a Visão
   geral (que é o início, e não tem para onde voltar). Guarda a trilha das telas
   por onde o dono passou; nada do que ele digitou se perde, porque trocar de
@@ -358,7 +358,7 @@ até alguém informar o novo valor.
   Os boxes do Renaissance já estão no valor dos apartamentos. Ver
   "Garagem do Renaissance", em REGRAS ATUAIS.
 - ~~**Refazer a apresentação de Visão geral > Estoque geral**~~ — **FEITO na
-  v291.** Dois degraus: uma faixa de cima que responde em dois segundos
+  v301.** Dois degraus: uma faixa de cima que responde em dois segundos
   (quantos à venda, quantos vendidos, que tipo de imóvel, barra de quanto já foi
   vendido) e, embaixo, três colunas de mesmo peso — estoque por tipologia,
   garagem e situação do cadastro. A lista "Garagem por unidade" continua
@@ -451,7 +451,7 @@ site" grava. Como a linha do item pode não ter mais o campo `preco`,
 em vez de falhar, e `precosDesejadosPendentes` deixou de exigir um preço atual.
 
 **O INCC corrige custo, não preço (v225)** — continua valendo. O que mudou na
-v291 é que o custo corrigido fica **exato**, sem arredondamento.
+v301 é que o custo corrigido fica **exato**, sem arredondamento.
  *"Nessa tela tem que aparecer o
 custo e não venda — INCC corrige custo; venda e margem é outra coisa."* A
 pré-visualização lista **Custo atual → Custo novo** dos custos guardados, o
@@ -1026,7 +1026,7 @@ acusar desatualizado sem motivo.
 ## Testar o painel
 
 > **REGRA ANTIGA — substituída por "Validação e testes", em REGRAS ATUAIS.**
-> Desde a v291 há, sim, duas suítes: `node tools/validar.js` e
+> Desde a v301 há, sim, duas suítes: `node tools/validar.js` e
 > `node tools/testar-navegador.js`. O parágrafo abaixo descreve o arranjo
 > manual que elas automatizaram — continua útil para entender como o painel é
 > exercitado sem token de verdade.
@@ -1072,7 +1072,7 @@ painel.
 
 > **REGRA ANTIGA — substituída por "Dinheiro: custo, preço e arredondamento",
 > em REGRAS ATUAIS.** Os dois itens abaixo descrevem o arredondamento incidindo
-> sobre o CUSTO. Desde a v291 é o contrário: **custo sempre exato, e o
+> sobre o CUSTO. Desde a v301 é o contrário: **custo sempre exato, e o
 > arredondamento vale só para o preço de venda.** Não reviva o comportamento
 > antigo.
 

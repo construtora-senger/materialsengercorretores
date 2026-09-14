@@ -472,7 +472,7 @@ img { max-width: 100%; display: block; }
 .condition-note { margin-top: 16px; padding: 14px 16px; border-left: 3px solid var(--brand); border-radius: 0 10px 10px 0; background: var(--brand-soft); color: #315860; font-size: 13px; line-height: 1.55; }
 
 /* ============================================================
-   v291 — A FICHA DA UNIDADE (link do cliente com UMA unidade)
+   v301 — A FICHA DA UNIDADE (link do cliente com UMA unidade)
    ------------------------------------------------------------
    Quem abre esse link recebeu aquele imovel porque ja ha interesse:
    a pagina responde na ordem em que ele pergunta — qual unidade,
@@ -1213,7 +1213,7 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 
 
 /* ============================================================
-   v291 — a ficha da unidade no celular
+   v301 — a ficha da unidade no celular
    ------------------------------------------------------------
    CUIDADO: ha dois @media (max-width: 720px) neste arquivo, e as
    regras repetidas sao decididas pelo ULTIMO. Por isso a versao

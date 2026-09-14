@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* v291 — o Voltar do painel. Discreto, no alto do conteudo, e some na
+    /* v301 — o Voltar do painel. Discreto, no alto do conteudo, e some na
        Visao geral (que e o inicio: nao ha para onde voltar). */
     .contexto-titulo .botao-voltar {
       display: inline-flex; align-items: center; gap: 6px; margin: 0 0 8px;
@@ -187,19 +187,19 @@
     /* align-items: start para cada cartao ter a sua altura: com a lista de
        unidades dentro, um cartao alto deixaria os vizinhos cheios de vazio. */
     .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; align-items: start; }
-    /* v291 — a visao geral e uma faixa por empreendimento, da largura toda.
+    /* v301 — a visao geral e uma faixa por empreendimento, da largura toda.
        O cartao cuida do proprio layout (ver o bloco logo abaixo), entao aqui
        so se define a coluna unica e o container.
 
        REGRA ANTIGA REMOVIDA: a v262 punha grid-template-areas no proprio
        .card ("titulo/resumo/unidades/garagem/falta"). A marcacao mudou na
-       v291 e aquelas areas nao existem mais — deixa-las no arquivo prendia o
+       v301 e aquelas areas nao existem mais — deixa-las no arquivo prendia o
        conteudo novo num molde de duas colunas e a faixa saia toda espremida
        na esquerda, com metade da tela vazia. */
     .cards.cascata { grid-template-columns: minmax(0, 1fr); container-type: inline-size; }
 
     /* ============================================================
-       v291 — VISAO GERAL > ESTOQUE GERAL
+       v301 — VISAO GERAL > ESTOQUE GERAL
        ------------------------------------------------------------
        Hierarquia em tres degraus, que e o que faltava: o numero
        grande responde primeiro, a barra mostra a situacao comercial
@@ -420,7 +420,7 @@
     .pend-emp li b { color: var(--vermelho); font-weight: 600; }
     .pend-emp li .pend-texto { display:block; }
 
-    /* v291 — as pendencias saem em tres blocos, na ordem do que o dono tem de
+    /* v301 — as pendencias saem em tres blocos, na ordem do que o dono tem de
        resolver primeiro. A cor do bloco inteiro diz o peso; a bolinha de cada
        linha acompanha o bloco, em vez de cada linha ter de se explicar. */
     /* Os tres blocos descem um embaixo do outro, NAO lado a lado: "resolver
@@ -1365,7 +1365,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 291;
+  const VERSAO_PAINEL = 301;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1424,7 +1424,7 @@
       apagadoEm: salvo.apagadoEm || "",
       apagadoPorEmp: salvo.apagadoPorEmp || {},
       recuperado: !!mudou,
-      // v291 — o que estava GUARDADO antes da digitacao, sem o rascunho por
+      // v301 — o que estava GUARDADO antes da digitacao, sem o rascunho por
       // cima. E o valor "de antes" para o qual o Descartar volta. Sem este
       // retrato nao havia como desfazer um custo digitado por engano: o
       // rascunho e gravado a cada tecla e sobrevive a recarregar a pagina.
@@ -1478,7 +1478,7 @@
     } catch (e) { return false; }
   }
 
-  // v291 — DESFAZER O QUE FOI DIGITADO E AINDA NAO FOI GUARDADO.
+  // v301 — DESFAZER O QUE FOI DIGITADO E AINDA NAO FOI GUARDADO.
   //
   // O dono mexeu num custo por engano, nao publicou, recarregou a pagina,
   // clicou em Descartar, recarregou de novo — e o valor errado continuava la.
@@ -1587,7 +1587,7 @@
     if (op && !financeiroAntesDaPrevia) {
       financeiroAntesDaPrevia = { custos: { ...custosInternos }, margens: { ...margensDesejadas }, moveis: { ...moveisInternos } };
       const fator = 1 + op.pct / 100;
-      // v291 — O CUSTO NAO SE ARREDONDA. Decisao do dono em 14/09/2026:
+      // v301 — O CUSTO NAO SE ARREDONDA. Decisao do dono em 14/09/2026:
       // "quando importar a tabela com os custos, devem ser exatas, e nao
       // arredondado — arredondar somente 100,00 mais proximos no preco de
       // venda, nao custo". O custo corrigido fica no centavo; quem cai em
@@ -2033,7 +2033,7 @@
     const idade = idadeDaChave();
     if (!idade) return "";
     const quando = idade.desde.toLocaleDateString("pt-BR");
-    // 85 dias porque a instrucao atual pede chave de 90 dias (v291); o corte
+    // 85 dias porque a instrucao atual pede chave de 90 dias (v301); o corte
     // antigo era 300, herdado de quando se recomendava "No expiration".
     if (idade.dias >= 85) {
       return ` A chave foi cadastrada aqui em ${quando} e durou ${emDias(idade.dias)}: foi vencimento mesmo. Gere outra no GitHub com a mesma validade e cole aqui — dura mais alguns meses. (Chave sem vencimento evitaria a troca, mas vale para sempre mesmo se o aparelho se perder, então não é o caminho.)`;
@@ -2712,7 +2712,7 @@
          imóvel para um cliente, e o movimento aparece aqui.</p>`;
   }
 
-  // v291 — VISAO GERAL > ESTOQUE GERAL, REFEITA.
+  // v301 — VISAO GERAL > ESTOQUE GERAL, REFEITA.
   //
   // A v262 pos os empreendimentos em cascata e o dono disse que continuava
   // "pessimo de entender". O que atrapalhava era o peso igual: numero de
@@ -3148,7 +3148,7 @@
       .map((emp) => ({ emp, faltas: pendenciasDoEmp(emp) }))
       .filter((item) => item.faltas.length);
     const total = comFalta.reduce((soma, item) => soma + item.faltas.length, 0);
-    // v291 — a conta que importa e a dos CRITICOS: e o que nao pode ficar para
+    // v301 — a conta que importa e a dos CRITICOS: e o que nao pode ficar para
     // depois. O numero total misturava "sem video" com "unidade sem preco".
     const criticos = comFalta.reduce((soma, item) => soma + item.faltas.filter((f) => f.nivel === NIVEL.critico).length, 0);
     const resumo = $("cadastro-resumo");
@@ -3815,7 +3815,7 @@
   // Tudo o que falta preencher no cadastro de um empreendimento — nao so os
   // box. A central de materiais resolve capa, galeria, plantas, folder e video;
   // esta lista continua mostrando tambem metragem, garagem, RI e demais dados.
-  // v291 — TRES NIVEIS, NAO UM BOOLEANO.
+  // v301 — TRES NIVEIS, NAO UM BOOLEANO.
   //
   // Ate aqui "grave" era sim ou nao, e "sem video oficial" pesava igual a
   // "unidade a venda sem preco". Sao coisas de outra natureza: uma faz o
@@ -5207,7 +5207,7 @@
     return $("incc-arredondar")?.value || "100";
   }
 
-  // v291 — O ARREDONDAMENTO E DO PRECO DE VENDA, NAO DO CUSTO.
+  // v301 — O ARREDONDAMENTO E DO PRECO DE VENDA, NAO DO CUSTO.
   //
   // Decisao do dono em 14/09/2026: o custo — importado ou corrigido pelo INCC —
   // fica exato, no centavo; quem cai no R$ 100 mais proximo e o preco que vai
@@ -5844,7 +5844,7 @@
       if (contaBoxes(conferido) !== contaBoxes(estado.dados)) {
         throw new Error("A conferência falhou: o número de box mudou. Nada foi gravado.");
       }
-      // v291 — GUARDA DE MATERIAL. Uma publicação de estoque não pode apagar,
+      // v301 — GUARDA DE MATERIAL. Uma publicação de estoque não pode apagar,
       // sem ninguém ver, o folder, o vídeo, a capa, o logo, o mapa, as fotos
       // da galeria, os diferenciais ou os vínculos de planta que já estavam no
       // ar. Isso já aconteceu neste projeto: os materiais sumiram e ninguém
@@ -6107,7 +6107,7 @@
     mostrarTela(telaAntesDaChave);
   });
 
-  // v291 — apagar a chave DESTE aparelho. Existe para o caso mais comum de
+  // v301 — apagar a chave DESTE aparelho. Existe para o caso mais comum de
   // problema num painel assim: o celular foi emprestado, perdido ou vendido.
   // Não mexe no GitHub — se a chave já correu mundo, o jeito é gerar outra lá,
   // e o texto abaixo diz isso.
