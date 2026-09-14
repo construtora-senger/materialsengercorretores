@@ -1,4 +1,7 @@
-<!-- SENGER ADMIN BUILD v173 - INCC historico + data real + moeda BR + tabela financeira responsiva -->
+<!-- Painel administrativo Senger — pagina unica, sem build.
+     A VERSAO DESTE PAINEL e a constante VERSAO_PAINEL, no script la embaixo.
+     Nao escreva um numero de versao aqui em cima: este comentario dizia "v173"
+     enquanto o painel ja estava na v264, e quem lia acreditava nele. -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,6 +14,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* v291 — o Voltar do painel. Discreto, no alto do conteudo, e some na
+       Visao geral (que e o inicio: nao ha para onde voltar). */
+    .contexto-titulo .botao-voltar {
+      display: inline-flex; align-items: center; gap: 6px; margin: 0 0 8px;
+      padding: 7px 14px; min-height: 38px; border: 1px solid var(--borda, #dfe5e9);
+      border-radius: 999px; background: #fff; color: #44525c;
+      font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+    .contexto-titulo .botao-voltar:hover { border-color: #b9c4cb; color: #1d272e; }
+    .contexto-titulo .botao-voltar[hidden] { display: none; }
+
     /* Paleta e fontes iguais às do site (styles.css) */
     :root {
       --fundo: #f4f6f7;
@@ -173,52 +187,121 @@
     /* align-items: start para cada cartao ter a sua altura: com a lista de
        unidades dentro, um cartao alto deixaria os vizinhos cheios de vazio. */
     .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; align-items: start; }
-    /* v262 — a visao geral em cascata: um empreendimento embaixo do outro, cada
-       um numa faixa da largura toda. Em quatro colunas estreitas, lado a lado,
-       a lista "Garagem por unidade" do Renaissance descia por tres telas e os
-       vizinhos ficavam pela metade. Na faixa, o resumo e a garagem ficam a
-       esquerda e a lista de unidades a direita, correndo em colunas. A faixa
-       mede a si mesma (@container): o menu lateral entra na conta. Estreita
-       (celular), ela volta a ser uma coluna so, na ordem de sempre. */
+    /* v291 — a visao geral e uma faixa por empreendimento, da largura toda.
+       O cartao cuida do proprio layout (ver o bloco logo abaixo), entao aqui
+       so se define a coluna unica e o container.
+
+       REGRA ANTIGA REMOVIDA: a v262 punha grid-template-areas no proprio
+       .card ("titulo/resumo/unidades/garagem/falta"). A marcacao mudou na
+       v291 e aquelas areas nao existem mais — deixa-las no arquivo prendia o
+       conteudo novo num molde de duas colunas e a faixa saia toda espremida
+       na esquerda, com metade da tela vazia. */
     .cards.cascata { grid-template-columns: minmax(0, 1fr); container-type: inline-size; }
-    .cards.cascata .card {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas: "titulo" "resumo" "unidades" "garagem" "falta";
-      align-items: start;
+
+    /* ============================================================
+       v291 — VISAO GERAL > ESTOQUE GERAL
+       ------------------------------------------------------------
+       Hierarquia em tres degraus, que e o que faltava: o numero
+       grande responde primeiro, a barra mostra a situacao comercial
+       de relance, e so entao vem o detalhe em tres colunas de mesmo
+       peso. A lista longa (garagem por unidade) foi para uma gaveta
+       fechada — nenhuma informacao saiu, ela so parou de enterrar
+       o resto.
+       ============================================================ */
+    .visao-emp { padding: 16px 18px; }
+    .ve-topo {
+      display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start;
+      justify-content: space-between;
     }
-    .cards.cascata .card h3 { grid-area: titulo; }
-    .cards.cascata .card .resumo { grid-area: resumo; }
-    .cards.cascata .card .por-unidade { grid-area: unidades; columns: 270px; column-gap: 24px; }
-    .cards.cascata .card .por-unidade .rotulo { column-span: all; }
-    .cards.cascata .card .por-unidade .linha { break-inside: avoid; }
-    .cards.cascata .card .garagem-cartao { grid-area: garagem; }
-    .cards.cascata .card .falta-cadastro { grid-area: falta; }
-    @container (min-width: 900px) {
-      .cards.cascata .card {
-        grid-template-columns: minmax(230px, 1fr) minmax(0, 3fr);
-        /* A quarta linha e a folga: e ela que cresce quando a lista de unidades
-           e mais alta que o resumo e a garagem juntos, para o bloco da garagem
-           nao descolar do resumo. */
-        grid-template-rows: auto auto auto 1fr auto;
-        grid-template-areas:
-          "titulo  titulo"
-          "resumo  unidades"
-          "garagem unidades"
-          ".       unidades"
-          "falta   falta";
-        column-gap: 24px;
-        padding: 16px 18px;
-      }
-      .cards.cascata .card h3 {
-        justify-content: flex-start; font-size: 1rem;
-        padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--borda);
-      }
-      .cards.cascata .card .por-unidade {
-        align-self: stretch; margin-top: 0; padding-top: 0; border-top: 0;
-        padding-left: 24px; border-left: 1px solid var(--borda);
-      }
+    .ve-identidade { min-width: 0; }
+    .ve-identidade h3 { font-size: 1.08rem; margin: 0 0 5px; display: block; }
+    .ve-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+    .ve-chips span {
+      font-size: .7rem; font-weight: 650; color: var(--texto-suave);
+      background: var(--cartao); border: 1px solid var(--borda);
+      border-radius: 999px; padding: 2px 9px;
     }
+    .ve-numeros { display: flex; gap: 18px; flex: none; }
+    .ve-numero { text-align: right; }
+    .ve-numero strong {
+      display: block; font-size: 1.5rem; line-height: 1.05;
+      color: var(--texto-suave); font-variant-numeric: tabular-nums;
+    }
+    .ve-numero.destaque strong { font-size: 1.9rem; color: var(--verde); }
+    .ve-numero span { font-size: .7rem; color: var(--texto-suave); white-space: nowrap; }
+
+    /* Quanto do predio ja foi vendido, em uma barra: e a "situacao comercial"
+       que o dono le sem precisar dividir numero por numero. */
+    .ve-barra {
+      position: relative; height: 20px; margin: 12px 0 14px;
+      background: var(--cartao); border: 1px solid var(--borda);
+      border-radius: 999px; overflow: hidden;
+    }
+    .ve-barra > span { display: block; height: 100%; background: rgba(157,73,73,.22); }
+    .ve-barra > em {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      font-style: normal; font-size: .7rem; font-weight: 700; letter-spacing: .03em;
+      color: var(--texto-suave);
+    }
+
+    .ve-colunas {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 18px; align-items: start;
+    }
+    .ve-coluna { min-width: 0; }
+    .ve-rotulo {
+      font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+      color: var(--texto-suave); padding-bottom: 6px; margin-bottom: 4px;
+      border-bottom: 1px solid var(--borda);
+    }
+    .ve-vazio { font-size: .8rem; color: var(--texto-suave); margin: 6px 0 0; }
+    .ve-coluna .garagem-cartao { border-top: 0; margin-top: 0; padding-top: 0; }
+    .ve-coluna .garagem-cartao .rotulo { display: none; }
+
+    .ve-pend { display: flex; gap: 8px; align-items: flex-start; padding: 7px 0; }
+    .ve-pend .ve-bolinha {
+      flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 5px;
+      background: var(--borda);
+    }
+    .ve-pend strong { display: block; font-size: .82rem; font-weight: 700; color: var(--texto); }
+    .ve-pend em { display: block; font-style: normal; font-size: .74rem; line-height: 1.45; color: var(--texto-suave); }
+    .ve-pend.critico .ve-bolinha { background: var(--vermelho); }
+    .ve-pend.critico strong { color: var(--vermelho); }
+    .ve-pend.atencao .ve-bolinha { background: var(--amarelo); }
+    .ve-pend.ok .ve-bolinha { background: var(--verde); }
+    .ve-pend.ok strong { color: var(--verde); }
+
+    .ve-atalhos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .ve-atalho {
+      padding: 6px 12px; min-height: 34px; border: 1px solid var(--borda);
+      border-radius: 999px; background: var(--cartao); color: var(--dourado-escuro);
+      font: inherit; font-size: .74rem; font-weight: 750; cursor: pointer;
+    }
+    .ve-atalho:hover { border-color: var(--dourado); color: var(--dourado); }
+
+    .ve-gaveta { margin-top: 14px; border-top: 1px solid var(--borda); padding-top: 8px; }
+    .ve-gaveta > summary {
+      cursor: pointer; font-size: .76rem; font-weight: 700; color: var(--texto-suave);
+      list-style: none; display: flex; align-items: center; gap: 8px; min-height: 34px;
+    }
+    .ve-gaveta > summary::-webkit-details-marker { display: none; }
+    .ve-gaveta > summary::before { content: "▸"; font-size: .7rem; }
+    .ve-gaveta[open] > summary::before { content: "▾"; }
+    .ve-gaveta .ve-conta { font-weight: 500; opacity: .8; }
+    .ve-gaveta .por-unidade {
+      border-top: 0; margin-top: 4px; padding-top: 0;
+      columns: 250px; column-gap: 24px;
+    }
+    .ve-gaveta .por-unidade .rotulo { display: none; }
+    .ve-gaveta .por-unidade .linha { break-inside: avoid; }
+
+    @media (max-width: 640px) {
+      .ve-numeros { gap: 14px; }
+      .ve-numero strong { font-size: 1.25rem; }
+      .ve-numero.destaque strong { font-size: 1.5rem; }
+      .ve-colunas { grid-template-columns: 1fr; gap: 14px; }
+    }
+
     /* Movimento do portfolio: o numero grande na frente do que ele conta. */
     .uso-resumo { margin-bottom: 16px; }
     .uso-tile { display: flex; align-items: baseline; gap: 10px; background: var(--fundo); border: 1px solid var(--borda); border-radius: 10px; padding: 14px; }
@@ -331,9 +414,54 @@
       content: ""; position: absolute; left: 0; top: 11px;
       width: 6px; height: 6px; border-radius: 50%; background: var(--amarelo);
     }
-    .pend-emp li.grave::before { background: var(--vermelho); }
+    .passo-nota { font-size: .84rem; line-height: 1.55; color: var(--texto-suave); margin: 0 0 10px; }
+    .passo-obs { display: block; margin-top: 3px; font-size: .95em; opacity: .9; }
+    .nota.alerta-chave { border-left: 3px solid var(--vermelho); }
     .pend-emp li b { color: var(--vermelho); font-weight: 600; }
     .pend-emp li .pend-texto { display:block; }
+
+    /* v291 — as pendencias saem em tres blocos, na ordem do que o dono tem de
+       resolver primeiro. A cor do bloco inteiro diz o peso; a bolinha de cada
+       linha acompanha o bloco, em vez de cada linha ter de se explicar. */
+    /* Os tres blocos descem um embaixo do outro, NAO lado a lado: "resolver
+       primeiro" so significa alguma coisa se o primeiro estiver em cima. A
+       .pend-lista e uma grade de colunas (do desenho antigo, de um cartao por
+       empreendimento); quando ela recebe os blocos, vira coluna unica. */
+    .pend-lista:has(.pend-grupo) { display: block; }
+    .pend-grupo { margin-bottom: 26px; }
+    .pend-grupo-topo { margin-bottom: 10px; }
+    .pend-grupo-topo h3 {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 1rem; margin-bottom: 3px;
+    }
+    .pend-grupo-topo h3 .quantos {
+      font-family: "Inter", system-ui, sans-serif; font-size: .74rem; font-weight: 800;
+      min-width: 26px; text-align: center; border-radius: 999px; padding: 2px 8px;
+    }
+    .pend-grupo-topo p { font-size: .8rem; color: var(--texto-suave); margin: 0; }
+    .pend-grupo .pend-lista-interna,
+    .pend-grupo { display: block; }
+    .pend-grupo .pend-emp { margin-bottom: 10px; }
+    .pend-grupo .pend-emp h4 {
+      font-size: .88rem; font-weight: 700; margin-bottom: 7px; color: var(--texto);
+    }
+    .pend-grupo-critico .pend-grupo-topo h3 { color: var(--vermelho); }
+    .pend-grupo-critico .pend-grupo-topo h3 .quantos { color: var(--vermelho); background: rgba(157,73,73,.12); }
+    .pend-grupo-critico .pend-emp { border-left: 3px solid var(--vermelho); }
+    .pend-grupo-critico .pend-emp li::before { background: var(--vermelho); }
+    .pend-grupo-atencao .pend-grupo-topo h3 { color: var(--amarelo); }
+    .pend-grupo-atencao .pend-grupo-topo h3 .quantos { color: var(--amarelo); background: rgba(168,112,31,.14); }
+    .pend-grupo-atencao .pend-emp { border-left: 3px solid var(--amarelo); }
+    .pend-grupo-material .pend-grupo-topo h3 { color: var(--texto-suave); }
+    .pend-grupo-material .pend-grupo-topo h3 .quantos { color: var(--texto-suave); background: rgba(0,0,0,.06); }
+    .pend-grupo-material .pend-emp { border-left: 3px solid var(--borda); }
+    .pend-grupo-material .pend-emp li::before { background: var(--borda); }
+    /* Dentro de um bloco, os empreendimentos correm em colunas — cabem varios
+       na mesma altura sem a lista virar uma escada. */
+    .pend-grupo .pend-corpo { columns: 300px; column-gap: 14px; }
+    .pend-grupo .pend-emp { break-inside: avoid; margin-bottom: 12px; }
+    .resumo-cadastro.tem-critico { color: var(--vermelho); }
+    .card .falta-cadastro.critico { color: var(--vermelho); }
     .pend-acao {
       display:inline-block; margin-top:5px; padding:0; border:0; background:none;
       color:var(--dourado-escuro); font:inherit; font-size:.72rem; font-weight:750;
@@ -849,15 +977,30 @@
       </div>
       <details class="dobra">
         <summary>Não tenho a chave em aparelho nenhum — criar uma nova no GitHub</summary>
+        <p class="passo-nota"><strong>O painel usa DOIS repositórios</strong>, e a chave precisa alcançar os dois:
+          <strong>materialsengercorretores</strong> (o site) e <strong>senger-financeiro</strong> (o cofre privado
+          dos custos). Uma chave só com o primeiro salva no site mas nunca guarda os custos, e eles somem ao trocar
+          de aparelho.</p>
         <ol class="passos">
           <li>Entre no GitHub com a conta <strong>sanchaikraemer</strong>.</li>
           <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">esta página do GitHub</a>. Se aparecer uma tela de erro com um unicórnio rosa, é o GitHub que demorou demais: atualize a página que ela abre.</li>
           <li>Em <em>Token name</em>, escreva um nome que ainda não exista — por exemplo <strong id="nome-sugerido">Painel Senger</strong>. Se o GitHub disser que o nome já está em uso, mude o nome; <strong>não</strong> use <em>Regenerate</em> na chave antiga, porque isso desliga o outro aparelho.</li>
-          <li>Em <em>Expiration</em>, escolha <strong>No expiration</strong> (sem vencimento). É o que evita ter de repetir isso daqui a alguns meses.</li>
-          <li>Em <em>Repository access</em>, marque <em>Only select repositories</em> e escolha <strong>materialsengercorretores</strong>.</li>
-          <li>Confira em <em>Permissions → Repository permissions → Contents</em> se está <strong>Read and write</strong>.</li>
+          <li>Em <em>Expiration</em>, escolha <strong>90 dias</strong> (ou 1 ano). Chave sem vencimento vale para sempre
+            mesmo se o celular for perdido ou o código vazar — e quem publica com ela é a sua conta. O painel avisa
+            quando estiver perto de vencer, e trocar leva um minuto.</li>
+          <li>Em <em>Repository access</em>, marque <em>Only select repositories</em> e escolha
+            <strong>os dois</strong>: <strong>materialsengercorretores</strong> e <strong>senger-financeiro</strong>.
+            <br><span class="passo-obs">Se o <em>senger-financeiro</em> ainda não existir, crie-o antes em
+            <a href="https://github.com/new" target="_blank" rel="noopener">github.com/new</a>, marcando
+            <em>Private</em>. É onde os custos ficam — nunca no repositório do site, que é público.</span></li>
+          <li>Em <em>Permissions → Repository permissions</em>, deixe <strong>Contents: Read and write</strong>.
+            Só isso. <strong>Não</strong> marque Administration, Actions, Workflows nem nada em
+            <em>Account permissions</em>: o painel não usa e, se a chave vazar, é menos estrago.</li>
           <li>Clique em <em>Generate token</em>, copie o código (começa com <code>github_pat_</code>) e cole abaixo.</li>
         </ol>
+        <p class="passo-nota">A chave fica guardada <strong>só neste aparelho</strong> (no navegador). Ela não vai
+          para o site, não entra no <code>data.js</code> e não aparece em endereço nenhum. Se este aparelho for
+          perdido ou emprestado, apague a chave em <em>Publicação → Acesso técnico</em> e gere outra no GitHub.</p>
       </details>
       <label for="campo-token">Cole aqui a chave</label>
       <div class="campo-senha">
@@ -882,8 +1025,12 @@
         <button type="button" class="olho" data-alvo="campo-chave-atual" aria-label="Mostrar a chave"></button>
       </div>
       <div class="nota">Para usar o painel em outro celular ou computador, copie esta chave e cole lá. Não gere uma chave nova para o outro aparelho: no GitHub, gerar de novo no lugar da antiga desliga este aqui.</div>
+      <div class="nota alerta-chave"><strong>Cuidado ao copiar.</strong> Quem tiver este código publica no site como
+        se fosse você e enxerga o cofre dos custos. Mande só para você mesmo, e apague a mensagem depois.
+        O campo acima já vem escondido de propósito.</div>
       <button class="botao" id="botao-copiar-chave">Copiar a chave</button>
       <button class="botao secundario" id="botao-trocar-chave" style="margin-left:8px">Cadastrar outra chave</button>
+      <button class="botao perigo" id="botao-apagar-chave" style="margin-left:8px">Apagar a chave deste aparelho</button>
       <button class="botao secundario" id="botao-voltar-chave" style="margin-left:8px">Voltar</button>
 
       <h2 class="titulo-diario">O que já aconteceu com a chave</h2>
@@ -952,7 +1099,13 @@
             <button type="button" class="botao" id="botao-atualizar-painel" style="margin-top:0">Atualizar agora</button>
           </div>
           <div class="contexto-modulo" id="contexto-modulo">
-            <div>
+            <div class="contexto-titulo">
+              <!-- Um Voltar so, no alto de toda tela que nao seja a Visao geral
+                   (pedido do dono em 10/09/2026). As telas do painel sao longas
+                   e ate aqui so Precos e margem tinha como sair sem rolar tudo.
+                   Nao ha dez botoes: o menu lateral continua sendo o caminho
+                   normal, e este resolve o "como eu saio daqui". -->
+              <button type="button" class="botao-voltar" id="botao-voltar-modulo" hidden>← Voltar</button>
               <h2 id="titulo-modulo">Visão geral</h2>
               <p id="descricao-modulo">Resumo do estoque, movimento e pendências do cadastro.</p>
             </div>
@@ -1017,7 +1170,7 @@
         <!-- INCC -->
         <section class="bloco" data-modulo="incc">
           <h2>Correção pelo INCC</h2>
-          <p class="descricao">Informe o novo índice e a variação do mês. A variação sobe todos os custos guardados de uma vez. O preço do site não muda aqui — ele sai da venda desejada, em Preços e margem.</p>
+          <p class="descricao">Informe o novo índice e a variação do mês. A variação sobe todos os custos guardados de uma vez, <strong>em valor exato, sem arredondar</strong>. O preço do site não muda aqui — ele sai da venda desejada, em Preços e margem, e é lá que o arredondamento acontece.</p>
           <div class="form-incc">
             <div>
               <label for="incc-valor">Novo INCC (R$)</label>
@@ -1039,7 +1192,7 @@
               <small class="incc-ajuda" id="incc-data-ajuda"></small>
             </div>
             <div>
-              <label for="incc-arredondar">Arredondar para</label>
+              <label for="incc-arredondar">Arredondar o preço de venda para</label>
               <select id="incc-arredondar">
                 <option value="100" selected>R$ 100 mais próximo</option>
                 <option value="100-cima">R$ 100 para cima</option>
@@ -1047,7 +1200,7 @@
                 <option value="1000-cima">R$ 1.000 para cima</option>
                 <option value="1">Valor exato (sem arredondar)</option>
               </select>
-              <small class="incc-ajuda">Vale para o custo e a margem corrigidos — é o que faz a venda desejada cair em valor redondo.</small>
+              <small class="incc-ajuda"><strong>Só o preço que vai para o site é arredondado.</strong> O custo nunca: ele fica exato, tanto o que você importa quanto o que o INCC corrige.</small>
             </div>
             <div>
               <button class="botao" id="botao-previa">Pré-visualizar</button>
@@ -1080,6 +1233,7 @@
         <section class="bloco" data-modulo="precos">
           <h2>Preços e margem</h2>
           <p class="descricao">Informe o <strong>custo</strong> de cada item e a <strong>venda desejada</strong>. A margem sai sozinha. Custo e margem ficam só aqui, na sua conta — quem vira preço no site é a venda desejada, e só depois de você clicar em “Publicar no site”.</p>
+          <p class="descricao"><strong>O custo é sempre exato</strong>, do jeito que você digita ou importa: nada é arredondado nele. Só o <strong>preço que vai para o site</strong> é arredondado — por padrão para os R$ 100 mais próximos. <span id="precos-arredondamento"></span></p>
           <div class="faixa-precos" id="area-aplicar-precos" style="display:none">
             <div>
               <strong id="aplicar-precos-status"></strong>
@@ -1133,6 +1287,11 @@
             <summary>Acesso técnico para publicar</summary>
             <div class="publicacao-tecnica-corpo">
               <p>A chave do GitHub só é necessária para o painel conseguir gravar as alterações. Não precisa mexer nela no uso normal.</p>
+              <p class="passo-nota"><strong>O que protege de verdade é a chave, não a senha.</strong> Este painel é uma
+                página que roda no navegador, sem servidor — a senha de entrada só esconde a tela de quem abrir o
+                endereço por acaso; quem entende de navegador passa por ela. Quem não tem a chave do GitHub, porém,
+                <strong>não publica nada e não abre o cofre dos custos</strong>. Por isso: guarde a chave como guardaria
+                a senha do banco, use uma chave com validade, e apague a chave do aparelho que sair da sua mão.</p>
               <button class="botao secundario" id="botao-chave-publicacao">Gerenciar chave</button>
             </div>
           </details>
@@ -1153,6 +1312,9 @@
   const REPO = "sanchaikraemer/materialsengercorretores";
   const BRANCH = "main";
   const API = `https://api.github.com/repos/${REPO}/contents/`;
+  // A API de dados do git (blobs, arvore, commit, ref). E o que permite gravar
+  // data.js, index.html, sw.js e os arquivos anexados em UM commit so.
+  const GIT_API = `https://api.github.com/repos/${REPO}/git/`;
   // Cofre dos custos: um repositorio PRIVADO da mesma conta. Custo nao pode
   // ficar no repositorio do site, que e publico, mas precisa estar em qualquer
   // aparelho: celular na rua, computador de casa, computador do escritorio.
@@ -1203,7 +1365,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 264;
+  const VERSAO_PAINEL = 291;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1212,6 +1374,9 @@
   const FINANCEIRO_RASCUNHO = "senger-admin-financeiro-rascunho";
   // Como o dono gosta de arredondar os precos na correcao do INCC.
   const ARREDONDAR_ITEM = "senger-admin-arredondar";
+
+  // Duas casas, sem degrau nenhum. O custo mora sempre assim: exato.
+  const centavos = (n) => Math.round(Number(n) * 100) / 100;
 
   function mapaDeNumeros(m) {
     return m && typeof m === "object" && !Array.isArray(m) ? m : {};
@@ -1259,6 +1424,11 @@
       apagadoEm: salvo.apagadoEm || "",
       apagadoPorEmp: salvo.apagadoPorEmp || {},
       recuperado: !!mudou,
+      // v291 — o que estava GUARDADO antes da digitacao, sem o rascunho por
+      // cima. E o valor "de antes" para o qual o Descartar volta. Sem este
+      // retrato nao havia como desfazer um custo digitado por engano: o
+      // rascunho e gravado a cada tecla e sobrevive a recarregar a pagina.
+      salvo: { custos: { ...salvo.custos }, margensDesejadas: { ...salvo.margensDesejadas }, moveis: { ...(salvo.moveis || {}) } },
     };
   }
 
@@ -1273,6 +1443,9 @@
   let financeiroApagadoEm = financeiroInicial.apagadoEm || "";
   let apagadoPorEmp = { ...(financeiroInicial.apagadoPorEmp || {}) };
   let financeiroSujo = financeiroInicial.recuperado;
+  // O ultimo estado GUARDADO do financeiro (aparelho + cofre). O Descartar
+  // volta para ele. Atualiza a cada gravacao bem-sucedida.
+  let financeiroSalvo = financeiroInicial.salvo;
   // Quantos itens da tabela ja tem custo. E o que responde na tela a pergunta
   // "cade meus custos?" sem o dono precisar rolar a tabela inteira.
   let financeiroCobertura = { comCusto: 0, total: 0 };
@@ -1299,8 +1472,34 @@
       // Mantém o mapa antigo atualizado para não perder compatibilidade com backups v171.
       localStorage.setItem(CUSTOS_ITEM, JSON.stringify(custosInternos));
       localStorage.removeItem(FINANCEIRO_RASCUNHO);
+      // Gravou: e este o valor para o qual o Descartar volta daqui em diante.
+      financeiroSalvo = { custos: { ...custosInternos }, margensDesejadas: { ...margensDesejadas }, moveis: { ...moveisInternos } };
       return true;
     } catch (e) { return false; }
+  }
+
+  // v291 — DESFAZER O QUE FOI DIGITADO E AINDA NAO FOI GUARDADO.
+  //
+  // O dono mexeu num custo por engano, nao publicou, recarregou a pagina,
+  // clicou em Descartar, recarregou de novo — e o valor errado continuava la.
+  // Eram tres coisas juntas:
+  //   1. o rascunho e gravado a CADA TECLA, entao recarregar nao desfaz nada;
+  //   2. o Descartar so limpava `estado.ops` (o que vai para o site) e nunca
+  //      encostava em custo, margem ou moveis;
+  //   3. com so um custo mexido nao havia op nenhuma na fila, entao o proprio
+  //      botao Descartar ficava escondido — nao havia o que clicar.
+  // Agora o botao aparece tambem quando ha alteracao financeira, e voltar
+  // significa voltar ao ultimo valor GUARDADO.
+  function descartarFinanceiro() {
+    if (!financeiroSujo) return false;
+    custosInternos = { ...financeiroSalvo.custos };
+    margensDesejadas = { ...financeiroSalvo.margensDesejadas };
+    moveisInternos = { ...financeiroSalvo.moveis };
+    // O retrato do INCC tambem some: ele so existe enquanto ha previa na tela.
+    financeiroAntesDaPrevia = null;
+    try { localStorage.removeItem(FINANCEIRO_RASCUNHO); } catch (e) { /* modo privado */ }
+    atualizarEstadoFinanceiro(false);
+    return true;
   }
 
   function textoFinanceiroStatus() {
@@ -1388,7 +1587,12 @@
     if (op && !financeiroAntesDaPrevia) {
       financeiroAntesDaPrevia = { custos: { ...custosInternos }, margens: { ...margensDesejadas }, moveis: { ...moveisInternos } };
       const fator = 1 + op.pct / 100;
-      const corrigido = (n) => arredondarValor(n * fator, op.arredondar);
+      // v291 — O CUSTO NAO SE ARREDONDA. Decisao do dono em 14/09/2026:
+      // "quando importar a tabela com os custos, devem ser exatas, e nao
+      // arredondado — arredondar somente 100,00 mais proximos no preco de
+      // venda, nao custo". O custo corrigido fica no centavo; quem cai em
+      // valor redondo e o preco que vai para o site (ver precoDeVenda).
+      const corrigido = (n) => centavos(n * fator);
       Object.keys(custosInternos).forEach((k) => { const n = Number(custosInternos[k]); if (Number.isFinite(n) && n > 0) custosInternos[k] = corrigido(n); });
       Object.keys(margensDesejadas).forEach((k) => { const n = Number(margensDesejadas[k]); if (Number.isFinite(n)) margensDesejadas[k] = corrigido(n); });
       // Os moveis sobem junto: o dono quis o INCC sobre o custo total (v263).
@@ -1403,10 +1607,11 @@
     }
   }
 
-  function corrigirFinanceiroPeloIncc(pct, arredondar) {
+  function corrigirFinanceiroPeloIncc(pct) {
     const fator = 1 + Number(pct) / 100;
     if (!Number.isFinite(fator) || fator <= 0) return 0;
-    const corrigido = (n) => arredondarValor(n * fator, arredondar);
+    // Exato, no centavo: o arredondamento e do preco de venda, nunca do custo.
+    const corrigido = (n) => centavos(n * fator);
     let quantos = 0;
     Object.keys(custosInternos).forEach((chave) => {
       const n = Number(custosInternos[chave]);
@@ -1623,8 +1828,24 @@
     }
   }
 
+  // Por onde o dono passou. Serve so ao Voltar: guarda a tela anterior, nunca
+  // o estado dela — nada do que foi digitado se perde, porque trocar de modulo
+  // apenas mostra e esconde secoes, sem redesenhar os campos.
+  const trilhaDeModulos = [];
+
+  function voltarDeModulo() {
+    const anterior = trilhaDeModulos.pop();
+    if (anterior) ativarModulo(anterior.modulo, { ...anterior.opcoes, semTrilha: true });
+    else ativarModulo("visao", { visaoFiltro: "estoque", semTrilha: true });
+  }
+
   function ativarModulo(modulo, opcoes = {}) {
     if (!MODULOS[modulo]) modulo = "visao";
+    // Guarda de onde veio, sem repetir a mesma tela duas vezes seguidas.
+    if (!opcoes.semTrilha && estado.moduloAtivo && estado.moduloAtivo !== modulo) {
+      trilhaDeModulos.push({ modulo: estado.moduloAtivo, opcoes: { visaoFiltro: estado.visaoFiltro, materialFiltro: estado.materialFiltro } });
+      if (trilhaDeModulos.length > 12) trilhaDeModulos.shift();
+    }
     estado.moduloAtivo = modulo;
     if (opcoes.visaoFiltro) estado.visaoFiltro = opcoes.visaoFiltro;
     if (opcoes.materialFiltro) estado.materialFiltro = opcoes.materialFiltro;
@@ -1648,6 +1869,15 @@
     if (seletor) seletor.hidden = !["materiais", "estoque"].includes(modulo);
     if ($("seletor-emp-admin")) $("seletor-emp-admin").value = estado.empAberto || "";
 
+    // A Visao geral e o inicio do painel: la o Voltar nao tem para onde ir.
+    const voltar = $("botao-voltar-modulo");
+    if (voltar) {
+      voltar.hidden = modulo === "visao";
+      const anterior = trilhaDeModulos[trilhaDeModulos.length - 1];
+      const nomeAnterior = anterior && MODULOS[anterior.modulo] ? MODULOS[anterior.modulo][0] : "Visão geral";
+      voltar.textContent = `← Voltar para ${nomeAnterior}`;
+    }
+
     aplicarFiltroVisao();
     aplicarFiltroMateriais();
     mostrarEmpAberto(false);
@@ -1655,6 +1885,8 @@
     fecharMenuMobile();
     if (opcoes.rolar !== false) window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  $("botao-voltar-modulo")?.addEventListener("click", voltarDeModulo);
 
   document.querySelectorAll("[data-accordion-toggle]").forEach((botao) => {
     botao.addEventListener("click", () => {
@@ -1801,8 +2033,10 @@
     const idade = idadeDaChave();
     if (!idade) return "";
     const quando = idade.desde.toLocaleDateString("pt-BR");
-    if (idade.dias >= 300) {
-      return ` A chave foi cadastrada aqui em ${quando} e durou ${emDias(idade.dias)}: foi vencimento mesmo. Ao gerar a nova, escolha "No expiration" e isso não se repete.`;
+    // 85 dias porque a instrucao atual pede chave de 90 dias (v291); o corte
+    // antigo era 300, herdado de quando se recomendava "No expiration".
+    if (idade.dias >= 85) {
+      return ` A chave foi cadastrada aqui em ${quando} e durou ${emDias(idade.dias)}: foi vencimento mesmo. Gere outra no GitHub com a mesma validade e cole aqui — dura mais alguns meses. (Chave sem vencimento evitaria a troca, mas vale para sempre mesmo se o aparelho se perder, então não é o caminho.)`;
     }
     return ` A chave foi cadastrada aqui em ${quando}, ou seja, durou ${emDias(idade.dias)} — cedo demais para ter vencido. O mais provável é que ela tenha sido apagada, ou gerada de novo (Regenerate), lá no GitHub: fazer isso desliga a chave que este aparelho guardava.`;
   }
@@ -1949,6 +2183,7 @@
     atualizarEstadoFinanceiro(false);
     renderCustosMargens();
     renderPendentes();
+    mostrarArredondamentoNosPrecos();
     return true;
   }
 
@@ -2056,8 +2291,11 @@
     return (await resp.json()).sha || null;
   }
 
-  async function ghGravarArquivo(path, arquivo, mensagem) {
-    const [base64, sha] = await Promise.all([arquivoParaBase64(arquivo), ghShaSeExiste(path)]);
+  // PUT de um arquivo, a partir do base64 já pronto. O caminho de um commit só
+  // converte os anexos antes de qualquer gravação; este é o plano B, usado
+  // quando a conta não alcança a API de dados do git.
+  async function ghGravarBase64(path, base64, mensagem, nome = path) {
+    const sha = await ghShaSeExiste(path);
     const corpo = { message: mensagem, content: base64, branch: BRANCH };
     if (sha) corpo.sha = sha;
     const resp = await fetch(API + path, {
@@ -2067,7 +2305,7 @@
     });
     if (!resp.ok) {
       const json = await resp.json().catch(() => ({}));
-      const falha = new Error(`Falha ao enviar ${arquivo.name} (HTTP ${resp.status}): ${json.message || ""}`);
+      const falha = new Error(`Falha ao enviar ${nome} (HTTP ${resp.status}): ${json.message || ""}`);
       falha.status = resp.status;
       throw falha;
     }
@@ -2146,7 +2384,11 @@
       box: b.box,
       rotulo: "Box " + b.box,
       vagas: b.vagas || 1,
-      // O box e venda separada, com valor proprio de tabela.
+      // Preco de box guardado de outra epoca. NENHUM empreendimento vende box
+      // a parte desde a v246 — no Renaissance, o ultimo que vendia, o valor do
+      // box foi embutido no custo do apartamento. O campo so continua sendo
+      // lido para o valor antigo nao ficar preso invisivel; a linha do box nao
+      // tem campo de custo e diz "ja incluso no preco do apartamento".
       preco: b.preco,
       apto: b.apto || "",
       areaPriv: b.areaPriv,
@@ -2470,6 +2712,21 @@
          imóvel para um cliente, e o movimento aparece aqui.</p>`;
   }
 
+  // v291 — VISAO GERAL > ESTOQUE GERAL, REFEITA.
+  //
+  // A v262 pos os empreendimentos em cascata e o dono disse que continuava
+  // "pessimo de entender". O que atrapalhava era o peso igual: numero de
+  // unidades, tipologia, garagem, a lista de garagem por unidade e a pendencia
+  // saiam todos no mesmo tamanho de letra, um embaixo do outro, e a lista do
+  // Renaissance (43 apartamentos) enterrava o resto.
+  //
+  // Agora cada empreendimento tem duas partes:
+  //   1. a FAIXA DE CIMA responde em dois segundos — quantos a venda, quantos
+  //      vendidos, que tipo de imovel e quanto do predio ja foi vendido;
+  //   2. embaixo, tres colunas com o mesmo peso entre si: estoque por
+  //      tipologia, garagem e o que falta no cadastro.
+  // A lista "Garagem por unidade" continua inteira, mas dentro de uma gaveta
+  // fechada: quem precisa dela abre; quem quer a visao geral nao rola por ela.
   function renderDashboard() {
     const alvo = $("dashboard");
     alvo.innerHTML = estado.dados.EMPREENDIMENTOS.map((emp) => {
@@ -2480,55 +2737,121 @@
         const s = statusAtual(emp.id, i);
         contagem[s] = (contagem[s] || 0) + 1;
       });
-      const linhas = STATUS_OPCOES
-        .filter(([s]) => contagem[s])
-        .map(([s, label]) => `<div class="linha"><span class="st-${s}">${label}</span><strong>${contagem[s]}</strong></div>`)
-        .join("");
-      // O que ha em estoque de cada tipologia — a conta que o dono usa para
-      // dividir as vagas de garagem. Só vale quando ha mais de uma tipologia.
+      const vendidos = contagem.vendido || 0;
+      const disponiveis = contagem.disponivel || 0;
+      const alugados = contagem.alugado || 0;
+      // "Comercializavel" e o que ainda se vende: disponivel + alugado. O
+      // alugado continua na oferta — e o produto pronto para o investidor.
+      const aVenda = disponiveis + alugados;
+      const pct = Math.round((vendidos / itens.length) * 100);
+
+      // Que tipo de imovel e este empreendimento, em uma palavra.
+      const forma = itens[0].tipo;
+      const TIPO_IMOVEL = {
+        terreno: "Lotes",
+        outro: "Imóveis avulsos",
+        unidade: emp.categoria === "comercial" ? "Salas comerciais" : "Apartamentos",
+      };
+      const chips = [
+        TIPO_IMOVEL[forma] || "Unidades",
+        emp.cidade,
+        emp.statusLabel || emp.entrega,
+      ].filter(Boolean);
+
+      // O estoque por tipologia, com a regra de garagem de cada uma ao lado —
+      // e a conta que o dono faz de cabeca ao atender.
       const porTipo = new Map();
       itens.forEach((i) => {
         if (statusAtual(emp.id, i) !== "disponivel") return;
         const rot = i.estoque || i.grupo || "Outros";
         porTipo.set(rot, (porTipo.get(rot) || 0) + 1);
       });
-      // A regra de garagem de cada tipologia entra junto do estoque: e a conta
-      // que o dono faz de cabeca ao atender, e ela nao pode ficar so na tela
-      // de dentro do empreendimento.
       const regraDoEmp = emp.vagasPorTipologia || {};
-      const linhasTipo = porTipo.size > 1
-        ? `<div class="tipos">` + [...porTipo].map(([rot, n]) => {
-            const r = regraDoEmp[rot];
-            const leva = r ? [r.duplo ? conta(r.duplo, "box duplo", "box duplos") : "", r.simples ? conta(r.simples, "box simples", "box simples") : ""].filter(Boolean).join(" + ") : "";
-            return `<div class="linha"><span>${escapeHtml(rot)}${leva ? ` <em class="regra">${leva} cada</em>` : ""}</span><strong>${n}</strong></div>`;
-          }).join("") + `</div>`
-        : "";
-      // Toda a garagem num bloco so, contada em vagas: o que ha livre, o que os
-      // apartamentos em estoque pedem e a sobra. A tabela inteira continua na
-      // tela do empreendimento.
+      const linhasTipo = [...porTipo]
+        .sort((a, b) => b[1] - a[1])
+        .map(([rot, n]) => {
+          const r = regraDoEmp[rot];
+          const leva = r ? [r.duplo ? conta(r.duplo, "box duplo", "box duplos") : "", r.simples ? conta(r.simples, "box simples", "box simples") : ""].filter(Boolean).join(" + ") : "";
+          return `<div class="linha"><span>${escapeHtml(rot)}${leva ? ` <em class="regra">${leva} cada</em>` : ""}</span><strong>${n}</strong></div>`;
+        }).join("");
+
       const blocoGaragem = renderGaragemNoCartao(emp, regraDoEmp, porTipo);
-      // A lista que o dono pediu: cada unidade em estoque com o box que leva,
-      // sem precisar abrir o empreendimento.
       const listaUnidades = renderUnidadesNoCartao(emp, regraDoEmp, itens);
-      // Quantos pontos deste empreendimento ainda faltam preencher. A lista
-      // inteira fica no bloco de cima; aqui vai so o numero, para o dono saber
-      // de qual empreendimento ela fala sem ter de comparar nome por nome.
-      const faltando = pendenciasDoEmp(emp).length;
-      const marcaCadastro = faltando
-        ? `<div class="falta-cadastro">${conta(faltando, "ponto a preencher no cadastro", "pontos a preencher no cadastro")}</div>`
-        : "";
-      // Quanto do estoque de unidades ja foi vendido. Box ficam de fora: sao
-      // vendidos a parte e distorceriam o numero do empreendimento.
-      const pct = Math.round(((contagem.vendido || 0) / itens.length) * 100);
-      // Situacao, total e tipologias ficam num bloco so: e o "resumo" que a
-      // faixa em cascata poe a esquerda, com a lista de unidades a direita (v262).
-      return `<div class="card" data-emp="${escapeHtml(emp.id)}">
-        <h3>${escapeHtml(emp.nome)} <span class="pct${pct ? " tem" : ""}">${pct}% vendido</span></h3>
-        <div class="resumo">${linhas}
-          <div class="linha" style="border-top:1px solid var(--borda);margin-top:6px;padding-top:6px"><span>Total</span><strong>${itens.length}</strong></div>${linhasTipo}
-        </div>${listaUnidades}${blocoGaragem}${marcaCadastro}
+
+      // O que falta no cadastro, separado pelo peso: dado comercial primeiro.
+      const faltas = pendenciasDoEmp(emp);
+      const criticas = faltas.filter((f) => f.nivel === NIVEL.critico);
+      const atencao = faltas.filter((f) => f.nivel === NIVEL.atencao);
+      const material = faltas.filter((f) => f.nivel === NIVEL.material);
+      const blocoPendencias = `<div class="ve-coluna">
+        <div class="ve-rotulo">Situação do cadastro</div>
+        ${faltas.length ? `
+          ${criticas.length ? `<div class="ve-pend critico"><span class="ve-bolinha"></span><div><strong>${conta(criticas.length, "dado comercial", "dados comerciais")} a corrigir</strong><em>${escapeHtml(semTagsSimples(criticas[0].texto))}${criticas.length > 1 ? ` e mais ${criticas.length - 1}` : ""}</em></div></div>` : `<div class="ve-pend ok"><span class="ve-bolinha"></span><div><strong>Dado comercial em ordem</strong><em>preço, área, garagem e registro conferidos</em></div></div>`}
+          ${atencao.length ? `<div class="ve-pend atencao"><span class="ve-bolinha"></span><div><strong>${conta(atencao.length, "ponto de atenção", "pontos de atenção")}</strong><em>${escapeHtml(semTagsSimples(atencao[0].texto))}</em></div></div>` : ""}
+          ${material.length ? `<div class="ve-pend material"><span class="ve-bolinha"></span><div><strong>${conta(material.length, "material a completar", "materiais a completar")}</strong><em>${escapeHtml(material.map((f) => semTagsSimples(f.texto)).join(" · "))}</em></div></div>` : ""}
+        ` : `<div class="ve-pend ok"><span class="ve-bolinha"></span><div><strong>Cadastro completo</strong><em>não falta nada neste empreendimento</em></div></div>`}
+        <div class="ve-atalhos">
+          <button type="button" class="ve-atalho" data-ve-estoque="${escapeHtml(emp.id)}">Ver unidades</button>
+          <button type="button" class="ve-atalho" data-ve-precos="${escapeHtml(emp.id)}">Preços e margem</button>
+          ${faltas.length ? `<button type="button" class="ve-atalho" data-ve-pendencias="1">O que falta</button>` : ""}
+        </div>
+      </div>`;
+
+      return `<div class="card visao-emp" data-emp="${escapeHtml(emp.id)}">
+        <header class="ve-topo">
+          <div class="ve-identidade">
+            <h3>${escapeHtml(emp.nome)}</h3>
+            <p class="ve-chips">${chips.map((c) => `<span>${escapeHtml(c)}</span>`).join("")}</p>
+          </div>
+          <div class="ve-numeros">
+            <div class="ve-numero destaque"><strong>${aVenda}</strong><span>à venda${alugados ? ` · ${alugados} alugad${alugados === 1 ? "o" : "os"}` : ""}</span></div>
+            <div class="ve-numero"><strong>${vendidos}</strong><span>vendidos</span></div>
+            <div class="ve-numero"><strong>${itens.length}</strong><span>no prédio</span></div>
+          </div>
+        </header>
+        <div class="ve-barra" title="${pct}% do estoque já vendido" aria-label="${pct}% vendido">
+          <span style="width:${pct}%"></span>
+          <em>${pct}% vendido</em>
+        </div>
+        <div class="ve-colunas">
+          <div class="ve-coluna">
+            <div class="ve-rotulo">Estoque disponível por tipologia</div>
+            ${linhasTipo || `<p class="ve-vazio">Nada disponível no momento.</p>`}
+          </div>
+          <div class="ve-coluna">
+            <div class="ve-rotulo">Garagem</div>
+            ${blocoGaragem || `<p class="ve-vazio">Este empreendimento não tem box no cadastro.</p>`}
+          </div>
+          ${blocoPendencias}
+        </div>
+        ${listaUnidades ? `<details class="ve-gaveta"><summary>Garagem por unidade <span class="ve-conta">${conta(itens.filter((i) => statusAtual(emp.id, i) === "disponivel").length, "unidade em estoque", "unidades em estoque")}</span></summary>${listaUnidades}</details>` : ""}
       </div>`;
     }).join("");
+
+    // Os atalhos: da visao geral para a tela que resolve. O dono pediu para
+    // poder "clicar e aprofundar" — sem "Abrir" generico, cada botao diz o
+    // destino.
+    alvo.querySelectorAll("[data-ve-estoque]").forEach((b) => b.addEventListener("click", () => {
+      estado.empAberto = b.dataset.veEstoque;
+      ativarModulo("estoque");
+      mostrarEmpAberto(true);
+    }));
+    alvo.querySelectorAll("[data-ve-precos]").forEach((b) => b.addEventListener("click", () => {
+      ativarModulo("precos");
+      const bloco = document.querySelector(`#custos-venda [data-preco-emp="${b.dataset.vePrecos}"]`);
+      if (bloco) { bloco.open = true; bloco.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    }));
+    alvo.querySelectorAll("[data-ve-pendencias]").forEach((b) => b.addEventListener("click", () => {
+      ativarModulo("visao", { visaoFiltro: "cadastro" });
+    }));
+  }
+
+  // O texto da pendencia sem as marcas de negrito — para caber numa linha de
+  // resumo. A lista inteira continua em "Pendências do cadastro".
+  function semTagsSimples(html) {
+    const caixa = document.createElement("div");
+    caixa.innerHTML = String(html || "");
+    return caixa.textContent.trim();
   }
 
   function renderMateriais() {
@@ -2825,17 +3148,39 @@
       .map((emp) => ({ emp, faltas: pendenciasDoEmp(emp) }))
       .filter((item) => item.faltas.length);
     const total = comFalta.reduce((soma, item) => soma + item.faltas.length, 0);
+    // v291 — a conta que importa e a dos CRITICOS: e o que nao pode ficar para
+    // depois. O numero total misturava "sem video" com "unidade sem preco".
+    const criticos = comFalta.reduce((soma, item) => soma + item.faltas.filter((f) => f.nivel === NIVEL.critico).length, 0);
     const resumo = $("cadastro-resumo");
     resumo.classList.toggle("tudo-ok", total === 0);
+    resumo.classList.toggle("tem-critico", criticos > 0);
     resumo.textContent = total === 0
       ? "Está tudo preenchido — não falta nada no cadastro."
-      : `${conta(total, "ponto a preencher", "pontos a preencher")} em ${conta(comFalta.length, "empreendimento", "empreendimentos")}.`;
+      : criticos
+        ? `${conta(criticos, "dado comercial a corrigir", "dados comerciais a corrigir")} — estes primeiro. Ao todo, ${conta(total, "ponto", "pontos")} em ${conta(comFalta.length, "empreendimento", "empreendimentos")}.`
+        : `Nenhum dado comercial pendente. Faltam ${conta(total, "material ou conferência", "materiais e conferências")} em ${conta(comFalta.length, "empreendimento", "empreendimentos")}.`;
     $("botao-copiar-cadastro").style.display = total ? "" : "none";
+
+    // A lista sai por NIVEL, nao por empreendimento: o dono quer saber o que
+    // resolver primeiro, nao percorrer dez predios procurando o vermelho.
     const alvo = $("cadastro");
-    alvo.innerHTML = comFalta.map(({ emp, faltas }) => `<div class="pend-emp">
-        <h3>${escapeHtml(emp.nome)} <span class="quantos">${faltas.length} a preencher</span></h3>
-        <ul>${faltas.map((f) => `<li${f.grave ? ` class="grave"` : ""}><span class="pend-texto">${f.texto}</span>${f.destino ? `<button type="button" class="pend-acao" data-emp="${escapeHtml(emp.id)}" data-modulo="${escapeHtml(f.destino.modulo)}" data-material="${escapeHtml(f.destino.materialFiltro || "")}">${escapeHtml(f.destino.rotulo)}</button>` : ""}</li>`).join("")}</ul>
-      </div>`).join("");
+    alvo.innerHTML = NIVEL_ORDEM.map((nivel) => {
+      const porEmp = comFalta
+        .map(({ emp, faltas }) => ({ emp, faltas: faltas.filter((f) => f.nivel === nivel) }))
+        .filter((x) => x.faltas.length);
+      if (!porEmp.length) return "";
+      const quantos = porEmp.reduce((soma, x) => soma + x.faltas.length, 0);
+      return `<section class="pend-grupo pend-grupo-${nivel}">
+        <header class="pend-grupo-topo">
+          <h3>${escapeHtml(NIVEL_TITULO[nivel])} <span class="quantos">${quantos}</span></h3>
+          <p>${escapeHtml(NIVEL_EXPLICA[nivel])}</p>
+        </header>
+        <div class="pend-corpo">${porEmp.map(({ emp, faltas }) => `<div class="pend-emp">
+          <h4>${escapeHtml(emp.nome)}</h4>
+          <ul>${faltas.map((f) => `<li><span class="pend-texto">${f.texto}</span>${f.destino ? `<button type="button" class="pend-acao" data-emp="${escapeHtml(emp.id)}" data-modulo="${escapeHtml(f.destino.modulo)}" data-material="${escapeHtml(f.destino.materialFiltro || "")}">${escapeHtml(f.destino.rotulo)}</button>` : ""}</li>`).join("")}</ul>
+        </div>`).join("")}</div>
+      </section>`;
+    }).join("");
     alvo.querySelectorAll("button.pend-acao").forEach((botao) => {
       botao.addEventListener("click", () => {
         estado.empAberto = botao.dataset.emp;
@@ -2853,11 +3198,16 @@
       return caixa.textContent;
     };
     const linhas = ["O que falta no cadastro — site Senger"];
-    estado.dados.EMPREENDIMENTOS.forEach((emp) => {
-      const faltas = pendenciasDoEmp(emp);
-      if (!faltas.length) return;
-      linhas.push("", `${emp.nome}:`);
-      faltas.forEach((f) => linhas.push(`- ${semTags(f.texto)}`));
+    NIVEL_ORDEM.forEach((nivel) => {
+      const blocos = estado.dados.EMPREENDIMENTOS
+        .map((emp) => ({ emp, faltas: pendenciasDoEmp(emp).filter((f) => f.nivel === nivel) }))
+        .filter((x) => x.faltas.length);
+      if (!blocos.length) return;
+      linhas.push("", `== ${NIVEL_TITULO[nivel].toUpperCase()} ==`, NIVEL_EXPLICA[nivel]);
+      blocos.forEach(({ emp, faltas }) => {
+        linhas.push("", `${emp.nome}:`);
+        faltas.forEach((f) => linhas.push(`- ${semTags(f.texto)}`));
+      });
     });
     return linhas.length > 1 ? linhas.join("\n") : "Está tudo preenchido — não falta nada no cadastro.";
   }
@@ -3439,10 +3789,12 @@
     const semAreaPriv = lista.filter((b) => b.areaPriv == null).length;
     const semAreaGlobal = lista.filter((b) => b.areaGlobal == null && !b.pne).length;
     const itens = [];
-    if (semApto) itens.push({ texto: `<b>${conta(semApto, "box vendido sem a unidade", "box vendidos sem a unidade")}</b> que levou`, grave: true });
-    if (semBox) itens.push({ texto: `<b>${conta(semBox, `${n.sing} vendid${n.os === "as" ? "a" : "o"} sem box`, `${n.plur} vendid${n.os === "as" ? "as" : "os"} sem box`)}</b> vinculado`, grave: true });
-    if (semAreaPriv) itens.push({ texto: conta(semAreaPriv, "box sem área privativa", "box sem área privativa"), grave: false });
-    if (semAreaGlobal) itens.push({ texto: conta(semAreaGlobal, "box sem área global", "box sem área global"), grave: false });
+    // Vinculo de box errado faz o corretor prometer garagem que nao existe:
+    // e dado comercial, nao conferencia.
+    if (semApto) itens.push({ texto: `<b>${conta(semApto, "box vendido sem a unidade", "box vendidos sem a unidade")}</b> que levou`, nivel: NIVEL.critico });
+    if (semBox) itens.push({ texto: `<b>${conta(semBox, `${n.sing} vendid${n.os === "as" ? "a" : "o"} sem box`, `${n.plur} vendid${n.os === "as" ? "as" : "os"} sem box`)}</b> vinculado`, nivel: NIVEL.critico });
+    if (semAreaPriv) itens.push({ texto: conta(semAreaPriv, "box sem área privativa", "box sem área privativa"), nivel: NIVEL.atencao });
+    if (semAreaGlobal) itens.push({ texto: conta(semAreaGlobal, "box sem área global", "box sem área global"), nivel: NIVEL.atencao });
     return itens;
   }
 
@@ -3463,9 +3815,31 @@
   // Tudo o que falta preencher no cadastro de um empreendimento — nao so os
   // box. A central de materiais resolve capa, galeria, plantas, folder e video;
   // esta lista continua mostrando tambem metragem, garagem, RI e demais dados.
+  // v291 — TRES NIVEIS, NAO UM BOOLEANO.
+  //
+  // Ate aqui "grave" era sim ou nao, e "sem video oficial" pesava igual a
+  // "unidade a venda sem preco". Sao coisas de outra natureza: uma faz o
+  // corretor vender errado na frente do cliente; a outra e material que falta.
+  // Agora a lista sai em tres blocos, nesta ordem:
+  //   critico    — dado comercial: se estiver errado, a venda sai errada;
+  //   atencao    — informacao incompleta ou generica, que da para contornar;
+  //   material   — folder, video, foto: falta material, nao ha erro no que ha.
+  const NIVEL = { critico: "critico", atencao: "atencao", material: "material" };
+  const NIVEL_ORDEM = [NIVEL.critico, NIVEL.atencao, NIVEL.material];
+  const NIVEL_TITULO = {
+    critico: "Dado comercial",
+    atencao: "Atenção",
+    material: "Material complementar",
+  };
+  const NIVEL_EXPLICA = {
+    critico: "Se estiver errado aqui, o corretor vende errado. Resolver primeiro.",
+    atencao: "A informação existe, mas está incompleta ou genérica demais.",
+    material: "Falta material para enviar ao cliente. Nada do que já existe está errado.",
+  };
+
   function pendenciasDoEmp(emp) {
     const itens = [];
-    const marca = (texto, grave, destino) => itens.push({ texto, grave: !!grave, destino: destino || null });
+    const marca = (texto, nivel, destino) => itens.push({ texto, nivel: nivel || NIVEL.atencao, destino: destino || null });
     const todos = itensDoEmp(emp);
     if (!todos.length) return itens;
     const n = nomes(emp);
@@ -3491,14 +3865,14 @@
     // 1. Preco. O que esta a venda sem preco sai no site como "Sob consulta";
     // o que foi vendido nao pode ficar com o preco de tabela, que ja nao vale.
     const semPreco = todos.filter((i) => statusAtual(emp.id, i) === "disponivel" && !i.preco).length;
-    if (semPreco) marca(`<b>${quantos(semPreco)} à venda sem preço</b> — no site aparecem como “Sob consulta”`, true);
+    if (semPreco) marca(`<b>${quantos(semPreco)} à venda sem preço</b> — no site aparecem como “Sob consulta”`, NIVEL.critico);
     // So para unidade: no lote o preco de tabela continua valendo depois da
     // venda, e no apartamento nao — o comprador mexe na planta e o valor vira
     // outro. E a razao de a unidade vendida ficar sem preco no cadastro.
     const precoDeVendido = forma === "unidade"
       ? todos.filter((i) => statusAtual(emp.id, i) === "vendido" && i.preco).length
       : 0;
-    if (precoDeVendido) marca(`<b>${quantos(precoDeVendido)} ${vendidos(precoDeVendido)} ainda com o preço na tabela</b> — depois da venda o valor de tabela não vale mais`, true);
+    if (precoDeVendido) marca(`<b>${quantos(precoDeVendido)} ${vendidos(precoDeVendido)} ainda com o preço na tabela</b> — depois da venda o valor de tabela não vale mais`, NIVEL.critico);
 
     // 2. A tipologia: metragem, planta e garagem. A planta ligada e o que faz o
     // link de uma unidade mostrar a planta dela, e nao as do predio inteiro.
@@ -3524,9 +3898,11 @@
       const garagemPelaRegra = unidades.length && unidades.every((u) => regraDoGrupo[u.estoque || rotulo]);
       if (!g.garagem && !garagemPelaRegra && !ehComercial(rotulo)) semGaragem.push(rotulo);
     });
-    if (semArea.length) marca(`${dizerTipologias(semArea)} sem a metragem`);
-    if (semPlanta.length) marca(`${dizerTipologias(semPlanta)} sem planta ligada — quem abre o link da unidade vê as plantas de todas as outras junto`, false, { modulo: "materiais", materialFiltro: "plantas", rotulo: "Corrigir em Plantas" });
-    if (semGaragem.length) marca(`${dizerTipologias(semGaragem)} sem a garagem informada`);
+    // Metragem e o que o cliente compara antes do preco: sem ela a ficha mente por omissao.
+    if (semArea.length) marca(`${dizerTipologias(semArea)} sem a metragem`, NIVEL.critico);
+    // Planta generica no lugar da especifica: o cliente ve a planta errada.
+    if (semPlanta.length) marca(`${dizerTipologias(semPlanta)} sem planta ligada — quem abre o link da unidade vê as plantas de todas as outras junto`, NIVEL.atencao, { modulo: "materiais", materialFiltro: "plantas", rotulo: "Corrigir em Plantas" });
+    if (semGaragem.length) marca(`${dizerTipologias(semGaragem)} sem a garagem informada`, NIVEL.critico);
 
     // 3. A regra de garagem. Sem ela a tipologia fica fora da conferencia dos
     // box — o painel nao sabe quantos ela leva e nao pode dizer se fecha.
@@ -3535,21 +3911,27 @@
       const regra = emp.vagasPorTipologia || {};
       const foraDaRegra = [...new Set(todos.map((i) => i.estoque || i.grupo).filter(Boolean))]
         .filter((rotulo) => !regra[rotulo] && !ehComercial(rotulo));
-      if (foraDaRegra.length) marca(`${dizerTipologias(foraDaRegra)} sem a regra de quantos box levam — ficam fora da conferência da garagem`);
+      if (foraDaRegra.length) marca(`${dizerTipologias(foraDaRegra)} sem a regra de quantos box levam — ficam fora da conferência da garagem`, NIVEL.atencao);
     }
 
     // 4. O que o corretor ve na ficha do empreendimento. "Outros Imoveis" fica
     // de fora: la cada imovel tem a sua propria ficha, e nao ha ficha do grupo.
     if (emp.id !== "outros") {
-      if (!materialAtual(emp, "hero")) marca("sem foto de capa", true, { modulo: "materiais", materialFiltro: "identidade", rotulo: "Corrigir em Capa e logo" });
-      if (!galeriaAtual(emp).some((item) => !ehPlantaMidia(item))) marca("sem fotos na galeria", true, { modulo: "materiais", materialFiltro: "galeria", rotulo: "Corrigir em Galeria de fotos" });
+      // Sem capa o cartao do empreendimento sai quebrado no site e na previa do
+      // WhatsApp: e o unico material que e dado comercial.
+      if (!materialAtual(emp, "hero")) marca("sem foto de capa — o cartão do site e a prévia do WhatsApp ficam sem imagem", NIVEL.critico, { modulo: "materiais", materialFiltro: "identidade", rotulo: "Corrigir em Capa e logo" });
+      if (!galeriaAtual(emp).some((item) => !ehPlantaMidia(item))) marca("sem fotos na galeria", NIVEL.material, { modulo: "materiais", materialFiltro: "galeria", rotulo: "Corrigir em Galeria de fotos" });
       const folder = materialAtual(emp, "folder");
       const video = materialAtual(emp, "video");
-      if (!folder) marca("<b>sem folder em PDF</b> — o padrão comercial exige 1 folder por empreendimento", true, { modulo: "materiais", materialFiltro: "comerciais", rotulo: "Corrigir em Folder e vídeo" });
-      else if (!materialParecePdf(folder)) marca("folder cadastrado não parece ser um arquivo PDF — conferir o link/caminho", true, { modulo: "materiais", materialFiltro: "comerciais", rotulo: "Corrigir em Folder e vídeo" });
-      if (!video) marca("<b>sem vídeo oficial</b> — o padrão comercial exige 1 vídeo por empreendimento", true, { modulo: "materiais", materialFiltro: "comerciais", rotulo: "Corrigir em Folder e vídeo" });
+      // Folder e video sao material complementar: faltar nao faz ninguem vender
+      // errado. Mas um folder CADASTRADO que aponta para arquivo que nao e PDF
+      // e outra coisa — e um link quebrado na mao do cliente.
+      if (!folder) marca("sem folder em PDF", NIVEL.material, { modulo: "materiais", materialFiltro: "comerciais", rotulo: "Corrigir em Folder e vídeo" });
+      else if (!materialParecePdf(folder)) marca("<b>o folder cadastrado não é um PDF</b> — o link chega quebrado ao cliente", NIVEL.critico, { modulo: "materiais", materialFiltro: "comerciais", rotulo: "Corrigir em Folder e vídeo" });
+      if (!video) marca("sem vídeo oficial", NIVEL.material, { modulo: "materiais", materialFiltro: "comerciais", rotulo: "Corrigir em Folder e vídeo" });
       // Registro de incorporacao e coisa de predio: loteamento nao tem.
-      if ((emp.grupos || []).length && !(emp.ri || []).length) marca("sem o registro de incorporação — na ficha sai “Não informado”");
+      // O RI e documento: sai na ficha e no PDF que o cliente leva.
+      if ((emp.grupos || []).length && !(emp.ri || []).length) marca("<b>sem o registro de incorporação</b> — na ficha e no PDF sai “Não informado”", NIVEL.critico);
     }
 
     return itens.concat(pendenciasDeBox(emp, boxes));
@@ -3649,14 +4031,16 @@
     if (!estado.dados) return [];
     const lista = [];
     estado.dados.EMPREENDIMENTOS.forEach((emp) => {
-      const itens = [...itensDoEmp(emp), ...boxesDoEmp(emp).map((b) => ({ ...b, semValor: !emp.boxSeparado }))];
+      const itens = [...itensDoEmp(emp), ...boxesDoEmp(emp).map((b) => ({ ...b, semValor: true }))];
       itens.forEach((item) => {
         if (item.semValor || statusAtual(emp.id, item) === "vendido") return;
         const chave = chaveDoItem(emp.id, item);
         const custo = custoTotalInterno(chave);
         const margem = margemDesejadaInterna(chave);
         if (!custo || margem == null) return;
-        const novo = Math.round(custo + margem);
+        // O preco do site sai arredondado (R$ 100 mais proximo, por padrao);
+        // custo e margem continuam exatos aqui dentro.
+        const novo = precoDeVenda(custo + margem, custo);
         const atual = Number(item.preco || 0);
         // Item sem preço no cadastro também entra: a venda desejada vira o
         // primeiro preço dele. Antes o "!atual" descartava esses.
@@ -3706,9 +4090,12 @@
     // gravar - dois botoes para uma acao so.
     const haAlgoParaPublicar = n > 0 || financeiroSujo;
     $("botao-publicar").disabled = !haAlgoParaPublicar;
-    $("botao-descartar").style.display = n > 0 ? "inline-block" : "none";
+    // Alteracao financeira sem preco na fila tambem precisa de Descartar: era
+    // justamente o caso do custo digitado por engano.
+    const haOQueDesfazer = n > 0 || financeiroSujo;
+    $("botao-descartar").style.display = haOQueDesfazer ? "inline-block" : "none";
     if ($("botao-publicar-modulo")) $("botao-publicar-modulo").disabled = !haAlgoParaPublicar;
-    if ($("botao-descartar-modulo")) $("botao-descartar-modulo").style.display = n > 0 ? "inline-block" : "none";
+    if ($("botao-descartar-modulo")) $("botao-descartar-modulo").style.display = haOQueDesfazer ? "inline-block" : "none";
     if ($("publicacao-resumo")) {
       $("publicacao-resumo").innerHTML = n
         ? `<strong>${escapeHtml(partes.join(" · "))} pendente${n === 1 ? "" : "s"}.</strong><br>Revise os módulos necessários e publique quando estiver pronto.`
@@ -3832,10 +4219,14 @@
   // A venda desejada so vira preco quando e diferente do que esta no ar — e a
   // mesma conta da fila de publicacao, para a faixa amarela da linha nunca
   // dizer uma coisa e o botao "Publicar no site" outra.
-  function vendaVaiParaOSite(linha, vendaDesejada) {
+  function vendaVaiParaOSite(linha, vendaDesejada, custo = 0) {
     const preco = Number(linha.dataset.preco || 0);
-    return linha.dataset.vendavel === "1" && vendaDesejada != null && preco > 0
-      && Math.round(vendaDesejada) > 0 && Math.round(vendaDesejada) !== preco;
+    if (linha.dataset.vendavel !== "1" || vendaDesejada == null || preco <= 0) return false;
+    // A MESMA conta da fila de publicacao (precosDesejadosPendentes), incluindo
+    // o arredondamento: sem isso a faixa amarela da linha diria uma coisa e o
+    // "Publicar no site" faria outra.
+    const doSite = precoDeVenda(vendaDesejada, custo);
+    return doSite > 0 && doSite !== preco;
   }
 
   // A nota embaixo do custo: "= 1.313.900,00 com móveis". So aparece quando a
@@ -3867,7 +4258,7 @@
       cel.classList.toggle("margem-positiva", margem != null && margem >= 0);
       cel.classList.toggle("margem-negativa", margem != null && margem < 0);
     }
-    const muda = vendaVaiParaOSite(linha, vendaDesejada);
+    const muda = vendaVaiParaOSite(linha, vendaDesejada, custo);
     linha.classList.toggle("muda", muda);
     const marca = linha.querySelector("[data-venda-nota]");
     if (marca) {
@@ -3903,8 +4294,8 @@
   const precosUnidadesVendidasAbertas = new Set();
 
   // O prédio inteiro fica a vista: o box de todos os empreendimentos aparece
-  // (onde e venda separada tem valor proprio; nos demais ja esta no preco do
-  // apartamento) e o vendido vai para o fim da lista, em vermelho.
+  // (em TODOS eles o box ja esta dentro do preco do apartamento, Renaissance
+  // incluido) e o vendido vai para o fim da lista, em vermelho.
   // O numero que o dono le no nome do item: o apartamento, o box, o lote. Quem
   // nao tem numero (os imoveis de "outros") vai para o fim, em ordem de nome.
   function numeroDoItemFinanceiro(item) {
@@ -3917,7 +4308,7 @@
     if (!estado.dados) return [];
     return estado.dados.EMPREENDIMENTOS.map((emp) => ({
       emp,
-      itens: [...itensDoEmp(emp), ...boxesDoEmp(emp).map((b) => ({ ...b, semValor: !emp.boxSeparado }))]
+      itens: [...itensDoEmp(emp), ...boxesDoEmp(emp).map((b) => ({ ...b, semValor: true }))]
         .sort((a, b) => (a.tipo === "box" ? 1 : 0) - (b.tipo === "box" ? 1 : 0)
           || (statusAtual(emp.id, a) === "vendido" ? 1 : 0) - (statusAtual(emp.id, b) === "vendido" ? 1 : 0)
           // Dentro de cada bloco, do menor numero para o maior. Sem isso a lista
@@ -4415,7 +4806,7 @@
     }
     const boxesDaqui = boxesDoEmp(emp);
     const prefixo = nomes(emp).prefixo;
-    const itens = [...itensDoEmp(emp), ...boxesDaqui.map((b) => ({ ...b, semValor: !emp.boxSeparado }))];
+    const itens = [...itensDoEmp(emp), ...boxesDaqui.map((b) => ({ ...b, semValor: true }))];
     let quantos = 0;
     let semCusto = 0;
     itens.forEach((item) => {
@@ -4515,6 +4906,9 @@
       const indice = indiceDeItens();
       const custosValidos = {};
       let semCorrespondencia = 0;
+      // O CUSTO IMPORTADO ENTRA EXATO, no centavo — nunca arredondado. Regra do
+      // dono (14/09/2026). Quem arredonda e o preco de venda, na hora de
+      // publicar (ver precoDeVenda).
       Object.entries(mapaCustos).forEach(([chave, valor]) => {
         const n = Number(valor);
         if (!chave || !Number.isFinite(n) || n <= 0) return;
@@ -4768,6 +5162,10 @@
 
   $("incc-arredondar")?.addEventListener("change", () => {
     try { localStorage.setItem(ARREDONDAR_ITEM, $("incc-arredondar").value); } catch (e) { /* modo privado */ }
+    // O arredondamento agora decide o preco que vai para o site: a lista de
+    // precos e a fila de publicacao tem de acompanhar a escolha na hora.
+    mostrarArredondamentoNosPrecos();
+    if (estado.dados) { renderCustosMargens(); renderPendentes(); }
   });
 
   $("incc-variacao")?.addEventListener("input", calcularNovoInccPelaVariacao);
@@ -4809,6 +5207,34 @@
     return $("incc-arredondar")?.value || "100";
   }
 
+  // v291 — O ARREDONDAMENTO E DO PRECO DE VENDA, NAO DO CUSTO.
+  //
+  // Decisao do dono em 14/09/2026: o custo — importado ou corrigido pelo INCC —
+  // fica exato, no centavo; quem cai no R$ 100 mais proximo e o preco que vai
+  // para o site. Antes (v254) era o contrario: arredondava-se o custo e a
+  // margem para o preco sair redondo por tabela.
+  //
+  // Regra de seguranca herdada da v207: o arredondamento NUNCA pode deixar o
+  // preco abaixo do custo. Encostou, sobe para o proximo degrau — foi assim que
+  // 43 unidades ficaram abaixo do custo depois da correcao de setembro.
+  // O dono precisa ver, na tela onde precifica, qual arredondamento esta
+  // valendo — o seletor mora na tela do INCC.
+  function mostrarArredondamentoNosPrecos() {
+    const el = $("precos-arredondamento");
+    if (!el) return;
+    const escolha = $("incc-arredondar")?.selectedOptions?.[0]?.textContent?.trim() || "";
+    el.textContent = escolha ? `Agora está em: ${escolha}. Para mudar, abra “Correção pelo INCC”.` : "";
+  }
+
+  function precoDeVenda(valor, custo) {
+    if (!Number.isFinite(valor)) return 0;
+    const modo = arredondamentoEscolhido(null);
+    const passo = Number(String(modo).replace("-cima", "")) || 1;
+    let n = arredondarValor(valor, modo);
+    if (custo > 0 && n < custo) n = Math.ceil(valor / passo) * passo;
+    return Math.round(n);
+  }
+
   $("botao-previa").addEventListener("click", () => {
     const pct = lerVariacao();
     if (pct === null) { aviso("Informe a variação do mês (ex.: 0,62).", "falha"); return; }
@@ -4829,7 +5255,8 @@
       if (!daqui.length) return;
       total += daqui.length;
       const soma = daqui.reduce((t, x) => t + x.obra + x.moveis, 0);
-      const novoCusto = (n) => arredondarValor(n * fator, modo);
+      // Custo exato: o arredondamento e do preco de venda, nunca do custo.
+      const novoCusto = (n) => Math.round(n * fator * 100) / 100;
       const novoTotal = (x) => novoCusto(x.obra) + (x.moveis ? novoCusto(x.moveis) : 0);
       linhas += `<details class="previa-emp">
         <summary>${escapeHtml(emp.nome)} <span class="contagem">${conta(daqui.length, "custo", "custos")} · ${moedaFinanceira(soma)} → ${moedaFinanceira(daqui.reduce((t, x) => t + novoTotal(x), 0))}</span></summary>
@@ -4838,9 +5265,8 @@
       </details>`;
     });
     $("previa-lista").innerHTML = linhas || `<p class="descricao">Nenhum custo lançado ainda. Informe os custos em <strong>Preços e margem</strong> antes de corrigir.</p>`;
-    const comoArredonda = $("incc-arredondar")?.selectedOptions?.[0]?.textContent?.trim() || "";
     $("previa-resumo").textContent = total
-      ? `Variação de ${pct.toLocaleString("pt-BR")}% aplicada a ${conta(total, "custo", "custos")}${comoArredonda ? `, arredondando para ${comoArredonda.toLowerCase()}` : ""}. Confira alguns valores antes de aplicar.`
+      ? `Variação de ${pct.toLocaleString("pt-BR")}% aplicada a ${conta(total, "custo", "custos")}, em valor exato — o custo não é arredondado. O arredondamento vale só para o preço de venda.`
       : "Não há custo lançado para corrigir.";
     $("previa-incc").classList.add("visivel");
   });
@@ -5219,6 +5645,131 @@
     return `v${novaVersao}: ${partes.join(" · ") || "atualização pelo painel"} (painel administrativo)`;
   }
 
+  // ---------------- publicação em um commit só ----------------
+  //
+  // O PROBLEMA QUE ISTO RESOLVE: até aqui o painel gravava data.js, index.html
+  // e sw.js em três PUT separados, além de um PUT por arquivo anexado. Se a
+  // internet caísse (ou a chave fosse recusada) entre o primeiro e o segundo,
+  // o site ficava com o preço novo e a versão velha — ou pior, com o data.js
+  // apontando para uma foto que não subiu. Não havia como voltar atrás.
+  //
+  // COMO FUNCIONA: o git guarda conteúdo (blob), uma árvore de arquivos (tree)
+  // e um commit que aponta para a árvore. Criar blobs e árvore não muda nada no
+  // repositório — é rascunho. Só o último passo, mover o ponteiro do branch
+  // (update ref), torna tudo visível, e ele é atômico: ou entra tudo, ou nada.
+  //
+  // Se qualquer passo falhar, nada foi publicado e o painel continua com as
+  // alterações na tela — o dono não perde o que digitou.
+  //
+  // O caminho antigo (um PUT por arquivo) continua como plano B, para o caso
+  // de a conta não ter permissão na API de dados do git.
+
+  async function gitPost(caminho, corpo) {
+    const resp = await fetch(GIT_API + caminho, {
+      method: "POST",
+      headers: { Authorization: "Bearer " + estado.token, Accept: "application/vnd.github+json" },
+      body: JSON.stringify(corpo),
+    });
+    if (!resp.ok) {
+      const dados = await resp.json().catch(() => ({}));
+      const falha = new Error(`git/${caminho} (HTTP ${resp.status}): ${dados.message || ""}`);
+      falha.status = resp.status;
+      throw falha;
+    }
+    return resp.json();
+  }
+
+  // arquivos: [{ path, texto }] para texto, [{ path, base64 }] para binário.
+  async function publicarEmUmCommit(arquivos, mensagem) {
+    // 1. Onde o branch está agora.
+    const refResp = await fetch(`${GIT_API}ref/heads/${BRANCH}`, {
+      headers: { Authorization: "Bearer " + estado.token, Accept: "application/vnd.github+json" },
+      cache: "no-store",
+    });
+    if (!refResp.ok) throw erroHttp(refResp);
+    const ref = await refResp.json();
+    const commitPai = ref.object.sha;
+    const commitAtual = await (await fetch(`${GIT_API}commits/${commitPai}`, {
+      headers: { Authorization: "Bearer " + estado.token, Accept: "application/vnd.github+json" },
+      cache: "no-store",
+    })).json();
+
+    // 2. Um blob por arquivo. Nada disso aparece no repositório ainda.
+    const folhas = [];
+    for (const arquivo of arquivos) {
+      const blob = await gitPost("blobs", arquivo.base64
+        ? { content: arquivo.base64, encoding: "base64" }
+        : { content: arquivo.texto, encoding: "utf-8" });
+      folhas.push({ path: arquivo.path, mode: "100644", type: "blob", sha: blob.sha });
+    }
+
+    // 3. A árvore nova, usando a atual como base: o que não está na lista fica
+    //    exatamente como estava.
+    const arvore = await gitPost("trees", { base_tree: commitAtual.tree.sha, tree: folhas });
+
+    // 4. O commit.
+    const commit = await gitPost("commits", { message: mensagem, tree: arvore.sha, parents: [commitPai] });
+
+    // 5. O único passo que muda o site. Sem force: se alguém publicou no meio
+    //    do caminho, o GitHub recusa e nada é perdido — é só publicar de novo.
+    const patch = await fetch(`${GIT_API}refs/heads/${BRANCH}`, {
+      method: "PATCH",
+      headers: { Authorization: "Bearer " + estado.token, Accept: "application/vnd.github+json" },
+      body: JSON.stringify({ sha: commit.sha, force: false }),
+    });
+    if (!patch.ok) {
+      const dados = await patch.json().catch(() => ({}));
+      const falha = new Error(`Não consegui mover a branch (HTTP ${patch.status}): ${dados.message || ""}`);
+      falha.status = patch.status;
+      throw falha;
+    }
+    return commit.sha;
+  }
+
+  // ---------------- guarda de material ----------------
+  //
+  // O que uma publicação NUNCA deveria apagar sozinha. Comparação entre dois
+  // data.js — o que está no ar e o que vai ser gravado — empreendimento a
+  // empreendimento. Devolve uma lista em português; vazia significa que nada
+  // se perdeu.
+  const CAMPOS_DE_MATERIAL = [
+    ["hero", "a foto de capa"],
+    ["logo", "o logo"],
+    ["folder", "o folder"],
+    ["video", "o vídeo"],
+    ["mapa", "o mapa"],
+  ];
+
+  function plantasLigadas(emp) {
+    return (emp.grupos || []).reduce((soma, g) =>
+      soma + (g.planta ? 1 : 0) + (g.unidades || []).filter((u) => u.planta).length, 0);
+  }
+
+  function perdasDeMaterial(antes, depois) {
+    if (!antes || !depois) return [];
+    const perdas = [];
+    const mapaDepois = new Map((depois.EMPREENDIMENTOS || []).map((e) => [e.id, e]));
+    (antes.EMPREENDIMENTOS || []).forEach((velho) => {
+      const novo = mapaDepois.get(velho.id);
+      if (!novo) { perdas.push(`${velho.nome}: o empreendimento inteiro sai do cadastro`); return; }
+      CAMPOS_DE_MATERIAL.forEach(([campo, nome]) => {
+        if (velho[campo] && !novo[campo]) perdas.push(`${velho.nome}: ${nome} (${velho[campo]}) fica vazio`);
+      });
+      const fotosAntes = (velho.galeria || []).length;
+      const fotosDepois = (novo.galeria || []).length;
+      if (fotosDepois < fotosAntes) perdas.push(`${velho.nome}: a galeria cai de ${fotosAntes} para ${fotosDepois} ${fotosDepois === 1 ? "foto" : "fotos"}`);
+      const difAntes = (velho.diferenciais || []).length;
+      const difDepois = (novo.diferenciais || []).length;
+      if (difDepois < difAntes) perdas.push(`${velho.nome}: os diferenciais caem de ${difAntes} para ${difDepois}`);
+      const plAntes = plantasLigadas(velho);
+      const plDepois = plantasLigadas(novo);
+      if (plDepois < plAntes) perdas.push(`${velho.nome}: os vínculos de planta caem de ${plAntes} para ${plDepois}`);
+      const riAntes = (velho.ri || []).length;
+      if (riAntes && !(novo.ri || []).length) perdas.push(`${velho.nome}: o registro de incorporação fica vazio`);
+    });
+    return perdas;
+  }
+
   // ---------------- publicar ----------------
 
   async function publicar() {
@@ -5263,12 +5814,14 @@
       const novaVersao = (m ? Number(m[1]) : estado.versao) + 1;
       const mensagem = mensagemDoCommit(novaVersao);
 
-      // Primeiro envia os arquivos novos. O data.js só passa a apontar para
-      // eles depois que todos os uploads terminarem com sucesso.
+      // Os arquivos anexados viram base64 agora, na memória — ainda não sobem.
+      // No caminho de um commit só eles entram junto com o data.js; no plano B
+      // eles sobem antes, como sempre foi.
       const anexos = estado.ops.filter((op) => op.tipoOp === "upload");
+      const anexosProntos = [];
       for (const op of anexos) {
-        botao.textContent = `Enviando ${op.rotulo || "arquivo"} de ${op.empId}…`;
-        await ghGravarArquivo(op.path, op.arquivo, mensagem);
+        botao.textContent = `Preparando ${op.rotulo || "arquivo"}…`;
+        anexosProntos.push({ path: op.path, base64: await arquivoParaBase64(op.arquivo), op });
       }
       botao.textContent = "Publicando…";
 
@@ -5291,6 +5844,24 @@
       if (contaBoxes(conferido) !== contaBoxes(estado.dados)) {
         throw new Error("A conferência falhou: o número de box mudou. Nada foi gravado.");
       }
+      // v291 — GUARDA DE MATERIAL. Uma publicação de estoque não pode apagar,
+      // sem ninguém ver, o folder, o vídeo, a capa, o logo, o mapa, as fotos
+      // da galeria, os diferenciais ou os vínculos de planta que já estavam no
+      // ar. Isso já aconteceu neste projeto: os materiais sumiram e ninguém
+      // soube quando. Aqui a comparação é entre o data.js que está no GitHub
+      // (dataJs.text, lido agora) e o que vai ser gravado.
+      const perdas = perdasDeMaterial(avaliarDataJs(dataJs.text), conferido);
+      if (perdas.length) {
+        const lista = perdas.slice(0, 8).map((p) => `• ${p}`).join("\n");
+        const resto = perdas.length > 8 ? `\n… e mais ${perdas.length - 8}.` : "";
+        if (!confirm(
+          `ATENÇÃO — esta publicação APAGA material que já estava no site:\n\n${lista}${resto}\n\n` +
+          `Isso não costuma ser o que você quer: material some sem aviso e o corretor descobre com o cliente na frente.\n\n` +
+          `Publicar assim mesmo?`
+        )) {
+          throw new Error("Publicação cancelada por você: havia material sendo apagado. Nada foi gravado.");
+        }
+      }
 
       // Sobe a versão do cache para os corretores receberem a atualização.
       const dia = new Date();
@@ -5300,14 +5871,39 @@
         .replace(/const CACHE = "[^"]*"/, `const CACHE = "senger-portfolio-v${novaVersao}-${carimbo}-painel"`)
         .replace(/v=\d+/g, `v=${novaVersao}`);
 
-      await ghGravar("data.js", texto, dataJs.sha, mensagem);
-      await ghGravar("index.html", novoIndex, indexHtml.sha, mensagem);
-      await ghGravar("sw.js", novoSw, swJs.sha, mensagem);
+      // TUDO DE UMA VEZ: data.js, index.html, sw.js e os arquivos anexados no
+      // mesmo commit. É o passo que elimina a publicação pela metade — antes,
+      // uma queda entre o data.js e o sw.js deixava o site com preço novo e
+      // versão velha, e o corretor não recebia a atualização.
+      const pacote = [
+        { path: "data.js", texto },
+        { path: "index.html", texto: novoIndex },
+        { path: "sw.js", texto: novoSw },
+        ...anexosProntos.map(({ path, base64 }) => ({ path, base64 })),
+      ];
+      try {
+        await publicarEmUmCommit(pacote, mensagem);
+      } catch (erroCommit) {
+        // Chave recusada é problema de permissão, não de método: não adianta
+        // tentar o plano B, que usa a mesma chave.
+        if (erroCommit.status === 401) throw erroCommit;
+        // Plano B: o caminho antigo, um arquivo por vez. Vale quando a conta
+        // não tem acesso à API de dados do git.
+        botao.textContent = "Publicando (modo antigo)…";
+        for (const { path, base64, op } of anexosProntos) {
+          botao.textContent = `Enviando ${op.rotulo || "arquivo"}…`;
+          await ghGravarBase64(path, base64, mensagem);
+        }
+        botao.textContent = "Publicando…";
+        await ghGravar("data.js", texto, dataJs.sha, mensagem);
+        await ghGravar("index.html", novoIndex, indexHtml.sha, mensagem);
+        await ghGravar("sw.js", novoSw, swJs.sha, mensagem);
+      }
 
       // A tabela subiu: o custo, que sai dela, sobe no mesmo passo.
       // A previa ja corrigiu custo e margem na tela; aqui so falta guardar.
       const custosCorrigidos = incc
-        ? (financeiroAntesDaPrevia ? Object.keys(custosInternos).length : corrigirFinanceiroPeloIncc(incc.pct, incc.arredondar))
+        ? (financeiroAntesDaPrevia ? Object.keys(custosInternos).length : corrigirFinanceiroPeloIncc(incc.pct))
         : 0;
       aviso(`Publicado! O site sobe para a v${novaVersao} em 1–2 minutos.` +
         (custosCorrigidos ? ` ${custosCorrigidos} custos também foram corrigidos em ${incc.pct.toLocaleString("pt-BR")}%.` : ""), "ok");
@@ -5451,12 +6047,22 @@
     campo.closest(".campo-senha").style.display = temChave ? "" : "none";
     $("botao-copiar-chave").style.display = temChave ? "" : "none";
     $("botao-trocar-chave").style.display = temChave ? "" : "none";
+    if ($("botao-apagar-chave")) $("botao-apagar-chave").style.display = temChave ? "" : "none";
     const idade = idadeDaChave();
     $("chave-desde").textContent = !temChave
       ? "Não há chave guardada neste aparelho agora."
       : idade
         ? `Cadastrada neste aparelho em ${idade.desde.toLocaleDateString("pt-BR")} — faz ${emDias(idade.dias)}.`
         : "Cadastrada neste aparelho antes de o painel passar a anotar a data.";
+    // Chave velha é chave que vai vencer (ou que já devia ter sido trocada).
+    // Como a instrução agora pede 90 dias, o painel avisa antes de o dono
+    // descobrir na hora de publicar.
+    const alerta = $("chave-desde");
+    if (temChave && idade && idade.dias >= 75) {
+      alerta.textContent += idade.dias >= 90
+        ? " Ela já passou dos 90 dias: se o painel recusar a publicação, é isso. Gere outra no GitHub e cole aqui."
+        : " Ela está perto dos 90 dias — vale gerar outra no GitHub antes que pare no meio de uma publicação.";
+    }
     renderDiario();
     mostrarTela("tela-chave");
   }
@@ -5494,12 +6100,38 @@
   });
 
   $("botao-voltar-chave").addEventListener("click", () => {
+    // A chave sai do campo ao sair da tela: sem isso ela ficava no documento,
+    // à mostra para quem passasse depois no mesmo aparelho.
     $("campo-chave-atual").value = "";
+    $("campo-chave-atual").type = "password";
     mostrarTela(telaAntesDaChave);
+  });
+
+  // v291 — apagar a chave DESTE aparelho. Existe para o caso mais comum de
+  // problema num painel assim: o celular foi emprestado, perdido ou vendido.
+  // Não mexe no GitHub — se a chave já correu mundo, o jeito é gerar outra lá,
+  // e o texto abaixo diz isso.
+  $("botao-apagar-chave")?.addEventListener("click", () => {
+    if (!confirm(
+      "Apagar a chave do GitHub deste aparelho?\n\n" +
+      "O painel para de publicar aqui até você colar a chave de novo. " +
+      "Nada do site muda.\n\n" +
+      "Se você acha que alguém mais tem esta chave, apagar aqui NÃO basta: " +
+      "vá ao GitHub e apague a chave lá também."
+    )) return;
+    anotarNoDiario("trocada");
+    esquecerChave();
+    $("campo-chave-atual").value = "";
+    $("campo-chave-atual").type = "password";
+    $("campo-token").value = "";
+    $("erro-token").classList.remove("visivel");
+    aviso("Chave apagada deste aparelho. Para publicar de novo, cadastre uma chave.", "ok");
+    mostrarTela("tela-token");
   });
 
   $("botao-trocar-chave").addEventListener("click", () => {
     $("campo-chave-atual").value = "";
+    $("campo-chave-atual").type = "password";
     anotarNoDiario("trocada");
     esquecerChave();
     $("campo-token").value = "";
@@ -5508,13 +6140,22 @@
   });
 
   $("botao-descartar").addEventListener("click", () => {
+    const tinhaOps = estado.ops.length > 0;
+    const tinhaFinanceiro = financeiroSujo;
+    if (tinhaFinanceiro && !confirm("Descartar também o custo, os móveis e a margem digitados e voltar aos últimos valores guardados?\n\nO que já foi guardado (aqui e na sua conta) não muda.")) {
+      if (!tinhaOps) return;
+    } else if (tinhaFinanceiro) {
+      descartarFinanceiro();
+    }
     // Descartar tem de valer tambem para o preco, senao ele voltaria sozinho
     // na linha seguinte. Volta a aparecer assim que a venda desejada mudar.
     estado.ops.filter((op) => op.tipoOp === "preco").forEach((op) => precosDispensados.add(`${op.chave}=${op.novo}`));
     estado.ops = [];
     aplicarPreviaIncc();
     renderTudo();
-    aviso("Alterações descartadas.", "ok");
+    aviso(tinhaFinanceiro && !financeiroSujo
+      ? "Alterações descartadas. Custo, móveis e margem voltaram ao último valor guardado."
+      : "Alterações descartadas.", "ok");
   });
 
   $("botao-publicar").addEventListener("click", publicar);

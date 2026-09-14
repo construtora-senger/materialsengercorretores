@@ -1,50 +1,101 @@
-ATUALIZAÇÃO — MATERIAL SENGER CORRETORES — v173
+MATERIAL SENGER CORRETORES
 
-Este ZIP contém o projeto completo atualizado.
+O que é
+-------
+Portfólio comercial dos empreendimentos da Construtora Senger, com um painel
+administrativo que o dono usa pelo celular.
 
-NOVIDADES DESTA VERSÃO
-- retirado o “Abrir” genérico dos cartões da Visão geral; os cartões agora são somente resumo;
-- em Pendências do cadastro, não existe mais “Abrir o empreendimento” genérico; quando a pendência tem editor no painel, aparece um atalho direto para o módulo correto (Capa e logo, Galeria, Plantas ou Folder e vídeo);
-- pendências que ainda não possuem editor específico ficam apenas como conferência, sem botão inútil;
-- o módulo Configurações foi retirado do menu;
-- a Chave do GitHub foi movida para Publicação > Acesso técnico para publicar e fica recolhida no uso normal;
-- o botão de “Sair do painel”/encerrar sessão foi retirado da navegação;
-- Correção pelo INCC agora também mostra todos os itens à venda separados por empreendimento, em acordeões (disponíveis e alugados; vendidos ficam fora);
-- a tabela interna possui: Unidade, Custo, Custo - 5%, Custo - 10%, Preço de venda atual, Margem extra atual, Margem extra desejada e Venda desejada;
-- Margem extra atual = Preço de venda atual - Custo; Venda desejada = Custo + Margem extra desejada;
-- os custos são internos e ficam apenas no navegador deste aparelho (localStorage). Eles NÃO são enviados ao data.js, GitHub ou site público;
-- a tela possui Importar backup, Salvar custos e margens e Exportar backup para levar a tabela interna entre computadores sem expor esses valores;
-- enquanto as tabelas de custo não forem fornecidas, os campos de custo ficam vazios e podem ser preenchidos pelo painel;
-- cache atualizado para v173.
+NÃO é um site público de captação. São duas coisas:
+  1. uma ferramenta de trabalho do corretor (buscar, conferir, selecionar e
+     enviar imóveis);
+  2. uma apresentação privada e dirigida, enviada pelo WhatsApp a um cliente que
+     JÁ demonstrou interesse — ele recebe exatamente o que o corretor escolheu
+     mandar, e não um catálogo aberto para navegar.
 
-PADRÃO DE ARQUIVOS MOSTRADO NO PAINEL
-- Capa principal: WEBP, JPG ou PNG — 1600 × 900 px — até 5 MB.
-- Fotos da galeria: WEBP, JPG ou PNG — 1600 × 900 px — até 5 MB cada.
-- Plantas: WEBP, JPG ou PNG — 2000 × 2000 px — fundo claro — até 6 MB.
-- Logo do empreendimento: PNG ou WEBP — 1600 × 600 px — fundo transparente — até 3 MB.
-- Folder: PDF — até 25 MB.
-- Vídeo: MP4, WebM ou Ogg — recomendado 1920 × 1080 px (Full HD) — até 80 MB; para arquivos maiores, usar YouTube/Vimeo.
+Qual é a versão
+---------------
+NÃO EXISTE UM NÚMERO DE VERSÃO NESTE ARQUIVO, de propósito: ele envelhecia
+sozinho e passava a mentir. A versão que está no ar é sempre a que está em:
 
-COMO FUNCIONA O ARMAZENAMENTO DE MATERIAIS
-Quando um arquivo novo é anexado pelo painel e publicado, ele é enviado ao próprio repositório GitHub. Os novos caminhos seguem a organização assets/<empreendimento>/...
+  - index.html          — os ?v= dos arquivos
+  - sw.js               — o CACHE e os ?v= do CORE
+  - admin/index.html    — o VERSAO_PAINEL (a versão do painel)
 
-IMPORTANTE SOBRE CUSTOS
-Os custos não ficam no repositório público. Eles são gravados somente no navegador que está usando o painel. Isso evita expor custo e margem comercial no site. Se trocar de computador/navegador, esses valores não acompanham automaticamente.
+O painel mostra o próprio número no alto da tela e avisa, com uma faixa amarela,
+quando a página aberta for mais velha que a que está publicada.
 
-COMO PUBLICAR NO GITHUB
-1. Substitua os arquivos alterados pelos desta versão, mantendo as pastas.
-2. Confirme o commit na branch usada para publicação.
-3. Aguarde a atualização do site.
-4. Confirme no painel que a versão carregada é v173.
+Onde fica cada coisa
+--------------------
+  index.html + app.js + styles.css   o site
+  data.js                            TODOS os dados: META (mês da tabela, INCC)
+                                     e EMPREENDIMENTOS
+  admin/index.html                   o painel, uma página só, sem build
+  sw.js                              service worker (PWA)
+  assets/                            fotos, plantas, logos, folder
+  l/                                 páginas-ponte (a prévia do WhatsApp)
+  tools/                             os scripts (abaixo)
 
-NOVIDADES v173:
-- INCC: mostra a variação anterior abaixo do campo e mantém histórico persistente no data.js.
-- Data da tabela: campo de data real com seletor/calendário e gravação em dd/mm/aaaa.
-- Valores financeiros editáveis com moeda brasileira e 2 casas decimais.
-- Tabela financeira responsiva, sem cortar Venda desejada.
-- botão visível “Salvar custos e margens”, com aviso de alterações não salvas;
-- custos e margens desejadas continuam privados neste navegador e só são persistidos ao clicar em Salvar;
-- nova coluna “Margem extra desejada”, editável por unidade;
-- nova coluna “Venda desejada” = custo + margem extra desejada;
-- a variação mensal do INCC agora é calculada automaticamente quando o novo INCC é informado, comparando com o índice atual da tabela;
-- custos já digitados na v171 são migrados automaticamente.
+Antes de publicar qualquer mudança
+----------------------------------
+  node tools/validar.js
+      Confere o cadastro inteiro: sintaxe dos JS, IDs repetidos, unidades
+      duplicadas, status inválido, preço incoerente com o status, arquivo de
+      foto que não existe, planta apontando para o nada, RI faltando, ponte
+      faltando ou sobrando, segredo dentro de arquivo público e a versão batendo
+      entre index.html e sw.js. Também acusa REGRESSÃO DE MATERIAL — folder,
+      vídeo, capa, logo, galeria ou planta que existia e sumiu.
+      Sai com erro (código 1) quando há algo quebrado.
+
+  node tools/testar-navegador.js
+      Abre o Chromium e exercita de verdade: o site do corretor, o modo cliente
+      (link de empreendimento, de unidade e de seleção), o painel administrativo
+      (com a API do GitHub simulada, sem token de verdade) e o service worker.
+
+  node tools/gerar-pontes.js
+      Só é obrigatório depois de ACRESCENTAR ou REMOVER unidade no data.js.
+      Mudar status não precisa: a ponte é gerada para toda unidade do cadastro,
+      inclusive a vendida, justamente para o painel poder desfazer uma venda sem
+      quebrar o link que já foi enviado ao cliente.
+
+  node tools/validar.js --gravar-retrato
+      Atualiza tools/materiais.json, que é a referência da guarda de regressão
+      de materiais. Rode DEPOIS de acrescentar material de propósito.
+
+Como publicar
+-------------
+O normal é o dono publicar pelo próprio painel: ele grava direto na branch main,
+sobe o número da versão sozinho e manda data.js, index.html e sw.js no MESMO
+commit — ou entra tudo, ou nada entra.
+
+Mudança feita direto no repositório (fora do painel) precisa subir o número à
+mão nos três lugares listados acima, antes do merge.
+
+Custos e margens
+----------------
+NUNCA vão para este repositório, que é público. Eles ficam no navegador do
+aparelho e num repositório PRIVADO da mesma conta (senger-financeiro), alcançado
+com a mesma chave do GitHub que o painel já usa.
+
+A chave do GitHub precisa alcançar OS DOIS repositórios —
+materialsengercorretores (o site) e senger-financeiro (o cofre) — com permissão
+Contents: Read and write, e nada além disso.
+
+Padrão dos arquivos de material
+-------------------------------
+  Capa principal    WEBP, JPG ou PNG — 1600 × 900 px — até 5 MB
+  Fotos da galeria  WEBP, JPG ou PNG — 1600 × 900 px — até 5 MB cada
+  Plantas           WEBP, JPG ou PNG — 2000 × 2000 px — fundo claro — até 6 MB
+  Logo              PNG ou WEBP — 1600 × 600 px — fundo transparente — até 3 MB
+  Folder            PDF — até 25 MB
+  Vídeo             MP4, WebM ou Ogg — 1920 × 1080 px — até 80 MB; acima disso,
+                    usar YouTube ou Vimeo
+
+Arquivo anexado pelo painel vai para o próprio repositório, em
+assets/<empreendimento>/...
+
+O histórico das decisões
+------------------------
+Está no CLAUDE.md. Ele é longo: leia primeiro a seção
+"REGRAS ATUAIS — PREVALECEM SOBRE O HISTÓRICO", no topo. O que vem depois é
+registro do que foi decidido versão a versão, e boa parte descreve comportamento
+que já foi abandonado.
