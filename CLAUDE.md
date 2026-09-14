@@ -76,6 +76,13 @@ até alguém informar o novo valor.
 - **Embutir o valor do box no custo do Renaissance**, como foi feito no
   Boulevard (pedido em 10/09/2026). Lá o box é venda separada e os custos ainda
   estão sem ele.
+- **Refazer a apresentação de Visão geral > Estoque geral** (pedido em
+  14/09/2026). A v262 pôs os empreendimentos em cascata — uma faixa por
+  empreendimento, resumo e garagem à esquerda, "Garagem por unidade" à direita
+  em colunas — e o dono disse que continua *"péssimo de entender"*. Ele não
+  detalhou o que confunde e deixou para depois (*"agora a prioridade é
+  outra"*): **lembrá-lo disso** quando a prioridade do momento terminar e
+  perguntar o que ele quer ver ali antes de mexer.
 ### São três Casas Suspensas, não duas (v252)
 
 O dono fala delas separadas — **2 suítes**, **3 suítes frente** e
