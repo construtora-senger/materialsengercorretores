@@ -154,8 +154,16 @@ disponíveis e ganharam o valor junto. Os lotes de **permuta** (155/10, 155/11,
 cadastro e continuam de fora — não são oferta. Conferido lote a lote: os 83
 cadastrados casaram com a tabela em quadra, número e situação.
 
-O **Nova Vila Rica I & II** continua sem valor nenhum: a tabela que ele mandou é
-só do III.
+**O Nova Vila Rica I & II entrou logo depois (v288)**, pela folha de preços dele
+("Preços válidos agosto/2026"): os **10 lotes à venda** receberam `preco`,
+de R$ 95.000 a R$ 305.000 (o 146/22, de 1.420 m²). O vendido (77/51) continua
+sem preço. Os 11 do cadastro casaram com a folha — o único que não está lá é
+justamente o vendido.
+
+**Duas diferenças ficaram anotadas, sem mexer:** o lote 77/50 tem 342 m² no
+cadastro e 340 m² na folha; e as ruas do 145/10 e do 145/18 estão **trocadas**
+entre o cadastro e a folha (um diz Acácia onde o outro diz Figueira). Rua e área
+são o que o cliente lê, então isso se corrige com ele, não por conta própria.
 
 ### A tabela começa vazia (v225)
 
