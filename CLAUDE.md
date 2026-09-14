@@ -342,12 +342,11 @@ até alguém informar o novo valor.
 
 ### A fazer na próxima atualização
 
-- **Conferir a área do lote 98 da quadra 77 (Nova Vila Rica III)** (visto em
-  14/09/2026). O cadastro diz **348 m²** e a tabela de valores do dono diz
-  **290 m²**. Os vizinhos 92 a 99 têm 290 m² e o valor do 98 (R$ 65.000) é o
-  mesmo dos outros de 290 m² — os de 348 m² custam R$ 75.000 —, então tudo
-  indica que o certo é 290. **Não foi mexido**: mudar área sem ele confirmar é
-  anunciar outra coisa ao cliente. Perguntar e corrigir.
+- ~~**Conferir a área do lote 98 da quadra 77 (Nova Vila Rica III)**~~ —
+  **RESOLVIDO em 14/09/2026 (v302).** O dono confirmou: são **290 m²**, não 348.
+  Corrigido no cadastro. (Continuam em aberto, sem fonte conclusiva, o lote
+  77/50 — 342 m² no cadastro × 340 m² na folha — e as ruas trocadas dos lotes
+  145/10 e 145/18 do Nova Vila Rica I & II.)
 
 - ~~**Botão "voltar" em todas as telas do painel**~~ — **FEITO na v301.** Um
   "← Voltar para <tela anterior>" no alto de toda tela que não seja a Visão

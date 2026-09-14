@@ -1352,7 +1352,7 @@ const EMPREENDIMENTOS = [
       { quadra: "77", numero: "95", rua: "Laranjeira", area: 290, status: "vendido" },
       { quadra: "77", numero: "96", rua: "Laranjeira", area: 290, preco: 65000 },
       { quadra: "77", numero: "97", rua: "Laranjeira", area: 290, status: "vendido" },
-      { quadra: "77", numero: "98", rua: "Laranjeira", area: 348, preco: 65000 },
+      { quadra: "77", numero: "98", rua: "Laranjeira", area: 290, preco: 65000 },
       { quadra: "77", numero: "99", rua: "Laranjeira", area: 290, preco: 63000 },
       { quadra: "77", numero: "100", rua: "Laranjeira", area: 262, preco: 70000 },
       { quadra: "77", numero: "101", rua: "Laranjeira", area: 262, preco: 70000 },
