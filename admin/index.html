@@ -173,6 +173,52 @@
     /* align-items: start para cada cartao ter a sua altura: com a lista de
        unidades dentro, um cartao alto deixaria os vizinhos cheios de vazio. */
     .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; align-items: start; }
+    /* v262 — a visao geral em cascata: um empreendimento embaixo do outro, cada
+       um numa faixa da largura toda. Em quatro colunas estreitas, lado a lado,
+       a lista "Garagem por unidade" do Renaissance descia por tres telas e os
+       vizinhos ficavam pela metade. Na faixa, o resumo e a garagem ficam a
+       esquerda e a lista de unidades a direita, correndo em colunas. A faixa
+       mede a si mesma (@container): o menu lateral entra na conta. Estreita
+       (celular), ela volta a ser uma coluna so, na ordem de sempre. */
+    .cards.cascata { grid-template-columns: minmax(0, 1fr); container-type: inline-size; }
+    .cards.cascata .card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "titulo" "resumo" "unidades" "garagem" "falta";
+      align-items: start;
+    }
+    .cards.cascata .card h3 { grid-area: titulo; }
+    .cards.cascata .card .resumo { grid-area: resumo; }
+    .cards.cascata .card .por-unidade { grid-area: unidades; columns: 270px; column-gap: 24px; }
+    .cards.cascata .card .por-unidade .rotulo { column-span: all; }
+    .cards.cascata .card .por-unidade .linha { break-inside: avoid; }
+    .cards.cascata .card .garagem-cartao { grid-area: garagem; }
+    .cards.cascata .card .falta-cadastro { grid-area: falta; }
+    @container (min-width: 900px) {
+      .cards.cascata .card {
+        grid-template-columns: minmax(230px, 1fr) minmax(0, 3fr);
+        /* A quarta linha e a folga: e ela que cresce quando a lista de unidades
+           e mais alta que o resumo e a garagem juntos, para o bloco da garagem
+           nao descolar do resumo. */
+        grid-template-rows: auto auto auto 1fr auto;
+        grid-template-areas:
+          "titulo  titulo"
+          "resumo  unidades"
+          "garagem unidades"
+          ".       unidades"
+          "falta   falta";
+        column-gap: 24px;
+        padding: 16px 18px;
+      }
+      .cards.cascata .card h3 {
+        justify-content: flex-start; font-size: 1rem;
+        padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--borda);
+      }
+      .cards.cascata .card .por-unidade {
+        align-self: stretch; margin-top: 0; padding-top: 0; border-top: 0;
+        padding-left: 24px; border-left: 1px solid var(--borda);
+      }
+    }
     /* Movimento do portfolio: o numero grande na frente do que ele conta. */
     .uso-resumo { margin-bottom: 16px; }
     .uso-tile { display: flex; align-items: baseline; gap: 10px; background: var(--fundo); border: 1px solid var(--borda); border-radius: 10px; padding: 14px; }
@@ -916,7 +962,7 @@
           <p class="descricao">A contagem que não aparece no site — só aqui no painel.
             Na garagem a conta é em <strong>box</strong>: cada box vai inteiro para um apartamento.
             O box duplo tem as duas vagas uma atrás da outra, então ele não se reparte entre dois apartamentos.</p>
-          <div class="cards" id="dashboard"></div>
+          <div class="cards cascata" id="dashboard"></div>
         </section>
 
         <!-- Movimento do portfolio -->
@@ -1146,7 +1192,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 261;
+  const VERSAO_PAINEL = 262;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2445,9 +2491,13 @@
       // Quanto do estoque de unidades ja foi vendido. Box ficam de fora: sao
       // vendidos a parte e distorceriam o numero do empreendimento.
       const pct = Math.round(((contagem.vendido || 0) / itens.length) * 100);
+      // Situacao, total e tipologias ficam num bloco so: e o "resumo" que a
+      // faixa em cascata poe a esquerda, com a lista de unidades a direita (v262).
       return `<div class="card" data-emp="${escapeHtml(emp.id)}">
-        <h3>${escapeHtml(emp.nome)} <span class="pct${pct ? " tem" : ""}">${pct}% vendido</span></h3>${linhas}
-        <div class="linha" style="border-top:1px solid var(--borda);margin-top:6px;padding-top:6px"><span>Total</span><strong>${itens.length}</strong></div>${linhasTipo}${listaUnidades}${blocoGaragem}${marcaCadastro}
+        <h3>${escapeHtml(emp.nome)} <span class="pct${pct ? " tem" : ""}">${pct}% vendido</span></h3>
+        <div class="resumo">${linhas}
+          <div class="linha" style="border-top:1px solid var(--borda);margin-top:6px;padding-top:6px"><span>Total</span><strong>${itens.length}</strong></div>${linhasTipo}
+        </div>${listaUnidades}${blocoGaragem}${marcaCadastro}
       </div>`;
     }).join("");
   }
