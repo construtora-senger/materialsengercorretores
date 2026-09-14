@@ -1170,7 +1170,7 @@ const EMPREENDIMENTOS = [
         area: "57 m² global · 43 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-57",
-        unidades: [{ apto: "802A", preco: 403370, status: "disponivel" }],
+        unidades: [{ apto: "802A", preco: 427906, status: "disponivel" }],
       },
       {
         tipo: "2 dormitórios c/ móveis",
@@ -1197,9 +1197,9 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-3d",
         obs: "Aluguel R$ 1.600,00 · Condomínio e IPTU por conta do inquilino.",
         unidades: [
-          { apto: "501A", preco: 618310, status: "alugado" },
-          { apto: "601A", preco: 618310, status: "alugado" },
-          { apto: "801A", preco: 637010, status: "alugado" },
+          { apto: "501A", preco: 630310, status: "alugado" },
+          { apto: "601A", preco: 630310, status: "alugado" },
+          { apto: "801A", preco: 649010, status: "alugado" },
         ],
       },
       {
@@ -1209,7 +1209,7 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-3d",
         unidades: [
           { apto: "201A", preco: 562100, status: "disponivel" },
-          { apto: "401A", preco: 618310, status: "disponivel", tags: ["Semimobiliado"] },
+          { apto: "401A", preco: 630310, status: "disponivel", tags: ["Semimobiliado"] },
           { apto: "701A", preco: 637010, status: "disponivel" },
         ],
       },
