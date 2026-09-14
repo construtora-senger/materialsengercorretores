@@ -70,6 +70,13 @@ até alguém informar o novo valor.
 
 ### A fazer na próxima atualização
 
+- **Conferir a área do lote 98 da quadra 77 (Nova Vila Rica III)** (visto em
+  14/09/2026). O cadastro diz **348 m²** e a tabela de valores do dono diz
+  **290 m²**. Os vizinhos 92 a 99 têm 290 m² e o valor do 98 (R$ 65.000) é o
+  mesmo dos outros de 290 m² — os de 348 m² custam R$ 75.000 —, então tudo
+  indica que o certo é 290. **Não foi mexido**: mudar área sem ele confirmar é
+  anunciar outra coisa ao cliente. Perguntar e corrigir.
+
 - **Botão "voltar" em todas as telas do painel** (pedido em 10/09/2026), não só
   em Preços e margem. As telas são longas e não há como subir nem sair de
   nenhuma delas sem rolar tudo.
@@ -130,6 +137,25 @@ segue as mesmas palavras — "1 box duplo + 1 box simples" (Renaissance, 3 suít
 superiores), "4 box simples" (18º pavimento) e "3 box simples" (a sala do térreo
 do Premium Office, que tem três mesmo). As salas do térreo do Renaissance
 continuam sem garagem, com o campo vazio, a pedido dele.
+
+### Os lotes do Nova Vila Rica III têm preço de novo (v287)
+
+O dono mandou a **tabela de valores do loteamento** (o arquivo dele, com
+comprador, CPF, telefone e comissão) e pediu para "colocar os terrenos". Do
+arquivo saiu **só o valor**: os **67 lotes à venda** receberam `preco` no
+`data.js`, de R$ 57.000 a R$ 110.000. **Nada de nome, CPF, telefone, e-mail,
+comissão ou matrícula encostou no repositório** — é dado privado dele, e o
+repositório do site é público.
+
+Os **16 vendidos continuam sem `preco`**, pela regra de sempre: o valor de
+tabela não vale mais. Os **distratos** (venda desfeita) já estavam como
+disponíveis e ganharam o valor junto. Os lotes de **permuta** (155/10, 155/11,
+155/20, 155/21, 157/17, 157/18) e o **157/38 (pago em 2016)** não estão no
+cadastro e continuam de fora — não são oferta. Conferido lote a lote: os 83
+cadastrados casaram com a tabela em quadra, número e situação.
+
+O **Nova Vila Rica I & II** continua sem valor nenhum: a tabela que ele mandou é
+só do III.
 
 ### A tabela começa vazia (v225)
 
