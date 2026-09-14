@@ -1459,8 +1459,13 @@ const EMPREENDIMENTOS = [
       { lote: "Nova Vila Rica I", quadra: "147", numero: "05", rua: "Alberto Graeff", area: 300, preco: 95000 },
       { lote: "Nova Vila Rica II", quadra: "77", numero: "50", rua: "Acácia", area: 342.5, preco: 100000 },
       { lote: "Nova Vila Rica II", quadra: "77", numero: "51", rua: "Acácia", area: 300, status: "vendido" },
-      { lote: "Nova Vila Rica II", quadra: "145", numero: "10", rua: "Acácia", area: 400, preco: 95000 },
-      { lote: "Nova Vila Rica II", quadra: "145", numero: "18", rua: "Figueira", area: 300, preco: 95000 },
+      // Ruas conferidas na planta de retificacao do loteamento I e II (o
+      // documento do projeto): o 10 e o lote de esquina da quadra 145, com
+      // frente para a Figueira; o 18 esta na fileira que da para a Acacia.
+      // O cadastro tinha as duas trocadas — corrigido em 14/09/2026, com o
+      // dono, pela planta.
+      { lote: "Nova Vila Rica II", quadra: "145", numero: "10", rua: "Figueira", area: 400, preco: 95000 },
+      { lote: "Nova Vila Rica II", quadra: "145", numero: "18", rua: "Acácia", area: 300, preco: 95000 },
       { lote: "Nova Vila Rica II", quadra: "146", numero: "22", rua: "Figueira", area: 1420, preco: 305000 },
     ],
     grupos: [],
