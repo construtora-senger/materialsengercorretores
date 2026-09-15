@@ -90,7 +90,7 @@ Na v306 entraram, pelas **tabelas de vendas do dono** (setembro/2026):
 
 | prédio | antes | agora | vendidos que entraram |
 |---|---|---|---|
-| Prime | 1 | 31 | 26 apartamentos + 4 salas |
+| Prime | 1 | 32 | 27 apartamentos + 4 salas |
 | Personalité | 2 | 50 | 39 apartamentos + 9 salas |
 | Quality Residence | 10 | 60 | 50 apartamentos (blocos A e B) |
 
@@ -399,9 +399,12 @@ até alguém informar o novo valor.
 - ~~**Premium Office · Sala 301**~~ — **RESOLVIDO em 15/09/2026 (v307).** O dono
   confirmou: **vendida para SERGIO KIRINUS**. O cadastro já estava certo; o que
   faltava era o comprador, que foi para o cofre.
-- **Prime · apartamento 902.** Existe nas plantas de box (o box 218 foi para
-  ele), mas **não está na tabela de vendas** — a planilha pula do 901 para o 903.
-  Por isso o Prime ficou com 27 unidades, não 28. **Não foi inventado.**
+- **Prime · apartamento 902** — **cadastrado como VENDIDO na v308**, a pedido do
+  dono, que vai conferir quem comprou. Ele **não tem linha na tabela de vendas**
+  (a planilha pula do 901 para o 903), mas existe: o box 218 foi para ele e
+  todos os andares têm três unidades. Ficou **sem `areaUnit`** de propósito —
+  sem linha na tabela não há metragem própria, então vale a do final 02 — e
+  **sem comprador no cofre**, até o dono confirmar o nome.
 - **Quality · box 58 e 59** *(o dono está conferindo).* A tabela diz box 58 **vendido** (apto 301-A, Sergio
   Kirinus) e box 59 **livre**; o cadastro diz o contrário (58 livre, 59 alugado).
 - ~~**Quality · apto 501-A**~~ — **RESOLVIDO em 15/09/2026 (v307).** O dono
