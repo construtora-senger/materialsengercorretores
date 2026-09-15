@@ -108,9 +108,22 @@ novas nesta rodada.
 
 Quem comprou cada unidade — **nome, CPF/CNPJ, telefone, e-mail, data e valor da
 venda, corretor, contrato** — fica no **cofre privado** (`senger-financeiro`,
-`financeiro.json`), na chave `compradores`, ao lado dos custos. Chega lá pelo
-botão **Importar compradores**, em Preços e margem, e aparece embaixo do nome da
-unidade em **Estoque / Unidades**, só para quem tem a chave do GitHub.
+`financeiro.json`), na chave `compradores`, ao lado dos custos.
+
+**Tem menu próprio: "Clientes" (v310)**, a pedido do dono — *"faça um menu então
+só de clientes; isso não precisa tá em margens"*. É de lá que se importa
+(**Importar clientes**) e exporta, e é lá que fica a lista completa. O nome
+continua aparecendo também embaixo da unidade em **Estoque / Unidades** e na
+linha de **Preços e margem**, que é onde o dono está quando pensa naquela
+unidade. Tudo só para quem tem a chave do GitHub.
+
+**A tela mostra as duas metades:** quem já tem cliente e, embaixo de cada
+empreendimento, **quantas vendidas ainda estão sem nome**. Sem esse segundo
+número a pergunta *"cadê os compradores?"* não tem resposta na tela — as
+planilhas do dono só trazem nome em parte das vendas (o Premium Office e o
+Renaissance têm coluna de comprador; os outros só anotação solta). **O box fica
+fora dessa conta**: ele vai junto com o apartamento, e o nome é o do
+apartamento; só aparece o box alugado direto a alguém, como o 59 do Quality.
 
 **Isto jamais pode entrar no `data.js` nem em nenhum arquivo do repositório do
 site — ele é público.** Publicar o nome de um comprador não tem volta: fica no
@@ -266,6 +279,23 @@ node tools/gerar-pontes.js     # depois de acrescentar/remover unidade
 `tools/validar.js --gravar-retrato` atualiza `tools/materiais.json`, que é a
 referência da guarda de regressão de materiais. **Rode os dois antes de
 publicar.**
+
+## Contar por tipo de imóvel, não pela categoria do prédio (v310)
+
+A gaveta de vendidos dizia **"6 apartamentos vendidos"** no Renaissance com
+**três salas do térreo** dentro. O nome saía de `nomes(emp)`, que olha só a
+`categoria` do empreendimento — e o Renaissance é residencial. O mesmo acontecia
+no Evolutti (3 lojas), no Personalité (9 salas) e no Prime (4 salas).
+
+Agora quem manda é o **rótulo de cada item**, não o prédio (`dizerVendidos`):
+"3 apartamentos e 3 salas vendidos", "16 apartamentos e 3 lojas vendidos",
+"25 salas vendidas". O produto do prédio vem primeiro — a sala do térreo é o
+acessório, não o assunto —, e o plural feminino ("vendidas") só aparece quando
+tudo o que está ali é palavra feminina.
+
+**Regra geral:** todo texto que conte itens de um empreendimento tem de olhar o
+item, não a `categoria`. Quase todo prédio residencial da Senger tem sala ou
+loja no térreo.
 
 ## O que mudou na v301 (rodada de 14/09/2026)
 
