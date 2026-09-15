@@ -1295,7 +1295,7 @@
              vai para o data.js nem para nenhum arquivo do repositorio do site. -->
         <section class="bloco" data-modulo="clientes">
           <h2>Quem comprou cada unidade</h2>
-          <p class="descricao">Nome, CPF, telefone, data e valor da venda de cada unidade vendida ou alugada. <strong>Fica guardado só na sua conta, em repositório privado</strong> — o site do portfólio é público e o cliente nunca vê nada disto.</p>
+          <p class="descricao">Nome, telefone, data e valor da venda de cada unidade vendida ou alugada. <strong>Fica guardado só na sua conta, em repositório privado</strong> — o site do portfólio é público e o cliente nunca vê nada disto. <strong>O CPF não é guardado</strong>: o painel descarta esse campo mesmo que ele venha no arquivo.</p>
           <div class="custos-acoes">
             <label class="botao-arquivo" for="arquivo-importar-compradores">Importar clientes</label>
             <input class="arquivo-input" type="file" id="arquivo-importar-compradores" accept="application/json,.json">
@@ -1304,7 +1304,7 @@
           </div>
           <p class="financeiro-cofre" id="compradores-import" style="display:none"></p>
           <div class="precos-filtros">
-            <input class="preco-busca" id="cliente-busca" type="search" placeholder="Procurar nome, apartamento, CPF, telefone…" autocomplete="off">
+            <input class="preco-busca" id="cliente-busca" type="search" placeholder="Procurar nome, apartamento, telefone…" autocomplete="off">
           </div>
           <div id="lista-clientes"></div>
         </section>
@@ -1400,7 +1400,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 310;
+  const VERSAO_PAINEL = 311;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1435,7 +1435,12 @@
       const f = m[k];
       if (!f || typeof f !== "object" || Array.isArray(f)) return;
       const limpa = {};
-      ["nome", "cpf", "telefone", "email", "data", "corretor", "contrato", "papel", "obs"].forEach((campo) => {
+      // v311 — O CPF NAO E GUARDADO. O dono disse que nao precisa dele, e
+      // documento de terceiro e o dado mais pesado de se ter por perto sem
+      // necessidade. Ele nao esta nesta lista de proposito: arquivo antigo que
+      // traga `cpf` perde o campo aqui, na leitura, e a gravacao seguinte
+      // limpa o cofre sozinha. Nao recoloque.
+      ["nome", "telefone", "email", "data", "corretor", "contrato", "papel", "obs"].forEach((campo) => {
         const v = String(f[campo] == null ? "" : f[campo]).trim();
         if (v) limpa[campo] = v;
       });
@@ -2514,7 +2519,6 @@
       f.data ? "Venda em " + (dataCurta(f.data) || f.data) : "",
       Number(f.valor) > 0 ? moedaFinanceira(f.valor) : "",
       f.corretor ? "Corretor: " + f.corretor : "",
-      f.cpf ? "CPF/CNPJ: " + f.cpf : "",
       f.telefone ? "Tel.: " + f.telefone : "",
       f.email || "",
     ].filter(Boolean).join(" · ");
@@ -4562,7 +4566,7 @@
         if (ficha) comFicha.push({ item, ficha, situacao });
       });
       const passa = (c) => !clienteBusca || [
-        c.item.rotulo, c.ficha.nome, c.ficha.cpf, c.ficha.telefone, c.ficha.email, c.ficha.obs, emp.nome,
+        c.item.rotulo, c.ficha.nome, c.ficha.telefone, c.ficha.email, c.ficha.obs, emp.nome,
       ].filter(Boolean).join(" ").toLowerCase().includes(clienteBusca);
       const visiveis = comFicha.filter(passa);
       if (!visiveis.length && (clienteBusca || !sem)) return "";
@@ -4570,7 +4574,6 @@
         const dados = [
           ficha.data ? "Venda em " + (dataCurta(ficha.data) || ficha.data) : "",
           Number(ficha.valor) > 0 ? moedaFinanceira(ficha.valor) : "",
-          ficha.cpf ? "CPF/CNPJ " + ficha.cpf : "",
           ficha.telefone || "",
           ficha.email || "",
           ficha.corretor ? "Corretor: " + ficha.corretor : "",
