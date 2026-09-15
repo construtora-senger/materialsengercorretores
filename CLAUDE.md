@@ -141,9 +141,12 @@ Cuidados que o código já tem, e que não podem se perder:
 - **o `compradores` vai junto em toda gravação no cofre.** O cofre é um arquivo
   só: mandar o pacote sem eles apagaria o cadastro inteiro lá dentro;
 - **`Apagar tudo` não encosta neles.** Aquele botão fala de custo e margem;
-- **nem todo nome é de comprador.** No Quality vários apartamentos estão
-  alugados e o nome é do **inquilino** — daí o campo `papel`, que a tela mostra
-  ao lado do nome;
+- **nem todo nome é de comprador.** Há apartamentos alugados em que o nome é do
+  **inquilino** — daí o campo `papel`. Mas, **regra do dono (v312): "inquilino
+  só serve quando ainda estiver à venda"**. O apartamento de investimento,
+  vendido com o inquilino dentro, é **vendido**, e quem vale ali é o comprador;
+  o inquilino não aparece. Por isso `papelDaFicha` só escreve o papel quando a
+  unidade está como `alugado` — que é o status do que continua na oferta;
 - o **Exportar backup** leva os compradores junto, então **o arquivo exportado
   tem dado pessoal**: ele é cópia de segurança, não coisa de mandar em grupo.
 
@@ -286,6 +289,39 @@ node tools/gerar-pontes.js     # depois de acrescentar/remover unidade
 referência da guarda de regressão de materiais. **Rode os dois antes de
 publicar.**
 
+## Os clientes vieram das tabelas do Word (v312)
+
+O dono mandou **cinco `TABELA DE CLIENTES`** em `.doc` — Prime, Personalité,
+Evolutti, Boulevard e Quality — e delas saíram **171 fichas**, que somadas ao
+que já havia (Premium Office e Renaissance, que não têm `.doc`) fecham **203**.
+De 168 vendidas sem nome sobraram **19**: 17 lotes do Nova Vila Rica e dois
+apartamentos do Quality.
+
+Os `.doc` são Word binário antigo (OLE2). O texto sai pela **piece table** do
+stream `1Table`, não por `strings` — o script fica em
+`tools/` apenas se o dono pedir; nesta rodada rodou fora do repositório, porque
+é leitura de arquivo dele, não parte do site.
+
+**Quando a tabela de clientes discorda da planilha de vendas, vale a tabela de
+clientes** — ela é a fonte direta. Foi assim que o Quality 403-A passou a ser do
+**João Carlos Santos** (o Márcio Schenatto é o inquilino) e as salas do Prime
+viraram **Rafael** e **Fabrício Bau Branda**.
+
+**Nada disso apaga decisão que o dono já deu por escrito:** o Personalité 1202
+segue **Cristian Kirinus** mesmo com a tabela registrando Everson Alceu Walber e
+a volta para a Senger em 02/2025.
+
+## O apartamento de investimento é vendido, não alugado (v312)
+
+O **Quality 601-B** estava como `alugado` — portanto na vitrine. O dono
+explicou: *"vendemos para a Doroti porque é apto de investimento; vendido
+mantenha vendido e esquece inquilino"*. Ele passou a `vendido`, sem preço, e o
+**box 32** foi junto.
+
+`alugado` continua significando **o que ainda está à venda com o inquilino
+dentro** — o produto pronto para o investidor. Assim que esse investidor compra,
+vira `vendido` e sai da vitrine.
+
 ## Contar por tipo de imóvel, não pela categoria do prédio (v310)
 
 A gaveta de vendidos dizia **"6 apartamentos vendidos"** no Renaissance com
@@ -427,6 +463,16 @@ até alguém informar o novo valor.
 
 
 ### A fazer na próxima atualização
+
+- **Quality · apto 104-A e 202-A** *(o dono está conferindo).* São as duas
+  únicas vendidas do prédio sem cliente: estão **em branco na tabela de
+  clientes** dele.
+- **Quality · apto 201-A.** O cadastro diz **à venda**; a tabela de clientes
+  traz a **Sudbrack Leonhardt Supermercados** nele. Se foi vendido, o cadastro
+  está errado. **Não mexido.**
+- **Os 17 lotes vendidos do Nova Vila Rica estão sem cliente.** Os compradores
+  existem na tabela de valores do loteamento, mas na v287 só o preço entrou no
+  sistema. Entram no cofre quando o dono pedir.
 
 - ~~**As 4 salas comerciais do térreo do Prime**~~ — **RESOLVIDO em 15/09/2026
   (v307).** O dono confirmou: as quatro estão **vendidas** (comprador BRANDA), e
