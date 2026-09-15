@@ -552,6 +552,17 @@
     /* A observacao da ficha em cor propria: e o aviso que o dono precisa ver de
        relance ("falta contrato", "constava vendido para fulano"). */
     .comprador-obs { margin-top:2px; font-size:.7rem; font-weight:600; color:#b26a00; }
+    .cliente-emp { border:1px solid var(--borda); border-radius:12px; margin-bottom:12px; background:#fff; }
+    .cliente-emp > summary { cursor:pointer; padding:12px 14px; font-weight:700; display:flex; gap:10px; align-items:center; }
+    .cliente-emp > summary .contagem { margin-left:auto; color:var(--texto-suave); font-size:.74rem; font-weight:500; text-align:right; }
+    .cliente-linha { display:grid; grid-template-columns:150px 1fr; gap:4px 14px; padding:10px 14px; border-top:1px solid var(--borda); font-size:.82rem; }
+    .cliente-linha .unidade { font-weight:700; }
+    .cliente-linha .unidade small { display:block; font-weight:500; color:var(--texto-suave); font-size:.72rem; }
+    .cliente-linha .nome { font-weight:700; }
+    .cliente-linha .dados { color:var(--texto-suave); font-size:.76rem; margin-top:2px; }
+    .cliente-linha .obs { color:#b26a00; font-weight:600; font-size:.74rem; margin-top:3px; }
+    .cliente-sem { padding:10px 14px; border-top:1px solid var(--borda); color:var(--texto-suave); font-size:.78rem; }
+    @media (max-width: 720px) { .cliente-linha { grid-template-columns:1fr; } }
     .previa-emp table { width:100%; }
     .previa-emp td { padding:6px 14px; font-size:.78rem; border-bottom:1px solid var(--borda); }
     .previa-emp tr:last-child td { border-bottom:none; }
@@ -1088,6 +1099,7 @@
           </div>
 
           <button type="button" class="nav-item" data-modulo-alvo="estoque"><span class="nav-icone">▦</span>Estoque / Unidades</button>
+          <button type="button" class="nav-item" data-modulo-alvo="clientes"><span class="nav-icone">👤</span>Clientes</button>
           <button type="button" class="nav-item" data-modulo-alvo="precos"><span class="nav-icone">R$</span>Preços e margem</button>
           <button type="button" class="nav-item" data-modulo-alvo="incc"><span class="nav-icone">%</span>Correção pelo INCC</button>
           <button type="button" class="nav-item" data-modulo-alvo="publicacao"><span class="nav-icone">↑</span>Publicação</button>
@@ -1248,8 +1260,6 @@
           <div class="custos-acoes">
             <label class="botao-arquivo" for="arquivo-importar-custos">Importar backup</label>
             <input class="arquivo-input" type="file" id="arquivo-importar-custos" accept="application/json,.json">
-            <label class="botao-arquivo" for="arquivo-importar-compradores">Importar compradores</label>
-            <input class="arquivo-input" type="file" id="arquivo-importar-compradores" accept="application/json,.json">
             <button type="button" class="botao secundario" id="botao-exportar-custos" style="margin-top:0">Exportar backup</button>
             <button type="button" class="botao perigo" id="botao-apagar-financeiro" style="margin-top:0">Apagar tudo</button>
             <span class="financeiro-status salvo" id="financeiro-status">Dados salvos neste aparelho ✓</span>
@@ -1257,8 +1267,6 @@
           <p class="financeiro-cofre" id="financeiro-cofre"></p>
           <button type="button" class="botao secundario" id="botao-chave-financeiro" style="display:none;margin:0 0 12px">Trocar a chave do GitHub</button>
           <p class="financeiro-cofre" id="financeiro-import" style="display:none"></p>
-          <p class="financeiro-cofre" id="compradores-import" style="display:none"></p>
-          <p class="custos-nota"><strong>Importar compradores</strong> carrega, de uma vez, quem comprou cada unidade vendida (nome, CPF, telefone, data e valor da venda). Fica guardado no mesmo cofre privado dos custos e aparece embaixo do nome da unidade em <strong>Estoque / Unidades</strong>. <strong>Nada disso vai para o site</strong> — o repositório do portfólio é público e o cliente nunca vê.</p>
           <p class="financeiro-vazio" id="financeiro-vazio" style="display:none">Nenhum custo aparece aqui neste aparelho. Os custos são guardados na sua conta do GitHub, em repositório privado, e descem sozinhos quando o painel abre. Se a mensagem acima disser que não deu para alcançar a conta, use <strong>Importar backup</strong> com o arquivo que você exportou.</p>
           <details class="precos-ajuda">
             <summary>Como as contas são feitas</summary>
@@ -1281,6 +1289,24 @@
             <span class="st-alugado"><span class="bolinha"></span>Alugado</span>
           </div>
           <div id="lista-emps"></div>
+        </section>
+
+        <!-- Clientes: quem comprou ou alugou cada unidade. Dado privado, nunca
+             vai para o data.js nem para nenhum arquivo do repositorio do site. -->
+        <section class="bloco" data-modulo="clientes">
+          <h2>Quem comprou cada unidade</h2>
+          <p class="descricao">Nome, CPF, telefone, data e valor da venda de cada unidade vendida ou alugada. <strong>Fica guardado só na sua conta, em repositório privado</strong> — o site do portfólio é público e o cliente nunca vê nada disto.</p>
+          <div class="custos-acoes">
+            <label class="botao-arquivo" for="arquivo-importar-compradores">Importar clientes</label>
+            <input class="arquivo-input" type="file" id="arquivo-importar-compradores" accept="application/json,.json">
+            <button type="button" class="botao secundario" id="botao-exportar-clientes" style="margin-top:0">Exportar clientes</button>
+            <span class="financeiro-status salvo" id="clientes-status">Nenhum cliente guardado</span>
+          </div>
+          <p class="financeiro-cofre" id="compradores-import" style="display:none"></p>
+          <div class="precos-filtros">
+            <input class="preco-busca" id="cliente-busca" type="search" placeholder="Procurar nome, apartamento, CPF, telefone…" autocomplete="off">
+          </div>
+          <div id="lista-clientes"></div>
         </section>
 
         <!-- Publicação -->
@@ -1374,7 +1400,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 309;
+  const VERSAO_PAINEL = 310;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1793,6 +1819,7 @@
     visao: ["Visão geral", "Resumo do estoque, movimento e pendências do cadastro."],
     materiais: ["Materiais dos empreendimentos", "Capa, galeria, plantas, folder e vídeo em uma área separada por tipo de material."],
     estoque: ["Estoque / Unidades", "Disponibilidade, preços, garagem e status das unidades do empreendimento escolhido."],
+    clientes: ["Clientes", "Quem comprou ou alugou cada unidade. Guardado só na sua conta, nunca no site."],
     precos: ["Preços e margem", "Custo, margem e preço item a item."],
     incc: ["Correção pelo INCC", "Atualização mensal: o índice do mês corrige todos os custos de uma vez. Venda e margem ficam em Preços e margem."],
     publicacao: ["Publicação", "Revisão das alterações pendentes antes de enviar ao site."],
@@ -2303,6 +2330,7 @@
     compradoresInternos = remotoManda
       ? { ...compradoresInternos, ...remotoCompradores }
       : { ...remotoCompradores, ...compradoresInternos };
+    renderClientes();
     const mudou = JSON.stringify([custosInternos, margensDesejadas, moveisInternos]) !== antes;
     if (mudou) {
       financeiroSalvoEm = new Date().toISOString();
@@ -2741,6 +2769,7 @@
     prepararCamposIncc();
     renderHistoricoIncc();
     renderCustosMargens();
+    renderClientes();
     renderPendentes();
     ativarModulo(estado.moduloAtivo, { rolar: false });
   }
@@ -3858,6 +3887,41 @@
     return `${n} ${n === 1 ? sing : plur}`;
   }
 
+  // COMO CHAMAR UM PUNHADO DE ITENS VENDIDOS (v310).
+  //
+  // O nome saia de `nomes(emp)`, que olha so a `categoria` do empreendimento —
+  // entao no Renaissance, que e residencial, a gaveta dizia "6 apartamentos
+  // vendidos" com TRES SALAS do terreo dentro. O mesmo no Evolutti (3 lojas),
+  // no Personalite (9 salas) e no Prime (4 salas).
+  //
+  // Agora quem manda e o rotulo de cada item, nao o predio: "3 apartamentos e
+  // 3 salas vendidos". O plural feminino ("vendidas") so aparece quando tudo o
+  // que esta ali e palavra feminina.
+  function tipoDoRotulo(rotulo, palavras) {
+    const t = String(rotulo || "");
+    if (/^sala\b/i.test(t)) return { sing: "sala", plur: "salas", fem: true };
+    if (/^loja\b/i.test(t)) return { sing: "loja", plur: "lojas", fem: true };
+    return { sing: palavras.sing, plur: palavras.plur, fem: palavras.sing === "sala" };
+  }
+
+  function dizerVendidos(registros, palavras) {
+    const grupos = [];
+    registros.forEach((r) => {
+      const t = tipoDoRotulo(r.item?.rotulo ?? r.rotulo, palavras);
+      const achou = grupos.find((g) => g.plur === t.plur);
+      if (achou) achou.n += 1;
+      else grupos.push({ ...t, n: 1 });
+    });
+    if (!grupos.length) return "";
+    // O produto do predio vem primeiro: "3 apartamentos e 3 salas vendidos",
+    // nao o contrario — a sala do terreo e o acessorio, nao o assunto.
+    grupos.sort((a, b) => (a.plur === palavras.plur ? -1 : 0) - (b.plur === palavras.plur ? -1 : 0));
+    const fem = grupos.every((g) => g.fem);
+    const uma = registros.length === 1;
+    return grupos.map((g) => conta(g.n, g.sing, g.plur)).join(" e ")
+      + (uma ? (fem ? " vendida" : " vendido") : (fem ? " vendidas" : " vendidos"));
+  }
+
   // O que falta preencher no cadastro dos box deste empreendimento. Buraco de
   // cadastro nao aparece sozinho: box vendido sem apartamento e apartamento
   // vendido sem box passam despercebidos na lista, e e justamente o que impede
@@ -4462,6 +4526,85 @@
     return true;
   }
 
+  // ------------------------------------------------- Clientes (v310)
+  //
+  // Tela propria, a pedido do dono: "faca um menu entao so de clientes — isso
+  // nao precisa ta em margens". Preços e margem e sobre custo e preco; quem
+  // comprou e outro assunto.
+  //
+  // A tela mostra as duas metades da verdade: as unidades que JA tem cliente e,
+  // logo abaixo, quantas vendidas ainda estao SEM. Sem esse segundo numero a
+  // pergunta "cade os compradores?" nao tem resposta na tela — as planilhas do
+  // dono so trazem nome em parte das vendas.
+  let clienteBusca = "";
+
+  function renderClientes() {
+    const alvo = $("lista-clientes");
+    if (!alvo || !estado.dados) return;
+    const total = Object.keys(compradoresInternos).length;
+    let vendidasSemCliente = 0;
+    let vendidasTotal = 0;
+
+    const blocos = estado.dados.EMPREENDIMENTOS.map((emp) => {
+      const itens = itensDoEmp(emp).concat(boxesDoEmp(emp));
+      const comFicha = [];
+      let sem = 0;
+      itens.forEach((item) => {
+        const ficha = compradorDoItem(emp.id, item);
+        const situacao = statusAtual(emp.id, item);
+        // O box NAO entra na conta do que falta: ele vai junto com o
+        // apartamento, e o nome de quem comprou e o do apartamento. So conta
+        // aqui o box alugado direto a alguem, que tem ficha propria.
+        if (situacao === "vendido" && item.tipo !== "box") {
+          vendidasTotal++;
+          if (!ficha) { sem++; vendidasSemCliente++; }
+        }
+        if (ficha) comFicha.push({ item, ficha, situacao });
+      });
+      const passa = (c) => !clienteBusca || [
+        c.item.rotulo, c.ficha.nome, c.ficha.cpf, c.ficha.telefone, c.ficha.email, c.ficha.obs, emp.nome,
+      ].filter(Boolean).join(" ").toLowerCase().includes(clienteBusca);
+      const visiveis = comFicha.filter(passa);
+      if (!visiveis.length && (clienteBusca || !sem)) return "";
+      const linhas = visiveis.map(({ item, ficha, situacao }) => {
+        const dados = [
+          ficha.data ? "Venda em " + (dataCurta(ficha.data) || ficha.data) : "",
+          Number(ficha.valor) > 0 ? moedaFinanceira(ficha.valor) : "",
+          ficha.cpf ? "CPF/CNPJ " + ficha.cpf : "",
+          ficha.telefone || "",
+          ficha.email || "",
+          ficha.corretor ? "Corretor: " + ficha.corretor : "",
+          ficha.contrato ? "Contrato em " + (dataCurta(ficha.contrato) || ficha.contrato) : "",
+        ].filter(Boolean).map(escapeHtml).join(" · ");
+        const papel = ficha.papel && ficha.papel !== "comprador" ? ` <span class="contagem">(${escapeHtml(ficha.papel)})</span>` : "";
+        return `<div class="cliente-linha">
+          <div class="unidade">${escapeHtml(item.rotulo)}<small class="st-${situacao}">${escapeHtml(STATUS_LABEL[situacao] || situacao)}</small></div>
+          <div>
+            <div class="nome">${escapeHtml(ficha.nome)}${papel}</div>
+            ${dados ? `<div class="dados">${dados}</div>` : ""}
+            ${ficha.obs ? `<div class="obs">⚠ ${escapeHtml(ficha.obs)}</div>` : ""}
+          </div>
+        </div>`;
+      }).join("");
+      const rodape = sem && !clienteBusca
+        ? `<div class="cliente-sem">${conta(sem, "unidade vendida ainda sem cliente", "unidades vendidas ainda sem cliente")} — o nome não veio na planilha.</div>`
+        : "";
+      if (!linhas && !rodape) return "";
+      return `<details class="cliente-emp"${clienteBusca ? " open" : ""}>
+        <summary>${escapeHtml(emp.nome)}<span class="contagem">${conta(visiveis.length, "cliente", "clientes")}${sem ? ` · ${sem} sem nome` : ""}</span></summary>
+        ${linhas}${rodape}
+      </details>`;
+    }).join("");
+
+    const status = $("clientes-status");
+    if (status) {
+      status.textContent = total
+        ? `${conta(total, "cliente guardado", "clientes guardados")} · ${vendidasSemCliente} de ${vendidasTotal} unidades vendidas ainda sem nome`
+        : "Nenhum cliente guardado — use “Importar clientes”";
+    }
+    alvo.innerHTML = blocos || `<p class="descricao">Nenhum cliente encontrado${clienteBusca ? " para essa procura" : ""}.</p>`;
+  }
+
   function renderCustosMargens() {
     const alvo = $("custos-venda");
     if (!alvo || !estado.dados) return;
@@ -4527,6 +4670,7 @@
               <div>
                 <span class="nome">${escapeHtml(item.rotulo)}</span>${marcaBox}
                 <span class="preco-sub"><span class="st-${situacao}"><span class="bolinha"></span>${escapeHtml(STATUS_LABEL[situacao] || situacao)}</span>${detalhe ? " · " + escapeHtml(detalhe) : ""}</span>
+                ${linhaDoComprador(reg.emp.id, item)}
                 ${semValor || item.tipo === "terreno" ? "" : `<label class="preco-moveis"><span>+ móveis</span><input class="moveis-input" inputmode="decimal" data-moveis-chave="${escapeHtml(chave)}" value="${moveis ? escapeHtml(dinheiroDaLinha(moveis)) : ""}" placeholder="0,00" aria-label="Valor dos móveis de ${escapeHtml(item.rotulo)}"></label>`}
               </div>
             </div>
@@ -4579,8 +4723,6 @@
         const boxNaOferta = registros.filter((r) => ehBox(r) && !r.vendido);
         const boxVendidos = registros.filter((r) => ehBox(r) && r.vendido);
         const palavras = nomes(emp);
-        // "salas vendidas", nao "salas vendidos": no comercial a palavra e ela.
-        const vendidoNoGenero = palavras.sing === "sala" ? ["sala vendida", "salas vendidas"] : ["apartamento vendido", "apartamentos vendidos"];
         const gaveta = (lista, chaveDado, aberta, texto) => lista.length ? `
           <details class="precos-vendidos" ${chaveDado}="${escapeHtml(emp.id)}"${aberta ? " open" : ""}>
             <summary>${texto} — toque para ver</summary>
@@ -4588,7 +4730,7 @@
           </details>` : "";
         return naLista.map(desenhar).join("")
           + gaveta(unidadesVendidas, "data-preco-unidades-vendidas", precosUnidadesVendidasAbertas.has(emp.id),
-                   conta(unidadesVendidas.length, vendidoNoGenero[0], vendidoNoGenero[1]))
+                   dizerVendidos(unidadesVendidas, palavras))
           + gaveta(boxNaOferta, "data-preco-box", precosBoxAbertos.has(emp.id),
                    conta(boxNaOferta.length, "box à venda", "box à venda"))
           + gaveta(boxVendidos, "data-preco-vendidos", precosVendidosAbertos.has(emp.id),
@@ -4924,6 +5066,31 @@
   // A busca nao redesenha a cada tecla: espera o dono parar de digitar, senao
   // o cursor sairia do campo no meio da palavra.
   let buscaPrecoTimer = null;
+  let buscaClienteTimer = null;
+  $("cliente-busca")?.addEventListener("input", (e) => {
+    const texto = e.target.value.trim().toLowerCase();
+    clearTimeout(buscaClienteTimer);
+    buscaClienteTimer = setTimeout(() => {
+      if (texto === clienteBusca) return;
+      clienteBusca = texto;
+      renderClientes();
+    }, 150);
+  });
+
+  // Exportar so os clientes. CUIDADO: o arquivo tem dado pessoal — e copia de
+  // seguranca, nao coisa de mandar em grupo.
+  $("botao-exportar-clientes")?.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify({ versao: 2, exportadoEm: new Date().toISOString(), compradores: compradoresInternos }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `clientes-senger-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
   $("preco-busca")?.addEventListener("input", (e) => {
     const texto = e.target.value.trim().toLowerCase();
     clearTimeout(buscaPrecoTimer);
@@ -5091,10 +5258,12 @@
       financeiroSalvoEm = new Date().toISOString();
       gravarFinanceiroLocal();
       renderEmps();
+      renderClientes();
+      renderCustosMargens();
       mostrarResultadoCompradores(
         `${quantos} ${quantos === 1 ? "comprador entrou" : "compradores entraram"} no cofre privado`
         + (semCorrespondencia ? ` · ${semCorrespondencia} do arquivo não existem no cadastro de hoje` : "")
-        + ". Aparecem embaixo do nome da unidade, em Estoque / Unidades.", "ok");
+        + ". Aparecem na lista abaixo e embaixo do nome da unidade, em Estoque / Unidades.", "ok");
       aviso(`${quantos} compradores guardados. Guardando também na sua conta…`, "ok");
       await enviarAoCofre();
     } catch (err) {
