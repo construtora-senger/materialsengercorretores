@@ -547,6 +547,8 @@
     .previa-emp > summary::before { content:"▸ "; color:var(--texto-suave); }
     .previa-emp[open] > summary::before { content:"▾ "; }
     .previa-emp > summary .contagem { margin-left:auto; color:var(--texto-suave); font-size:.74rem; font-weight:500; font-variant-numeric:tabular-nums; }
+    /* Quem comprou, embaixo do nome da unidade. Dado privado: so esta tela. */
+    .comprador { margin-top:2px; font-size:.72rem; color:var(--texto-suave); font-weight:500; }
     .previa-emp table { width:100%; }
     .previa-emp td { padding:6px 14px; font-size:.78rem; border-bottom:1px solid var(--borda); }
     .previa-emp tr:last-child td { border-bottom:none; }
@@ -1243,6 +1245,8 @@
           <div class="custos-acoes">
             <label class="botao-arquivo" for="arquivo-importar-custos">Importar backup</label>
             <input class="arquivo-input" type="file" id="arquivo-importar-custos" accept="application/json,.json">
+            <label class="botao-arquivo" for="arquivo-importar-compradores">Importar compradores</label>
+            <input class="arquivo-input" type="file" id="arquivo-importar-compradores" accept="application/json,.json">
             <button type="button" class="botao secundario" id="botao-exportar-custos" style="margin-top:0">Exportar backup</button>
             <button type="button" class="botao perigo" id="botao-apagar-financeiro" style="margin-top:0">Apagar tudo</button>
             <span class="financeiro-status salvo" id="financeiro-status">Dados salvos neste aparelho ✓</span>
@@ -1250,6 +1254,8 @@
           <p class="financeiro-cofre" id="financeiro-cofre"></p>
           <button type="button" class="botao secundario" id="botao-chave-financeiro" style="display:none;margin:0 0 12px">Trocar a chave do GitHub</button>
           <p class="financeiro-cofre" id="financeiro-import" style="display:none"></p>
+          <p class="financeiro-cofre" id="compradores-import" style="display:none"></p>
+          <p class="custos-nota"><strong>Importar compradores</strong> carrega, de uma vez, quem comprou cada unidade vendida (nome, CPF, telefone, data e valor da venda). Fica guardado no mesmo cofre privado dos custos e aparece embaixo do nome da unidade em <strong>Estoque / Unidades</strong>. <strong>Nada disso vai para o site</strong> — o repositório do portfólio é público e o cliente nunca vê.</p>
           <p class="financeiro-vazio" id="financeiro-vazio" style="display:none">Nenhum custo aparece aqui neste aparelho. Os custos são guardados na sua conta do GitHub, em repositório privado, e descem sozinhos quando o painel abre. Se a mensagem acima disser que não deu para alcançar a conta, use <strong>Importar backup</strong> com o arquivo que você exportou.</p>
           <details class="precos-ajuda">
             <summary>Como as contas são feitas</summary>
@@ -1365,7 +1371,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 305;
+  const VERSAO_PAINEL = 306;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1380,6 +1386,35 @@
 
   function mapaDeNumeros(m) {
     return m && typeof m === "object" && !Array.isArray(m) ? m : {};
+  }
+
+  // O CADASTRO DE COMPRADORES (v306). Quem comprou cada unidade vendida.
+  //
+  // Isto e dado pessoal de terceiros: nome, CPF, telefone, e-mail, valor e data
+  // da venda. O repositorio do site e PUBLICO, entao nada disto pode encostar
+  // no data.js nem em qualquer arquivo daqui — ele mora no MESMO cofre privado
+  // dos custos (senger-financeiro/financeiro.json), na chave `compradores`, e
+  // so aparece nesta tela, para quem tem a chave do GitHub.
+  //
+  // A ficha e um objeto por unidade, com a mesma chave dos custos
+  // (`<emp>:u:<apto>:<ocorrencia>`): { nome, cpf, telefone, email, data,
+  // valor, corretor, contrato, obs } — todos os campos opcionais.
+  function mapaDeFichas(m) {
+    if (!m || typeof m !== "object" || Array.isArray(m)) return {};
+    const saida = {};
+    Object.keys(m).forEach((k) => {
+      const f = m[k];
+      if (!f || typeof f !== "object" || Array.isArray(f)) return;
+      const limpa = {};
+      ["nome", "cpf", "telefone", "email", "data", "corretor", "contrato", "papel", "obs"].forEach((campo) => {
+        const v = String(f[campo] == null ? "" : f[campo]).trim();
+        if (v) limpa[campo] = v;
+      });
+      const valor = Number(f.valor);
+      if (Number.isFinite(valor) && valor > 0) limpa.valor = valor;
+      if (Object.keys(limpa).length) saida[k] = limpa;
+    });
+    return saida;
   }
 
   function lerPacoteFinanceiro(item) {
@@ -1401,6 +1436,10 @@
         // apagadoEm geral de proposito: limpar um predio nao pode fazer os
         // outros aparelhos apagarem o resto.
         apagadoPorEmp: bruto.apagadoPorEmp && typeof bruto.apagadoPorEmp === "object" ? bruto.apagadoPorEmp : {},
+        // Quem comprou cada unidade (v306). Anda no mesmo pacote que o custo
+        // porque mora no mesmo cofre — mas NAO e custo: o "Apagar tudo", que
+        // fala de custos e margens, nao encosta nele.
+        compradores: mapaDeFichas(bruto.compradores),
       };
     } catch (e) { return null; }
   }
@@ -1411,7 +1450,7 @@
       // Migra automaticamente os custos já digitados na v171.
       let legado = {};
       try { legado = mapaDeNumeros(JSON.parse(localStorage.getItem(CUSTOS_ITEM) || "{}")); } catch (e) { legado = {}; }
-      salvo = { custos: legado, margensDesejadas: {}, moveis: {}, salvoEm: "" };
+      salvo = { custos: legado, margensDesejadas: {}, moveis: {}, compradores: {}, salvoEm: "" };
     }
     const rascunho = lerPacoteFinanceiro(FINANCEIRO_RASCUNHO);
     const mudou = rascunho && JSON.stringify([rascunho.custos, rascunho.margensDesejadas, rascunho.moveis])
@@ -1423,6 +1462,9 @@
       salvoEm: salvo.salvoEm,
       apagadoEm: salvo.apagadoEm || "",
       apagadoPorEmp: salvo.apagadoPorEmp || {},
+      // O cadastro de compradores nao passa pelo rascunho: ele so muda no
+      // "Importar compradores", que grava na hora.
+      compradores: salvo.compradores || {},
       recuperado: !!mudou,
       // v301 — o que estava GUARDADO antes da digitacao, sem o rascunho por
       // cima. E o valor "de antes" para o qual o Descartar volta. Sem este
@@ -1436,6 +1478,8 @@
   let custosInternos = { ...financeiroInicial.custos };
   let margensDesejadas = { ...financeiroInicial.margensDesejadas };
   let moveisInternos = { ...(financeiroInicial.moveis || {}) };
+  // Quem comprou cada unidade vendida. Dado pessoal: vive so no cofre privado.
+  let compradoresInternos = { ...(financeiroInicial.compradores || {}) };
   let financeiroSalvoEm = financeiroInicial.salvoEm;
   // Quando o dono apagou tudo pela ultima vez. Sem esta data, o cofre (e outra
   // aba aberta com os valores velhos) devolvia os custos apagados na abertura
@@ -1467,7 +1511,7 @@
   function gravarFinanceiroLocal() {
     try {
       localStorage.setItem(FINANCEIRO_ITEM, JSON.stringify({
-        versao: 2, salvoEm: financeiroSalvoEm, apagadoEm: financeiroApagadoEm, apagadoPorEmp, custos: custosInternos, margensDesejadas, moveis: moveisInternos,
+        versao: 2, salvoEm: financeiroSalvoEm, apagadoEm: financeiroApagadoEm, apagadoPorEmp, custos: custosInternos, margensDesejadas, moveis: moveisInternos, compradores: compradoresInternos,
       }));
       // Mantém o mapa antigo atualizado para não perder compatibilidade com backups v171.
       localStorage.setItem(CUSTOS_ITEM, JSON.stringify(custosInternos));
@@ -2196,7 +2240,9 @@
       let remoto = null;
       try { remoto = await cofreLer(); } catch (e) { remoto = null; }
       acatarLimpezaDaConta(remoto?.pacote);
-      await cofreEnviar({ versao: 2, salvoEm: financeiroSalvoEm, apagadoEm: financeiroApagadoEm, apagadoPorEmp, custos: custosInternos, margensDesejadas, moveis: moveisInternos });
+      // Os compradores vao JUNTO em toda gravacao: o cofre e um arquivo so, e
+      // mandar o pacote sem eles apagaria o cadastro inteiro la de dentro.
+      await cofreEnviar({ versao: 2, salvoEm: financeiroSalvoEm, apagadoEm: financeiroApagadoEm, apagadoPorEmp, custos: custosInternos, margensDesejadas, moveis: moveisInternos, compradores: compradoresInternos });
       definirCofre("ok");
     } catch (e) {
       definirCofre(e.status ? "sem-permissao" : "offline");
@@ -2246,6 +2292,14 @@
     custosInternos = remotoManda ? { ...custosInternos, ...remotoCustos } : { ...remotoCustos, ...custosInternos };
     margensDesejadas = remotoManda ? { ...margensDesejadas, ...remotoMargens } : { ...remotoMargens, ...margensDesejadas };
     moveisInternos = remotoManda ? { ...moveisInternos, ...remotoMoveis } : { ...remotoMoveis, ...moveisInternos };
+    // Os compradores se juntam pela mesma regra dos custos: cadastrado aqui e
+    // cadastrado la somam, e no empate vale o pacote salvo mais tarde. Fora da
+    // regra da limpeza de proposito — "Apagar tudo" fala de custo e margem,
+    // nao de quem comprou.
+    const remotoCompradores = mapaDeFichas(pacote.compradores);
+    compradoresInternos = remotoManda
+      ? { ...compradoresInternos, ...remotoCompradores }
+      : { ...remotoCompradores, ...compradoresInternos };
     const mudou = JSON.stringify([custosInternos, margensDesejadas, moveisInternos]) !== antes;
     if (mudou) {
       financeiroSalvoEm = new Date().toISOString();
@@ -2256,7 +2310,8 @@
     // velha devolvia o que ja tinha sido apagado.
     const diferente = Object.keys(custosInternos).length !== Object.keys(remotoCustos).length
       || Object.keys(margensDesejadas).length !== Object.keys(remotoMargens).length
-      || Object.keys(moveisInternos).length !== Object.keys(remotoMoveis).length;
+      || Object.keys(moveisInternos).length !== Object.keys(remotoMoveis).length
+      || Object.keys(compradoresInternos).length !== Object.keys(remotoCompradores).length;
     if (diferente && quandoLocal >= quandoRemoto) await enviarAoCofre();
     else definirCofre("ok");
   }
@@ -2411,6 +2466,35 @@
     if (item.tipo === "terreno") return `${empId}:t:${item.quadra}:${item.numero}`;
     if (item.tipo === "box") return `${empId}:b:${item.box}`;
     return `${empId}:o:${item.nome}`;
+  }
+
+  // A ficha de quem comprou uma unidade, se houver. So aparece nesta tela.
+  function compradorDoItem(empId, item) {
+    return compradoresInternos[chaveDoItem(empId, item)] || null;
+  }
+
+  // Uma linha curta embaixo do nome da unidade: quem comprou e quando. O resto
+  // da ficha (CPF, telefone, e-mail) fica no "title", para nao encher a tabela
+  // — e porque CPF e telefone nao precisam estar a vista o tempo todo.
+  function linhaDoComprador(empId, item) {
+    const f = compradorDoItem(empId, item);
+    if (!f || !f.nome) return "";
+    const detalhe = [
+      f.data ? "Venda em " + (dataCurta(f.data) || f.data) : "",
+      Number(f.valor) > 0 ? moedaFinanceira(f.valor) : "",
+      f.corretor ? "Corretor: " + f.corretor : "",
+      f.cpf ? "CPF/CNPJ: " + f.cpf : "",
+      f.telefone ? "Tel.: " + f.telefone : "",
+      f.email || "",
+      f.obs || "",
+    ].filter(Boolean).join(" · ");
+    // Nem todo nome e de comprador: no Quality vários apartamentos estao
+    // alugados, e ali o nome e do INQUILINO. Dizer "comprador" para os dois
+    // faria o painel mentir na linha que o dono mais olha.
+    const papel = f.papel && f.papel !== "comprador" ? ` <span class="contagem">(${escapeHtml(f.papel)})</span>` : "";
+    return `<div class="comprador" title="${escapeHtml(detalhe)}">👤 ${escapeHtml(f.nome)}${papel}`
+      + (f.data ? ` <span class="contagem">· ${escapeHtml(dataCurta(f.data) || f.data)}</span>` : "")
+      + `</div>`;
   }
 
   function opDeStatus(chave) {
@@ -3274,7 +3358,7 @@
           grupoAtual = item.grupo;
           if (grupoAtual) linhas += `<tr class="linha-grupo"><td colspan="${colunas}" class="grupo-titulo">${escapeHtml(grupoAtual)}</td></tr>`;
         }
-        const celulas = [escapeHtml(item.rotulo), `<span class="num">${moeda(item.preco)}</span>`];
+        const celulas = [escapeHtml(item.rotulo) + linhaDoComprador(emp.id, item), `<span class="num">${moeda(item.preco)}</span>`];
         if (boxes.length) celulas.push(celulaGaragem(item, regra, boxDoApto[item.apto]));
         linhas += linhaDeStatus(emp.id, item, celulas);
       });
@@ -4902,6 +4986,8 @@
       const mapaCustos = bruto && typeof bruto === "object" && bruto.custos && typeof bruto.custos === "object" ? bruto.custos : bruto;
       const mapaMargens = bruto && typeof bruto === "object" && bruto.margensDesejadas && typeof bruto.margensDesejadas === "object" ? bruto.margensDesejadas : {};
       const mapaMoveis = bruto && typeof bruto === "object" && bruto.moveis && typeof bruto.moveis === "object" ? bruto.moveis : {};
+      // O backup exportado a partir da v306 leva tambem quem comprou.
+      const mapaCompradores = bruto && typeof bruto === "object" ? mapaDeFichas(bruto.compradores) : {};
       if (!mapaCustos || typeof mapaCustos !== "object" || Array.isArray(mapaCustos)) throw new Error("formato inválido");
       const indice = indiceDeItens();
       const custosValidos = {};
@@ -4932,9 +5018,15 @@
       if (!Object.keys(custosValidos).length && !Object.keys(margensValidas).length && !Object.keys(moveisValidos).length) {
         throw new Error(`o arquivo tem ${Object.keys(mapaCustos).length} linhas, mas nenhuma unidade dele existe no cadastro de hoje`);
       }
+      const compradoresValidos = {};
+      Object.entries(mapaCompradores).forEach(([chave, ficha]) => {
+        const alvo = chaveEquivalente(chave, indice);
+        if (alvo) compradoresValidos[alvo] = ficha;
+      });
       custosInternos = { ...custosInternos, ...custosValidos };
       margensDesejadas = { ...margensDesejadas, ...margensValidas };
       moveisInternos = { ...moveisInternos, ...moveisValidos };
+      compradoresInternos = { ...compradoresInternos, ...compradoresValidos };
       // Nada e salvo agora: o dono confere na tabela e decide no botao Salvar.
       atualizarEstadoFinanceiro(true);
       renderCustosMargens();
@@ -4952,6 +5044,61 @@
     }
   });
 
+  function mostrarResultadoCompradores(texto, tipo) {
+    const el = $("compradores-import");
+    if (!el) return;
+    el.textContent = texto;
+    el.classList.toggle("alerta", tipo === "falha");
+    el.classList.toggle("ok", tipo === "ok");
+    el.style.display = texto ? "block" : "none";
+  }
+
+  // IMPORTAR QUEM COMPROU (v306).
+  //
+  // O arquivo e um JSON com a chave `compradores`: { "<chave da unidade>":
+  // { nome, cpf, telefone, email, data, valor, corretor, contrato, obs } }.
+  // Aceita tambem o mapa solto, sem o embrulho. A unidade e reconhecida pela
+  // chave interna e, se ela mudou, pelo nome — sempre dentro do mesmo
+  // empreendimento e do mesmo tipo, como no backup dos custos.
+  //
+  // Diferente do backup de custos, este import GRAVA na hora (aparelho e
+  // cofre): nao ha o que conferir numa tabela de precos, e deixar pendente so
+  // criaria o risco de o dono fechar a aba e perder o cadastro inteiro.
+  $("arquivo-importar-compradores")?.addEventListener("change", async (e) => {
+    const arquivo = e.target.files?.[0];
+    if (!arquivo) return;
+    try {
+      const bruto = JSON.parse(await arquivo.text());
+      const mapa = mapaDeFichas(bruto && bruto.compradores ? bruto.compradores : bruto);
+      const quantasNoArquivo = Object.keys(mapa).length;
+      if (!quantasNoArquivo) throw new Error("não encontrei nenhuma ficha de comprador no arquivo");
+      const indice = indiceDeItens();
+      const validos = {};
+      let semCorrespondencia = 0;
+      Object.entries(mapa).forEach(([chave, ficha]) => {
+        const alvo = chaveEquivalente(chave, indice);
+        if (alvo) validos[alvo] = ficha; else semCorrespondencia++;
+      });
+      const quantos = Object.keys(validos).length;
+      if (!quantos) throw new Error(`o arquivo tem ${quantasNoArquivo} fichas, mas nenhuma unidade dele existe no cadastro de hoje`);
+      compradoresInternos = { ...compradoresInternos, ...validos };
+      financeiroSalvoEm = new Date().toISOString();
+      gravarFinanceiroLocal();
+      renderEmps();
+      mostrarResultadoCompradores(
+        `${quantos} ${quantos === 1 ? "comprador entrou" : "compradores entraram"} no cofre privado`
+        + (semCorrespondencia ? ` · ${semCorrespondencia} do arquivo não existem no cadastro de hoje` : "")
+        + ". Aparecem embaixo do nome da unidade, em Estoque / Unidades.", "ok");
+      aviso(`${quantos} compradores guardados. Guardando também na sua conta…`, "ok");
+      await enviarAoCofre();
+    } catch (err) {
+      mostrarResultadoCompradores(`Não consegui importar: ${err.message}.`, "falha");
+      aviso(`Não consegui importar os compradores: ${err.message}.`, "falha");
+    } finally {
+      e.target.value = "";
+    }
+  });
+
   // Comecar do zero. So limpar o aparelho nao adianta: ao reabrir, o painel
   // funde o cofre de volta (v190) e os custos antigos ressuscitam. Entao o
   // apagar tem de ir aos dois lugares.
@@ -4964,7 +5111,7 @@
     const oQueVai = quantosCustos || quantasMargens || quantosMoveis
       ? `${quantosCustos} custos e ${quantasMargens} margens${quantosMoveis ? ` (e ${conta(quantosMoveis, "valor de móveis", "valores de móveis")})` : ""}, deste aparelho e da sua conta.`
       : "Este aparelho já está vazio; isto apaga o que ainda estiver guardado na sua conta.";
-    if (!confirm(`Apagar TODOS os custos e margens?\n\n${oQueVai}\n\nNão dá para desfazer. Se quiser guardar antes, cancele e use “Exportar backup”.\n\nOs preços do site não mudam.`)) return;
+    if (!confirm(`Apagar TODOS os custos e margens?\n\n${oQueVai}\n\nNão dá para desfazer. Se quiser guardar antes, cancele e use “Exportar backup”.\n\nOs preços do site não mudam, e o cadastro de compradores fica onde está.`)) return;
     custosInternos = {};
     margensDesejadas = {};
     moveisInternos = {};
@@ -5049,7 +5196,10 @@
   }
 
   $("botao-exportar-custos")?.addEventListener("click", () => {
-    const blob = new Blob([JSON.stringify({ versao: 2, exportadoEm: new Date().toISOString(), custos: custosInternos, margensDesejadas, moveis: moveisInternos }, null, 2)], { type: "application/json" });
+    // O backup leva tambem quem comprou (v306): ele e a copia de seguranca do
+    // cofre inteiro. CUIDADO: este arquivo tem dado pessoal — guarde com voce,
+    // nao mande para o repositorio do site nem por grupo de WhatsApp.
+    const blob = new Blob([JSON.stringify({ versao: 2, exportadoEm: new Date().toISOString(), custos: custosInternos, margensDesejadas, moveis: moveisInternos, compradores: compradoresInternos }, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
