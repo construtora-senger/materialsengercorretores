@@ -1400,7 +1400,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 311;
+  const VERSAO_PAINEL = 312;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2509,6 +2509,14 @@
     return compradoresInternos[chaveDoItem(empId, item)] || null;
   }
 
+  // "inquilino" so vale para o que AINDA esta a venda (status `alugado`).
+  // Numa unidade vendida o nome e do comprador, ponto.
+  function papelDaFicha(ficha, situacao) {
+    if (!ficha || !ficha.papel || ficha.papel === "comprador") return "";
+    if (situacao !== "alugado") return "";
+    return ` <span class="contagem">(${escapeHtml(ficha.papel)})</span>`;
+  }
+
   // Uma linha curta embaixo do nome da unidade: quem comprou e quando. O resto
   // da ficha (CPF, telefone, e-mail) fica no "title", para nao encher a tabela
   // — e porque CPF e telefone nao precisam estar a vista o tempo todo.
@@ -2522,10 +2530,13 @@
       f.telefone ? "Tel.: " + f.telefone : "",
       f.email || "",
     ].filter(Boolean).join(" · ");
-    // Nem todo nome e de comprador: no Quality vários apartamentos estao
-    // alugados, e ali o nome e do INQUILINO. Dizer "comprador" para os dois
-    // faria o painel mentir na linha que o dono mais olha.
-    const papel = f.papel && f.papel !== "comprador" ? ` <span class="contagem">(${escapeHtml(f.papel)})</span>` : "";
+    // Nem todo nome e de comprador: no Quality ha apartamentos alugados, e ali
+    // o nome e do INQUILINO. Mas, regra do dono (15/09/2026): "inquilino so
+    // serve quando ainda estiver a venda". Vendido com inquilino dentro — o
+    // apartamento de investimento — e VENDIDO, e quem vale e o comprador;
+    // o inquilino nao aparece. Por isso o papel so e escrito quando a unidade
+    // esta como `alugado`, que e o que continua na oferta.
+    const papel = papelDaFicha(f, statusAtual(empId, item));
     // A observacao NAO fica escondida no tooltip: ela e o aviso ("falta
     // contrato", "constava vendido para fulano") e sai em linha propria, em
     // cor propria, a pedido do dono.
@@ -4579,7 +4590,7 @@
           ficha.corretor ? "Corretor: " + ficha.corretor : "",
           ficha.contrato ? "Contrato em " + (dataCurta(ficha.contrato) || ficha.contrato) : "",
         ].filter(Boolean).map(escapeHtml).join(" · ");
-        const papel = ficha.papel && ficha.papel !== "comprador" ? ` <span class="contagem">(${escapeHtml(ficha.papel)})</span>` : "";
+        const papel = papelDaFicha(ficha, situacao);
         return `<div class="cliente-linha">
           <div class="unidade">${escapeHtml(item.rotulo)}<small class="st-${situacao}">${escapeHtml(STATUS_LABEL[situacao] || situacao)}</small></div>
           <div>
