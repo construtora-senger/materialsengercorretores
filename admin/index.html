@@ -1374,7 +1374,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 308;
+  const VERSAO_PAINEL = 309;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -4050,7 +4050,7 @@
       if (item.cabecalho) return `<tr class="linha-grupo"><td colspan="6" class="grupo-titulo">${escapeHtml(item.cabecalho)}</td></tr>`;
       const obs = item.obs ? ` <span class="contagem">${escapeHtml(item.obs)}</span>` : "";
       return linhaDeStatus(emp.id, item, [
-        escapeHtml(item.rotulo) + obs,
+        escapeHtml(item.rotulo) + obs + linhaDoComprador(emp.id, item),
         item.vagas === 2 ? "Duplo — 2 vagas" : "Simples — 1 vaga",
         // O box do Personalite as vezes foi com uma sala do terreo, e nao com
         // um apartamento: quando o nome ja vem escrito, ele vale como esta.
