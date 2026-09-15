@@ -1253,6 +1253,13 @@ const EMPREENDIMENTOS = [
           { apto: "602", status: "vendido" },
           { apto: "702", status: "vendido" },
           { apto: "802", status: "vendido" },
+          // O 902 nao tem linha na tabela de vendas (ela pula do 901 para o
+          // 903), mas o apartamento existe: o box 218 foi para ele, e todos os
+          // andares tem tres unidades. Entrou como VENDIDO a pedido do dono em
+          // 15/09/2026, que vai conferir o comprador. Sem areaUnit de
+          // proposito: sem linha na tabela nao ha metragem propria, entao vale
+          // a do final 02. Unidade vendida nao aparece para o cliente.
+          { apto: "902", status: "vendido" },
           { apto: "1002", status: "vendido", areaUnit: "148 m² global · 115 m² privativo" },
         ],
       },
