@@ -298,9 +298,27 @@ De 168 vendidas sem nome sobraram **19**: 17 lotes do Nova Vila Rica e dois
 apartamentos do Quality.
 
 Os `.doc` são Word binário antigo (OLE2). O texto sai pela **piece table** do
-stream `1Table`, não por `strings` — o script fica em
-`tools/` apenas se o dono pedir; nesta rodada rodou fora do repositório, porque
-é leitura de arquivo dele, não parte do site.
+stream `1Table`, não por `strings`. **A primeira leitura saiu errada em 13
+nomes** e o dono pegou: três armadilhas, todas do formato.
+
+1. **O nome riscado.** Ele risca o dono antigo e escreve o novo do lado. O
+   riscado é o `sprmCFStrike` (**0x0837**, não o 0x0801 do Word 6) nos CHPX do
+   `1Table`. Sem ler isso, o nome que saía era o antigo, ou os dois grudados.
+2. **A tabela é uma grade de 4 células por linha** — unidade, box, nome e a
+   célula vazia que fecha a linha. Procurar "o que parece unidade" não serve:
+   *o Prime tem apto 201 e box 201*. Anda-se de 4 em 4 a partir do cabeçalho,
+   e a linha de seção ("BLOCO A"), que tem 2 células, anda 2.
+3. **Célula inteira riscada apagava a própria marca de fim de célula**, juntando
+   duas células e desalinhando a tabela daí para baixo.
+
+O script rodou fora do repositório — é leitura de arquivo do dono, não parte do
+site; entra em `tools/` só se ele pedir.
+
+**Nada do que está na célula se perde (v314).** A ficha guarda `riscado` (o dono
+anterior) e `anotacao` (a célula inteira, como ele escreveu), e o painel mostra
+os dois atrás de um **📝 obs** que abre no toque — pedido dele: *"nem que deixe
+um ícone de obs pra clicar e abrir nesses casos que tem mais coisas além do
+nome"*. **O CPF é retirado de todo campo**, inclusive de dentro da anotação.
 
 **Quando a tabela de clientes discorda da planilha de vendas, vale a tabela de
 clientes** — ela é a fonte direta. Foi assim que o Quality 403-A passou a ser do

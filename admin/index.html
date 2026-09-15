@@ -553,7 +553,16 @@
     .comprador .contagem { font-weight:500; }
     /* A observacao da ficha em cor propria: e o aviso que o dono precisa ver de
        relance ("falta contrato", "constava vendido para fulano"). */
-    .comprador-obs { margin-top:2px; font-size:.7rem; font-weight:600; color:#b26a00; }
+    .ficha-mais { margin-top:3px; }
+    .ficha-mais > summary { cursor:pointer; display:inline-block; font-size:.7rem; font-weight:600; color:#b26a00;
+      background:rgba(178,106,0,.09); border-radius:999px; padding:1px 8px; list-style:none; }
+    .ficha-mais > summary::-webkit-details-marker { display:none; }
+    .ficha-mais[open] > summary { margin-bottom:4px; }
+    .ficha-riscado, .ficha-obs, .ficha-contato, .ficha-anotacao { font-size:.72rem; line-height:1.45; margin-top:2px; }
+    .ficha-riscado { color:var(--texto-suave); }
+    .ficha-obs { color:#b26a00; font-weight:600; }
+    .ficha-contato { color:var(--texto); }
+    .ficha-anotacao { color:var(--texto-suave); white-space:pre-line; }
     .cliente-emp { border:1px solid var(--borda); border-radius:12px; margin-bottom:12px; background:#fff; }
     .cliente-emp > summary { cursor:pointer; padding:12px 14px; font-weight:700; display:flex; gap:10px; align-items:center; }
     .cliente-emp > summary .contagem { margin-left:auto; color:var(--texto-suave); font-size:.74rem; font-weight:500; text-align:right; }
@@ -1402,7 +1411,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 313;
+  const VERSAO_PAINEL = 314;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1442,8 +1451,17 @@
       // necessidade. Ele nao esta nesta lista de proposito: arquivo antigo que
       // traga `cpf` perde o campo aqui, na leitura, e a gravacao seguinte
       // limpa o cofre sozinha. Nao recoloque.
-      ["nome", "telefone", "email", "data", "corretor", "contrato", "papel", "obs"].forEach((campo) => {
-        const v = String(f[campo] == null ? "" : f[campo]).trim();
+      // `riscado` e o dono ANTIGO, que na tabela do dono aparece com o nome
+      // cortado; `anotacao` e a celula inteira, como ele escreveu. Os dois
+      // ficam guardados a pedido dele: "nem que deixe um icone de obs pra
+      // clicar e abrir nesses casos que tem mais coisas alem do nome".
+      ["nome", "telefone", "email", "data", "corretor", "contrato", "papel", "obs", "riscado", "anotacao"].forEach((campo) => {
+        // O CPF sai de qualquer campo, inclusive de dentro da anotacao.
+        const v = String(f[campo] == null ? "" : f[campo])
+          .replace(/(?:CPF|CNPJ)\s*\.?\s*:?\s*[\d][\d.\-/]*/gi, "")
+          .replace(/\b\d{3}\.\d{3}\.\d{3}-?\d{0,2}\b/g, "")
+          .replace(/\b\d{2}\.\d{3}\.\d{3}\/?\d{0,4}-?\d{0,2}\b/g, "")
+          .replace(/\s{2,}/g, " ").trim();
         if (v) limpa[campo] = v;
       });
       const valor = Number(f.valor);
@@ -2542,10 +2560,30 @@
     // A observacao NAO fica escondida no tooltip: ela e o aviso ("falta
     // contrato", "constava vendido para fulano") e sai em linha propria, em
     // cor propria, a pedido do dono.
-    const obs = f.obs ? `<div class="comprador-obs">⚠ ${escapeHtml(f.obs)}</div>` : "";
     return `<div class="comprador" title="${escapeHtml(detalhe)}">👤 ${escapeHtml(f.nome)}${papel}`
       + (f.data ? ` <span class="contagem">· ${escapeHtml(dataCurta(f.data) || f.data)}</span>` : "")
-      + `</div>${obs}`;
+      + `</div>${gavetaDaFicha(f)}`;
+  }
+
+  // TUDO O QUE HA ALEM DO NOME, atras de um icone. O dono pediu para nao
+  // perder o nome riscado (o dono anterior) nem o resto do que ele escreveu na
+  // tabela — mas isso nao cabe na linha, entao fica numa gaveta que abre no
+  // toque. Sem JavaScript: <details> abre sozinho no celular.
+  function gavetaDaFicha(f) {
+    const linhas = [];
+    if (f.riscado) linhas.push(`<div class="ficha-riscado">Antes: <s>${escapeHtml(f.riscado)}</s></div>`);
+    if (f.obs) linhas.push(`<div class="ficha-obs">⚠ ${escapeHtml(f.obs)}</div>`);
+    const contato = [
+      f.telefone ? "Tel.: " + f.telefone : "",
+      f.email || "",
+      f.corretor ? "Corretor: " + f.corretor : "",
+      Number(f.valor) > 0 ? moedaFinanceira(f.valor) : "",
+      f.contrato ? "Contrato em " + (dataCurta(f.contrato) || f.contrato) : "",
+    ].filter(Boolean).map(escapeHtml).join(" · ");
+    if (contato) linhas.push(`<div class="ficha-contato">${contato}</div>`);
+    if (f.anotacao) linhas.push(`<div class="ficha-anotacao">Como está na tabela: ${escapeHtml(f.anotacao)}</div>`);
+    if (!linhas.length) return "";
+    return `<details class="ficha-mais"><summary title="Ver a anotação inteira">📝 obs</summary>${linhas.join("")}</details>`;
   }
 
   function opDeStatus(chave) {
@@ -4579,7 +4617,8 @@
         if (ficha) comFicha.push({ item, ficha, situacao });
       });
       const passa = (c) => !clienteBusca || [
-        c.item.rotulo, c.ficha.nome, c.ficha.telefone, c.ficha.email, c.ficha.obs, emp.nome,
+        c.item.rotulo, c.ficha.nome, c.ficha.telefone, c.ficha.email,
+        c.ficha.obs, c.ficha.riscado, c.ficha.anotacao, emp.nome,
       ].filter(Boolean).join(" ").toLowerCase().includes(clienteBusca);
       const visiveis = comFicha.filter(passa);
       if (!visiveis.length && (clienteBusca || !sem)) return "";
@@ -4598,7 +4637,9 @@
           <div>
             <div class="nome">${escapeHtml(ficha.nome)}${papel}</div>
             ${dados ? `<div class="dados">${dados}</div>` : ""}
+            ${ficha.riscado ? `<div class="obs">Antes: <s>${escapeHtml(ficha.riscado)}</s></div>` : ""}
             ${ficha.obs ? `<div class="obs">⚠ ${escapeHtml(ficha.obs)}</div>` : ""}
+            ${ficha.anotacao ? `<details class="ficha-mais"><summary>📝 como está na tabela</summary><div class="ficha-anotacao">${escapeHtml(ficha.anotacao)}</div></details>` : ""}
           </div>
         </div>`;
       }).join("");
