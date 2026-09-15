@@ -998,10 +998,9 @@ const EMPREENDIMENTOS = [
           { apto: "902", preco: 1450000, status: "disponivel", tags: ["Semimobiliado"] },
           { apto: "1002", status: "vendido" },
           { apto: "1102", status: "vendido" },
-          // A planilha do dono marca o 1202 como VENDIDO com a observacao
-          // "VOLTOU 02/2025 - ALUGADO BRAVO". Fica vendido aqui para nao
-          // entrar sozinho na vitrine; se a venda foi desfeita mesmo, o dono
-          // troca para "alugado" no painel e ele volta a oferta.
+          // O 1202 e VENDIDO mesmo — confirmado pelo dono em 15/09/2026:
+          // vendido para CRISTIAN KIRINUS, que aluga para a BRAVO LOG. A
+          // observacao "VOLTOU 02/2025" da planilha nao desfez a venda.
           { apto: "1202", status: "vendido" },
           { apto: "1302", status: "vendido" },
         ],
@@ -1266,6 +1265,20 @@ const EMPREENDIMENTOS = [
         plantaNota: "Unidade vendida — planta não cadastrada",
         unidades: [
           { apto: "1101", status: "vendido" },
+        ],
+      },
+      // As quatro salas do terreo: VENDIDAS, confirmado pelo dono em
+      // 15/09/2026. Sem garagem — a tabela de vendas dele traz "-" na coluna
+      // da garagem para as quatro.
+      {
+        tipo: "Salas comerciais — térreo",
+        area: "Áreas variadas",
+        plantaNota: "Salas comerciais vendidas — planta não cadastrada",
+        unidades: [
+          { apto: "Sala 101", status: "vendido", areaUnit: "131 m² global · 101 m² privativo" },
+          { apto: "Sala 102", status: "vendido", areaUnit: "129 m² global · 99 m² privativo" },
+          { apto: "Sala 103", status: "vendido", areaUnit: "164 m² global · 127 m² privativo" },
+          { apto: "Sala 104", status: "vendido", areaUnit: "173 m² global · 133 m² privativo" },
         ],
       },
     ],
