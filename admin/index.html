@@ -549,6 +549,9 @@
     .previa-emp > summary .contagem { margin-left:auto; color:var(--texto-suave); font-size:.74rem; font-weight:500; font-variant-numeric:tabular-nums; }
     /* Quem comprou, embaixo do nome da unidade. Dado privado: so esta tela. */
     .comprador { margin-top:2px; font-size:.72rem; color:var(--texto-suave); font-weight:500; }
+    /* A observacao da ficha em cor propria: e o aviso que o dono precisa ver de
+       relance ("falta contrato", "constava vendido para fulano"). */
+    .comprador-obs { margin-top:2px; font-size:.7rem; font-weight:600; color:#b26a00; }
     .previa-emp table { width:100%; }
     .previa-emp td { padding:6px 14px; font-size:.78rem; border-bottom:1px solid var(--borda); }
     .previa-emp tr:last-child td { border-bottom:none; }
@@ -1371,7 +1374,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 306;
+  const VERSAO_PAINEL = 307;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2486,15 +2489,18 @@
       f.cpf ? "CPF/CNPJ: " + f.cpf : "",
       f.telefone ? "Tel.: " + f.telefone : "",
       f.email || "",
-      f.obs || "",
     ].filter(Boolean).join(" · ");
     // Nem todo nome e de comprador: no Quality vários apartamentos estao
     // alugados, e ali o nome e do INQUILINO. Dizer "comprador" para os dois
     // faria o painel mentir na linha que o dono mais olha.
     const papel = f.papel && f.papel !== "comprador" ? ` <span class="contagem">(${escapeHtml(f.papel)})</span>` : "";
+    // A observacao NAO fica escondida no tooltip: ela e o aviso ("falta
+    // contrato", "constava vendido para fulano") e sai em linha propria, em
+    // cor propria, a pedido do dono.
+    const obs = f.obs ? `<div class="comprador-obs">⚠ ${escapeHtml(f.obs)}</div>` : "";
     return `<div class="comprador" title="${escapeHtml(detalhe)}">👤 ${escapeHtml(f.nome)}${papel}`
       + (f.data ? ` <span class="contagem">· ${escapeHtml(dataCurta(f.data) || f.data)}</span>` : "")
-      + `</div>`;
+      + `</div>${obs}`;
   }
 
   function opDeStatus(chave) {

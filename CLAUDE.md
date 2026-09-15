@@ -90,7 +90,7 @@ Na v306 entraram, pelas **tabelas de vendas do dono** (setembro/2026):
 
 | prédio | antes | agora | vendidos que entraram |
 |---|---|---|---|
-| Prime | 1 | 27 | 26 apartamentos |
+| Prime | 1 | 31 | 26 apartamentos + 4 salas |
 | Personalité | 2 | 50 | 39 apartamentos + 9 salas |
 | Quality Residence | 10 | 60 | 50 apartamentos (blocos A e B) |
 
@@ -392,26 +392,26 @@ até alguém informar o novo valor.
 
 ### A fazer na próxima atualização
 
-- **As 4 salas comerciais do térreo do Prime.** A tabela de vendas do dono lista
-  SALA 101, 102, 103 e 104 (de 131 a 173 m² globais) **sem a marca VENDIDO** —
-  ou seja, à venda. Elas **não estão no cadastro**, então não aparecem no site
-  nem no painel. Não foram cadastradas na v306 de propósito: pôr produto novo à
-  venda é decisão comercial, e faltam preço, planta e fotos. **Perguntar ao
-  dono** se entram.
-- **Premium Office · Sala 301.** O cadastro diz **vendida**; a tabela dele diz
-  **à venda**, com valor (220 INCC = R$ 749.456,40) e o box nº 08. Se a tabela
-  estiver certa, há uma sala fora da vitrine há tempo. **Não foi mexido** — quem
-  decide é ele.
+- ~~**As 4 salas comerciais do térreo do Prime**~~ — **RESOLVIDO em 15/09/2026
+  (v307).** O dono confirmou: as quatro estão **vendidas** (comprador BRANDA), e
+  não à venda como a coluna DISPONÍVEIS da tabela dava a entender. Entraram no
+  cadastro como vendidas, sem garagem — a tabela traz "-" para as quatro.
+- ~~**Premium Office · Sala 301**~~ — **RESOLVIDO em 15/09/2026 (v307).** O dono
+  confirmou: **vendida para SERGIO KIRINUS**. O cadastro já estava certo; o que
+  faltava era o comprador, que foi para o cofre.
 - **Prime · apartamento 902.** Existe nas plantas de box (o box 218 foi para
   ele), mas **não está na tabela de vendas** — a planilha pula do 901 para o 903.
   Por isso o Prime ficou com 27 unidades, não 28. **Não foi inventado.**
-- **Quality · box 58 e 59.** A tabela diz box 58 **vendido** (apto 301-A, Sergio
+- **Quality · box 58 e 59** *(o dono está conferindo).* A tabela diz box 58 **vendido** (apto 301-A, Sergio
   Kirinus) e box 59 **livre**; o cadastro diz o contrário (58 livre, 59 alugado).
-- **Quality · apto 501-A.** A tabela escreve "EDSON ALUGADO/FINANC" e, na coluna
-  do fim, "VENDIDO". O cadastro segue **alugado**. Confirmar qual é.
-- **Personalité · apto 1202.** Marcado VENDIDO com a observação "VOLTOU 02/2025 —
-  ALUGADO BRAVO". Ficou **vendido** no cadastro para não entrar sozinho na
-  vitrine. Se a venda foi mesmo desfeita, é só trocar para "alugado" no painel.
+- ~~**Quality · apto 501-A**~~ — **RESOLVIDO em 15/09/2026 (v307).** O dono
+  decidiu: segue **alugado** (portanto continua na oferta), e o "vendido para
+  EDSON" da tabela fica só como **observação** na ficha do cofre. Foi o que fez
+  a observação da ficha ganhar linha e cor próprias na tela, em vez de ficar
+  escondida no toque.
+- ~~**Personalité · apto 1202**~~ — **RESOLVIDO em 15/09/2026 (v307).** Vendido
+  mesmo, para **CRISTIAN KIRINUS**, que aluga para a BRAVO LOG. O "VOLTOU
+  02/2025" da planilha não desfez a venda.
 
 - ~~**Conferir a área do lote 98 da quadra 77 (Nova Vila Rica III)**~~ —
   **RESOLVIDO em 14/09/2026 (v302).** O dono confirmou: são **290 m²**, não 348.
