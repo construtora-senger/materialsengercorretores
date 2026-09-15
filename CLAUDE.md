@@ -78,6 +78,56 @@ falha se alguém recriar a marca.
 > texto que ainda disser "venda separada" ou "valor próprio" para o Renaissance
 > é resquício e está errado.
 
+## O prédio inteiro está no cadastro — inclusive o vendido (v306)
+
+**O cadastro é o prédio inteiro, não só a vitrine.** Até a v305 o Prime tinha
+**1** apartamento cadastrado, o Personalité **2** e o Quality **10** — só os que
+estavam à venda. As vendas não existiam em lugar nenhum, então o painel mostrava
+"0 vendidos · 0% vendido" nos três, e o dono, com razão, achou que o sistema
+estava errado. O sistema estava certo; o cadastro é que estava pela metade.
+
+Na v306 entraram, pelas **tabelas de vendas do dono** (setembro/2026):
+
+| prédio | antes | agora | vendidos que entraram |
+|---|---|---|---|
+| Prime | 1 | 27 | 26 apartamentos |
+| Personalité | 2 | 50 | 39 apartamentos + 9 salas |
+| Quality Residence | 10 | 60 | 50 apartamentos (blocos A e B) |
+
+Os grupos criados para essas unidades **só têm vendidas**, e o site omite o
+grupo que fica sem nenhuma disponível — **nada disso aparece para o cliente**.
+Eles existem para o painel contar o prédio inteiro. Cada um traz `plantaNota`
+(não há planta cadastrada para unidade vendida) e a `garagem` que a tabela do
+dono informa; onde a tabela não informa, vale a composição predominante das
+plantas de box que já estavam no cadastro.
+
+**Ao acrescentar unidade, rode `node tools/gerar-pontes.js`** — foram 124 pontes
+novas nesta rodada.
+
+## O cadastro de compradores mora no cofre, nunca no site (v306)
+
+Quem comprou cada unidade — **nome, CPF/CNPJ, telefone, e-mail, data e valor da
+venda, corretor, contrato** — fica no **cofre privado** (`senger-financeiro`,
+`financeiro.json`), na chave `compradores`, ao lado dos custos. Chega lá pelo
+botão **Importar compradores**, em Preços e margem, e aparece embaixo do nome da
+unidade em **Estoque / Unidades**, só para quem tem a chave do GitHub.
+
+**Isto jamais pode entrar no `data.js` nem em nenhum arquivo do repositório do
+site — ele é público.** Publicar o nome de um comprador não tem volta: fica no
+histórico do git e nos buscadores. A regra é a mesma da v287, quando a tabela
+dos lotes entrou e só o valor passou.
+
+Cuidados que o código já tem, e que não podem se perder:
+
+- **o `compradores` vai junto em toda gravação no cofre.** O cofre é um arquivo
+  só: mandar o pacote sem eles apagaria o cadastro inteiro lá dentro;
+- **`Apagar tudo` não encosta neles.** Aquele botão fala de custo e margem;
+- **nem todo nome é de comprador.** No Quality vários apartamentos estão
+  alugados e o nome é do **inquilino** — daí o campo `papel`, que a tela mostra
+  ao lado do nome;
+- o **Exportar backup** leva os compradores junto, então **o arquivo exportado
+  tem dado pessoal**: ele é cópia de segurança, não coisa de mandar em grupo.
+
 ## Registro de incorporação
 
 - Renaissance: **RI nº 11-47.935** (cadastrado na v301).
@@ -341,6 +391,27 @@ até alguém informar o novo valor.
 
 
 ### A fazer na próxima atualização
+
+- **As 4 salas comerciais do térreo do Prime.** A tabela de vendas do dono lista
+  SALA 101, 102, 103 e 104 (de 131 a 173 m² globais) **sem a marca VENDIDO** —
+  ou seja, à venda. Elas **não estão no cadastro**, então não aparecem no site
+  nem no painel. Não foram cadastradas na v306 de propósito: pôr produto novo à
+  venda é decisão comercial, e faltam preço, planta e fotos. **Perguntar ao
+  dono** se entram.
+- **Premium Office · Sala 301.** O cadastro diz **vendida**; a tabela dele diz
+  **à venda**, com valor (220 INCC = R$ 749.456,40) e o box nº 08. Se a tabela
+  estiver certa, há uma sala fora da vitrine há tempo. **Não foi mexido** — quem
+  decide é ele.
+- **Prime · apartamento 902.** Existe nas plantas de box (o box 218 foi para
+  ele), mas **não está na tabela de vendas** — a planilha pula do 901 para o 903.
+  Por isso o Prime ficou com 27 unidades, não 28. **Não foi inventado.**
+- **Quality · box 58 e 59.** A tabela diz box 58 **vendido** (apto 301-A, Sergio
+  Kirinus) e box 59 **livre**; o cadastro diz o contrário (58 livre, 59 alugado).
+- **Quality · apto 501-A.** A tabela escreve "EDSON ALUGADO/FINANC" e, na coluna
+  do fim, "VENDIDO". O cadastro segue **alugado**. Confirmar qual é.
+- **Personalité · apto 1202.** Marcado VENDIDO com a observação "VOLTOU 02/2025 —
+  ALUGADO BRAVO". Ficou **vendido** no cadastro para não entrar sozinho na
+  vitrine. Se a venda foi mesmo desfeita, é só trocar para "alugado" no painel.
 
 - ~~**Conferir a área do lote 98 da quadra 77 (Nova Vila Rica III)**~~ —
   **RESOLVIDO em 14/09/2026 (v302).** O dono confirmou: são **290 m²**, não 348.
