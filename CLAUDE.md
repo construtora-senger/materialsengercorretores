@@ -405,8 +405,17 @@ até alguém informar o novo valor.
   todos os andares têm três unidades. Ficou **sem `areaUnit`** de propósito —
   sem linha na tabela não há metragem própria, então vale a do final 02 — e
   **sem comprador no cofre**, até o dono confirmar o nome.
-- **Quality · box 58 e 59** *(o dono está conferindo).* A tabela diz box 58 **vendido** (apto 301-A, Sergio
-  Kirinus) e box 59 **livre**; o cadastro diz o contrário (58 livre, 59 alugado).
+- ~~**Quality · box 58 e 59**~~ — **RESOLVIDO em 15/09/2026 (v309).** O dono
+  mandou a **planta de box vendidos de 10/08/2026** e mandou seguir ela. A
+  planta foi lida box a box, casando cada rótulo com o box mais próximo:
+  **o cadastro já estava certo** nos 60 box, e quem estava fora era a
+  observação da tabela de vendas. Livres: **01, 12, 58 e 60**. O **box 59 está
+  alugado direto a uma pessoa, sem apartamento nenhum** — a planta escreve
+  "ALUGADO FILHO LAIRTON", e esse nome foi para o cofre. Único ponto em que a
+  planta e o cadastro divergem: o **box 51**, que a planta dá como vendido
+  (apto 501-A) e o cadastro mantém **alugado** — de propósito, porque o dono
+  decidiu na v307 que o próprio 501-A segue alugado, e o box acompanha a
+  unidade.
 - ~~**Quality · apto 501-A**~~ — **RESOLVIDO em 15/09/2026 (v307).** O dono
   decidiu: segue **alugado** (portanto continua na oferta), e o "vendido para
   EDSON" da tabela fica só como **observação** na ficha do cofre. Foi o que fez
