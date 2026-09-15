@@ -548,7 +548,9 @@
     .previa-emp[open] > summary::before { content:"▾ "; }
     .previa-emp > summary .contagem { margin-left:auto; color:var(--texto-suave); font-size:.74rem; font-weight:500; font-variant-numeric:tabular-nums; }
     /* Quem comprou, embaixo do nome da unidade. Dado privado: so esta tela. */
-    .comprador { margin-top:2px; font-size:.72rem; color:var(--texto-suave); font-weight:500; }
+    .comprador { margin-top:3px; font-size:.8rem; color:var(--texto); font-weight:700; }
+    /* O "(inquilino)" e a data continuam discretos — quem tem de saltar e o nome. */
+    .comprador .contagem { font-weight:500; }
     /* A observacao da ficha em cor propria: e o aviso que o dono precisa ver de
        relance ("falta contrato", "constava vendido para fulano"). */
     .comprador-obs { margin-top:2px; font-size:.7rem; font-weight:600; color:#b26a00; }
@@ -559,7 +561,7 @@
     .cliente-linha .unidade { font-weight:700; }
     .cliente-linha .unidade small { display:block; font-weight:500; color:var(--texto-suave); font-size:.72rem; }
     .cliente-linha .nome { font-weight:700; }
-    .cliente-linha .dados { color:var(--texto-suave); font-size:.76rem; margin-top:2px; }
+    .cliente-linha .dados { color:var(--texto); font-size:.78rem; margin-top:3px; }
     .cliente-linha .obs { color:#b26a00; font-weight:600; font-size:.74rem; margin-top:3px; }
     .cliente-sem { padding:10px 14px; border-top:1px solid var(--borda); color:var(--texto-suave); font-size:.78rem; }
     @media (max-width: 720px) { .cliente-linha { grid-template-columns:1fr; } }
@@ -1400,7 +1402,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 312;
+  const VERSAO_PAINEL = 313;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
