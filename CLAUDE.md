@@ -106,9 +106,15 @@ novas nesta rodada.
 
 ## O cadastro de compradores mora no cofre, nunca no site (v306)
 
-Quem comprou cada unidade — **nome, CPF/CNPJ, telefone, e-mail, data e valor da
-venda, corretor, contrato** — fica no **cofre privado** (`senger-financeiro`,
+Quem comprou cada unidade — **nome, telefone, e-mail, data e valor da venda,
+corretor, contrato** — fica no **cofre privado** (`senger-financeiro`,
 `financeiro.json`), na chave `compradores`, ao lado dos custos.
+
+**O CPF não é guardado (v311)**, por decisão do dono: *"cpf do cliente não é
+necessário"*. O campo **não está** na lista de `mapaDeFichas`, de propósito —
+arquivo que traga `cpf` perde o campo na leitura, e a gravação seguinte limpa o
+cofre sozinha. **Não recoloque**: documento de terceiro é o dado mais pesado de
+se ter por perto sem necessidade.
 
 **Tem menu próprio: "Clientes" (v310)**, a pedido do dono — *"faça um menu então
 só de clientes; isso não precisa tá em margens"*. É de lá que se importa
