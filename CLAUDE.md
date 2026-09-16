@@ -489,6 +489,21 @@ nenhuma disponível; se a venda for desfeita, o preço aparece como "Sob consult
 até alguém informar o novo valor.
 
 
+### O menu lateral fica fechado até o dono abrir (v318)
+
+As gavetas **Visão geral** e **Materiais** começavam abertas e, pior,
+**voltavam a abrir sozinhas**: `atualizarNavegacaoAtiva` reabria a gaveta toda
+vez que o módulo dela ficava ativo, então fechar não durava nada. Pedido do
+dono: *"deixe esse menu cascata sempre fechado, eu abro quando quiser"*.
+
+Agora as duas nascem fechadas e **só o botão delas abre**. Nada mais mexe nisso
+— entrar numa tela de dentro não reabre a gaveta.
+
+Os testes de navegador passaram a fazer o caminho do dono (`clicarNoMenu`):
+abrem a gaveta e só então clicam no item de dentro. **Teste que clica em item de
+submenu tem de abrir a gaveta antes** — direto no item, o clique fica esperando
+um botão que está escondido.
+
 ### A metragem pode morar na unidade, não no grupo (v315)
 
 A pendência **"tipologia 'Lojas' sem a metragem"** do Evolutti era **falsa**. As
