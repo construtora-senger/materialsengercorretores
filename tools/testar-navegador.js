@@ -407,6 +407,22 @@ async function teste(nome, fn) {
   await admin.goto(`${base}/admin/`, { waitUntil: "networkidle" });
   await admin.waitForTimeout(1200);
 
+  // v318 — as gavetas "Visão geral" e "Materiais" do menu comecam FECHADAS e so
+  // o dono as abre. O teste passou a fazer o mesmo caminho que ele: abre a
+  // gaveta e so entao clica no item de dentro.
+  async function clicarNoMenu(seletor) {
+    const item = admin.locator(seletor).first();
+    const gaveta = item.locator("xpath=ancestor::div[contains(@class,'nav-accordion')][1]");
+    if (await gaveta.count()) {
+      const aberta = await gaveta.first().evaluate((el) => el.classList.contains("aberto"));
+      if (!aberta) {
+        await gaveta.locator("[data-accordion-toggle]").first().click();
+        await admin.waitForTimeout(150);
+      }
+    }
+    await item.click();
+  }
+
   await teste("o painel abre direto no conteúdo", async () => {
     const visivel = await admin.locator("#tela-painel").isVisible();
     if (!visivel) {
@@ -424,7 +440,7 @@ async function teste(nome, fn) {
   await teste("cada módulo do menu abre a sua tela", async () => {
     const ruins = [];
     for (const modulo of ["materiais", "estoque", "precos", "incc", "publicacao", "visao"]) {
-      await admin.locator(`[data-modulo-alvo="${modulo}"]`).first().click();
+      await clicarNoMenu(`[data-modulo-alvo="${modulo}"]`);
       await admin.waitForTimeout(250);
       const visivel = await admin.locator(`section.bloco[data-modulo="${modulo}"]`).first().isVisible().catch(() => false);
       if (!visivel) ruins.push(modulo);
@@ -435,7 +451,7 @@ async function teste(nome, fn) {
   await teste("toda tela do painel tem como voltar", async () => {
     const semVoltar = [];
     for (const modulo of ["materiais", "estoque", "precos", "incc", "publicacao"]) {
-      await admin.locator(`[data-modulo-alvo="${modulo}"]`).first().click();
+      await clicarNoMenu(`[data-modulo-alvo="${modulo}"]`);
       await admin.waitForTimeout(200);
       if (!(await admin.locator("#botao-voltar-modulo").isVisible().catch(() => false))) semVoltar.push(modulo);
     }
@@ -443,7 +459,7 @@ async function teste(nome, fn) {
   });
 
   await teste("as pendências saem separadas por prioridade", async () => {
-    await admin.locator('[data-visao-filtro="cadastro"]').click();
+    await clicarNoMenu('[data-visao-filtro="cadastro"]');
     await admin.waitForTimeout(400);
     const texto = await admin.locator("#cadastro").innerText();
     const falta = ["Dado comercial", "Atenção", "Material complementar"].filter((t) => !texto.includes(t));
@@ -456,7 +472,7 @@ async function teste(nome, fn) {
   });
 
   await teste("digitar um custo acende Publicar e Descartar", async () => {
-    await admin.locator('[data-modulo-alvo="precos"]').first().click();
+    await clicarNoMenu('[data-modulo-alvo="precos"]');
     await admin.waitForTimeout(600);
     // A lista vem com um acordeao fechado por empreendimento.
     await admin.evaluate(() => document.querySelectorAll("#custos-venda details").forEach((d) => { d.open = true; }));
@@ -507,7 +523,7 @@ async function teste(nome, fn) {
 
   await teste("publicar grava data.js, index.html e sw.js de uma vez", async () => {
     gravacoes.length = 0;
-    await admin.locator('[data-modulo-alvo="estoque"]').first().click();
+    await clicarNoMenu('[data-modulo-alvo="estoque"]');
     await admin.waitForTimeout(500);
     const mudou = await admin.evaluate(() => {
       // Uma mudanca de status: e a operacao mais simples que existe.

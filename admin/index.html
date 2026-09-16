@@ -1090,8 +1090,8 @@
           <button type="button" class="sidebar-fechar" id="botao-fechar-menu" aria-label="Fechar menu">×</button>
         </div>
         <nav class="nav-admin">
-          <div class="nav-accordion aberto" data-nav-grupo="visao">
-            <button type="button" class="nav-accordion-toggle" data-accordion-toggle="visao" aria-expanded="true"><span class="nav-icone">⌂</span>Visão geral <span class="nav-seta">⌄</span></button>
+          <div class="nav-accordion" data-nav-grupo="visao">
+            <button type="button" class="nav-accordion-toggle" data-accordion-toggle="visao" aria-expanded="false"><span class="nav-icone">⌂</span>Visão geral <span class="nav-seta">⌄</span></button>
             <div class="nav-submenu">
               <button type="button" class="nav-subitem ativo" data-modulo-alvo="visao" data-visao-filtro="estoque">Estoque geral</button>
               <button type="button" class="nav-subitem" data-modulo-alvo="visao" data-visao-filtro="movimento">Movimento do portfólio</button>
@@ -1099,8 +1099,8 @@
             </div>
           </div>
 
-          <div class="nav-accordion aberto" data-nav-grupo="materiais">
-            <button type="button" class="nav-accordion-toggle" data-accordion-toggle="materiais" aria-expanded="true"><span class="nav-icone">▧</span>Materiais <span class="nav-seta">⌄</span></button>
+          <div class="nav-accordion" data-nav-grupo="materiais">
+            <button type="button" class="nav-accordion-toggle" data-accordion-toggle="materiais" aria-expanded="false"><span class="nav-icone">▧</span>Materiais <span class="nav-seta">⌄</span></button>
             <div class="nav-submenu">
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="identidade">Capa e logo</button>
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="galeria">Galeria de fotos</button>
@@ -1411,7 +1411,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 317;
+  const VERSAO_PAINEL = 318;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1917,14 +1917,10 @@
       const visaoCerta = botao.dataset.visaoFiltro ? botao.dataset.visaoFiltro === estado.visaoFiltro : true;
       botao.classList.toggle("ativo", moduloCerto && materialCerto && visaoCerta);
     });
-    if (estado.moduloAtivo === "visao") {
-      document.querySelector('[data-nav-grupo="visao"]')?.classList.add("aberto");
-      document.querySelector('[data-accordion-toggle="visao"]')?.setAttribute("aria-expanded", "true");
-    }
-    if (estado.moduloAtivo === "materiais") {
-      document.querySelector('[data-nav-grupo="materiais"]')?.classList.add("aberto");
-      document.querySelector('[data-accordion-toggle="materiais"]')?.setAttribute("aria-expanded", "true");
-    }
+    // v318 — as gavetas do menu ficam FECHADAS e so o dono as abre, no proprio
+    // botao: "deixe esse menu cascata sempre fechado, eu abro quando quiser".
+    // Antes, entrar numa tela de Visao geral ou de Materiais reabria a gaveta
+    // sozinha, mesmo logo depois de ele a ter fechado.
   }
 
   // Por onde o dono passou. Serve so ao Voltar: guarda a tela anterior, nunca
