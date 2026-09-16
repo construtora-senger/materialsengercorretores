@@ -522,11 +522,12 @@ nova também diz 290. **Não "corrija" de volta.**
 - **Nova Vila Rica I & II · lote 51 da quadra 77** — é a **única vendida do
   cadastro inteiro ainda sem nome**. A tabela que o dono mandou em 16/09/2026 é
   a do **Nova Vila Rica III**; o I & II não veio. Entra quando ele mandar.
-- **Quality · box 58** *(conferir com o dono).* A **tabela de clientes** liga o
-  box 58 ao apto 301-A, agora confirmado vendido; a **planta de box de
-  10/08/2026**, que mandou seguir na v309, dá o 58 como **livre**, e é ela que
-  está no cadastro. Como o 301-A está vendido **sem box nenhum vinculado**, uma
-  das duas está velha. **Não mexido.**
+- ~~**Quality · box 58**~~ — **RESOLVIDO em 16/09/2026 (v317).** O dono conferiu
+  e decidiu: o **box 58 é do apto 301-A**, e está nos dois papéis — *"apto 301-A
+  box 58 (também está na tabela) e no mapa também"*. A leitura da planta de box
+  da v309, que dava o 58 como livre, estava errada nesse ponto. **Livres agora:
+  01, 12 e 60** — eram quatro. Com isso o Quality não tem mais nenhum
+  apartamento vendido sem box vinculado.
 
 - ~~**Os 17 lotes vendidos do Nova Vila Rica**~~ — **RESOLVIDO em 16/09/2026**
   para os 16 do **Nova Vila Rica III**. O dono decidiu: *"se tem o nome do
@@ -570,7 +571,8 @@ nova também diz 290. **Não "corrija" de volta.**
   mandou a **planta de box vendidos de 10/08/2026** e mandou seguir ela. A
   planta foi lida box a box, casando cada rótulo com o box mais próximo:
   **o cadastro já estava certo** nos 60 box, e quem estava fora era a
-  observação da tabela de vendas. Livres: **01, 12, 58 e 60**. O **box 59 está
+  observação da tabela de vendas. Livres: **01, 12 e 60** — a v309 listava o
+  **58** junto, e o dono corrigiu em 16/09/2026: ele é do apto 301-A. O **box 59 está
   alugado direto a uma pessoa, sem apartamento nenhum** — a planta escreve
   "ALUGADO FILHO LAIRTON", e esse nome foi para o cofre. Único ponto em que a
   planta e o cadastro divergem: o **box 51**, que a planta dá como vendido
