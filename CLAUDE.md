@@ -489,20 +489,42 @@ nenhuma disponível; se a venda for desfeita, o preço aparece como "Sob consult
 até alguém informar o novo valor.
 
 
+### Os distratos do Nova Vila Rica III conferem (16/09/2026)
+
+A folha de **distratos** que o dono mandou traz **11 lotes** cuja venda foi
+desfeita (77/91, 77/93, 77/96, 77/98, 77/99, 77/105, 77/107, 147/27, 147/30,
+157/16 e 157/29). **Todos os 11 já estão como `disponivel` no cadastro**, com
+preço, e nenhum deles recebeu ficha de comprador — venda desfeita não tem dono.
+Os 16 que a tabela dá como VENDIDO são exatamente os 16 `vendido` do cadastro.
+
+A folha de distratos escreve **348 m²** no lote 98 da quadra 77, mas ali vale
+**290 m²**: é a mesma folha antiga que a v302 corrigiu com o dono, e a tabela
+nova também diz 290. **Não "corrija" de volta.**
+
 ### A fazer na próxima atualização
 
-- **Os 17 lotes vendidos do Nova Vila Rica estão sem cliente.** Os compradores
-  existem na tabela de valores do loteamento, mas na v287 só o preço entrou no
-  sistema. O dono decidiu em 16/09/2026: *"se tem o nome do comprador, deve
-  constar como nos outros produtos"*. **Falta a tabela do loteamento** — ela não
-  está no repositório (é arquivo dele), então as fichas entram assim que ele
-  mandar o arquivo de novo.
-- **Quality · apto 301-A** *(conferir com o dono).* O cadastro diz **vendido**;
-  a tabela de clientes traz, em amarelo, **"SERGIO KIRINUS — reservado
-  01/12.2025 (falta contrato de venda) — DISPONÍVEL P/ALUGUEL"**. Reservado não
-  existe neste sistema, e "disponível para aluguel" não é o mesmo que vendido.
-  **Não mexido.**
+- **Nova Vila Rica I & II · lote 51 da quadra 77** — é a **única vendida do
+  cadastro inteiro ainda sem nome**. A tabela que o dono mandou em 16/09/2026 é
+  a do **Nova Vila Rica III**; o I & II não veio. Entra quando ele mandar.
+- **Quality · box 58** *(conferir com o dono).* A **tabela de clientes** liga o
+  box 58 ao apto 301-A, agora confirmado vendido; a **planta de box de
+  10/08/2026**, que mandou seguir na v309, dá o 58 como **livre**, e é ela que
+  está no cadastro. Como o 301-A está vendido **sem box nenhum vinculado**, uma
+  das duas está velha. **Não mexido.**
 
+- ~~**Os 17 lotes vendidos do Nova Vila Rica**~~ — **RESOLVIDO em 16/09/2026**
+  para os 16 do **Nova Vila Rica III**. O dono decidiu: *"se tem o nome do
+  comprador, deve constar como nos outros produtos"*, e mandou a tabela do
+  loteamento (a dele, com CPF, comissão e matrícula) mais a folha de
+  **distratos**. Foram para o cofre **nome, telefone, e-mail, data, valor da
+  venda e corretor** — **o CPF não**, como manda a v311, nem comissão ou
+  matrícula. O 157/32 é o único com dono anterior: **Silvio da Rosa Nunes cedeu
+  para Luis Antonio Hermann**. Falta só o 77/51, do I & II, que é outra tabela.
+- ~~**Quality · apto 301-A**~~ — **RESOLVIDO em 16/09/2026.** O dono mandou:
+  *"apto 301A — bote vendido para Sergio Kirinus"*. O cadastro já estava como
+  **vendido**; o que faltava era a ficha, que foi para o cofre com o
+  "reservado 01/12.2025 (falta contrato de venda) — DISPONÍVEL P/ALUGUEL" da
+  tabela guardado como anotação, atrás do 📝.
 - ~~**Quality · apto 104-A e 202-A**~~ — **RESOLVIDO em 16/09/2026.** Eles nunca
   estiveram em branco: o dono mandou a foto da TABELA DE CLIENTES do bloco A e
   os dois têm nome — **104-A é do LAIRTON HARNISCH** (box 36) e **202-A é do
