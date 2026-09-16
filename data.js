@@ -378,12 +378,14 @@ const EMPREENDIMENTOS = [
       { src: "assets/evo-3.webp", legenda: "Andamento da obra" },
       { src: "assets/evo-p2.webp", legenda: "Planta — 2 dormitórios (1 ou 2 suítes)" },
       { src: "assets/evo-p3.webp", legenda: "Planta — 3 dormitórios (3 suítes)" },
+      { src: "assets/evolutti/evo-planta-terreo.webp", legenda: "Planta — salas comerciais do térreo" },
     ],
     grupos: [
       {
         // Lojas do terreo, as tres vendidas. Cada uma tem a sua metragem, por
         // isso a area vai na propria unidade e nao no grupo.
         tipo: "Lojas",
+        planta: "evo-planta-terreo",
         unidades: [
           { apto: "Loja 101", status: "vendido", areaUnit: "148 m² global · 108 m² privativo" },
           { apto: "Loja 102", status: "vendido", areaUnit: "120 m² global · 88 m² privativo" },
