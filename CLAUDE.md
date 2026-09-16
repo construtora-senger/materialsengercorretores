@@ -519,9 +519,12 @@ nova também diz 290. **Não "corrija" de volta.**
 
 ### A fazer na próxima atualização
 
-- **Nova Vila Rica I & II · lote 51 da quadra 77** — é a **única vendida do
-  cadastro inteiro ainda sem nome**. A tabela que o dono mandou em 16/09/2026 é
-  a do **Nova Vila Rica III**; o I & II não veio. Entra quando ele mandar.
+- **Nova Vila Rica III · lote 34 da quadra 157** *(conferir com o dono).* A
+  folha de **vendas e comissões** registra *"Maio — Silvio Nunes — Q157 L34"*,
+  mas a tabela do loteamento põe o Silvio da Rosa Nunes no **157/32**, cedido
+  depois para o Luis Antonio Hermann — e é o 32 que está vendido no cadastro,
+  com o 34 à venda. Ou a folha trocou o número, ou há uma venda a mais.
+  **Não mexido.**
 - ~~**Quality · box 58**~~ — **RESOLVIDO em 16/09/2026 (v317).** O dono conferiu
   e decidiu: o **box 58 é do apto 301-A**, e está nos dois papéis — *"apto 301-A
   box 58 (também está na tabela) e no mapa também"*. A leitura da planta de box
@@ -529,6 +532,11 @@ nova também diz 290. **Não "corrija" de volta.**
   01, 12 e 60** — eram quatro. Com isso o Quality não tem mais nenhum
   apartamento vendido sem box vinculado.
 
+- ~~**Nova Vila Rica I & II · lote 51 da quadra 77**~~ — **RESOLVIDO em
+  16/09/2026.** Era a última vendida do cadastro inteiro sem nome, e o
+  comprador estava na folha de **vendas e comissões** do dono: *"Junho —
+  Alessandra e Jonatas — NVR II — Q77 L51 — R$ 90.000,00"*. A ficha foi
+  entregue para importar. Com ela, **todas as vendidas do sistema têm nome**.
 - ~~**Os 17 lotes vendidos do Nova Vila Rica**~~ — **RESOLVIDO em 16/09/2026**
   para os 16 do **Nova Vila Rica III**. O dono decidiu: *"se tem o nome do
   comprador, deve constar como nos outros produtos"*, e mandou a tabela do
