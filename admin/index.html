@@ -1411,7 +1411,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 314;
+  const VERSAO_PAINEL = 315;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -4091,7 +4091,14 @@
     (emp.grupos || []).forEach((g, grupoIndex) => {
       const rotulo = g.estoque || g.tipo;
       const unidades = g.unidades || [];
-      if (!g.area) semArea.push(rotulo);
+      // v315 — a metragem pode estar na PROPRIA UNIDADE (`areaUnit`), e nao no
+      // grupo: e o caso das Lojas do Evolutti, onde cada loja tem a sua e por
+      // isso o grupo nao tem uma so. Antes daqui a pendencia acusava "sem a
+      // metragem" com as tres metragens cadastradas — o dono mandou conferir e
+      // estava certo. So falta metragem quando nao ha NEM o texto do grupo NEM
+      // a area em todas as unidades.
+      const todasComArea = unidades.length && unidades.every((u) => u.areaUnit);
+      if (!g.area && !todasComArea) semArea.push(rotulo);
       // Considera tambem as plantas que o usuario acabou de anexar e ainda nao
       // publicou, para a pendencia sumir na hora no painel.
       const plantaGrupo = plantaAtual(emp, { grupoIndex, unidadeIndex: null });

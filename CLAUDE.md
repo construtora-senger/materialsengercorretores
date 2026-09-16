@@ -489,6 +489,22 @@ nenhuma disponível; se a venda for desfeita, o preço aparece como "Sob consult
 até alguém informar o novo valor.
 
 
+### A metragem pode morar na unidade, não no grupo (v315)
+
+A pendência **"tipologia 'Lojas' sem a metragem"** do Evolutti era **falsa**. As
+três lojas do térreo têm metragem no cadastro desde sempre — **cada uma a sua**
+(101: 148 m² global / 108 privativo; 102: 120/88; 103: 185/135), em `areaUnit`
+na própria unidade, porque um grupo com três metragens diferentes não tem uma só
+para escrever. O painel olhava **apenas `g.area`** e acusava falta.
+
+Agora a conferência é a mesma da planta: **falta metragem só quando não há nem o
+texto do grupo nem `areaUnit` em todas as unidades**. Vale a regra geral —
+**toda conferência de tipologia tem de olhar a unidade também**, não só o grupo.
+
+O dono levou a sério ("as metragens das salas têm lá na tabela que já mandei
+antes — e umas mil vezes já"), e estava certo: **quando ele disser que um dado
+está lá, confira no cadastro antes de responder.**
+
 ### Os distratos do Nova Vila Rica III conferem (16/09/2026)
 
 A folha de **distratos** que o dono mandou traz **11 lotes** cuja venda foi
