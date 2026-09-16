@@ -297,6 +297,15 @@ que já havia (Premium Office e Renaissance, que não têm `.doc`) fecham **203*
 De 168 vendidas sem nome sobraram **19**: 17 lotes do Nova Vila Rica e dois
 apartamentos do Quality.
 
+**Os dois do Quality eram erro de leitura, não falta de nome (16/09/2026).** O
+dono mandou a foto da tabela e lá estão os dois: **104-A · LAIRTON HARNISCH** e
+**202-A · DANIEL WEBER LIMA**. Com eles, ficam **205 fichas** e **17 vendidas
+sem nome** — todas lotes do Nova Vila Rica. É a **quarta armadilha** do formato,
+depois das três de cima: **duas linhas seguidas podem sair da leitura sem nenhum
+aviso**, e a conta de "quantas ficaram sem nome" não acusa nada, porque o lugar
+delas fica vazio do mesmo jeito. **Quando o dono disser que um nome existe, a
+tabela dele vence a leitura** — foi ele quem achou as duas.
+
 Os `.doc` são Word binário antigo (OLE2). O texto sai pela **piece table** do
 stream `1Table`, não por `strings`. **A primeira leitura saiu errada em 13
 nomes** e o dono pegou: três armadilhas, todas do formato.
@@ -482,15 +491,28 @@ até alguém informar o novo valor.
 
 ### A fazer na próxima atualização
 
-- **Quality · apto 104-A e 202-A** *(o dono está conferindo).* São as duas
-  únicas vendidas do prédio sem cliente: estão **em branco na tabela de
-  clientes** dele.
-- **Quality · apto 201-A.** O cadastro diz **à venda**; a tabela de clientes
-  traz a **Sudbrack Leonhardt Supermercados** nele. Se foi vendido, o cadastro
-  está errado. **Não mexido.**
 - **Os 17 lotes vendidos do Nova Vila Rica estão sem cliente.** Os compradores
   existem na tabela de valores do loteamento, mas na v287 só o preço entrou no
-  sistema. Entram no cofre quando o dono pedir.
+  sistema. O dono decidiu em 16/09/2026: *"se tem o nome do comprador, deve
+  constar como nos outros produtos"*. **Falta a tabela do loteamento** — ela não
+  está no repositório (é arquivo dele), então as fichas entram assim que ele
+  mandar o arquivo de novo.
+- **Quality · apto 301-A** *(conferir com o dono).* O cadastro diz **vendido**;
+  a tabela de clientes traz, em amarelo, **"SERGIO KIRINUS — reservado
+  01/12.2025 (falta contrato de venda) — DISPONÍVEL P/ALUGUEL"**. Reservado não
+  existe neste sistema, e "disponível para aluguel" não é o mesmo que vendido.
+  **Não mexido.**
+
+- ~~**Quality · apto 104-A e 202-A**~~ — **RESOLVIDO em 16/09/2026.** Eles nunca
+  estiveram em branco: o dono mandou a foto da TABELA DE CLIENTES do bloco A e
+  os dois têm nome — **104-A é do LAIRTON HARNISCH** (box 36) e **202-A é do
+  DANIEL WEBER LIMA** (box 46), com a **Sudbrack Leonhardt Supermercados Ltda.
+  riscada** antes dele. Quem errou foi a leitura da v312, que perdeu as duas
+  linhas. As fichas foram entregues ao dono para importar em Clientes.
+- ~~**Quality · apto 201-A**~~ — **RESOLVIDO em 16/09/2026.** Está **à venda
+  mesmo**: *"cliente cancelou trato"*, e a célula dele está **em branco** na
+  tabela. O "Sudbrack no 201-A" era erro de leitura — aquele nome é o riscado do
+  **202-A**, a linha de baixo. O cadastro já estava certo; nada mexido.
 
 - ~~**As 4 salas comerciais do térreo do Prime**~~ — **RESOLVIDO em 15/09/2026
   (v307).** O dono confirmou: as quatro estão **vendidas** (comprador BRANDA), e
@@ -499,12 +521,13 @@ até alguém informar o novo valor.
 - ~~**Premium Office · Sala 301**~~ — **RESOLVIDO em 15/09/2026 (v307).** O dono
   confirmou: **vendida para SERGIO KIRINUS**. O cadastro já estava certo; o que
   faltava era o comprador, que foi para o cofre.
-- **Prime · apartamento 902** — **cadastrado como VENDIDO na v308**, a pedido do
-  dono, que vai conferir quem comprou. Ele **não tem linha na tabela de vendas**
-  (a planilha pula do 901 para o 903), mas existe: o box 218 foi para ele e
-  todos os andares têm três unidades. Ficou **sem `areaUnit`** de propósito —
-  sem linha na tabela não há metragem própria, então vale a do final 02 — e
-  **sem comprador no cofre**, até o dono confirmar o nome.
+- ~~**Prime · apartamento 902**~~ — **RESOLVIDO em 16/09/2026.** O dono
+  confirmou: *"foi vendido para a Consuelo e agora por último para Leodi
+  Altmann"*. A ficha ficou com **LEODI ALTMANN** como comprador e **Consuelo**
+  como o nome anterior (o mesmo campo `riscado` da v314, que é onde mora o dono
+  antigo). Ele continua **cadastrado como VENDIDO desde a v308** e **sem
+  `areaUnit`** de propósito — não tem linha na tabela de vendas (a planilha pula
+  do 901 para o 903), então vale a metragem do final 02.
 - ~~**Quality · box 58 e 59**~~ — **RESOLVIDO em 15/09/2026 (v309).** O dono
   mandou a **planta de box vendidos de 10/08/2026** e mandou seguir ela. A
   planta foi lida box a box, casando cada rótulo com o box mais próximo:
