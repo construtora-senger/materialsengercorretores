@@ -489,6 +489,57 @@ nenhuma disponível; se a venda for desfeita, o preço aparece como "Sob consult
 até alguém informar o novo valor.
 
 
+### O box 59 do Quality voltou a ficar livre (v320)
+
+O dono mandou o **mapa de box atualizado em 16/09/26** e a **TABELA DE CLIENTES**
+do Quality e pediu para conferir *"os aptos e mapas de box disponíveis, não pode
+estar faltando nenhum"*. As três fontes — cadastro, mapa e tabela — foram lidas
+uma a uma e **casam nos 60 apartamentos**, sem uma única divergência entre mapa
+e tabela.
+
+**Nada faltava.** O que parecia falta era o **box 59**, alugado direto a uma
+pessoa ("ALUGADO FILHO LAIRTON" no mapa, sem apartamento nenhum, e ausente da
+tabela de clientes). Com ele fora da conta sobravam 3 box livres para 4
+apartamentos disponíveis, e o painel acusava "1 apartamento sem box".
+
+O dono decidiu: *"então tira esse alugado filho Lairton — ele já desistiu
+mesmo"*. O box 59 passou a **`disponivel`** e a `obs` do aluguel saiu.
+
+**A conta do Quality fecha exata agora:**
+
+| | |
+|---|---|
+| apartamentos | 60 = 51 vendidos + 5 alugados + 4 disponíveis |
+| box | 60 = 51 vendidos + 5 alugados + 4 livres |
+| box livres | **01, 12, 59 e 60** |
+| apartamentos sem box | **201-A, 401-A, 701-A e 802-A** (os 4 disponíveis) |
+
+Os 5 alugados já levam box próprio (40, 42, 51, 52 e 57), então **4 box livres
+para 4 apartamentos**: um para um.
+
+**Sumiu junto um alarme falso.** A pendência crítica *"1 box vendido sem a
+unidade que levou"* era o 59 — que não era vendido, era **alugado**, e estava
+certo em não ter apartamento. `pendenciasDeBox` conta todo box não-disponível
+sem `apto` e chama todos de "vendido". **Se voltar a existir box alugado direto
+a uma pessoa, o alarme falso volta** — a regra ainda não separa os dois casos.
+
+**O nome do locatário continua no cofre.** Só o dono alcança: a ficha sai por
+**Clientes**, com a chave do GitHub.
+
+**Duas divergências entre o cadastro e o mapa novo continuam de pé, de
+propósito**, porque as duas são decisão escrita do dono e o mapa não foi
+atualizado nelas:
+
+- **box 32 / apto 601-B** — cadastro **vendido** (v312, apto de investimento da
+  Doroti); o mapa de 16/09/26 ainda escreve ALUGADO;
+- **box 51 / apto 501-A** — cadastro **alugado** (v307); o mapa escreve VENDIDO.
+
+**Cuidado de teste herdado:** o teste *"as pendências saem separadas por
+prioridade"* exigia que o grupo **Dado comercial** existisse. Sem o alarme falso
+não há mais nenhuma pendência crítica no sistema inteiro, o painel omite o grupo
+vazio — e o teste quebrou. Ele agora confere **a ordem dos grupos que existem**,
+não a presença de todos. **Nenhum teste pode exigir que haja pendência.**
+
 ### A Visão geral virou a faixa da Senger + o placar (v319)
 
 Terceira tentativa nessa tela, e a primeira em que o dono disse **o que**

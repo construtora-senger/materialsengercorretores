@@ -486,12 +486,22 @@ async function teste(nome, fn) {
     return semVoltar.length ? `sem voltar: ${semVoltar.join(", ")}` : "";
   });
 
+  // Os tres niveis saem separados e NESTA ordem. O grupo de dado comercial pode
+  // nao existir — quando nenhum empreendimento tem pendencia critica, o painel
+  // omite o grupo, e isso e o certo. Exigir que ele apareca fazia o teste
+  // quebrar no dia em que o cadastro ficou em ordem (v320, box 59 do Quality).
   await teste("as pendências saem separadas por prioridade", async () => {
     await clicarNoMenu('[data-visao-filtro="cadastro"]');
     await admin.waitForTimeout(400);
-    const texto = await admin.locator("#cadastro").innerText();
-    const falta = ["Dado comercial", "Atenção", "Material complementar"].filter((t) => !texto.includes(t));
-    return falta.length ? `sem os grupos: ${falta.join(", ")}` : "";
+    const titulos = await admin.locator("#cadastro .pend-grupo-topo h3").allTextContents();
+    const ordemEsperada = ["Dado comercial", "Atenção", "Material complementar"];
+    const vistos = ordemEsperada.filter((t) => titulos.some((h) => h.includes(t)));
+    if (!vistos.length) return "nenhum grupo de pendência na tela";
+    // Nao pode faltar um nivel do meio: se ha critico e material, tem de haver
+    // o grupo de atencao entre eles, na ordem.
+    const posicoes = vistos.map((t) => titulos.findIndex((h) => h.includes(t)));
+    const emOrdem = posicoes.every((p, i) => i === 0 || p > posicoes[i - 1]);
+    return emOrdem ? "" : `grupos fora de ordem: ${titulos.join(" / ")}`;
   });
 
   await teste("folder e vídeo não entram como pendência crítica", async () => {
