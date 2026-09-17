@@ -1584,7 +1584,7 @@ const EMPREENDIMENTOS = [
       { box: "56", vagas: 1, areaPriv: 12.25, status: "vendido", apto: "303A" },
       { box: "57", vagas: 1, areaPriv: 12.25, status: "alugado", apto: "801A" },
       { box: "58", vagas: 1, areaPriv: 12.25, status: "vendido", apto: "301A" },
-      { box: "59", vagas: 1, areaPriv: 12.25, status: "alugado", obs: "Alugado para o filho do Lairton" },
+      { box: "59", vagas: 1, areaPriv: 12.25, status: "disponivel" },
       { box: "60", vagas: 1, areaPriv: 12.25, status: "disponivel" },
     ],
   },
