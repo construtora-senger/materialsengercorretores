@@ -432,9 +432,37 @@ async function teste(nome, fn) {
     return (await admin.locator("#conteudo").isVisible()) ? "" : "o conteudo nao carregou";
   });
 
-  await teste("a Visão geral mostra o estoque por empreendimento", async () => {
-    const n = await admin.locator("#dashboard .card").count();
-    return n >= 8 ? "" : `so ${n} cartoes no estoque geral`;
+  // v319 — a Visao geral virou faixa da Senger + placar. O teste segue o
+  // caminho do dono: confere o total, conta os quadros, abre um e volta.
+  await teste("a Visão geral abre com o total da Senger e o placar", async () => {
+    const total = await admin.locator("#dashboard .ve-total").count();
+    const quadros = await admin.locator("#dashboard .ve-quadro").count();
+    if (!total) return "a faixa com o total da Senger nao apareceu";
+    return quadros >= 8 ? "" : `so ${quadros} quadros no placar`;
+  });
+
+  await teste("a faixa de cima soma todos os empreendimentos", async () => {
+    const naFaixa = await admin.locator("#dashboard .ve-total-n strong").allTextContents();
+    const nosQuadros = await admin.locator("#dashboard .ve-quadro .ve-q-n").allTextContents();
+    const somaDosQuadros = nosQuadros.reduce((a, t) => a + parseInt(t, 10), 0);
+    const aVenda = parseInt(naFaixa[0], 10);
+    if (aVenda !== somaDosQuadros) return `a faixa diz ${aVenda} a venda e os quadros somam ${somaDosQuadros}`;
+    // O total do cadastro tem de fechar com "a venda + vendidos".
+    const [, vendidos, cadastro] = naFaixa.map((t) => parseInt(t, 10));
+    return aVenda + vendidos === cadastro ? "" : `${aVenda} + ${vendidos} nao dao os ${cadastro} do cadastro`;
+  });
+
+  await teste("tocar num quadro abre o detalhe, e o voltar fecha", async () => {
+    await admin.locator("#dashboard .ve-quadro").first().click();
+    await admin.waitForTimeout(250);
+    if (!(await admin.locator("#dashboard .visao-emp").count())) return "o detalhe nao abriu";
+    // Nada do detalhe pode ter se perdido: tipologia, garagem e cadastro.
+    const colunas = await admin.locator("#dashboard .ve-coluna").count();
+    if (colunas < 3) return `o detalhe abriu com ${colunas} colunas, nao 3`;
+    if (!(await admin.locator("#dashboard .ve-gaveta").count())) return "sumiu a gaveta da garagem por unidade";
+    await admin.locator("#dashboard [data-ve-fechar]").click();
+    await admin.waitForTimeout(250);
+    return (await admin.locator("#dashboard .ve-quadro").count()) >= 8 ? "" : "o voltar nao devolveu o placar";
   });
 
   await teste("cada módulo do menu abre a sua tela", async () => {

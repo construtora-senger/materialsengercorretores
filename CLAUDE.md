@@ -489,6 +489,60 @@ nenhuma disponível; se a venda for desfeita, o preço aparece como "Sob consult
 até alguém informar o novo valor.
 
 
+### A Visão geral virou a faixa da Senger + o placar (v319)
+
+Terceira tentativa nessa tela, e a primeira em que o dono disse **o que**
+atrapalhava. A v262 e a v301 tinham refeito no escuro — ele só dizia que
+continuava confuso. Desta vez ele listou os oito problemas (e confirmou:
+*"acertou em tudo, os 8 itens"*), viu **quatro telas desenhadas** e escolheu.
+
+**O que estava errado, na ordem em que ele confirmou:**
+
+1. a tela se chamava "Estoque geral" e **não tinha nenhum número geral** — a
+   soma dos dez ficava por conta da cabeça dele;
+2. o que mais gritava no cartão era a **garagem** (bolinha verde, negrito), e
+   garagem não é a pergunta de quem abre a visão geral;
+3. embaixo dela vinham **cinco frases de conferência de box**, repetidas nos
+   dez empreendimentos;
+4. tipologia, garagem e cadastro tinham **o mesmo peso** — nada dizia qual era
+   o principal;
+5. **"43 · 6 · 49" não se explicava**: o 43 já inclui os alugados, e o
+   "· 2 alugados" saía numa letrinha do lado;
+6. a barra do vendido era **vermelha**, e vendido é a coisa boa;
+7. no **celular** cada empreendimento tomava uma tela e meia — dez deles,
+   quinze telas de rolagem;
+8. a tela **refazia o trabalho de outras três** (Estoque/Unidades, O que falta
+   e a conferência de garagem) em vez de resumir cada uma.
+
+**O que está no ar agora — o "Placar", layout 2 dos quatro:**
+
+- **a faixa da Senger**, em cima: quantos à venda (com *"(6 alugados, que
+  seguem na oferta)"* escrito por extenso), quantos vendidos, quantos no
+  cadastro e em quantos empreendimentos, mais a barra **verde** do quanto já
+  foi vendido. Hoje: 183 à venda, 216 vendidos, 399 no cadastro, 54% vendido;
+- **o placar**, embaixo: um quadro por empreendimento com **só o número do que
+  falta vender**, o tipo de imóvel, a barra e "N de M". Dois por linha no
+  celular, os dez em menos de duas telas.
+
+**Nada foi jogado fora.** O cartão inteiro da v301 — tipologia, garagem,
+situação do cadastro, os atalhos e a gaveta "Garagem por unidade" — continua
+inteiro em `renderDetalheDoEmp`, **um toque adiante**. A conferência de box
+saiu do resumo porque o lugar dela é o detalhe.
+
+**A pendência virou uma bolinha** ao lado do nome no quadro: vermelha quando há
+dado comercial a corrigir, amarela no ponto de atenção. O texto continua no
+detalhe e em "O que falta".
+
+**Cuidado de CSS herdado disto:** o `.ve-quadro` é uma **coluna flex** de
+propósito, e `.ve-quadro > *` é `display: block`. A barra é um `<span>`, e
+**altura não vale em elemento inline** — sem o `block` ela estourava o quadro
+inteiro no celular. O `margin-top: auto` da barra é o que deixa todos os
+quadros de uma fileira com a mesma altura e a barra alinhada no pé.
+
+**Regra que fica: nesta tela, não adivinhe.** Foram três rodadas às cegas e uma
+com ele apontando. Quando a tela não agradar, **peça os itens e mostre
+desenhos** antes de programar.
+
 ### O menu lateral fica fechado até o dono abrir (v318)
 
 As gavetas **Visão geral** e **Materiais** começavam abertas e, pior,
@@ -654,14 +708,12 @@ nova também diz 290. **Não "corrija" de volta.**
 - ~~**Embutir o valor do box no custo do Renaissance**~~ — **FEITO na v246.**
   Os boxes do Renaissance já estão no valor dos apartamentos. Ver
   "Garagem do Renaissance", em REGRAS ATUAIS.
-- ~~**Refazer a apresentação de Visão geral > Estoque geral**~~ — **FEITO na
-  v301.** Dois degraus: uma faixa de cima que responde em dois segundos
-  (quantos à venda, quantos vendidos, que tipo de imóvel, barra de quanto já foi
-  vendido) e, embaixo, três colunas de mesmo peso — estoque por tipologia,
-  garagem e situação do cadastro. A lista "Garagem por unidade" continua
-  inteira, dentro de uma gaveta fechada, e cada empreendimento tem atalhos para
-  Ver unidades, Preços e margem e O que falta. **Confirmar com o dono se agora
-  está claro** — ele nunca chegou a detalhar o que o confundia na v262.
+- ~~**Refazer a apresentação de Visão geral > Estoque geral**~~ — **RESOLVIDO
+  em 17/09/2026 (v319).** A v301 não resolveu: o dono disse que *"ainda não tá
+  bem claro de entender"*. Desta vez ele apontou os oito problemas, confirmou
+  a leitura (*"acertou em tudo, os 8 itens"*), escolheu entre quatro telas
+  desenhadas e ficou o **Placar**. Ver "A Visão geral virou a faixa da Senger
+  + o placar (v319)".
 ### São três Casas Suspensas, não duas (v252)
 
 O dono fala delas separadas — **2 suítes**, **3 suítes frente** e

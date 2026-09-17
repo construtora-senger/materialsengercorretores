@@ -207,7 +207,107 @@
        peso. A lista longa (garagem por unidade) foi para uma gaveta
        fechada — nenhuma informacao saiu, ela so parou de enterrar
        o resto.
+
+       v319 — O PLACAR. O dono desenhou quatro telas e escolheu esta.
+       A v301 ainda punha os dez empreendimentos inteiros um debaixo do
+       outro: o que mais gritava era a conferencia de box (bolinha verde,
+       negrito, cinco frases de auditoria por cartao), e a tela chamada
+       "Estoque geral" nao tinha nenhum numero geral. Agora sao dois
+       niveis: a FAIXA DA SENGER com o total de tudo, e um PLACAR de
+       quadrinhos — um por empreendimento, so com o quanto falta vender.
+       O detalhe de sempre (tipologia, garagem, cadastro e a gaveta da
+       garagem por unidade) continua inteiro, um toque adiante.
        ============================================================ */
+
+    /* A faixa que responde pela Senger inteira, antes de qualquer predio. */
+    .ve-total {
+      background: var(--fundo); border: 1px solid var(--borda);
+      border-radius: 10px; padding: 15px 17px; margin-bottom: 16px;
+    }
+    .ve-total-numeros { display: flex; flex-wrap: wrap; gap: 16px; }
+    .ve-total-n { flex: 1 1 140px; min-width: 0; }
+    .ve-total-n strong {
+      display: block; font-size: 1.95rem; line-height: 1.05;
+      font-variant-numeric: tabular-nums; color: var(--texto);
+    }
+    .ve-total-n.destaque strong { color: var(--dourado-escuro); }
+    .ve-total-n span {
+      display: block; font-size: .72rem; color: var(--texto-suave);
+      line-height: 1.35; margin-top: 3px;
+    }
+    .ve-trilho {
+      height: 9px; border-radius: 999px; background: var(--borda);
+      overflow: hidden; margin-top: 13px;
+    }
+    .ve-trilho > i { display: block; height: 100%; background: var(--verde); }
+    .ve-legenda {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px;
+      font-size: .72rem; color: var(--texto-suave); margin-top: 6px;
+    }
+    .ve-legenda b { color: var(--verde); }
+
+    /* O placar: um quadro por empreendimento, tocavel. */
+    .ve-placar {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+      gap: 11px; align-items: stretch;
+    }
+    /* O quadro e uma COLUNA FLEX de proposito: com `align-items: stretch` na
+       grade, os quadros de uma fileira ficam da mesma altura, e a barra
+       (`margin-top: auto`) encosta no pe de todos, alinhada. Os filhos
+       precisam ser `block` — a barra e um <span>, e altura nao vale em
+       elemento inline: ela estourava o quadro inteiro. */
+    .ve-quadro {
+      display: flex; flex-direction: column; width: 100%; text-align: left;
+      font: inherit; cursor: pointer;
+      background: var(--fundo); border: 1px solid var(--borda);
+      border-radius: 10px; padding: 13px;
+    }
+    .ve-quadro:hover { border-color: var(--dourado); }
+    .ve-quadro > * { display: block; }
+    .ve-quadro .ve-q-nome {
+      font-weight: 700; font-size: .84rem; line-height: 1.3; color: var(--texto);
+    }
+    .ve-quadro .ve-q-n {
+      font-size: 2rem; line-height: 1; margin-top: 6px;
+      font-weight: 700; color: var(--dourado-escuro); font-variant-numeric: tabular-nums;
+    }
+    .ve-quadro .ve-q-un { font-size: .7rem; color: var(--texto-suave); margin-top: 2px; }
+    .ve-quadro .ve-trilho { height: 6px; margin-top: auto; }
+    .ve-quadro .ve-q-pe {
+      display: flex; justify-content: space-between; gap: 8px;
+      font-size: .68rem; color: var(--texto-suave); margin-top: 5px;
+    }
+    /* A pendencia virou uma bolinha ao lado do nome: vermelha quando ha dado
+       comercial a corrigir, amarela no ponto de atencao. O texto inteiro
+       continua no detalhe e em "O que falta". */
+    .ve-sinal {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      margin-left: 6px; vertical-align: middle; background: var(--borda);
+    }
+    .ve-sinal.critico { background: var(--vermelho); }
+    .ve-sinal.atencao { background: var(--amarelo); }
+
+    .ve-nota { font-size: .72rem; color: var(--texto-suave); line-height: 1.5; margin: 13px 0 0; }
+    .ve-voltar-emp {
+      border: 0; background: none; padding: 4px 0; margin-bottom: 8px;
+      font: inherit; font-size: .76rem; font-weight: 700; min-height: 34px;
+      color: var(--dourado-escuro); cursor: pointer;
+    }
+    .ve-voltar-emp:hover { color: var(--dourado); }
+
+    @media (max-width: 640px) {
+      .ve-placar { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .ve-quadro { padding: 11px; }
+      .ve-quadro .ve-q-n { font-size: 1.65rem; }
+      /* Os tres numeros da Senger continuam lado a lado no celular: empilhados
+         eles tomavam meia tela antes do placar comecar. */
+      .ve-total { padding: 13px; }
+      .ve-total-numeros { gap: 10px; flex-wrap: nowrap; }
+      .ve-total-n { flex: 1 1 0; }
+      .ve-total-n strong { font-size: 1.5rem; }
+      .ve-total-n span { font-size: .66rem; }
+    }
+
     .visao-emp { padding: 16px 18px; }
     .ve-topo {
       display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start;
@@ -237,7 +337,9 @@
       background: var(--cartao); border: 1px solid var(--borda);
       border-radius: 999px; overflow: hidden;
     }
-    .ve-barra > span { display: block; height: 100%; background: rgba(157,73,73,.22); }
+    /* Verde, nao vermelho: a parte colorida e o que JA FOI VENDIDO, e
+       vermelho se le como problema. */
+    .ve-barra > span { display: block; height: 100%; background: rgba(20,133,101,.24); }
     .ve-barra > em {
       position: absolute; inset: 0; display: grid; place-items: center;
       font-style: normal; font-size: .7rem; font-weight: 700; letter-spacing: .03em;
@@ -1150,10 +1252,11 @@
 
         <!-- Dashboard -->
         <section class="bloco" data-modulo="visao" data-visao-secao="estoque">
-          <h2>Estoque por empreendimento</h2>
+          <h2>Todo o estoque da Senger</h2>
           <p class="descricao">A contagem que não aparece no site — só aqui no painel.
-            Na garagem a conta é em <strong>box</strong>: cada box vai inteiro para um apartamento.
-            O box duplo tem as duas vagas uma atrás da outra, então ele não se reparte entre dois apartamentos.</p>
+            Em cima, a Senger inteira; embaixo, um quadro por empreendimento com <strong>quanto ainda
+            falta vender ali</strong>. Toque no quadro para ver as tipologias, a garagem e o que falta
+            naquele empreendimento.</p>
           <div class="cards cascata" id="dashboard"></div>
         </section>
 
@@ -1399,6 +1502,9 @@
     empAberto: null,   // id do empreendimento escolhido no seletor do painel
     moduloAtivo: "visao",
     visaoFiltro: "estoque",
+    // v319 — qual empreendimento esta aberto no placar da Visao geral. Nulo
+    // significa o placar dos dez; um id significa o detalhe daquele.
+    visaoEmpAberto: null,
     materialFiltro: "identidade",
   };
 
@@ -1411,7 +1517,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 318;
+  const VERSAO_PAINEL = 319;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1942,7 +2048,12 @@
       if (trilhaDeModulos.length > 12) trilhaDeModulos.shift();
     }
     estado.moduloAtivo = modulo;
-    if (opcoes.visaoFiltro) estado.visaoFiltro = opcoes.visaoFiltro;
+    if (opcoes.visaoFiltro) {
+      // Trocar de tela dentro da Visao geral fecha o detalhe: o placar e o
+      // ponto de partida.
+      if (opcoes.visaoFiltro !== estado.visaoFiltro) estado.visaoEmpAberto = null;
+      estado.visaoFiltro = opcoes.visaoFiltro;
+    }
     if (opcoes.materialFiltro) estado.materialFiltro = opcoes.materialFiltro;
 
     document.querySelectorAll('section.bloco[data-modulo]').forEach((secao) => {
@@ -2882,106 +2993,173 @@
          imóvel para um cliente, e o movimento aparece aqui.</p>`;
   }
 
-  // v301 — VISAO GERAL > ESTOQUE GERAL, REFEITA.
+  // v319 — VISAO GERAL > ESTOQUE GERAL: A FAIXA DA SENGER E O PLACAR.
   //
-  // A v262 pos os empreendimentos em cascata e o dono disse que continuava
-  // "pessimo de entender". O que atrapalhava era o peso igual: numero de
-  // unidades, tipologia, garagem, a lista de garagem por unidade e a pendencia
-  // saiam todos no mesmo tamanho de letra, um embaixo do outro, e a lista do
-  // Renaissance (43 apartamentos) enterrava o resto.
+  // A v301 ja tinha refeito esta tela e o dono disse que continuava dificil de
+  // entender. Desta vez ele apontou o que atrapalhava, item por item, e
+  // escolheu entre quatro telas desenhadas. O que estava errado:
   //
-  // Agora cada empreendimento tem duas partes:
-  //   1. a FAIXA DE CIMA responde em dois segundos — quantos a venda, quantos
-  //      vendidos, que tipo de imovel e quanto do predio ja foi vendido;
-  //   2. embaixo, tres colunas com o mesmo peso entre si: estoque por
-  //      tipologia, garagem e o que falta no cadastro.
-  // A lista "Garagem por unidade" continua inteira, mas dentro de uma gaveta
-  // fechada: quem precisa dela abre; quem quer a visao geral nao rola por ela.
-  function renderDashboard() {
-    const alvo = $("dashboard");
-    alvo.innerHTML = estado.dados.EMPREENDIMENTOS.map((emp) => {
-      const itens = itensDoEmp(emp);
-      if (!itens.length) return "";
-      const contagem = {};
-      itens.forEach((i) => {
-        const s = statusAtual(emp.id, i);
-        contagem[s] = (contagem[s] || 0) + 1;
-      });
-      const vendidos = contagem.vendido || 0;
-      const disponiveis = contagem.disponivel || 0;
-      const alugados = contagem.alugado || 0;
-      // "Comercializavel" e o que ainda se vende: disponivel + alugado. O
-      // alugado continua na oferta — e o produto pronto para o investidor.
-      const aVenda = disponiveis + alugados;
-      const pct = Math.round((vendidos / itens.length) * 100);
+  //   1. a tela se chamava "Estoque geral" e nao tinha UM numero geral — a
+  //      soma dos dez ficava por conta da cabeca dele;
+  //   2. o que mais gritava no cartao era a GARAGEM (bolinha verde, negrito),
+  //      e garagem nao e a pergunta de quem abre a visao geral;
+  //   3. embaixo dela vinham cinco frases de conferencia de box, repetidas em
+  //      cada um dos dez empreendimentos;
+  //   4. tipologia, garagem e cadastro tinham o mesmo peso — nada dizia qual
+  //      era o principal;
+  //   5. "43 · 6 · 49" nao se explicava: o 43 ja inclui os alugados;
+  //   6. a barra do vendido era VERMELHA, e vendido e a coisa boa;
+  //   7. no celular cada empreendimento tomava uma tela e meia — dez deles,
+  //      quinze telas de rolagem;
+  //   8. a tela refazia o trabalho de outras tres em vez de resumir cada uma.
+  //
+  // A tela agora tem dois niveis. Em cima, a FAIXA DA SENGER: quantos a venda
+  // (com os alugados explicados), quantos vendidos, quantos no cadastro e a
+  // barra verde do quanto ja foi vendido. Embaixo, o PLACAR: um quadro por
+  // empreendimento, com o numero do que FALTA VENDER em destaque e nada mais.
+  //
+  // Nada se perdeu: o detalhe de sempre — tipologia, garagem, situacao do
+  // cadastro, os atalhos e a gaveta "Garagem por unidade" — continua inteiro,
+  // um toque adiante, em `renderDetalheDoEmp`. A conferencia de box saiu da
+  // visao geral porque o lugar dela e o detalhe, nao o resumo.
+  function resumoDoEmp(emp) {
+    const itens = itensDoEmp(emp);
+    const contagem = {};
+    itens.forEach((i) => {
+      const s = statusAtual(emp.id, i);
+      contagem[s] = (contagem[s] || 0) + 1;
+    });
+    const vendidos = contagem.vendido || 0;
+    const disponiveis = contagem.disponivel || 0;
+    const alugados = contagem.alugado || 0;
+    // "A venda" e o que ainda se vende: disponivel + alugado. O alugado
+    // continua na oferta — e o produto pronto para o investidor.
+    const faltas = pendenciasDoEmp(emp);
+    return {
+      itens, vendidos, disponiveis, alugados,
+      aVenda: disponiveis + alugados,
+      total: itens.length,
+      pct: itens.length ? Math.round((vendidos / itens.length) * 100) : 0,
+      faltas,
+      criticas: faltas.filter((f) => f.nivel === NIVEL.critico),
+      atencao: faltas.filter((f) => f.nivel === NIVEL.atencao),
+      material: faltas.filter((f) => f.nivel === NIVEL.material),
+    };
+  }
 
-      // Que tipo de imovel e este empreendimento, em uma palavra.
-      const forma = itens[0].tipo;
-      const TIPO_IMOVEL = {
-        terreno: "Lotes",
-        outro: "Imóveis avulsos",
-        unidade: emp.categoria === "comercial" ? "Salas comerciais" : "Apartamentos",
-      };
-      const chips = [
-        TIPO_IMOVEL[forma] || "Unidades",
-        emp.cidade,
-        emp.statusLabel || emp.entrega,
-      ].filter(Boolean);
+  // Que tipo de imovel e este empreendimento, em uma palavra. Vale a regra da
+  // v310: quem manda e o item, e o prefixo ja sai de `nomes(emp)`.
+  function tipoDeImovel(emp, itens) {
+    const forma = itens.length ? itens[0].tipo : "unidade";
+    if (forma === "terreno") return "Lotes";
+    if (forma === "outro") return "Imóveis avulsos";
+    return emp.categoria === "comercial" ? "Salas comerciais" : "Apartamentos";
+  }
 
-      // O estoque por tipologia, com a regra de garagem de cada uma ao lado —
-      // e a conta que o dono faz de cabeca ao atender.
-      const porTipo = new Map();
-      itens.forEach((i) => {
-        if (statusAtual(emp.id, i) !== "disponivel") return;
-        const rot = i.estoque || i.grupo || "Outros";
-        porTipo.set(rot, (porTipo.get(rot) || 0) + 1);
-      });
-      const regraDoEmp = emp.vagasPorTipologia || {};
-      const linhasTipo = [...porTipo]
-        .sort((a, b) => b[1] - a[1])
-        .map(([rot, n]) => {
-          const r = regraDoEmp[rot];
-          const leva = r ? [r.duplo ? conta(r.duplo, "box duplo", "box duplos") : "", r.simples ? conta(r.simples, "box simples", "box simples") : ""].filter(Boolean).join(" + ") : "";
-          return `<div class="linha"><span>${escapeHtml(rot)}${leva ? ` <em class="regra">${leva} cada</em>` : ""}</span><strong>${n}</strong></div>`;
-        }).join("");
+  function empreendimentosComItens() {
+    return estado.dados.EMPREENDIMENTOS.filter((emp) => itensDoEmp(emp).length);
+  }
 
-      const blocoGaragem = renderGaragemNoCartao(emp, regraDoEmp, porTipo);
-      const listaUnidades = renderUnidadesNoCartao(emp, regraDoEmp, itens);
+  // A faixa de cima: a Senger inteira, antes de qualquer predio.
+  function renderFaixaDaSenger(emps) {
+    const t = emps.reduce((a, emp) => {
+      const r = resumoDoEmp(emp);
+      return { aVenda: a.aVenda + r.aVenda, alugados: a.alugados + r.alugados,
+               vendidos: a.vendidos + r.vendidos, total: a.total + r.total };
+    }, { aVenda: 0, alugados: 0, vendidos: 0, total: 0 });
+    const pct = t.total ? Math.round((t.vendidos / t.total) * 100) : 0;
+    // O agrupador "outros" nao e empreendimento: ele entra na conta dos
+    // imoveis, mas nao no "em N empreendimentos".
+    const predios = emps.filter((emp) => emp.id !== "outros").length;
+    return `<div class="ve-total">
+      <div class="ve-total-numeros">
+        <div class="ve-total-n destaque"><strong>${t.aVenda}</strong>
+          <span>à venda hoje${t.alugados ? `<br>(${conta(t.alugados, "alugado", "alugados")}, que seguem na oferta)` : ""}</span></div>
+        <div class="ve-total-n"><strong>${t.vendidos}</strong><span>já vendidos</span></div>
+        <div class="ve-total-n"><strong>${t.total}</strong><span>no cadastro, em ${conta(predios, "empreendimento", "empreendimentos")}</span></div>
+      </div>
+      <div class="ve-trilho" role="img" aria-label="${pct}% do estoque já vendido"><i style="width:${pct}%"></i></div>
+      <div class="ve-legenda"><span><b>${pct}% já vendido</b> — ${t.vendidos} de ${t.total}</span><span>faltam ${t.aVenda}</span></div>
+    </div>`;
+  }
 
-      // O que falta no cadastro, separado pelo peso: dado comercial primeiro.
-      const faltas = pendenciasDoEmp(emp);
-      const criticas = faltas.filter((f) => f.nivel === NIVEL.critico);
-      const atencao = faltas.filter((f) => f.nivel === NIVEL.atencao);
-      const material = faltas.filter((f) => f.nivel === NIVEL.material);
-      const blocoPendencias = `<div class="ve-coluna">
-        <div class="ve-rotulo">Situação do cadastro</div>
-        ${faltas.length ? `
-          ${criticas.length ? `<div class="ve-pend critico"><span class="ve-bolinha"></span><div><strong>${conta(criticas.length, "dado comercial", "dados comerciais")} a corrigir</strong><em>${escapeHtml(semTagsSimples(criticas[0].texto))}${criticas.length > 1 ? ` e mais ${criticas.length - 1}` : ""}</em></div></div>` : `<div class="ve-pend ok"><span class="ve-bolinha"></span><div><strong>Dado comercial em ordem</strong><em>preço, área, garagem e registro conferidos</em></div></div>`}
-          ${atencao.length ? `<div class="ve-pend atencao"><span class="ve-bolinha"></span><div><strong>${conta(atencao.length, "ponto de atenção", "pontos de atenção")}</strong><em>${escapeHtml(semTagsSimples(atencao[0].texto))}</em></div></div>` : ""}
-          ${material.length ? `<div class="ve-pend material"><span class="ve-bolinha"></span><div><strong>${conta(material.length, "material a completar", "materiais a completar")}</strong><em>${escapeHtml(material.map((f) => semTagsSimples(f.texto)).join(" · "))}</em></div></div>` : ""}
-        ` : `<div class="ve-pend ok"><span class="ve-bolinha"></span><div><strong>Cadastro completo</strong><em>não falta nada neste empreendimento</em></div></div>`}
-        <div class="ve-atalhos">
-          <button type="button" class="ve-atalho" data-ve-estoque="${escapeHtml(emp.id)}">Ver unidades</button>
-          <button type="button" class="ve-atalho" data-ve-precos="${escapeHtml(emp.id)}">Preços e margem</button>
-          ${faltas.length ? `<button type="button" class="ve-atalho" data-ve-pendencias="1">O que falta</button>` : ""}
-        </div>
-      </div>`;
+  // O placar: um quadro por empreendimento, so com o que falta vender.
+  function renderPlacar(emps) {
+    const quadros = emps.map((emp) => {
+      const r = resumoDoEmp(emp);
+      const sinal = r.criticas.length ? "critico" : r.atencao.length ? "atencao" : "";
+      const aviso = r.criticas.length ? "dado comercial a corrigir"
+                  : r.atencao.length ? "ponto de atenção no cadastro" : "";
+      return `<button type="button" class="ve-quadro" data-ve-abrir="${escapeHtml(emp.id)}">
+        <span class="ve-q-nome">${escapeHtml(emp.nome)}${sinal ? `<span class="ve-sinal ${sinal}" title="${aviso}"></span>` : ""}</span>
+        <strong class="ve-q-n">${r.aVenda}</strong>
+        <span class="ve-q-un">à venda · ${escapeHtml(tipoDeImovel(emp, r.itens).toLowerCase())}</span>
+        <span class="ve-trilho"><i style="width:${r.pct}%"></i></span>
+        <span class="ve-q-pe"><span>${r.pct}% vendido</span><span>${r.vendidos} de ${r.total}</span></span>
+      </button>`;
+    }).join("");
+    return `<div class="ve-placar">${quadros}</div>
+      <p class="ve-nota">Cada quadro responde só uma coisa: <strong>quanto ainda tem para vender ali</strong>.
+        Toque no quadro para ver as tipologias, a garagem e o que falta naquele empreendimento.
+        A bolinha vermelha ao lado do nome avisa que há dado comercial a corrigir; a amarela, ponto de atenção.</p>`;
+  }
 
-      return `<div class="card visao-emp" data-emp="${escapeHtml(emp.id)}">
+  // O detalhe de um empreendimento: e o cartao inteiro da v301, que continua
+  // valendo — ele so deixou de estar dez vezes na mesma tela.
+  function renderDetalheDoEmp(emp) {
+    const r = resumoDoEmp(emp);
+    const chips = [tipoDeImovel(emp, r.itens), emp.cidade, emp.statusLabel || emp.entrega].filter(Boolean);
+
+    // O estoque por tipologia, com a regra de garagem de cada uma ao lado —
+    // a conta que o dono faz de cabeca ao atender.
+    const porTipo = new Map();
+    r.itens.forEach((i) => {
+      if (statusAtual(emp.id, i) !== "disponivel") return;
+      const rot = i.estoque || i.grupo || "Outros";
+      porTipo.set(rot, (porTipo.get(rot) || 0) + 1);
+    });
+    const regraDoEmp = emp.vagasPorTipologia || {};
+    const linhasTipo = [...porTipo]
+      .sort((a, b) => b[1] - a[1])
+      .map(([rot, n]) => {
+        const regra = regraDoEmp[rot];
+        const leva = regra ? [regra.duplo ? conta(regra.duplo, "box duplo", "box duplos") : "", regra.simples ? conta(regra.simples, "box simples", "box simples") : ""].filter(Boolean).join(" + ") : "";
+        return `<div class="linha"><span>${escapeHtml(rot)}${leva ? ` <em class="regra">${leva} cada</em>` : ""}</span><strong>${n}</strong></div>`;
+      }).join("");
+
+    const blocoGaragem = renderGaragemNoCartao(emp, regraDoEmp, porTipo);
+    const listaUnidades = renderUnidadesNoCartao(emp, regraDoEmp, r.itens);
+
+    const blocoPendencias = `<div class="ve-coluna">
+      <div class="ve-rotulo">Situação do cadastro</div>
+      ${r.faltas.length ? `
+        ${r.criticas.length ? `<div class="ve-pend critico"><span class="ve-bolinha"></span><div><strong>${conta(r.criticas.length, "dado comercial", "dados comerciais")} a corrigir</strong><em>${escapeHtml(semTagsSimples(r.criticas[0].texto))}${r.criticas.length > 1 ? ` e mais ${r.criticas.length - 1}` : ""}</em></div></div>` : `<div class="ve-pend ok"><span class="ve-bolinha"></span><div><strong>Dado comercial em ordem</strong><em>preço, área, garagem e registro conferidos</em></div></div>`}
+        ${r.atencao.length ? `<div class="ve-pend atencao"><span class="ve-bolinha"></span><div><strong>${conta(r.atencao.length, "ponto de atenção", "pontos de atenção")}</strong><em>${escapeHtml(semTagsSimples(r.atencao[0].texto))}</em></div></div>` : ""}
+        ${r.material.length ? `<div class="ve-pend material"><span class="ve-bolinha"></span><div><strong>${conta(r.material.length, "material a completar", "materiais a completar")}</strong><em>${escapeHtml(r.material.map((f) => semTagsSimples(f.texto)).join(" · "))}</em></div></div>` : ""}
+      ` : `<div class="ve-pend ok"><span class="ve-bolinha"></span><div><strong>Cadastro completo</strong><em>não falta nada neste empreendimento</em></div></div>`}
+      <div class="ve-atalhos">
+        <button type="button" class="ve-atalho" data-ve-estoque="${escapeHtml(emp.id)}">Ver unidades</button>
+        <button type="button" class="ve-atalho" data-ve-precos="${escapeHtml(emp.id)}">Preços e margem</button>
+        ${r.faltas.length ? `<button type="button" class="ve-atalho" data-ve-pendencias="1">O que falta</button>` : ""}
+      </div>
+    </div>`;
+
+    return `<button type="button" class="ve-voltar-emp" data-ve-fechar="1">← Voltar para todos os empreendimentos</button>
+      <div class="card visao-emp" data-emp="${escapeHtml(emp.id)}">
         <header class="ve-topo">
           <div class="ve-identidade">
             <h3>${escapeHtml(emp.nome)}</h3>
             <p class="ve-chips">${chips.map((c) => `<span>${escapeHtml(c)}</span>`).join("")}</p>
           </div>
           <div class="ve-numeros">
-            <div class="ve-numero destaque"><strong>${aVenda}</strong><span>à venda${alugados ? ` · ${alugados} alugad${alugados === 1 ? "o" : "os"}` : ""}</span></div>
-            <div class="ve-numero"><strong>${vendidos}</strong><span>vendidos</span></div>
-            <div class="ve-numero"><strong>${itens.length}</strong><span>no prédio</span></div>
+            <div class="ve-numero destaque"><strong>${r.aVenda}</strong><span>à venda${r.alugados ? ` · ${conta(r.alugados, "alugado", "alugados")}` : ""}</span></div>
+            <div class="ve-numero"><strong>${r.vendidos}</strong><span>vendidos</span></div>
+            <div class="ve-numero"><strong>${r.total}</strong><span>no prédio</span></div>
           </div>
         </header>
-        <div class="ve-barra" title="${pct}% do estoque já vendido" aria-label="${pct}% vendido">
-          <span style="width:${pct}%"></span>
-          <em>${pct}% vendido</em>
+        <div class="ve-barra" title="${r.pct}% do estoque já vendido" aria-label="${r.pct}% vendido">
+          <span style="width:${r.pct}%"></span>
+          <em>${r.pct}% vendido</em>
         </div>
         <div class="ve-colunas">
           <div class="ve-coluna">
@@ -2994,9 +3172,32 @@
           </div>
           ${blocoPendencias}
         </div>
-        ${listaUnidades ? `<details class="ve-gaveta"><summary>Garagem por unidade <span class="ve-conta">${conta(itens.filter((i) => statusAtual(emp.id, i) === "disponivel").length, "unidade em estoque", "unidades em estoque")}</span></summary>${listaUnidades}</details>` : ""}
+        ${listaUnidades ? `<details class="ve-gaveta"><summary>Garagem por unidade <span class="ve-conta">${conta(r.itens.filter((i) => statusAtual(emp.id, i) === "disponivel").length, "unidade em estoque", "unidades em estoque")}</span></summary>${listaUnidades}</details>` : ""}
       </div>`;
-    }).join("");
+  }
+
+  function renderDashboard() {
+    const alvo = $("dashboard");
+    const emps = empreendimentosComItens();
+    const aberto = estado.visaoEmpAberto && emps.find((emp) => emp.id === estado.visaoEmpAberto);
+    // Pediram um empreendimento que saiu do cadastro: volta para o placar em
+    // vez de deixar a tela vazia.
+    if (estado.visaoEmpAberto && !aberto) estado.visaoEmpAberto = null;
+
+    alvo.innerHTML = aberto
+      ? renderDetalheDoEmp(aberto)
+      : renderFaixaDaSenger(emps) + renderPlacar(emps);
+
+    alvo.querySelectorAll("[data-ve-abrir]").forEach((b) => b.addEventListener("click", () => {
+      estado.visaoEmpAberto = b.dataset.veAbrir;
+      renderDashboard();
+      alvo.scrollIntoView({ behavior: "smooth", block: "start" });
+    }));
+    alvo.querySelectorAll("[data-ve-fechar]").forEach((b) => b.addEventListener("click", () => {
+      estado.visaoEmpAberto = null;
+      renderDashboard();
+      alvo.scrollIntoView({ behavior: "smooth", block: "start" });
+    }));
 
     // Os atalhos: da visao geral para a tela que resolve. O dono pediu para
     // poder "clicar e aprofundar" — sem "Abrir" generico, cada botao diz o
