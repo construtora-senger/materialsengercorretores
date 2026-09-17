@@ -139,6 +139,27 @@ async function teste(nome, fn) {
     return finais.length === 4 ? "" : `so apareceram ${finais.join(", ") || "nenhum"}`;
   });
 
+  // v321 — os quadros saem do mais barato para o mais caro. E a ordem que o
+  // cliente espera ler, e o dono pediu por nome.
+  await teste("as tipologias saem na ordem crescente de valor", async () => {
+    const ruins = [];
+    for (const id of ["quality", "renaissance", "boulevard", "evolutti"]) {
+      await pg.goto(`${base}/#emp-${id}`, { waitUntil: "networkidle" });
+      await pg.waitForTimeout(400);
+      // Le o "a partir de" do cabecalho (.unit-group-preco .price-value), nunca
+      // o texto solto do quadro: o bloco dos alugados traz "Aluguel R$ 1.400,00"
+      // antes do preco, e o primeiro "R$" da caixa seria o do aluguel.
+      const valores = await pg.evaluate(() =>
+        [...document.querySelectorAll("#unidades details.unit-group")]
+          .map((d) => d.querySelector(".unit-group-preco .price-value"))
+          .map((el) => (el ? parseInt(el.textContent.replace(/\D+/g, ""), 10) : null))
+          .filter((v) => v !== null && !Number.isNaN(v)));
+      const crescente = valores.every((v, i) => i === 0 || v >= valores[i - 1]);
+      if (!crescente) ruins.push(`${id}: ${valores.join(" > ")}`);
+    }
+    return ruins.length ? `fora de ordem — ${ruins.join(" | ")}` : "";
+  });
+
   await teste("compartilhar unidade abre a escolha de envio", async () => {
     await pg.locator("#unidades details.unit-group").first().evaluate((el) => { el.open = true; });
     await pg.locator("[data-share-item]").first().click();

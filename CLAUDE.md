@@ -489,6 +489,30 @@ nenhuma disponível; se a venda for desfeita, o preço aparece como "Sob consult
 até alguém informar o novo valor.
 
 
+### Os quadros saem do mais barato para o mais caro (v321)
+
+Pedido do dono: *"na ordem de apresentação dentro de cada empreendimento,
+coloque pela ordem de valores crescente"*. No Quality a lista saía
+**550 · 470 · 580 · 510 · 430**, que é a ordem de quem cadastrou, não a de quem
+compra.
+
+A v261 ordenava pelo **menor número de apartamento** e só usava o preço para
+desempatar. **Agora é o contrário: manda o preço**, e o número do apartamento só
+decide quando dois quadros começam no mesmo valor. É o mesmo "a partir de" que o
+cliente lê no cabeçalho de cada quadro.
+
+**Quadro sem preço nenhum ("Sob consulta") vai para o fim** — sem valor ele não
+tem lugar na escada de preços, e jogá-lo no começo esconderia o imóvel mais
+barato que tem preço.
+
+Vale na vitrine e no PDF, que usam a mesma `blocosDeTipologia`. **Os loteamentos
+não mudaram**: lá os quadros são as quadras, que seguem outro caminho no código
+(`renderLandInventory`) e continuam na ordem de quadra.
+
+> **REGRA ANTIGA — substituída por esta:** "Os quadros também saem em ordem, não
+> na ordem do cadastro (v261)", mais abaixo, diz que a ordem é pelo **menor
+> número de apartamento**. Desde a v321 é **pelo menor valor**.
+
 ### O box 59 do Quality voltou a ficar livre (v320)
 
 O dono mandou o **mapa de box atualizado em 16/09/26** e a **TABELA DE CLIENTES**
@@ -1283,14 +1307,17 @@ unidade guarda a sua própria planta e a sua própria área. No quadro que junto
 as unidades saem em ordem de número (503, 504, 603, 604…) em vez de uma coluna
 inteira depois da outra.
 
+> **REGRA ANTIGA — substituída por "Os quadros saem do mais barato para o mais
+> caro (v321)".** Desde a v321 quem manda é **o valor**, e o número do
+> apartamento só desempata. Leia o parágrafo abaixo como história.
+
 **Os quadros também saem em ordem, não na ordem do cadastro (v261).** Antes
 eles seguiam a ordem dos grupos no `data.js` — a ordem em que o dono cadastrou,
 não a que o cliente espera ler. No Renaissance isso fazia a Casa Suspensa de
 3 suítes superiores (1301, 1302) aparecer logo depois da de 3 suítes frente
-(401, 402), porque são os dois primeiros grupos do cadastro. Agora os quadros
-saem pelo **menor número de apartamento** de cada um, crescente, e só quando
-empatar decide o **menor valor**, também crescente. Vale para todos os
-empreendimentos.
+(401, 402), porque são os dois primeiros grupos do cadastro. Os quadros passaram
+a sair pelo **menor número de apartamento** de cada um, crescente, e só quando
+empatar decidia o **menor valor**.
 
 **O sufixo diz de qual final é a tipologia (v213).** O campo `sufixo` do grupo
 aparece ao lado do nome, em letra mais leve: "Sala comercial · final 01".
