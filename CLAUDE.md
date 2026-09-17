@@ -534,12 +534,31 @@ nova também diz 290. **Não "corrija" de volta.**
 
 ### A fazer na próxima atualização
 
-- **Nova Vila Rica III · lote 34 da quadra 157** *(conferir com o dono).* A
-  folha de **vendas e comissões** registra *"Maio — Silvio Nunes — Q157 L34"*,
-  mas a tabela do loteamento põe o Silvio da Rosa Nunes no **157/32**, cedido
-  depois para o Luis Antonio Hermann — e é o 32 que está vendido no cadastro,
-  com o 34 à venda. Ou a folha trocou o número, ou há uma venda a mais.
-  **Não mexido.**
+- ~~**Nova Vila Rica III · lote 34 da quadra 157**~~ — **RESOLVIDO em
+  17/09/2026.** Não havia venda a mais nem número trocado: **o Silvio trocou de
+  terreno.** O dono explicou — *"o silvio tinha trocado de terreno (o primeiro
+  deveria estar disponível), depois o que ele trocou foi revendido para Luis
+  Antonio (que por coincidência tb tem compra de outro lote)"*. Logo:
+
+  | lote | o que aconteceu | no cadastro |
+  |---|---|---|
+  | **157/34** | a compra de maio do Silvio, desfeita pela troca | `disponivel`, R$ 85.000 ✔ |
+  | **157/32** | o lote que ele pegou na troca, depois revendido | `vendido`, ficha do **Luis Antonio Hermann**, com o Silvio como dono anterior ✔ |
+
+  **O cadastro já estava certo nos dois** — nada foi mexido. O que estava errado
+  era a leitura: a folha de **vendas e comissões** registra a venda **original**
+  (*"Maio — Silvio Nunes — Q157 L34"*), que a troca desfez; a tabela do
+  loteamento registra **onde ele parou**. As duas estão certas, em momentos
+  diferentes.
+
+  **Luis Antonio Hermann aparecer em dois lotes é coincidência, não duplicata** —
+  ele comprou outro lote por conta própria, além do que veio da troca. **Não
+  "conserte" isso** achando que é a mesma ficha repetida.
+
+  **Regra que fica:** quando a folha de comissões e a tabela do loteamento
+  discordarem do número do lote, **antes de supor erro de leitura, considere a
+  troca de terreno** — ela deixa exatamente esse rastro: o primeiro lote volta
+  para a oferta e o segundo fica com o comprador.
 - ~~**Quality · box 58**~~ — **RESOLVIDO em 16/09/2026 (v317).** O dono conferiu
   e decidiu: o **box 58 é do apto 301-A**, e está nos dois papéis — *"apto 301-A
   box 58 (também está na tabela) e no mapa também"*. A leitura da planta de box
