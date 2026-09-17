@@ -1594,13 +1594,22 @@
     blocos.forEach((bloco) => {
       if (bloco.juntou) bloco.units.sort((a, b) => numeroDoApto(a) - numeroDoApto(b));
     });
-    // Os quadros tambem saem em ordem — pelo menor numero de apartamento que
-    // cada um tem, e so quando empatar (dois lotes, por exemplo, sem numero de
-    // apto) o menor preco decide. Antes eles saiam na ordem do data.js, que e
-    // a ordem em que o dono cadastrou, nao a que o cliente espera ler.
+    // v321 — OS QUADROS SAEM DO MAIS BARATO PARA O MAIS CARO, pelo mesmo
+    // "a partir de" que o cliente le no cabecalho de cada um. Pedido do dono:
+    // "na ordem de apresentacao dentro de cada empreendimento, coloque pela
+    // ordem de valores crescente".
+    //
+    // A v261 ordenava pelo menor numero de apartamento e so usava o preco para
+    // desempatar — no Quality isso fazia a lista sair 550, 470, 580, 510, 430.
+    // Agora e o contrario: manda o preco, e o numero do apartamento so decide
+    // quando dois quadros comecam no mesmo valor.
+    //
+    // Quadro sem preco nenhum ("Sob consulta") vai para o FIM: sem valor ele
+    // nao tem lugar na escada de precos, e jogar no comeco esconderia o imovel
+    // mais barato que tem preco.
     const menorNumero = (bloco) => Math.min(...bloco.units.map(numeroDoApto));
     const menorPreco = (bloco) => Math.min(...bloco.units.map((it) => it.price || Number.MAX_SAFE_INTEGER));
-    blocos.sort((a, b) => menorNumero(a) - menorNumero(b) || menorPreco(a) - menorPreco(b));
+    blocos.sort((a, b) => menorPreco(a) - menorPreco(b) || menorNumero(a) - menorNumero(b));
     return blocos;
   }
 
