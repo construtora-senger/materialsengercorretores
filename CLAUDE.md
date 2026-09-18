@@ -550,13 +550,19 @@ a uma pessoa, o alarme falso volta** — a regra ainda não separa os dois casos
 **O nome do locatário continua no cofre.** Só o dono alcança: a ficha sai por
 **Clientes**, com a chave do GitHub.
 
-**Duas divergências entre o cadastro e o mapa novo continuam de pé, de
-propósito**, porque as duas são decisão escrita do dono e o mapa não foi
-atualizado nelas:
+**ASSUNTO ENCERRADO — não traga de volta.** Duas divergências entre o cadastro
+e o mapa ficam de pé **de propósito**, porque as duas já são decisão do dono e o
+cadastro segue essa decisão. O mapa é que não foi atualizado nelas, e isso não
+muda nada:
 
 - **box 32 / apto 601-B** — cadastro **vendido** (v312, apto de investimento da
   Doroti); o mapa de 16/09/26 ainda escreve ALUGADO;
 - **box 51 / apto 501-A** — cadastro **alugado** (v307); o mapa escreve VENDIDO.
+
+**Não perguntar de novo "o mapa novo passa a valer?"** — ele já respondeu as
+duas, e em 18/09/2026 avisou que estava cansado do assunto (*"de novo esse
+assunto desses box?"*). O mapa só vence onde o dono disser, item a item. **Um
+papel novo não reabre decisão que ele já deu.**
 
 **Cuidado de teste herdado:** o teste *"as pendências saem separadas por
 prioridade"* exigia que o grupo **Dado comercial** existisse. Sem o alarme falso
