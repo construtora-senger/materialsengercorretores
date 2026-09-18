@@ -910,7 +910,6 @@
     .secao-vagas tr.troca td { color: var(--texto-suave); font-size: .82em; font-style: italic; }
     /* Recado embaixo da tipologia: por que ela nao ficou com o duplo que pedia. */
     .secao-vagas tr.linha-nota td { padding-top: 0; border-top: 0; font-size: .82em; }
-    .secao-vagas tr.linha-zerada td { opacity: .55; }
     .secao-vagas .aviso-limite { color: var(--amarelo); }
     .secao-vagas td[rowspan] { vertical-align: top; font-weight: 600; }
     .secao-vagas td[rowspan] .contagem { display: block; font-weight: 400; color: var(--texto-suave); font-size: .78rem; }
@@ -1517,7 +1516,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 321;
+  const VERSAO_PAINEL = 322;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -4015,7 +4014,17 @@
     const linhas = reparte.map(({ rot, n, r, comRegra, semDuplo, semSimples, semNada: semBox }) => {
       const nome = escapeHtml(rot);
       const regraCheia = cada(r.duplo || 0, r.simples || 0);
-      if (!n) return `<tr class="linha-zerada"><td>${nome}</td><td class="num">0</td><td>${regraCheia}</td><td>—</td></tr>`;
+      // v322 — TIPOLOGIA SEM NADA EM ESTOQUE NAO VIRA LINHA. Ate a v321 ela
+      // saia em cinza, com "0" e um travessao, e o dono apontou: a linha esta
+      // ali sem mostrar nada. Sao 12 delas no painel (o "9º pavimento" do
+      // Evolutti, a "Cobertura" do Prime, as tres do Personalite...), todas de
+      // tipologia que ja vendeu inteira. O proprio cabecalho da tabela diz que
+      // "a conferencia olha so o que esta em estoque" — a linha zerada
+      // contradizia isso e so gastava altura.
+      //
+      // Nada se perde na conta: com n = 0 a linha reservava 0 box, entao o
+      // "Total reservado", o "Tem em estoque" e a "Sobra" nao mudam.
+      if (!n) return "";
       const partes = [];
       // O nome da tipologia so se escreve por inteiro na primeira linha dela;
       // as trocas vem logo abaixo, recuadas, e a soma das linhas continua

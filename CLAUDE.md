@@ -489,6 +489,28 @@ nenhuma disponível; se a venda for desfeita, o preço aparece como "Sob consult
 até alguém informar o novo valor.
 
 
+### Tipologia sem nada em estoque não vira linha (v322)
+
+Na tabela **Garagem por apartamento** (Estoque / Unidades > Box de garagem)
+saía uma linha em cinza para toda tipologia da regra de box, **inclusive as que
+não têm nenhum apartamento em estoque**: nome, `0`, o que ela levaria e um
+travessão. O dono circulou a do **"9º pavimento"** do Evolutti e perguntou por
+que estava ali *"sem mostrar nada"*.
+
+Eram **12 linhas assim** no painel — "18º pavimento" (Renaissance), "9º
+pavimento" (Evolutti), "Sala térreo" (Premium Office), três do Personalité,
+três do Prime e três do Quality —, todas de tipologia **já vendida por
+inteiro**. O próprio cabeçalho da tabela diz que *"a conferência olha só o que
+está em estoque"*, então a linha zerada contradizia a tela e só gastava altura.
+
+**Nada saiu da conta:** com zero apartamentos a linha reservava zero box, então
+"Total reservado", "Tem em estoque" e "Sobra" continuam idênticos. Conferido no
+Evolutti, que é o do print: antes e depois, 14 apartamentos, 3 duplos + 12
+simples, 15 box, 18 vagas, sobra 0.
+
+A regra de CSS `.secao-vagas tr.linha-zerada` foi removida junto — ficou sem
+ninguém.
+
 ### Os quadros saem do mais barato para o mais caro (v321)
 
 Pedido do dono: *"na ordem de apresentação dentro de cada empreendimento,
@@ -550,13 +572,19 @@ a uma pessoa, o alarme falso volta** — a regra ainda não separa os dois casos
 **O nome do locatário continua no cofre.** Só o dono alcança: a ficha sai por
 **Clientes**, com a chave do GitHub.
 
-**Duas divergências entre o cadastro e o mapa novo continuam de pé, de
-propósito**, porque as duas são decisão escrita do dono e o mapa não foi
-atualizado nelas:
+**ASSUNTO ENCERRADO — não traga de volta.** Duas divergências entre o cadastro
+e o mapa ficam de pé **de propósito**, porque as duas já são decisão do dono e o
+cadastro segue essa decisão. O mapa é que não foi atualizado nelas, e isso não
+muda nada:
 
 - **box 32 / apto 601-B** — cadastro **vendido** (v312, apto de investimento da
   Doroti); o mapa de 16/09/26 ainda escreve ALUGADO;
 - **box 51 / apto 501-A** — cadastro **alugado** (v307); o mapa escreve VENDIDO.
+
+**Não perguntar de novo "o mapa novo passa a valer?"** — ele já respondeu as
+duas, e em 18/09/2026 avisou que estava cansado do assunto (*"de novo esse
+assunto desses box?"*). O mapa só vence onde o dono disser, item a item. **Um
+papel novo não reabre decisão que ele já deu.**
 
 **Cuidado de teste herdado:** o teste *"as pendências saem separadas por
 prioridade"* exigia que o grupo **Dado comercial** existisse. Sem o alarme falso
