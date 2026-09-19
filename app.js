@@ -1898,8 +1898,6 @@
     }
     if (emp.entrega) lines.push(`Entrega: ${semPonto(emp.entrega)}`);
     if (condicoesDe(emp)) lines.push(`Pagamento: ${condicoesDe(emp)}`);
-    // v323 — o link e o que traz a foto de volta: e dele que o WhatsApp monta a previa.
-    lines.push("", "👇 Clique no link abaixo para ver fotos, plantas, valores e todas as informações:", clientLinkFor(emp));
     lines.push("", `Tabela ${META.mesTabela || ""}. Valores e disponibilidade sujeitos a alteração.`);
     return lines.filter((line, index, array) => line !== "" || array[index - 1] !== "").join("\n");
   }
@@ -2038,7 +2036,6 @@
   }
 
   async function sharePortfolio() {
-    avisarSemContato();
     const enterprises = portfolioList();
     if (!enterprises.length) return;
     const nomes = enterprises.map((emp) => emp.nome);
@@ -2051,12 +2048,20 @@
       listClientLink(enterprises),
     ].join("\n");
     const title = "Seleção Construtora Senger";
-    // A montagem continua sendo feita para a janela do computador; no celular quem
-    // mostra a imagem e a previa do link (ver sendShare).
-    const montagem = enterprises.length > 1 ? await montarMosaicoLista(enterprises) : null;
-    const fotos = enterprises.map(coverPhoto);
-    if (montagem) fotos.unshift(fotoDaMontagem(montagem));
-    await sendShare(text, title, fotos);
+    if (navigator.share) {
+      const file = enterprises.length === 1
+        ? await loadShareFile(assetUrl(cardImage(enterprises[0])))
+        : await montarMosaicoLista(enterprises);
+      if (file && navigator.canShare && navigator.canShare({ title, text, files: [file] })) {
+        try { await navigator.share({ title, text, files: [file] }); return; }
+        catch (error) { if (error?.name === "AbortError") return; }
+      }
+      // Sem mosaico, melhor SEM foto do que com a foto de um so (a previa do link mostra a
+      // imagem generica da marca — neutra, nao engana o cliente).
+      try { await navigator.share({ title, text }); return; }
+      catch (error) { if (error?.name === "AbortError") return; }
+    }
+    openShareModal(text, enterprises.map(coverPhoto));
   }
 
   const semPonto = (texto = "") => String(texto).trim().replace(/\.$/, "");
@@ -2134,9 +2139,6 @@
 
     if (condicoesDe(emp)) lines.push(`${condicoesDe(emp)}.`);
     if (item.notes) lines.push(semPonto(item.notes) + ".");
-    // v323 — o link da unidade e o que traz a foto de volta: e dele que o WhatsApp
-    // monta a previa, com a foto do predio e a ficha deste apartamento.
-    lines.push("", "👇 Clique no link abaixo para ver fotos, planta, valores e todas as informações desta unidade:", ponteDaUnidade(item));
     lines.push("", `Tabela ${META.mesTabela || ""}. Valores e disponibilidade sujeitos a alteração.`);
     return lines.join("\n");
   }
@@ -2257,6 +2259,17 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", qualidade));
   }
 
+  async function loadShareFile(imageUrl) {
+    if (!imageUrl || !navigator.canShare) return null;
+    try {
+      const blob = await comoJpeg(imageUrl);
+      if (!blob) return null;
+      return new File([blob], "foto.jpg", { type: "image/jpeg" });
+    } catch (_) {
+      return null;
+    }
+  }
+
   // O "Baixar" do modal tambem entrega JPEG, pelo mesmo motivo: o corretor
   // salva a foto e anexa no WhatsApp na mao.
   async function baixarFotoJpeg(src, nome, button) {
@@ -2280,24 +2293,21 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     }
   }
 
-  // v323 — o envio nativo vai SEMPRE so com texto, nunca com foto anexada.
-  //
-  // O WhatsApp passou a DESCARTAR o texto quando a partilha traz um arquivo junto.
-  // Ate entao ele usava o texto como legenda da foto — era assim que a mensagem
-  // chegava com a imagem em cima e a descricao embaixo. Depois da mudanca chegava
-  // so a imagem: sem descricao, sem preco e sem link. Nada mudou aqui no site; quem
-  // mudou foi o aplicativo.
-  //
-  // O conserto e deixar o proprio WhatsApp buscar a foto: toda mensagem leva agora
-  // o link do imovel, e o robo de previa le a pagina-ponte (l/<emp>/ e l/<emp>/u/<n>/),
-  // que tem a foto e a descricao daquele imovel escritas dentro. O resultado na tela
-  // do cliente e o mesmo de antes — foto em cima, texto embaixo, numa mensagem so —
-  // e ainda da um link para ele abrir plantas e fotos.
-  //
-  // `photos` continua servindo a janela de copiar/baixar do computador, onde o
-  // corretor cola a foto e o texto separados e nada se perde.
-  async function sendShare(text, title = "Construtora Senger", photos = []) {
+  // `arquivo`: imagem ja montada para o envio. `null` diz "vai sem foto" — e o caso
+  // de varios empreendimentos sem montagem, em que a capa de um so engana o cliente.
+  // Deixando de fora, a foto sai da primeira da lista, como sempre.
+  async function sendShare(text, title = "Construtora Senger", photos = [], arquivo) {
+    const imageUrl = photos[0]?.src || "";
     if (navigator.share) {
+      const file = arquivo !== undefined ? arquivo : await loadShareFile(imageUrl);
+      if (file && navigator.canShare?.({ title, text, files: [file] })) {
+        try {
+          await navigator.share({ title, text, files: [file] });
+          return;
+        } catch (error) {
+          if (error?.name === "AbortError") return;
+        }
+      }
       try {
         await navigator.share({ title, text });
         return;
@@ -2389,19 +2399,34 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       "👇 Clique no link abaixo para ver fotos, plantas, valores e todas as informações:",
       url,
     ].join("\n");
-    await sendShare(text, emp.nome, [coverPhoto(emp)]);
+    if (navigator.share) {
+      const file = await loadShareFile(assetUrl(cardImage(emp)));
+      if (file && navigator.canShare({ text, files: [file] })) {
+        try {
+          await navigator.share({ title: emp.nome, text, files: [file] });
+          return;
+        } catch (error) {
+          if (error?.name === "AbortError") return;
+        }
+      }
+      try {
+        await navigator.share({ title: emp.nome, text });
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
+    }
+    openShareModal(text, [coverPhoto(emp)]);
   }
 
   function shareEnterprise(emp, includePrices) {
     if (!emp) return;
-    avisarSemContato();
     registrar("enviou", emp.id);
     sendShare(enterpriseMessage(emp, includePrices), emp.nome, [coverPhoto(emp)]);
   }
 
   function shareItem(item, includePrice) {
     if (!item) return;
-    avisarSemContato();
     registrar("enviou", item.emp.id);
     sendShare(itemMessage(item, includePrice), `${item.emp.nome} — ${itemLabel(item)}`, [coverPhoto(item.emp)]);
   }
@@ -2420,7 +2445,24 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       "👇 Clique no link abaixo para ver fotos, planta, valores e todas as informações desta unidade:",
       url,
     ].join("\n");
-    await sendShare(text, `${emp.nome} — ${itemLabel(item)}`, [coverPhoto(emp)]);
+    if (navigator.share) {
+      const file = await loadShareFile(assetUrl(cardImage(emp)));
+      if (file && navigator.canShare({ text, files: [file] })) {
+        try {
+          await navigator.share({ title: `${emp.nome} — ${itemLabel(item)}`, text, files: [file] });
+          return;
+        } catch (error) {
+          if (error?.name === "AbortError") return;
+        }
+      }
+      try {
+        await navigator.share({ title: `${emp.nome} — ${itemLabel(item)}`, text });
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
+    }
+    openShareModal(text, [coverPhoto(emp)]);
   }
 
   function openSendChoice(item) {
@@ -2489,15 +2531,14 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
   // com a fachada de todos os selecionados. Antes saia so a capa do primeiro, e o
   // cliente via um predio so numa mensagem que falava de cinco.
   async function shareSelection(includePrices) {
-    avisarSemContato();
     const items = selectedItems();
     if (!items.length) return;
     unique(items.map((item) => item.emp.id)).forEach((id) => registrar("enviou", id));
     const emps = empreendimentosDe(items);
-    const montagem = emps.length === 1 ? null : await montarMosaicoLista(emps, "Detalhes de cada imóvel na mensagem");
+    const montagem = emps.length === 1 ? undefined : await montarMosaicoLista(emps, "Detalhes de cada imóvel na mensagem");
     const fotos = coverPhotosFor(items);
     if (montagem) fotos.unshift(fotoDaMontagem(montagem));
-    await sendShare(selectedMessage(includePrices), "Seleção de imóveis", fotos);
+    await sendShare(selectedMessage(includePrices), "Seleção de imóveis", fotos, montagem);
   }
 
   // v94 — a selecao tambem vai como LINK (mesma janela que uma unidade sozinha ja tinha):
@@ -2510,23 +2551,21 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     unique(items.map((item) => item.emp.id)).forEach((id) => registrar("enviou", id));
     closeDrawer();
     const emps = empreendimentosDe(items);
+    const sel = items.map((item) => `${item.emp.id}~${encodeURIComponent(String(item.code))}`).join(",");
+    // Um empreendimento so: vai pela ponte dele, e a previa mostra a foto certa.
+    // Varios: nao ha ponte que represente todos, entao segue direto — e a
+    // mensagem leva a montagem com a fachada de cada um.
+    const url = emps.length === 1
+      ? pontePara(emps[0].id, `sel=${sel}`)
+      : linkCliente(`sel=${sel}`);
     const linhas = [`*Construtora Senger — Seleção de ${items.length === 1 ? "imóvel" : "imóveis"}*`, ""];
     items.forEach((item) => linhas.push(`• ${item.emp.nome} — ${itemLabel(item)}`));
-    linhas.push("", "👇 Clique no link abaixo para ver fotos, plantas, valores e todas as informações:", linkDaSelecao(items));
+    linhas.push("", "👇 Clique no link abaixo para ver fotos, plantas, valores e todas as informações:", url);
     const text = linhas.join("\n");
-    const montagem = emps.length === 1 ? null : await montarMosaicoLista(emps);
+    const montagem = emps.length === 1 ? undefined : await montarMosaicoLista(emps);
     const fotos = emps.map(coverPhoto);
     if (montagem) fotos.unshift(fotoDaMontagem(montagem));
-    await sendShare(text, "Seleção Construtora Senger", fotos);
-  }
-
-  // O endereco da selecao. Um empreendimento so: vai pela ponte dele, e a previa
-  // do WhatsApp mostra a foto daquele predio. Varios: nao ha ponte que represente
-  // todos, entao segue direto pro portfolio, com a imagem da marca na previa.
-  function linkDaSelecao(items) {
-    const emps = empreendimentosDe(items);
-    const sel = items.map((item) => `${item.emp.id}~${encodeURIComponent(String(item.code))}`).join(",");
-    return emps.length === 1 ? pontePara(emps[0].id, `sel=${sel}`) : linkCliente(`sel=${sel}`);
+    await sendShare(text, "Seleção Construtora Senger", fotos, montagem);
   }
 
   function selectedMessage(includePrices) {
@@ -2543,8 +2582,6 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       lines.push(includePrices ? `Valor: *${money(item.price)}*` : "Valor: consulte a equipe comercial");
       lines.push("");
     });
-    // v323 — o link e o que traz a foto de volta: e dele que o WhatsApp monta a previa.
-    lines.push("👇 Clique no link abaixo para ver fotos, plantas, valores e todas as informações:", linkDaSelecao(items), "");
     lines.push(`Tabela ${META.mesTabela || ""}. Valores e disponibilidade sujeitos a alteração.`);
     return lines.join("\n");
   }
