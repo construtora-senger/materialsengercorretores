@@ -36,6 +36,48 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## O WhatsApp não aceita mais foto e texto juntos (v323)
+
+**Nenhum envio do site anexa foto.** O `navigator.share` vai **só com texto**, e
+a foto volta pela **prévia do link** — é o próprio WhatsApp que busca a imagem na
+página-ponte e monta o cartão: foto em cima, texto embaixo, numa mensagem só.
+Na tela do cliente o resultado é o mesmo de sempre.
+
+**O que tinha quebrado.** O WhatsApp passou a **jogar fora o texto** quando a
+partilha traz arquivo junto. Até então ele usava o texto como legenda da foto —
+era assim que a mensagem chegava completa. Depois da mudança chegava **só a
+imagem**: sem descrição, sem preço e sem link. O dono percebeu no envio do
+apartamento (*"nem foto com descrição nem link; só tá indo a foto do
+empreendimento"*) e mandou os prints do formato antigo.
+
+**Nada tinha sido mexido no site.** O histórico do git mostra que essa parte do
+`app.js` nunca foi alterada desde o primeiro commit. Quem mudou foi o aplicativo.
+**Não procure regressão no código quando um envio parar de funcionar** — confira
+antes o que o WhatsApp faz hoje com foto + texto.
+
+**Por isso toda mensagem leva o link agora.** `itemMessage`, `enterpriseMessage`
+e `selectedMessage` não tinham link nenhum; sem ele a prévia não teria de onde
+tirar foto. Os três ganharam o endereço do imóvel antes da linha da tabela:
+
+| botão | link que vai | foto da prévia |
+|---|---|---|
+| Mensagem com foto e preço (unidade) | `l/<emp>/u/<n>/` | foto do prédio + ficha do apto |
+| WhatsApp com preços / sem preços | `l/<emp>/` | foto do prédio |
+| Enviar link (prédio e unidade) | o mesmo de antes | o mesmo de antes |
+| Seleção, com e sem preços | `l/<emp>/?sel=` ou `?cliente&sel=` | prédio, ou marca se forem vários |
+
+Como a mensagem agora carrega link, os seis botões chamam `avisarSemContato()`:
+sem o "Meu contato" preenchido o cliente abre a página sem o botão de chamar o
+corretor.
+
+**A montagem das fachadas em faixas diagonais (v92) continua viva**, mas só na
+**janela de copiar/baixar do computador**, onde a foto e o texto são colados
+separados e nada se perde. No celular ela não é mais anexada — era ela que
+apagava o texto. `loadShareFile` foi removida: ficou sem ninguém.
+
+**Regra que fica: nunca mande `files` junto com `text` no `navigator.share`.** Se
+a foto precisar ir, ela vai pela prévia de um link.
+
 ## Dinheiro: custo, preço e arredondamento (v301)
 
 **O custo é sempre EXATO — nunca arredondado.** Vale para o custo digitado, o
