@@ -36,7 +36,45 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## O envio por WhatsApp é como sempre foi — não mexa (v324)
+## O envio vai SEM anexo, e a foto vem da prévia do link (v326)
+
+**Regra atual. Substitui a v324 e a v325.**
+
+Em 20/09/2026 o WhatsApp do dono passou a **descartar o texto sempre que a
+mensagem leva arquivo anexado**. Chega a imagem sozinha, sem uma linha de
+descrição. Ele conferiu, um a um: WhatsApp comum, WhatsApp Business, com a
+montagem das fachadas e com a foto de capa de um empreendimento só. **Nos
+quatro casos chegou só a foto.**
+
+**Não é o site.** O código do envio estava idêntico ao de agosto, quando chegava
+certo — conferido commit a commit nos 124 commits que já tocaram o `app.js`, e
+medido no Chromium: o site entregava a foto **e** os 452 caracteres da descrição
+no mesmo compartilhamento. O que mudou foi o WhatsApp, e não há nada no site que
+o obrigue a guardar a legenda.
+
+**O que passou a valer:** nenhum envio leva arquivo anexado. A mensagem vai só
+como texto — e a **foto aparece na prévia do link**, no mesmo balão, que é
+exatamente para isso que as páginas-ponte existem (`l/<emp>/` e
+`l/<emp>/u/<n>/`, com o nome e a foto daquele prédio dentro). Por isso toda
+mensagem de descrição agora termina com o link do imóvel.
+
+O cliente recebe **uma mensagem só, com a foto em cima e a descrição inteira
+embaixo** — que é o que o dono sempre pediu. É o formato dos prints dele de 6/8,
+23/8 e 18/9.
+
+No computador nada muda: sem compartilhamento nativo, a janela de copiar/baixar
+continua mostrando as fotos para o corretor salvar.
+
+**A mensagem também fica copiada no aparelho** (`copiarTextoDoEnvio`, v325), como
+rede de segurança: se algum dia o texto sumir de novo, é só colar.
+
+> **REGRA ANTIGA — substituída pela de cima:** a v324 mandava a foto da capa
+> anexada em cada envio, com a descrição junto. Funcionou de julho a 18/09/2026 e
+> parou de funcionar por mudança do WhatsApp, não do site. **Não volte a anexar
+> arquivo** sem o dono confirmar, com print, que a legenda voltou a chegar.
+
+## Como era o envio até a v325 (histórico)
+### O envio por WhatsApp é como sempre foi — não mexa (v324)
 
 **Cada botão manda o que o nome dele diz, com a foto da capa anexada:**
 
@@ -61,7 +99,7 @@ depende qual escolhido"*.
 > caminho é **pedir o print do que chegou ao cliente** antes de mudar qualquer
 > coisa — não trocar o formato da mensagem por conta própria.
 
-## A mensagem também fica copiada no aparelho (v325)
+### A mensagem também fica copiada no aparelho (v325) — continua valendo
 
 **O WhatsApp entrega a foto e joga a descrição fora.** Em 20/09/2026 o dono
 mandou os prints: a montagem da seleção chegou sozinha, sem uma linha de texto,
