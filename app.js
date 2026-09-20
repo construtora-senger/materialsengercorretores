@@ -2048,6 +2048,7 @@
       listClientLink(enterprises),
     ].join("\n");
     const title = "Seleção Construtora Senger";
+    await copiarTextoDoEnvio(text);
     if (navigator.share) {
       const file = enterprises.length === 1
         ? await loadShareFile(assetUrl(cardImage(enterprises[0])))
@@ -2293,10 +2294,46 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     }
   }
 
+  // v325 — o WhatsApp entrega a foto e joga a descricao fora. O dono conferiu no
+  // WhatsApp comum E no Business: nos dois chegou so a imagem. O site manda as duas
+  // coisas juntas (conferido no Chromium: os 452 caracteres da descricao mais a
+  // montagem, no mesmo envio), entao nao ha nada aqui que obrigue o WhatsApp a
+  // guardar o texto. A rede de seguranca e esta: a mensagem vai para a memoria do
+  // aparelho na hora do envio e, se chegar so a foto, basta segurar o campo do
+  // WhatsApp e colar. O formato do envio NAO muda — continua a foto da capa com a
+  // descricao, como sempre foi (v324).
+  async function copiarTextoDoEnvio(text) {
+    if (!text) return false;
+    let copiou = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        copiou = true;
+      }
+    } catch (_) { copiou = false; }
+    if (!copiou) {
+      // Aparelho antigo, ou sem permissao de area de transferencia: o jeito de sempre.
+      try {
+        const campo = document.createElement("textarea");
+        campo.value = text;
+        campo.setAttribute("readonly", "");
+        campo.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0";
+        document.body.appendChild(campo);
+        campo.select();
+        campo.setSelectionRange(0, text.length);
+        copiou = document.execCommand("copy");
+        campo.remove();
+      } catch (_) { copiou = false; }
+    }
+    if (copiou) showToast("Mensagem copiada. Se chegar só a foto, é só colar no WhatsApp.");
+    return copiou;
+  }
+
   // `arquivo`: imagem ja montada para o envio. `null` diz "vai sem foto" — e o caso
   // de varios empreendimentos sem montagem, em que a capa de um so engana o cliente.
   // Deixando de fora, a foto sai da primeira da lista, como sempre.
   async function sendShare(text, title = "Construtora Senger", photos = [], arquivo) {
+    await copiarTextoDoEnvio(text);
     const imageUrl = photos[0]?.src || "";
     if (navigator.share) {
       const file = arquivo !== undefined ? arquivo : await loadShareFile(imageUrl);
@@ -2399,6 +2436,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       "👇 Clique no link abaixo para ver fotos, plantas, valores e todas as informações:",
       url,
     ].join("\n");
+    await copiarTextoDoEnvio(text);
     if (navigator.share) {
       const file = await loadShareFile(assetUrl(cardImage(emp)));
       if (file && navigator.canShare({ text, files: [file] })) {
@@ -2445,6 +2483,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       "👇 Clique no link abaixo para ver fotos, planta, valores e todas as informações desta unidade:",
       url,
     ].join("\n");
+    await copiarTextoDoEnvio(text);
     if (navigator.share) {
       const file = await loadShareFile(assetUrl(cardImage(emp)));
       if (file && navigator.canShare({ text, files: [file] })) {

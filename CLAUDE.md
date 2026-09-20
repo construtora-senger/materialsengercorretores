@@ -61,6 +61,29 @@ depende qual escolhido"*.
 > caminho é **pedir o print do que chegou ao cliente** antes de mudar qualquer
 > coisa — não trocar o formato da mensagem por conta própria.
 
+## A mensagem também fica copiada no aparelho (v325)
+
+**O WhatsApp entrega a foto e joga a descrição fora.** Em 20/09/2026 o dono
+mandou os prints: a montagem da seleção chegou sozinha, sem uma linha de texto,
+e ele conferiu **no WhatsApp comum e no Business** — nos dois igual.
+
+**O site não tem culpa e nada no site pode obrigar o WhatsApp a guardar o
+texto.** Medido no Chromium, com o `navigator.share` interceptado: o envio de
+"Mensagem com fotos e preços" entrega, no mesmo compartilhamento, a montagem
+(`selecao-senger.jpg`) **e** os 452 caracteres da descrição. O texto sai daqui;
+quem o descarta é o aplicativo do outro lado.
+
+Por isso a rede de segurança: **`copiarTextoDoEnvio` põe a mensagem na memória
+do aparelho na hora de cada envio** e avisa na tela — *"Mensagem copiada. Se
+chegar só a foto, é só colar no WhatsApp."* Se o texto sumir, o corretor segura
+o campo do WhatsApp e cola; nada se perde. Vale para os quatro caminhos de
+envio (`sendShare`, `sharePortfolio`, `shareClientLink` e `shareUnitLink`).
+
+**O formato do envio não mudou** — continua a foto da capa com a descrição, como
+manda a v324. Não confunda uma coisa com a outra: **isto não é a v323**, que
+tirava a foto e enfiava link em toda mensagem. Aqui não se mexeu em uma vírgula
+do que é enviado.
+
 ## Dinheiro: custo, preço e arredondamento (v301)
 
 **O custo é sempre EXATO — nunca arredondado.** Vale para o custo digitado, o
