@@ -36,6 +36,32 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A mensagem é curta: nome, valor e o link (v327)
+
+Pedido do dono, com o print na mão: *"ta muito grande a msg. Deixe a parte lá de
+baixo apenas (clique no link abaixo para mais informações)"*. A ficha completa,
+os diferenciais e o prazo saíam em mais de vinte linhas, e o link — que é o que
+interessa — ficava lá embaixo, depois de duas telas de rolagem.
+
+Agora cada mensagem tem **três coisas e só**:
+
+| envio | o que vai |
+|---|---|
+| unidade | nome do imóvel · valor · o convite e o link |
+| empreendimento | nome · cidade · "a partir de" · o convite e o link |
+| seleção | uma linha por imóvel (nome e valor) · o convite e o link |
+
+São **5 linhas** na mensagem de unidade, contra 25 antes. A frase é
+*"👇 Clique no link abaixo para mais informações:"*, como ele escreveu.
+
+**O valor fica**, e por um motivo prático: é o único conteúdo que separa
+"Mensagem com foto e preço" de "Mensagem sem preços". Sem ele os dois botões
+mandariam exatamente a mesma coisa.
+
+**Nada se perdeu para o cliente:** a prévia do link já mostra a foto, o nome e a
+ficha resumida (*"2 suítes · 130 m² global · 86 m² privativo · 1 box simples"*),
+e o resto está a um toque, na página da unidade.
+
 ## O envio vai SEM anexo, e a foto vem da prévia do link (v326)
 
 **Regra atual. Substitui a v324 e a v325.**
