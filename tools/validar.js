@@ -234,7 +234,7 @@ for (const emp of ativos) {
     else erro(`ponte ausente: l/${emp.id}/u/${nome}/ (${item.codigo}) — rode node tools/gerar-pontes.js`);
   }
 }
-// v333 — a ponte da montagem: uma para cada combinacao de 2 a 4 empreendimentos
+// v333/v334 — a ponte da montagem: uma para cada combinacao de 2 ou mais empreendimentos
 // (assets/preview/sel/<ids>.jpg + l/sel/<ids>/). Sem a imagem, a previa do
 // WhatsApp cai na marca; sem a ponte, o link enviado cai em pagina inexistente.
 {
@@ -242,7 +242,7 @@ for (const emp of ativos) {
   const combos = [];
   const anda = (inicio, atual) => {
     if (atual.length >= 2) combos.push([...atual].sort().join("_"));
-    if (atual.length === 4) return;
+    if (atual.length === 10) return;
     for (let i = inicio; i < ids.length; i++) anda(i + 1, [...atual, ids[i]]);
   };
   anda(0, []);

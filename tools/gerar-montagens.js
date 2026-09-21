@@ -7,7 +7,8 @@
 // site. A montagem das fachadas (a mesma que o site desenha na hora, em
 // montarMosaicoLista) precisa entao estar gravada aqui antes.
 //
-// Uma imagem para cada combinacao de 2 a 4 empreendimentos, com o nome dos
+// Uma imagem para cada combinacao de 2 ou mais empreendimentos (v334: ate os
+// 10 de uma vez), com o nome dos
 // ids em ordem alfabetica, separados por "_" (a mesma chave que o app.js usa
 // em chaveDaMontagem e que a ponte l/sel/<chave>/ carrega). A ordem dos
 // paineis dentro da imagem segue a ordem do cadastro, como no site.
@@ -28,7 +29,7 @@ const { chromium } = require("/opt/node22/lib/node_modules/playwright");
 
 const RAIZ = path.join(__dirname, "..");
 const DESTINO = path.join(RAIZ, "assets", "preview", "sel");
-const MAX = 4;             // igual ao MAX_MONTAGEM do app.js
+const MAX = 10;            // igual ao MAX_MONTAGEM do app.js
 const LARGURA = 1000;      // a previa do WhatsApp e pequena; 1000 px ja sobra
 const QUALIDADE = 0.7;
 const TUDO = process.argv.includes("--tudo");
