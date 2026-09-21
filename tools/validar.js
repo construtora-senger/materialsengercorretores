@@ -29,7 +29,7 @@ const existe = (rel) => fs.existsSync(path.join(RAIZ, rel));
 // ---------------------------------------------------------------- 1. sintaxe
 // Todo JS do projeto tem de compilar. Um erro de virgula no data.js deixa o
 // site inteiro em branco, e no navegador isso so aparece no console.
-const JS = ["data.js", "app.js", "sw.js", "tools/gerar-pontes.js", "tools/validar.js"];
+const JS = ["data.js", "app.js", "sw.js", "tools/gerar-pontes.js", "tools/gerar-montagens.js", "tools/validar.js"];
 for (const arquivo of JS) {
   if (!existe(arquivo)) { erro(`arquivo ausente: ${arquivo}`); continue; }
   try { new vm.Script(ler(arquivo), { filename: arquivo }); }
@@ -234,6 +234,33 @@ for (const emp of ativos) {
     else erro(`ponte ausente: l/${emp.id}/u/${nome}/ (${item.codigo}) — rode node tools/gerar-pontes.js`);
   }
 }
+// v333 — a ponte da montagem: uma para cada combinacao de 2 a 4 empreendimentos
+// (assets/preview/sel/<ids>.jpg + l/sel/<ids>/). Sem a imagem, a previa do
+// WhatsApp cai na marca; sem a ponte, o link enviado cai em pagina inexistente.
+{
+  const ids = ativos.map((e) => e.id);
+  const combos = [];
+  const anda = (inicio, atual) => {
+    if (atual.length >= 2) combos.push([...atual].sort().join("_"));
+    if (atual.length === 4) return;
+    for (let i = inicio; i < ids.length; i++) anda(i + 1, [...atual, ids[i]]);
+  };
+  anda(0, []);
+  let semMontagem = 0, semPonte = 0;
+  for (const chave of combos) {
+    pontesEsperadas++;
+    if (!existe(`assets/preview/sel/${chave}.jpg`)) semMontagem++;
+    if (existe(`l/sel/${chave}/index.html`)) pontesAchadas++; else semPonte++;
+  }
+  if (semMontagem) erro(`${semMontagem} montagem(ns) de previa faltando em assets/preview/sel/ — rode node tools/gerar-montagens.js`);
+  if (semPonte) erro(`${semPonte} ponte(s) de selecao faltando em l/sel/ — rode node tools/gerar-pontes.js`);
+  const dirSel = path.join(RAIZ, "l", "sel");
+  if (fs.existsSync(dirSel)) {
+    const validas = new Set(combos);
+    for (const nome of fs.readdirSync(dirSel)) if (!validas.has(nome)) erro(`ponte orfa: l/sel/${nome}/ — combinacao fora do cadastro`);
+  }
+}
+
 // Ponte sobrando aponta para unidade que saiu do cadastro.
 for (const emp of ativos) {
   const dir = path.join(RAIZ, "l", emp.id, "u");
@@ -267,7 +294,7 @@ if (/unidades? dispon[ií]ve|restam? \d|unidades? restantes/i.test(app)) {
 // ------------------------------------------------------------- 8. segredos
 // Nada de token, senha ou chave dentro de arquivo publico. O painel guarda a
 // chave no localStorage do aparelho; ela nunca pode ser commitada.
-const PUBLICOS = ["data.js", "app.js", "index.html", "sw.js", "manifest.json", "admin/index.html", "tools/gerar-pontes.js", "tools/validar.js"];
+const PUBLICOS = ["data.js", "app.js", "index.html", "sw.js", "manifest.json", "admin/index.html", "tools/gerar-pontes.js", "tools/gerar-montagens.js", "tools/validar.js"];
 const SEGREDOS = [
   [/gh[pousr]_[A-Za-z0-9]{16,}/, "token classico do GitHub"],
   [/github_pat_[A-Za-z0-9_]{20,}/, "token fine-grained do GitHub"],

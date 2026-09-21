@@ -11,9 +11,17 @@
 // certa; a pessoa que clica e mandada na mesma hora para o endereco de sempre,
 // com os mesmos parametros (?u=, ?sel=, ?w= do corretor).
 //
-// Sao duas familias de ponte:
+// Sao tres familias de ponte:
 //   l/<empreendimento>/            -> a previa fala do predio
 //   l/<empreendimento>/u/<codigo>/ -> a previa fala DAQUELA unidade
+//   l/sel/<ids>/                   -> a previa e a MONTAGEM de varios predios
+//
+// A terceira (v333) existe porque o envio nao leva mais foto anexada — o
+// WhatsApp do celular passou a descartar a legenda — e a foto vem pela previa.
+// Para a selecao de 2 a 4 empreendimentos, a previa e a montagem das fachadas
+// gravada por tools/gerar-montagens.js em assets/preview/sel/<ids>.jpg; a
+// chave sao os ids em ordem alfabetica, separados por "_", igual ao
+// chaveDaMontagem() do app.js. So se gera ponte para montagem que existe.
 //
 // A segunda existe porque a previa da unidade era a do predio: o corretor
 // mandava o apartamento 501 e o WhatsApp anunciava "Renaissance — alto padrao".
@@ -263,5 +271,103 @@ for (const emp of EMPREENDIMENTOS) {
   console.log(`  l/${emp.id}/  (+ ${usados.size} unidade${usados.size === 1 ? "" : "s"})`);
 }
 
-console.log(`\n${pontes} ponte(s) de empreendimento e ${unidades} de unidade.`);
+// ------------------------------------------------- a ponte da montagem (v333)
+// Mesmo molde, mas sem empreendimento: a imagem e a montagem, o titulo lista
+// os nomes e o destino e o portfolio com o que veio no endereco (?sel= ou
+// ?lista=), sem #emp- — o cliente ve a vitrine so com os escolhidos.
+const paginaDaSelecao = ({ chave, emps }) => {
+  const foto = `${SITE}/assets/preview/sel/${chave}.jpg`;
+  const nomes = emps.map((e) => e.nome);
+  const lista = nomes.length > 1 ? `${nomes.slice(0, -1).join(", ")} e ${nomes[nomes.length - 1]}` : nomes[0];
+  const titulo = `Seleção Construtora Senger — ${lista}`;
+  const desc = "Fotos, plantas, valores e disponibilidade dos imóveis selecionados para você.";
+  const caminho = `l/sel/${chave}/`;
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#182129">
+<title>${esc(titulo)}</title>
+<meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${SITE}/${caminho}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Construtora Senger">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="${esc(titulo)}">
+<meta property="og:description" content="${esc(desc)}">
+<meta property="og:url" content="${SITE}/${caminho}">
+<meta property="og:image" content="${foto}">
+<meta property="og:image:secure_url" content="${foto}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1000">
+<meta property="og:image:height" content="607">
+<meta property="og:image:alt" content="${esc(`Seleção Construtora Senger — ${lista}`)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(titulo)}">
+<meta name="twitter:description" content="${esc(desc)}">
+<meta name="twitter:image" content="${foto}">
+<script>
+  (function () {
+    var qs = location.search.replace(/^\\?/, "");
+    var raiz = location.pathname.replace(/\\/l\\/sel\\/[^/]*\\/?$/, "/");
+    location.replace(raiz + "?cliente" + (qs ? "&" + qs : ""));
+  })();
+</script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       padding:24px;background:#182129;color:#fff;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .cartao{width:100%;max-width:420px;text-align:center}
+  img{width:100%;height:auto;border-radius:14px;display:block;margin-bottom:20px}
+  h1{margin:0 0 6px;font-size:22px;line-height:1.25}
+  p{margin:0 0 22px;opacity:.75;line-height:1.5;font-size:15px}
+  a{display:block;padding:15px 20px;border-radius:999px;background:#fff;color:#182129;
+    text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+  <div class="cartao">
+    <img src="../../../assets/preview/sel/${chave}.jpg" alt="${esc(lista)}">
+    <h1>${esc(lista)}</h1>
+    <p>Construtora Senger</p>
+    <a id="ir" href="../../../?cliente">Ver fotos, plantas e valores</a>
+  </div>
+  <script>
+    (function () {
+      var qs = location.search.replace(/^\\?/, "");
+      var raiz = location.pathname.replace(/\\/l\\/sel\\/[^/]*\\/?$/, "/");
+      document.getElementById("ir").href = raiz + "?cliente" + (qs ? "&" + qs : "");
+    })();
+  </script>
+</body>
+</html>
+`;
+};
+
+const porId = new Map(EMPREENDIMENTOS.map((e) => [e.id, e]));
+const dirMontagens = path.join(RAIZ, "assets", "preview", "sel");
+const dirSel = path.join(RAIZ, "l", "sel");
+let selecoes = 0;
+if (fs.existsSync(dirMontagens)) {
+  fs.rmSync(dirSel, { recursive: true, force: true });
+  for (const nome of fs.readdirSync(dirMontagens).sort()) {
+    if (!nome.endsWith(".jpg")) continue;
+    const chave = nome.slice(0, -4);
+    const ids = chave.split("_");
+    if (!ids.every((id) => porId.has(id))) { console.error(`  ! montagem orfa: ${nome} (empreendimento fora do cadastro)`); continue; }
+    // Paineis na ordem do cadastro, como a montagem foi desenhada.
+    const emps = EMPREENDIMENTOS.filter((e) => ids.includes(e.id));
+    const destino = path.join(dirSel, chave);
+    fs.mkdirSync(destino, { recursive: true });
+    fs.writeFileSync(path.join(destino, "index.html"), paginaDaSelecao({ chave, emps }));
+    selecoes++;
+  }
+  console.log(`  l/sel/  (${selecoes} montagens)`);
+} else {
+  console.log("  (sem assets/preview/sel/ — rode node tools/gerar-montagens.js para as pontes de selecao)");
+}
+
+console.log(`\n${pontes} ponte(s) de empreendimento, ${unidades} de unidade e ${selecoes} de seleção.`);
 if (semPrevia.length) console.log(`Sem previa (nada gerado): ${semPrevia.join(", ")}`);

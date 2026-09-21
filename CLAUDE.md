@@ -61,89 +61,72 @@ ordem for sobre um texto que ele mostrou, **mexa só no pedaço que ele apontou*
 e, se restar dúvida sobre o alcance, pergunte antes; refazer texto que ele não
 mandou mexer custou duas rodadas.
 
-## Por que a foto chegava sem a descrição — o `title` (v330)
+## O envio vai como TEXTO, e a foto vem pela prévia do link — com a montagem pronta (v333)
 
-**Achado medindo, não supondo.** O dono mandou os prints de **6/8 e 23/8**: a
-montagem das fachadas e a descrição inteira **num balão só**. Logo o WhatsApp
-aceita foto e texto juntos, e o defeito era do site. Ele estava certo nas duas
-vezes em que disse isso.
+**Regra atual. Substitui a v329 e a v330.** Vale para todos os envios.
 
-**O culpado é o `title`.** O `navigator.share` ia com `{ title, text, files }`.
-O Chrome do Android transforma `title` em **EXTRA_SUBJECT** e `text` em
-**EXTRA_TEXT**; com os dois presentes o WhatsApp fica com o assunto e **joga a
-legenda fora** — chega a foto sozinha. Agora, **quando vai arquivo, o envio não
-leva `title`**: sobra só o EXTRA_TEXT, que é a legenda. No envio sem foto o
-`title` continua, porque ali nada compete com ele.
+**O que o dono quer, desde sempre:** *imagem + descrição (ou imagem + link) num
+balão só*; com vários empreendimentos, *a montagem das fachadas em cima e o
+resto embaixo*. Prints dele de 6/8 e 23/8 mostram exatamente isso.
 
-**Segundo defeito, o do computador.** Quando o aparelho não aceita arquivo — e
-**o computador não aceita** —, o código disparava um `navigator.share({ title,
-text })`: **texto sozinho, sem a foto e sem abrir janela nenhuma**. Era
-exatamente o *"pelo PC só vai o texto e não vai a imagem"*. Agora, sem arquivo
-para mandar, **abre a janela de copiar/baixar**, que tem o texto **e** as fotos.
-Nenhum caminho manda mais meia mensagem em silêncio.
+**O que aconteceu:** desde ~19/09/2026 o WhatsApp/Chrome do celular dele
+**descarta a legenda sempre que vai foto anexada**. Chega só a foto — seja a
+descrição, seja o link. **Provado em 21/09**: o site *exato de 17/08*
+(`agosto.html`, commit 8d77563, com as fotos daquela época) foi posto no ar e,
+no celular dele, também chegou só a foto. **Não é o site.** Nenhuma versão do
+site resolve isso anexando arquivo.
 
-**A cópia de segurança passou para depois do envio.** `copiarTextoDoEnvio`
-(v325) é uma escrita assíncrona na área de transferência e rodava **antes** do
-`navigator.share` — gastando o toque do dedo que o navegador exige para abrir o
-compartilhamento. Ela continua existindo, só que depois.
+**A v330 estava errada** ao apontar o `title` como culpado: o código de agosto
+também mandava `title` e funcionava. O `title` continua fora do envio, mas
+não era ele.
 
-**Dois testes guardam isto** (`tools/testar-navegador.js`), e os dois foram
-vistos falhando no código antigo antes de passarem no novo:
+**O que vale agora:**
 
-- *"a seleção sai com a montagem E a descrição no mesmo envio"* — falha se
-  voltar a ir `title` junto com arquivo, ou se o texto sumir do envio;
-- *"sem poder anexar (computador), abre a janela com texto e fotos"* — falha se
-  alguém reintroduzir o envio de texto sozinho.
+| envio | o que o site manda | o que o cliente vê |
+|---|---|---|
+| unidade (com/sem preço) | texto: descrição + frase curta + **link da unidade** (`l/<emp>/u/<n>/`) | foto da unidade em cima, descrição embaixo, um balão |
+| empreendimento | texto: resumo + **link do prédio** (`l/<emp>/`) | capa em cima, resumo embaixo |
+| enviar link | texto curto + link | capa em cima, texto embaixo |
+| seleção de 1 empreendimento | texto + `l/<emp>/?sel=…` | capa em cima |
+| **seleção de 2 a 4 empreendimentos** | texto + **`l/sel/<ids>/?sel=…`** | **a montagem das fachadas** em cima, o descritivo (ou a lista com link) embaixo |
+| seleção de 5+ | texto + `?cliente&sel=…` | a imagem da marca (não há montagem pronta) |
 
-**Regra que fica: não mande `title` junto com arquivo**, em envio nenhum. E
-**nunca dispare um `navigator.share` só com texto como plano B** — sem a foto, o
-lugar certo é a janela de copiar/baixar.
+**Nenhum envio leva arquivo anexado.** No celular, `sendShare` chama
+`navigator.share({ text })` — só texto, sem `title`, sem `files`. No
+computador (`aparelhoMovel()` falso) **não há envio nativo**: abre a janela de
+copiar/baixar com o texto (que já leva o link) e as fotos. **Nunca mais um
+`navigator.share` só com texto no PC** — era o *"só vai o texto e não vai a
+imagem"* da primeira reclamação.
 
-**Medido no Chromium, antes e depois** (com o `navigator.share` interceptado):
-antes o envio da seleção ia com `title: "Seleção de imóveis"` + 452 caracteres +
-`selecao-senger.jpg`; agora vai `title: null` + os mesmos 452 caracteres + o
-mesmo arquivo. No computador, antes: texto de 452 caracteres, zero arquivos,
-nenhuma janela; agora: nenhum envio pela metade e a janela aberta.
+**A montagem é gerada antes, porque o robô da prévia não roda JavaScript.**
+`tools/gerar-montagens.js` abre o site no Chromium, chama o próprio
+`montarMosaicoLista` do `app.js` (exposto em `window.__montarMosaicoLista`
+só para isso) e grava `assets/preview/sel/<ids>.jpg` — **375 combinações** de
+2 a 4 empreendimentos, 1000 px, ~33 MB. A chave são os ids em **ordem
+alfabética, separados por `_`** (`chaveDaMontagem` no `app.js`); os painéis
+dentro da imagem seguem a ordem do cadastro. `tools/gerar-pontes.js` cria a
+ponte `l/sel/<ids>/` para cada montagem existente, com a montagem como
+`og:image` e redirecionamento para `?cliente&<o que veio>` sem `#emp-`.
+`tools/validar.js` exige as 375 montagens e as 375 pontes.
 
-## O envio leva a IMAGEM junto — como sempre foi (v329)
+**Quando trocar a capa de um empreendimento, ou acrescentar/remover um:**
+`node tools/gerar-montagens.js --tudo` (ou sem `--tudo`, para só o que falta)
+e depois `node tools/gerar-pontes.js`. Sem isso a prévia da seleção mostra a
+montagem velha, ou a marca.
 
-**Regra atual. Desfaz a v326 por inteiro.**
+**Testes que guardam isto** (`tools/testar-navegador.js`):
+- *"no celular, a seleção vai como texto com o link da montagem — sem arquivo"*;
+- *"no computador, abre a janela com o texto (com link) e as fotos"*;
+- *"a ponte da montagem aponta para a imagem certa e redireciona para o portfólio"*.
 
-Cada envio vai com **imagem + o conteúdo do botão**:
+**Não volte a anexar arquivo** enquanto o dono não confirmar, com print, que a
+legenda voltou a chegar no aparelho dele. E **não proponha "segundo toque"**
+(foto num balão, texto no outro): ele recusou em 21/09 — *"não tem nada de
+segundo toque, tem que ir num só como ia antes"*.
 
-| o que o corretor escolhe | o que vai |
-|---|---|
-| Mensagem com foto e preço | **capa do empreendimento + o descritivo** da unidade, com o valor |
-| WhatsApp com preços / sem preços | **capa + o resumo do prédio** |
-| Enviar link (prédio ou unidade) | **capa + o texto curto com o link** |
-| Seleção de **vários** empreendimentos | **a montagem das fachadas** (um quadro por empreendimento, dividindo a imagem) + o descritivo de cada imóvel, ou o link com as unidades selecionadas |
-
-A montagem é `montarMosaicoLista`: com mais de um empreendimento ela divide o
-espaço somando os produtos selecionados, e vai anexada. Com um só, vai a capa
-dele.
-
-**A v326 tirou o anexo de todos os envios e o dono NUNCA mandou fazer isso.**
-Ele mandou os prints dizendo que chegava só a foto, sem o texto — relato de um
-problema, não ordem de mudar o formato. A v326 decidiu sozinha, e foi a segunda
-vez: a **v323** já tinha feito o mesmo e ele desfez no mesmo dia. Em 21/09/2026
-ele foi direto: *"eu nunca mandei desistir, tirar ou mudar isso... quero como
-era antes"*.
-
-**Regra que fica: relato de problema não é ordem de mudança.** Quando ele
-disser que algo chegou errado, **pergunte o que ele quer fazer** — não troque o
-formato do envio por conta própria. Isso já custou três rodadas (v323, v326,
-v329).
-
-**Não tire o anexo de novo sem ele mandar, com essas palavras.**
-
-**A mensagem também fica copiada no aparelho** (`copiarTextoDoEnvio`, v325),
-como rede de segurança: se o texto sumir, é só colar.
-
-**A frase curta do link (v328) continua valendo** — *"👇 Clique no link abaixo
-para mais informações:"* —, porque essa sim foi ordem dele.
-
-> **REGRA ANTIGA — substituída pela de cima:** a v326 mandava todo envio sem
-> arquivo anexado, com a foto vindo da prévia do link. **Desfeita na v329.**
+> **REGRA ANTIGA — substituída pela de cima:** a v329 mandava a foto anexada
+> (como agosto) e a v330 tirava o `title` achando que resolvia. As duas
+> chegavam só com a foto no celular do dono.
 
 ## Como era o envio até a v325 (histórico)
 ### O envio por WhatsApp é como sempre foi — não mexa (v324)
