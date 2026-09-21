@@ -36,31 +36,30 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## A mensagem é curta: nome, valor e o link (v327)
+## Só a frase do link mudou (v328) — a mensagem é a de sempre
 
-Pedido do dono, com o print na mão: *"ta muito grande a msg. Deixe a parte lá de
-baixo apenas (clique no link abaixo para mais informações)"*. A ficha completa,
-os diferenciais e o prazo saíam em mais de vinte linhas, e o link — que é o que
-interessa — ficava lá embaixo, depois de duas telas de rolagem.
+Pedido do dono, com o print e o círculo em volta de **uma frase só**:
 
-Agora cada mensagem tem **três coisas e só**:
+> *"ta muito grande a msg. Deixe a parte lá de baixo apenas (clique no link
+> abaixo para mais informações)"*
 
-| envio | o que vai |
-|---|---|
-| unidade | nome do imóvel · valor · o convite e o link |
-| empreendimento | nome · cidade · "a partir de" · o convite e o link |
-| seleção | uma linha por imóvel (nome e valor) · o convite e o link |
+O que ele mandou era **trocar a frase do fim da mensagem**, que era longa —
+*"Clique no link abaixo para ver fotos, planta, valores e todas as informações
+desta unidade:"* — pela curta: **"👇 Clique no link abaixo para mais
+informações:"**. Só isso.
 
-São **5 linhas** na mensagem de unidade, contra 25 antes. A frase é
-*"👇 Clique no link abaixo para mais informações:"*, como ele escreveu.
+**A v327 entendeu errado e cortou a mensagem inteira** — endereço, prazo,
+características, forma de pagamento e a linha da tabela. O dono corrigiu duas
+vezes: *"tirou mais coisas q mandei"* e *"só essa parte, o resto não mandei
+mexer"*. Na v328 `itemMessage`, `enterpriseMessage` e `selectedMessage` voltaram
+**byte a byte** ao que eram na v326; a única diferença no `app.js` são as três
+linhas da frase.
 
-**O valor fica**, e por um motivo prático: é o único conteúdo que separa
-"Mensagem com foto e preço" de "Mensagem sem preços". Sem ele os dois botões
-mandariam exatamente a mesma coisa.
-
-**Nada se perdeu para o cliente:** a prévia do link já mostra a foto, o nome e a
-ficha resumida (*"2 suítes · 130 m² global · 86 m² privativo · 1 box simples"*),
-e o resto está a um toque, na página da unidade.
+**Regra que fica:** *"deixe apenas a parte de baixo"* dito em cima de um print
+**com um trecho circulado** fala daquele trecho, não de cortar o resto. Quando a
+ordem for sobre um texto que ele mostrou, **mexa só no pedaço que ele apontou** —
+e, se restar dúvida sobre o alcance, pergunte antes; refazer texto que ele não
+mandou mexer custou duas rodadas.
 
 ## O envio vai SEM anexo, e a foto vem da prévia do link (v326)
 

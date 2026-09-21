@@ -1880,15 +1880,26 @@
     root.querySelectorAll("[data-select-item]").forEach((button) => button.addEventListener("click", () => toggleSelection(button.dataset.selectItem)));
   }
 
-  // v327 — enxuta pelo mesmo motivo do itemMessage: o resto o cliente ve no link.
   function enterpriseMessage(emp, includePrices) {
-    return [
+    const lines = [
       `*${emp.nome} — Construtora Senger*`,
       emp.cidade,
-      includePrices
-        ? `💰 Valores a partir de *${minPrice(emp) ? money(minPrice(emp)) : "sob consulta"}*`
-        : "💰 Consulte valores e condições.",
-    ].filter(Boolean).join("\n");
+      emp.tagline || emp.entrega || "",
+      "",
+    ];
+    // v99 — a mensagem NAO diz mais quantas opcoes existem na tabela. Anunciar
+    // "43 opcoes comercializaveis" tirava a urgencia da venda: passava a ideia de
+    // que sobra escolha e da pra decidir depois. Decisao do dono, vale para todos
+    // os empreendimentos. A contagem segue na tela do corretor, que precisa dela.
+    if (includePrices) {
+      lines.push(`Valores a partir de: *${minPrice(emp) ? money(minPrice(emp)) : "sob consulta"}*`);
+    } else {
+      lines.push("Consulte valores e condições.");
+    }
+    if (emp.entrega) lines.push(`Entrega: ${semPonto(emp.entrega)}`);
+    if (condicoesDe(emp)) lines.push(`Pagamento: ${condicoesDe(emp)}`);
+    lines.push("", `Tabela ${META.mesTabela || ""}. Valores e disponibilidade sujeitos a alteração.`);
+    return lines.filter((line, index, array) => line !== "" || array[index - 1] !== "").join("\n");
   }
 
   // Resumo do portfolio para o cliente que ainda nao sabe o que quer:
@@ -2096,19 +2107,26 @@
     return bullets;
   }
 
-  // v327 — a mensagem enxugou a pedido do dono: *"ta muito grande a msg, deixe a
-  // parte la de baixo apenas"*. Ficha, diferenciais e prazo saiam em vinte linhas
-  // e o cliente tinha de rolar para achar o link. Agora vai o nome, o valor e o
-  // convite para o link — e a previa do proprio link ja mostra a foto, o titulo e
-  // a ficha resumida do imovel, sem repetir nada aqui dentro.
-  //
-  // O VALOR fica: e o unico conteudo que separa "Mensagem com foto e preco" de
-  // "Mensagem sem precos". Sem ele os dois botoes mandariam a mesma coisa.
   function itemMessage(item, includePrice) {
-    return [
-      titulo(item),
-      includePrice ? `💰 *${money(item.price)}*` : "💰 Valor sob consulta.",
-    ].join("\n");
+    const emp = item.emp;
+    const lines = [titulo(item), semPonto(ondeFica(item)) + "."];
+
+    // Prazo de entrega logo no topo: data prevista, "Pronto para morar" ou "Pre-lancamento".
+    const prazo = emp.id !== "outros" ? semPonto(emp.entrega || emp.statusLabel || "") : "";
+    if (prazo) lines.push(`🗓️ ${prazo}`);
+    lines.push("");
+
+    itemBullets(item).forEach((b) => lines.push(`✅ ${b}`));
+    lines.push("");
+
+    // Observacoes ficam coladas no valor: elas explicam o que o preco inclui.
+    if (includePrice) lines.push(`💰 *${money(item.price)}*`);
+    else lines.push("💰 Valor sob consulta.");
+
+    if (condicoesDe(emp)) lines.push(`${condicoesDe(emp)}.`);
+    if (item.notes) lines.push(semPonto(item.notes) + ".");
+    lines.push("", `Tabela ${META.mesTabela || ""}. Valores e disponibilidade sujeitos a alteração.`);
+    return lines.join("\n");
   }
 
   // photos: [{ src, nome }] — uma por empreendimento presente na mensagem.
@@ -2566,13 +2584,21 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     return emps.length === 1 ? pontePara(emps[0].id, `sel=${sel}`) : linkCliente(`sel=${sel}`);
   }
 
-  // v327 — uma linha por imovel, com o valor. A ficha de cada um fica no link.
   function selectedMessage(includePrices) {
+    const items = selectedItems();
     const lines = ["*Seleção de imóveis — Construtora Senger*", ""];
-    selectedItems().forEach((item) => {
-      const valor = includePrices ? money(item.price) : "valor sob consulta";
-      lines.push(`• ${item.emp.nome} — ${itemLabel(item)} — *${valor}*`);
+    items.forEach((item, index) => {
+      lines.push(`*${index + 1}. ${item.emp.nome} — ${itemLabel(item)}*`);
+      if (item.group?.tipo) lines.push(item.group.tipo);
+      if (item.area) lines.push(`Área: ${item.area}`);
+      if (item.garage) lines.push(`Garagem: ${item.garage}`);
+      if (item.rua) lines.push(`Localização: ${item.rua}`);
+      const prazo = item.emp.id !== "outros" ? semPonto(item.emp.entrega || item.emp.statusLabel || "") : "";
+      if (prazo) lines.push(`Entrega: ${prazo}`);
+      lines.push(includePrices ? `Valor: *${money(item.price)}*` : "Valor: consulte a equipe comercial");
+      lines.push("");
     });
+    lines.push(`Tabela ${META.mesTabela || ""}. Valores e disponibilidade sujeitos a alteração.`);
     return lines.join("\n");
   }
 
