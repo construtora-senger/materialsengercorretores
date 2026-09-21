@@ -61,7 +61,7 @@ ordem for sobre um texto que ele mostrou, **mexa só no pedaço que ele apontou*
 e, se restar dúvida sobre o alcance, pergunte antes; refazer texto que ele não
 mandou mexer custou duas rodadas.
 
-## O envio vai como TEXTO, e a foto vem pela prévia do link — com a montagem pronta (v333)
+## O envio vai como TEXTO, e a foto vem pela prévia do link — com a montagem pronta (v333, ampliada na v334)
 
 **Regra atual. Substitui a v329 e a v330.** Vale para todos os envios.
 
@@ -88,8 +88,7 @@ não era ele.
 | empreendimento | texto: resumo + **link do prédio** (`l/<emp>/`) | capa em cima, resumo embaixo |
 | enviar link | texto curto + link | capa em cima, texto embaixo |
 | seleção de 1 empreendimento | texto + `l/<emp>/?sel=…` | capa em cima |
-| **seleção de 2 a 4 empreendimentos** | texto + **`l/sel/<ids>/?sel=…`** | **a montagem das fachadas** em cima, o descritivo (ou a lista com link) embaixo |
-| seleção de 5+ | texto + `?cliente&sel=…` | a imagem da marca (não há montagem pronta) |
+| **seleção de 2 a 10 empreendimentos** | texto + **`l/sel/<ids>/?sel=…`** | **a montagem das fachadas** em cima (até 6 fachadas; com mais, a última vira "+N"), o descritivo (ou a lista com link) embaixo |
 
 **Nenhum envio leva arquivo anexado.** No celular, `sendShare` chama
 `navigator.share({ text })` — só texto, sem `title`, sem `files`. No
@@ -101,13 +100,14 @@ imagem"* da primeira reclamação.
 **A montagem é gerada antes, porque o robô da prévia não roda JavaScript.**
 `tools/gerar-montagens.js` abre o site no Chromium, chama o próprio
 `montarMosaicoLista` do `app.js` (exposto em `window.__montarMosaicoLista`
-só para isso) e grava `assets/preview/sel/<ids>.jpg` — **375 combinações** de
-2 a 4 empreendimentos, 1000 px, ~33 MB. A chave são os ids em **ordem
+só para isso) e grava `assets/preview/sel/<ids>.jpg` — **1.013 combinações**,
+toda seleção possível de 2 a 10 empreendimentos (v334; a v333 ia até 4, e o
+dono mandou ampliar: *"e se quiser mais?"*), 1000 px, ~87 MB. A chave são os ids em **ordem
 alfabética, separados por `_`** (`chaveDaMontagem` no `app.js`); os painéis
 dentro da imagem seguem a ordem do cadastro. `tools/gerar-pontes.js` cria a
 ponte `l/sel/<ids>/` para cada montagem existente, com a montagem como
 `og:image` e redirecionamento para `?cliente&<o que veio>` sem `#emp-`.
-`tools/validar.js` exige as 375 montagens e as 375 pontes.
+`tools/validar.js` exige as 1.013 montagens e as 1.013 pontes.
 
 **Quando trocar a capa de um empreendimento, ou acrescentar/remover um:**
 `node tools/gerar-montagens.js --tudo` (ou sem `--tudo`, para só o que falta)
@@ -119,8 +119,11 @@ montagem velha, ou a marca.
 - *"no computador, abre a janela com o texto (com link) e as fotos"*;
 - *"a ponte da montagem aponta para a imagem certa e redireciona para o portfólio"*.
 
-**Não volte a anexar arquivo** enquanto o dono não confirmar, com print, que a
-legenda voltou a chegar no aparelho dele. E **não proponha "segundo toque"**
+**O dono confirmou em 21/09/2026 que voltou a funcionar** (*"agora deu certo
+de novo, não mexa mais em nada que quebre esse funcionamento"*). **Não volte a
+anexar arquivo** enquanto ele não pedir, com essas palavras; e **não mexa no
+`sendShare`, no `linkDaSelecao`, na `chaveDaMontagem` nem nas pontes `l/sel/`**
+sem ordem dele. E **não proponha "segundo toque"**
 (foto num balão, texto no outro): ele recusou em 21/09 — *"não tem nada de
 segundo toque, tem que ir num só como ia antes"*.
 

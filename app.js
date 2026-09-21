@@ -2597,13 +2597,13 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
   // daquele predio. Varios: nao ha ponte que represente todos, entao vai o
   // endereco do portfolio com os escolhidos — e a montagem das fachadas segue
   // anexada no botao de LINK, que e onde ela nunca atrapalhou o texto.
-  // v333 — ponte DA MONTAGEM. Para 2 a 4 empreendimentos existe uma ponte
+  // v333 — ponte DA MONTAGEM. Para 2 ou mais empreendimentos existe uma ponte
   // l/sel/<ids em ordem alfabetica, separados por _>/ com a montagem das
   // fachadas como imagem de previa (assets/preview/sel/<mesma chave>.jpg,
   // gerada por tools/gerar-montagens.js). E o que faz o WhatsApp mostrar os
-  // varios predios em cima da descricao, num balao so. Acima de 4 nao ha
-  // montagem pronta: vai o endereco do portfolio, com a previa da marca.
-  const MAX_MONTAGEM = 4;
+  // varios predios em cima da descricao, num balao so. v334: vale para toda
+  // combinacao dos empreendimentos do cadastro (ate os 10 de uma vez).
+  const MAX_MONTAGEM = 10;
   function chaveDaMontagem(emps) {
     if (emps.length < 2 || emps.length > MAX_MONTAGEM) return "";
     return emps.map((emp) => emp.id).sort().join("_");
