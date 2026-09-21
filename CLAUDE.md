@@ -61,6 +61,50 @@ ordem for sobre um texto que ele mostrou, **mexa só no pedaço que ele apontou*
 e, se restar dúvida sobre o alcance, pergunte antes; refazer texto que ele não
 mandou mexer custou duas rodadas.
 
+## Por que a foto chegava sem a descrição — o `title` (v330)
+
+**Achado medindo, não supondo.** O dono mandou os prints de **6/8 e 23/8**: a
+montagem das fachadas e a descrição inteira **num balão só**. Logo o WhatsApp
+aceita foto e texto juntos, e o defeito era do site. Ele estava certo nas duas
+vezes em que disse isso.
+
+**O culpado é o `title`.** O `navigator.share` ia com `{ title, text, files }`.
+O Chrome do Android transforma `title` em **EXTRA_SUBJECT** e `text` em
+**EXTRA_TEXT**; com os dois presentes o WhatsApp fica com o assunto e **joga a
+legenda fora** — chega a foto sozinha. Agora, **quando vai arquivo, o envio não
+leva `title`**: sobra só o EXTRA_TEXT, que é a legenda. No envio sem foto o
+`title` continua, porque ali nada compete com ele.
+
+**Segundo defeito, o do computador.** Quando o aparelho não aceita arquivo — e
+**o computador não aceita** —, o código disparava um `navigator.share({ title,
+text })`: **texto sozinho, sem a foto e sem abrir janela nenhuma**. Era
+exatamente o *"pelo PC só vai o texto e não vai a imagem"*. Agora, sem arquivo
+para mandar, **abre a janela de copiar/baixar**, que tem o texto **e** as fotos.
+Nenhum caminho manda mais meia mensagem em silêncio.
+
+**A cópia de segurança passou para depois do envio.** `copiarTextoDoEnvio`
+(v325) é uma escrita assíncrona na área de transferência e rodava **antes** do
+`navigator.share` — gastando o toque do dedo que o navegador exige para abrir o
+compartilhamento. Ela continua existindo, só que depois.
+
+**Dois testes guardam isto** (`tools/testar-navegador.js`), e os dois foram
+vistos falhando no código antigo antes de passarem no novo:
+
+- *"a seleção sai com a montagem E a descrição no mesmo envio"* — falha se
+  voltar a ir `title` junto com arquivo, ou se o texto sumir do envio;
+- *"sem poder anexar (computador), abre a janela com texto e fotos"* — falha se
+  alguém reintroduzir o envio de texto sozinho.
+
+**Regra que fica: não mande `title` junto com arquivo**, em envio nenhum. E
+**nunca dispare um `navigator.share` só com texto como plano B** — sem a foto, o
+lugar certo é a janela de copiar/baixar.
+
+**Medido no Chromium, antes e depois** (com o `navigator.share` interceptado):
+antes o envio da seleção ia com `title: "Seleção de imóveis"` + 452 caracteres +
+`selecao-senger.jpg`; agora vai `title: null` + os mesmos 452 caracteres + o
+mesmo arquivo. No computador, antes: texto de 452 caracteres, zero arquivos,
+nenhuma janela; agora: nenhum envio pela metade e a janela aberta.
+
 ## O envio leva a IMAGEM junto — como sempre foi (v329)
 
 **Regra atual. Desfaz a v326 por inteiro.**

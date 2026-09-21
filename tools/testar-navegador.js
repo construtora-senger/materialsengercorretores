@@ -240,6 +240,74 @@ async function teste(nome, fn) {
     return sobra <= 2 ? "" : `sobram ${sobra}px de rolagem horizontal`;
   });
 
+  // --------------------------------------------------- o envio por WhatsApp
+  // Guarda da v330. Duas coisas que ja quebraram no ar e o dono pegou antes dos
+  // testes: a foto chegando sem a descricao (o `title` roubava a legenda) e,
+  // no computador, o texto saindo sozinho sem foto e sem janela nenhuma.
+  //
+  // O navigator.share e interceptado; o que interessa e O QUE O SITE ENTREGA.
+  const envioDaSelecao = async (aceitaArquivo) => {
+    const pagina = await contexto.newPage();
+    await pagina.addInitScript((aceita) => {
+      window.__share = [];
+      navigator.share = async (d) => { window.__share.push({ title: d.title ?? null, texto: d.text || "", arquivos: (d.files || []).length }); };
+      navigator.canShare = (d) => (d && d.files && d.files.length ? aceita : true);
+    }, aceitaArquivo);
+    await pagina.goto(base + "/", { waitUntil: "networkidle" });
+    await pagina.getByRole("button", { name: /^Unidades$/ }).first().click().catch(() => {});
+    await pagina.waitForTimeout(600);
+    const chaves = await pagina.evaluate(() => {
+      const porEmp = new Map();
+      for (const el of document.querySelectorAll("[data-select-item]")) {
+        const emp = el.dataset.selectItem.split(":")[0];
+        if (!porEmp.has(emp)) porEmp.set(emp, el.dataset.selectItem);
+      }
+      return [...porEmp.values()].slice(0, 2);
+    });
+    for (const chave of chaves) await pagina.locator(`[data-select-item="${chave}"]`).first().click();
+    const resultado = {};
+    for (const [rotulo, id] of [["descricao", "share-selected-prices"], ["link", "share-selected-link"]]) {
+      await pagina.evaluate(() => { window.__share = []; });
+      await pagina.locator("#selection-fab").click();
+      await pagina.waitForTimeout(200);
+      await pagina.locator("#" + id).click();
+      await pagina.waitForTimeout(2500);
+      resultado[rotulo] = await pagina.evaluate(() => ({
+        envios: window.__share,
+        janela: document.getElementById("share-modal")?.classList.contains("open") || false,
+      }));
+      await pagina.evaluate(() => {
+        document.getElementById("share-modal")?.classList.remove("open");
+        document.body.classList.remove("no-scroll");
+        document.querySelector(".selection-drawer")?.classList.remove("open");
+      });
+      await pagina.waitForTimeout(150);
+    }
+    await pagina.close();
+    return resultado;
+  };
+
+  await teste("a seleção sai com a montagem E a descrição no mesmo envio", async () => {
+    const r = await envioDaSelecao(true);
+    for (const [rotulo, dados] of Object.entries(r)) {
+      const envio = dados.envios[0];
+      if (!envio) return `${rotulo}: nao houve envio nenhum`;
+      if (envio.arquivos !== 1) return `${rotulo}: foram ${envio.arquivos} arquivos, esperado 1`;
+      if (envio.texto.length < 100) return `${rotulo}: o texto saiu com ${envio.texto.length} caracteres`;
+      if (envio.title !== null) return `${rotulo}: foi com title "${envio.title}" — ele rouba a legenda do WhatsApp`;
+    }
+    return "";
+  });
+
+  await teste("sem poder anexar (computador), abre a janela com texto e fotos", async () => {
+    const r = await envioDaSelecao(false);
+    for (const [rotulo, dados] of Object.entries(r)) {
+      if (dados.envios.length) return `${rotulo}: mandou texto sozinho, sem a foto`;
+      if (!dados.janela) return `${rotulo}: nao abriu a janela de copiar/baixar`;
+    }
+    return "";
+  });
+
   // ================================================================= o cliente
   grupo("MODO CLIENTE");
 
