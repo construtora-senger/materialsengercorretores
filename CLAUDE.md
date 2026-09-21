@@ -61,42 +61,45 @@ ordem for sobre um texto que ele mostrou, **mexa só no pedaço que ele apontou*
 e, se restar dúvida sobre o alcance, pergunte antes; refazer texto que ele não
 mandou mexer custou duas rodadas.
 
-## O envio vai SEM anexo, e a foto vem da prévia do link (v326)
+## O envio leva a IMAGEM junto — como sempre foi (v329)
 
-**Regra atual. Substitui a v324 e a v325.**
+**Regra atual. Desfaz a v326 por inteiro.**
 
-Em 20/09/2026 o WhatsApp do dono passou a **descartar o texto sempre que a
-mensagem leva arquivo anexado**. Chega a imagem sozinha, sem uma linha de
-descrição. Ele conferiu, um a um: WhatsApp comum, WhatsApp Business, com a
-montagem das fachadas e com a foto de capa de um empreendimento só. **Nos
-quatro casos chegou só a foto.**
+Cada envio vai com **imagem + o conteúdo do botão**:
 
-**Não é o site.** O código do envio estava idêntico ao de agosto, quando chegava
-certo — conferido commit a commit nos 124 commits que já tocaram o `app.js`, e
-medido no Chromium: o site entregava a foto **e** os 452 caracteres da descrição
-no mesmo compartilhamento. O que mudou foi o WhatsApp, e não há nada no site que
-o obrigue a guardar a legenda.
+| o que o corretor escolhe | o que vai |
+|---|---|
+| Mensagem com foto e preço | **capa do empreendimento + o descritivo** da unidade, com o valor |
+| WhatsApp com preços / sem preços | **capa + o resumo do prédio** |
+| Enviar link (prédio ou unidade) | **capa + o texto curto com o link** |
+| Seleção de **vários** empreendimentos | **a montagem das fachadas** (um quadro por empreendimento, dividindo a imagem) + o descritivo de cada imóvel, ou o link com as unidades selecionadas |
 
-**O que passou a valer:** nenhum envio leva arquivo anexado. A mensagem vai só
-como texto — e a **foto aparece na prévia do link**, no mesmo balão, que é
-exatamente para isso que as páginas-ponte existem (`l/<emp>/` e
-`l/<emp>/u/<n>/`, com o nome e a foto daquele prédio dentro). Por isso toda
-mensagem de descrição agora termina com o link do imóvel.
+A montagem é `montarMosaicoLista`: com mais de um empreendimento ela divide o
+espaço somando os produtos selecionados, e vai anexada. Com um só, vai a capa
+dele.
 
-O cliente recebe **uma mensagem só, com a foto em cima e a descrição inteira
-embaixo** — que é o que o dono sempre pediu. É o formato dos prints dele de 6/8,
-23/8 e 18/9.
+**A v326 tirou o anexo de todos os envios e o dono NUNCA mandou fazer isso.**
+Ele mandou os prints dizendo que chegava só a foto, sem o texto — relato de um
+problema, não ordem de mudar o formato. A v326 decidiu sozinha, e foi a segunda
+vez: a **v323** já tinha feito o mesmo e ele desfez no mesmo dia. Em 21/09/2026
+ele foi direto: *"eu nunca mandei desistir, tirar ou mudar isso... quero como
+era antes"*.
 
-No computador nada muda: sem compartilhamento nativo, a janela de copiar/baixar
-continua mostrando as fotos para o corretor salvar.
+**Regra que fica: relato de problema não é ordem de mudança.** Quando ele
+disser que algo chegou errado, **pergunte o que ele quer fazer** — não troque o
+formato do envio por conta própria. Isso já custou três rodadas (v323, v326,
+v329).
 
-**A mensagem também fica copiada no aparelho** (`copiarTextoDoEnvio`, v325), como
-rede de segurança: se algum dia o texto sumir de novo, é só colar.
+**Não tire o anexo de novo sem ele mandar, com essas palavras.**
 
-> **REGRA ANTIGA — substituída pela de cima:** a v324 mandava a foto da capa
-> anexada em cada envio, com a descrição junto. Funcionou de julho a 18/09/2026 e
-> parou de funcionar por mudança do WhatsApp, não do site. **Não volte a anexar
-> arquivo** sem o dono confirmar, com print, que a legenda voltou a chegar.
+**A mensagem também fica copiada no aparelho** (`copiarTextoDoEnvio`, v325),
+como rede de segurança: se o texto sumir, é só colar.
+
+**A frase curta do link (v328) continua valendo** — *"👇 Clique no link abaixo
+para mais informações:"* —, porque essa sim foi ordem dele.
+
+> **REGRA ANTIGA — substituída pela de cima:** a v326 mandava todo envio sem
+> arquivo anexado, com a foto vindo da prévia do link. **Desfeita na v329.**
 
 ## Como era o envio até a v325 (histórico)
 ### O envio por WhatsApp é como sempre foi — não mexa (v324)
