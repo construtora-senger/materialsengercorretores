@@ -2047,22 +2047,12 @@
       "👇 Clique no link abaixo para mais informações:",
       listClientLink(enterprises),
     ].join("\n");
-    const title = "Seleção Construtora Senger";
-    await copiarTextoDoEnvio(text);
-    if (navigator.share) {
-      const file = enterprises.length === 1
-        ? await loadShareFile(assetUrl(cardImage(enterprises[0])))
-        : await montarMosaicoLista(enterprises);
-      if (file && navigator.canShare && navigator.canShare({ title, text, files: [file] })) {
-        try { await navigator.share({ title, text, files: [file] }); return; }
-        catch (error) { if (error?.name === "AbortError") return; }
-      }
-      // Sem mosaico, melhor SEM foto do que com a foto de um so (a previa do link mostra a
-      // imagem generica da marca — neutra, nao engana o cliente).
-      try { await navigator.share({ title, text }); return; }
-      catch (error) { if (error?.name === "AbortError") return; }
-    }
-    openShareModal(text, enterprises.map(coverPhoto));
+    // Sem mosaico (um empreendimento so), vai a capa dele. O caminho todo e o
+    // mesmo do resto do site: quem decide foto/texto/janela e o sendShare.
+    const arquivo = enterprises.length === 1
+      ? await loadShareFile(assetUrl(cardImage(enterprises[0])))
+      : await montarMosaicoLista(enterprises);
+    await sendShare(text, "Seleção Construtora Senger", enterprises.map(coverPhoto), arquivo);
   }
 
   const semPonto = (texto = "") => String(texto).trim().replace(/\.$/, "");
@@ -2332,26 +2322,40 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
   // `arquivo`: imagem ja montada para o envio. `null` diz "vai sem foto" — e o caso
   // de varios empreendimentos sem montagem, em que a capa de um so engana o cliente.
   // Deixando de fora, a foto sai da primeira da lista, como sempre.
+  // v330 — DOIS CONSERTOS, os dois medidos no Chromium antes e depois:
+  //
+  // 1) FOTO E TEXTO NO MESMO BALAO. Quando vai arquivo, o envio NAO leva mais
+  //    `title`. O Chrome do Android transforma o `title` em EXTRA_SUBJECT e o
+  //    `text` em EXTRA_TEXT; com os dois presentes o WhatsApp fica com o assunto
+  //    e joga a legenda fora — chega a foto sozinha. Sem o `title`, so resta o
+  //    EXTRA_TEXT, que e a legenda. O `title` continua no envio sem foto, onde
+  //    nada compete com ele.
+  //
+  // 2) SEM FOTO, NAO SE MANDA NADA PELA METADE. Antes, quando o aparelho nao
+  //    aceitava arquivo (e o computador nao aceita), o codigo disparava um
+  //    `navigator.share({ title, text })` — texto sozinho, sem a foto e sem
+  //    janela nenhuma. Era o "no PC so vai o texto e nao vai a imagem". Agora,
+  //    sem arquivo para mandar, abre a janela de copiar/baixar, que tem o texto
+  //    E as fotos.
+  //
+  // A copia de seguranca da mensagem (v325) passou para DEPOIS do envio: ela
+  // e uma escrita assincrona na area de transferencia e, antes do share,
+  // gastava o toque do dedo que o navegador exige para abrir o compartilhamento.
   async function sendShare(text, title = "Construtora Senger", photos = [], arquivo) {
-    await copiarTextoDoEnvio(text);
     const imageUrl = photos[0]?.src || "";
     if (navigator.share) {
       const file = arquivo !== undefined ? arquivo : await loadShareFile(imageUrl);
-      if (file && navigator.canShare?.({ title, text, files: [file] })) {
+      if (file && navigator.canShare?.({ text, files: [file] })) {
         try {
-          await navigator.share({ title, text, files: [file] });
+          await navigator.share({ text, files: [file] });
+          await copiarTextoDoEnvio(text);
           return;
         } catch (error) {
           if (error?.name === "AbortError") return;
         }
       }
-      try {
-        await navigator.share({ title, text });
-        return;
-      } catch (error) {
-        if (error?.name === "AbortError") return;
-      }
     }
+    await copiarTextoDoEnvio(text);
     openShareModal(text, photos);
   }
 
