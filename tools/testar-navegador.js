@@ -241,18 +241,25 @@ async function teste(nome, fn) {
   });
 
   // --------------------------------------------------- o envio por WhatsApp
-  // Guarda da v330. Duas coisas que ja quebraram no ar e o dono pegou antes dos
-  // testes: a foto chegando sem a descricao (o `title` roubava a legenda) e,
-  // no computador, o texto saindo sozinho sem foto e sem janela nenhuma.
+  // Guarda da v333. O WhatsApp do celular do dono descarta a legenda quando vai
+  // foto anexada (provado em 21/09 com o site exato de 17/08). Entao NENHUM
+  // envio leva arquivo: o texto vai com o link no fim e a foto vem pela previa.
+  // Para 2 a 4 empreendimentos o link e a ponte da montagem (l/sel/), que
+  // precisa existir com a imagem. No computador nao ha envio nativo: abre a
+  // janela de copiar/baixar, com o texto e as fotos.
   //
   // O navigator.share e interceptado; o que interessa e O QUE O SITE ENTREGA.
-  const envioDaSelecao = async (aceitaArquivo) => {
-    const pagina = await contexto.newPage();
-    await pagina.addInitScript((aceita) => {
+  const ANDROID = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Mobile Safari/537.36";
+  const envioDaSelecao = async (celular) => {
+    const ctx = await navegador.newContext(celular
+      ? { userAgent: ANDROID, viewport: { width: 390, height: 844 } }
+      : { viewport: { width: 1280, height: 900 } });
+    const pagina = await ctx.newPage();
+    await pagina.addInitScript(() => {
       window.__share = [];
       navigator.share = async (d) => { window.__share.push({ title: d.title ?? null, texto: d.text || "", arquivos: (d.files || []).length }); };
-      navigator.canShare = (d) => (d && d.files && d.files.length ? aceita : true);
-    }, aceitaArquivo);
+      navigator.canShare = () => true;
+    });
     await pagina.goto(base + "/", { waitUntil: "networkidle" });
     await pagina.getByRole("button", { name: /^Unidades$/ }).first().click().catch(() => {});
     await pagina.waitForTimeout(600);
@@ -265,16 +272,18 @@ async function teste(nome, fn) {
       return [...porEmp.values()].slice(0, 2);
     });
     for (const chave of chaves) await pagina.locator(`[data-select-item="${chave}"]`).first().click();
-    const resultado = {};
+    const resultado = { emps: chaves.map((c) => c.split(":")[0]) };
     for (const [rotulo, id] of [["descricao", "share-selected-prices"], ["link", "share-selected-link"]]) {
       await pagina.evaluate(() => { window.__share = []; });
       await pagina.locator("#selection-fab").click();
       await pagina.waitForTimeout(200);
       await pagina.locator("#" + id).click();
-      await pagina.waitForTimeout(2500);
+      await pagina.waitForTimeout(1500);
       resultado[rotulo] = await pagina.evaluate(() => ({
         envios: window.__share,
         janela: document.getElementById("share-modal")?.classList.contains("open") || false,
+        textoDaJanela: document.getElementById("share-modal-text")?.value || "",
+        fotosNaJanela: document.querySelectorAll("#share-modal-photos img").length,
       }));
       await pagina.evaluate(() => {
         document.getElementById("share-modal")?.classList.remove("open");
@@ -283,28 +292,48 @@ async function teste(nome, fn) {
       });
       await pagina.waitForTimeout(150);
     }
-    await pagina.close();
+    await ctx.close();
     return resultado;
   };
 
-  await teste("a seleção sai com a montagem E a descrição no mesmo envio", async () => {
+  await teste("no celular, a seleção vai como texto com o link da montagem — sem arquivo", async () => {
     const r = await envioDaSelecao(true);
-    for (const [rotulo, dados] of Object.entries(r)) {
-      const envio = dados.envios[0];
+    const chave = [...r.emps].sort().join("_");
+    for (const rotulo of ["descricao", "link"]) {
+      const envio = r[rotulo].envios[0];
       if (!envio) return `${rotulo}: nao houve envio nenhum`;
-      if (envio.arquivos !== 1) return `${rotulo}: foram ${envio.arquivos} arquivos, esperado 1`;
+      if (r[rotulo].envios.length !== 1) return `${rotulo}: ${r[rotulo].envios.length} envios, esperado 1`;
+      if (envio.arquivos !== 0) return `${rotulo}: foi com ${envio.arquivos} arquivo(s) — o WhatsApp descarta a legenda`;
       if (envio.texto.length < 100) return `${rotulo}: o texto saiu com ${envio.texto.length} caracteres`;
-      if (envio.title !== null) return `${rotulo}: foi com title "${envio.title}" — ele rouba a legenda do WhatsApp`;
+      if (!envio.texto.includes(`/l/sel/${chave}/`)) return `${rotulo}: o texto nao leva o link da montagem l/sel/${chave}/`;
+      if (r[rotulo].janela) return `${rotulo}: abriu a janela de copiar no celular`;
+    }
+    if (!fs.existsSync(path.join(RAIZ, "l", "sel", chave, "index.html"))) return `a ponte l/sel/${chave}/ nao existe`;
+    if (!fs.existsSync(path.join(RAIZ, "assets", "preview", "sel", `${chave}.jpg`))) return `a montagem assets/preview/sel/${chave}.jpg nao existe`;
+    return "";
+  });
+
+  await teste("no computador, abre a janela com o texto (com link) e as fotos", async () => {
+    const r = await envioDaSelecao(false);
+    for (const rotulo of ["descricao", "link"]) {
+      if (r[rotulo].envios.length) return `${rotulo}: disparou envio nativo no computador`;
+      if (!r[rotulo].janela) return `${rotulo}: nao abriu a janela de copiar/baixar`;
+      if (!/https?:\/\//.test(r[rotulo].textoDaJanela)) return `${rotulo}: o texto da janela esta sem link`;
+      if (r[rotulo].fotosNaJanela < 1) return `${rotulo}: a janela esta sem foto`;
     }
     return "";
   });
 
-  await teste("sem poder anexar (computador), abre a janela com texto e fotos", async () => {
-    const r = await envioDaSelecao(false);
-    for (const [rotulo, dados] of Object.entries(r)) {
-      if (dados.envios.length) return `${rotulo}: mandou texto sozinho, sem a foto`;
-      if (!dados.janela) return `${rotulo}: nao abriu a janela de copiar/baixar`;
-    }
+  await teste("a ponte da montagem aponta para a imagem certa e redireciona para o portfólio", async () => {
+    const chave = "evolutti_renaissance";
+    const html = fs.readFileSync(path.join(RAIZ, "l", "sel", chave, "index.html"), "utf8");
+    if (!html.includes(`assets/preview/sel/${chave}.jpg`)) return "og:image nao aponta para a montagem";
+    const pagina = await contexto.newPage();
+    await pagina.goto(`${base}/l/sel/${chave}/?sel=evolutti~504,renaissance~503&w=5554999`, { waitUntil: "networkidle" });
+    await pagina.waitForTimeout(500);
+    const url = pagina.url();
+    await pagina.close();
+    if (!/\/\?cliente&sel=evolutti~504,renaissance~503&w=5554999$/.test(url)) return `redirecionou para ${url}`;
     return "";
   });
 
