@@ -36,6 +36,40 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A faixa da Visão geral não conta os lotes dos loteamentos nem o Campos Elísios (v335)
+
+Dois pedidos do dono em 22/09/2026, com o print da Visão geral na mão:
+
+1. *"tire os terrenos do loteamento desse total de 183 tb"* — a faixa de cima
+   ("O estoque da Senger") passou a somar **só os prédios e os imóveis
+   avulsos**: os lotes do Nova Vila Rica III e do Nova Vila Rica I & II ficam
+   **fora** dos três números e da barra. `ehLoteamento(emp)` decide
+   (empreendimento com `terrenos`); os dois terrenos avulsos de "Outros
+   Imóveis" **não** são loteamento e seguem na conta.
+2. *"retire o Campos Elísios da conta tb, pois é de um dos sócios da Senger,
+   particular — deixe na lista de venda, só não contabilize ele nem em
+   unidades à venda nem em valor"* — o Edifício Campos Elísios tem
+   `foraDaConta: true` no `data.js`. Ele **continua na vitrine do site, nas
+   mensagens e no PDF**, e continua listado em Estoque / Unidades e em Preços
+   e margem; só **não conta** — nem como à venda, nem como alugado, nem no
+   total do cadastro — e a faixa diz por extenso quem ficou de fora. Quando o
+   dono pedir o **valor em estoque**, ele fica fora da soma também.
+
+Com o cadastro de hoje a faixa mostra **105 à venda** (5 alugados), **199
+vendidos**, **304 no cadastro, em 7 empreendimentos**, 65% vendido — antes
+eram 183 · 216 · 399 · 54%. **Os loteamentos não sumiram do painel**: cada um
+continua no seu quadro do placar (67 e 10 lotes à venda). O quadro de "Outros
+Imóveis" passou a dizer 3 à venda.
+
+`foraDaConta` vale para qualquer item (unidade, lote ou avulso): `itensDoEmp`
+lê a marca e `resumoDoEmp` aplica — é ele que alimenta a faixa, o placar e o
+detalhe. A edição textual do painel (`aplicarStatus`, `aplicarPreco`) acha o
+item pelo `nome:` e mexe só na linha do campo, então a marca não a atrapalha.
+
+Testes que guardam isto (`tools/testar-navegador.js`): *"a faixa de cima soma
+os empreendimentos, sem os lotes dos loteamentos"* e *"o item marcado como fora
+da conta fica na vitrine, mas fora da faixa"*.
+
 ## Só a frase do link mudou (v328) — a mensagem é a de sempre
 
 Pedido do dono, com o print e o círculo em volta de **uma frase só**:
@@ -766,7 +800,9 @@ continuava confuso. Desta vez ele listou os oito problemas (e confirmou:
 - **a faixa da Senger**, em cima: quantos à venda (com *"(6 alugados, que
   seguem na oferta)"* escrito por extenso), quantos vendidos, quantos no
   cadastro e em quantos empreendimentos, mais a barra **verde** do quanto já
-  foi vendido. Hoje: 183 à venda, 216 vendidos, 399 no cadastro, 54% vendido;
+  foi vendido. Na v319: 183 à venda, 216 vendidos, 399 no cadastro, 54% vendido
+  — **desde a v335 os lotes dos loteamentos ficam fora dessa faixa** (ver
+  REGRAS ATUAIS);
 - **o placar**, embaixo: um quadro por empreendimento com **só o número do que
   falta vender**, o tipo de imóvel, a barra e "N de M". Dois por linha no
   celular, os dez em menos de duas telas.

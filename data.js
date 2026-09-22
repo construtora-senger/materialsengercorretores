@@ -1772,6 +1772,11 @@ const EMPREENDIMENTOS = [
         area: "145 m² privativo",
         status: "alugado",
         obs: "Alugado por R$ 2.400,00.",
+        // v335 — fica na vitrine, nas mensagens e no PDF como sempre, mas
+        // FORA da contagem do painel: nem unidade a venda, nem valor em
+        // estoque. Pedido do dono em 22/09/2026. O painel le esta marca em
+        // itensDoEmp / resumoDoEmp.
+        foraDaConta: true,
       },
       {
         nome: "Terreno Loteamento Jardim América",
