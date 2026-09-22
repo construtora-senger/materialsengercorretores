@@ -1251,10 +1251,12 @@
 
         <!-- Dashboard -->
         <section class="bloco" data-modulo="visao" data-visao-secao="estoque">
-          <h2>Todo o estoque da Senger</h2>
+          <h2>O estoque da Senger</h2>
           <p class="descricao">A contagem que não aparece no site — só aqui no painel.
-            Em cima, a Senger inteira; embaixo, um quadro por empreendimento com <strong>quanto ainda
-            falta vender ali</strong>. Toque no quadro para ver as tipologias, a garagem e o que falta
+            Em cima, os prédios e os imóveis avulsos: <strong>os lotes dos loteamentos e os imóveis
+            marcados como fora da conta não entram nesses números</strong> — a própria faixa diz quais
+            ficaram de fora; embaixo, um quadro por empreendimento com <strong>quanto ainda falta
+            vender ali</strong>. Toque no quadro para ver as tipologias, a garagem e o que falta
             naquele empreendimento.</p>
           <div class="cards cascata" id="dashboard"></div>
         </section>
@@ -1516,7 +1518,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 322;
+  const VERSAO_PAINEL = 335;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2581,14 +2583,14 @@
         // onde a divisao comercial nao bate com a do site: as Casas Suspensas
         // do Renaissance sao um grupo so, mas contam com o andar delas.
         itens.push({ tipo: "unidade", grupo: grupo.tipo, estoque: u.estoque || grupo.estoque || grupo.tipo,
-          rotulo, apto: u.apto, ocorrencia, preco: u.preco, status: u.status || "disponivel" });
+          rotulo, apto: u.apto, ocorrencia, preco: u.preco, status: u.status || "disponivel", foraDaConta: !!u.foraDaConta });
       });
     });
     (emp.terrenos || []).forEach((t) => {
-      itens.push({ tipo: "terreno", grupo: t.lote || "Terrenos", rotulo: `Quadra ${t.quadra} · Lote ${t.numero}`, quadra: t.quadra, numero: t.numero, preco: t.preco, status: t.status || "disponivel" });
+      itens.push({ tipo: "terreno", grupo: t.lote || "Terrenos", rotulo: `Quadra ${t.quadra} · Lote ${t.numero}`, quadra: t.quadra, numero: t.numero, preco: t.preco, status: t.status || "disponivel", foraDaConta: !!t.foraDaConta });
     });
     (emp.outros || []).forEach((o) => {
-      itens.push({ tipo: "outro", grupo: "", rotulo: o.nome, nome: o.nome, preco: o.preco, status: o.status || "disponivel" });
+      itens.push({ tipo: "outro", grupo: "", rotulo: o.nome, nome: o.nome, preco: o.preco, status: o.status || "disponivel", foraDaConta: !!o.foraDaConta });
     });
     return itens;
   }
@@ -3023,8 +3025,12 @@
   // visao geral porque o lugar dela e o detalhe, nao o resumo.
   function resumoDoEmp(emp) {
     const itens = itensDoEmp(emp);
+    // v335 — `foraDaConta: true` no data.js deixa o item na vitrine e no
+    // cadastro, mas fora dos numeros: nem a venda, nem alugado, nem no total.
+    // Hoje e o Edificio Campos Elisios (pedido do dono, 22/09/2026).
+    const contados = itens.filter((i) => !i.foraDaConta);
     const contagem = {};
-    itens.forEach((i) => {
+    contados.forEach((i) => {
       const s = statusAtual(emp.id, i);
       contagem[s] = (contagem[s] || 0) + 1;
     });
@@ -3037,8 +3043,8 @@
     return {
       itens, vendidos, disponiveis, alugados,
       aVenda: disponiveis + alugados,
-      total: itens.length,
-      pct: itens.length ? Math.round((vendidos / itens.length) * 100) : 0,
+      total: contados.length,
+      pct: contados.length ? Math.round((vendidos / contados.length) * 100) : 0,
       faltas,
       criticas: faltas.filter((f) => f.nivel === NIVEL.critico),
       atencao: faltas.filter((f) => f.nivel === NIVEL.atencao),
@@ -3059,9 +3065,19 @@
     return estado.dados.EMPREENDIMENTOS.filter((emp) => itensDoEmp(emp).length);
   }
 
-  // A faixa de cima: a Senger inteira, antes de qualquer predio.
+  // Loteamento e o empreendimento cujo estoque sao lotes (`terrenos`): os
+  // dois Nova Vila Rica. Os terrenos avulsos de "outros" nao sao loteamento.
+  function ehLoteamento(emp) {
+    return (emp.terrenos || []).length > 0;
+  }
+
+  // A faixa de cima: os predios e os imoveis avulsos, antes de qualquer
+  // quadro. Os lotes dos loteamentos ficam FORA desta conta, a pedido do dono
+  // (22/09/2026, v335: "tire os terrenos do loteamento desse total de 183").
+  // Eles continuam no placar, cada loteamento no seu quadro.
   function renderFaixaDaSenger(emps) {
-    const t = emps.reduce((a, emp) => {
+    const semLotes = emps.filter((emp) => !ehLoteamento(emp));
+    const t = semLotes.reduce((a, emp) => {
       const r = resumoDoEmp(emp);
       return { aVenda: a.aVenda + r.aVenda, alugados: a.alugados + r.alugados,
                vendidos: a.vendidos + r.vendidos, total: a.total + r.total };
@@ -3069,13 +3085,14 @@
     const pct = t.total ? Math.round((t.vendidos / t.total) * 100) : 0;
     // O agrupador "outros" nao e empreendimento: ele entra na conta dos
     // imoveis, mas nao no "em N empreendimentos".
-    const predios = emps.filter((emp) => emp.id !== "outros").length;
+    const predios = semLotes.filter((emp) => emp.id !== "outros").length;
+    const fora = semLotes.flatMap((emp) => itensDoEmp(emp).filter((i) => i.foraDaConta).map((i) => i.rotulo));
     return `<div class="ve-total">
       <div class="ve-total-numeros">
         <div class="ve-total-n destaque"><strong>${t.aVenda}</strong>
           <span>à venda hoje${t.alugados ? `<br>(${conta(t.alugados, "alugado", "alugados")}, que seguem na oferta)` : ""}</span></div>
         <div class="ve-total-n"><strong>${t.vendidos}</strong><span>já vendidos</span></div>
-        <div class="ve-total-n"><strong>${t.total}</strong><span>no cadastro, em ${conta(predios, "empreendimento", "empreendimentos")}</span></div>
+        <div class="ve-total-n"><strong>${t.total}</strong><span>no cadastro, em ${conta(predios, "empreendimento", "empreendimentos")}<br>(fora da conta: os lotes dos loteamentos${fora.length ? " e " + fora.map(escapeHtml).join(", ") : ""})</span></div>
       </div>
       <div class="ve-trilho" role="img" aria-label="${pct}% do estoque já vendido"><i style="width:${pct}%"></i></div>
       <div class="ve-legenda"><span><b>${pct}% já vendido</b> — ${t.vendidos} de ${t.total}</span><span>faltam ${t.aVenda}</span></div>

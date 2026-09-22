@@ -559,15 +559,46 @@ async function teste(nome, fn) {
     return quadros >= 8 ? "" : `so ${quadros} quadros no placar`;
   });
 
-  await teste("a faixa de cima soma todos os empreendimentos", async () => {
+  // v335 — os lotes dos loteamentos ficam fora da faixa de cima, a pedido do
+  // dono; eles seguem nos quadros deles. A faixa tem de fechar com a soma dos
+  // quadros que nao sao de lotes — e nunca mais com a soma de todos.
+  await teste("a faixa de cima soma os empreendimentos, sem os lotes dos loteamentos", async () => {
     const naFaixa = await admin.locator("#dashboard .ve-total-n strong").allTextContents();
-    const nosQuadros = await admin.locator("#dashboard .ve-quadro .ve-q-n").allTextContents();
-    const somaDosQuadros = nosQuadros.reduce((a, t) => a + parseInt(t, 10), 0);
+    const quadros = await admin.locator("#dashboard .ve-quadro").evaluateAll((els) => els.map((el) => ({
+      n: parseInt(el.querySelector(".ve-q-n").textContent, 10),
+      lotes: /\blotes\b/.test(el.querySelector(".ve-q-un").textContent),
+    })));
+    const somaSemLotes = quadros.filter((q) => !q.lotes).reduce((a, q) => a + q.n, 0);
+    const somaComLotes = quadros.reduce((a, q) => a + q.n, 0);
     const aVenda = parseInt(naFaixa[0], 10);
-    if (aVenda !== somaDosQuadros) return `a faixa diz ${aVenda} a venda e os quadros somam ${somaDosQuadros}`;
+    if (aVenda !== somaSemLotes) return `a faixa diz ${aVenda} a venda e os quadros sem lotes somam ${somaSemLotes}`;
+    if (quadros.some((q) => q.lotes) && aVenda === somaComLotes) return "a faixa ainda soma os lotes dos loteamentos";
     // O total do cadastro tem de fechar com "a venda + vendidos".
     const [, vendidos, cadastro] = naFaixa.map((t) => parseInt(t, 10));
     return aVenda + vendidos === cadastro ? "" : `${aVenda} + ${vendidos} nao dao os ${cadastro} do cadastro`;
+  });
+
+  // v335 — `foraDaConta: true` (hoje, o Campos Elisios) deixa o item na
+  // vitrine, mas fora da conta do painel: nem a venda, nem no total.
+  await teste("o item marcado como fora da conta fica na vitrine, mas fora da faixa", async () => {
+    const fonte = fs.readFileSync(path.join(RAIZ, "data.js"), "utf8");
+    const { EMPREENDIMENTOS } = new Function(fonte.replace(/window\.SENGER[\s\S]*$/, "") + "; return { EMPREENDIMENTOS };")();
+    const outros = EMPREENDIMENTOS.find((e) => e.id === "outros");
+    const fora = (outros.outros || []).filter((o) => o.foraDaConta).map((o) => o.nome);
+    if (!fora.length) return "nenhum imovel avulso esta marcado como fora da conta — o teste nao prova nada";
+    const esperado = (outros.outros || []).filter((o) => !o.foraDaConta && (o.status || "disponivel") !== "vendido").length;
+    const legenda = await admin.locator("#dashboard .ve-total-n").nth(2).innerText();
+    const faltando = fora.filter((nome) => !legenda.includes(nome));
+    if (faltando.length) return `a faixa nao diz que ficou de fora: ${faltando.join(", ")}`;
+    const noQuadro = parseInt(await admin.locator('#dashboard .ve-quadro[data-ve-abrir="outros"] .ve-q-n').innerText(), 10);
+    if (noQuadro !== esperado) return `o quadro de Outros Imoveis diz ${noQuadro} a venda, esperava ${esperado}`;
+    // E no site ele continua a venda, como sempre.
+    const pg = await admin.context().newPage();
+    await pg.goto(`${base}/#emp-outros`, { waitUntil: "networkidle" });
+    const sumiram = [];
+    for (const nome of fora) if (!(await pg.getByText(nome).count())) sumiram.push(nome);
+    await pg.close();
+    return sumiram.length ? `sumiu da vitrine: ${sumiram.join(", ")}` : "";
   });
 
   await teste("tocar num quadro abre o detalhe, e o voltar fecha", async () => {
