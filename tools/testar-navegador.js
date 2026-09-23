@@ -306,6 +306,7 @@ async function teste(nome, fn) {
       if (envio.arquivos !== 0) return `${rotulo}: foi com ${envio.arquivos} arquivo(s) — o WhatsApp descarta a legenda`;
       if (envio.texto.length < 100) return `${rotulo}: o texto saiu com ${envio.texto.length} caracteres`;
       if (!envio.texto.includes(`/l/sel/${chave}/`)) return `${rotulo}: o texto nao leva o link da montagem l/sel/${chave}/`;
+      if (/[?&]sel=/.test(envio.texto)) return `${rotulo}: o link da montagem saiu comprido (?sel=), e nao o curto (?s=)`;
       if (r[rotulo].janela) return `${rotulo}: abriu a janela de copiar no celular`;
     }
     if (!fs.existsSync(path.join(RAIZ, "l", "sel", chave, "index.html"))) return `a ponte l/sel/${chave}/ nao existe`;
@@ -334,6 +335,16 @@ async function teste(nome, fn) {
     const url = pagina.url();
     await pagina.close();
     if (!/\/\?cliente&sel=evolutti~504,renaissance~503&w=5554999$/.test(url)) return `redirecionou para ${url}`;
+    return "";
+  });
+
+  await teste("o link curto da montagem (?s=) abre as mesmas unidades", async () => {
+    const pagina = await contexto.newPage();
+    await pagina.goto(`${base}/l/sel/evolutti_renaissance/?s=504.604_503&w=5554999`, { waitUntil: "networkidle" });
+    await pagina.waitForTimeout(500);
+    const url = pagina.url();
+    await pagina.close();
+    if (!/\/\?cliente&sel=evolutti~504,evolutti~604,renaissance~503&w=5554999$/.test(url)) return `redirecionou para ${url}`;
     return "";
   });
 

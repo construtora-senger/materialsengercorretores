@@ -308,11 +308,24 @@ const paginaDaSelecao = ({ chave, emps }) => {
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${foto}">
 <script>
-  (function () {
+  // v336 — o link curto (?s=504_802A) vira o ?sel=emp~cod de sempre: um bloco
+  // por empreendimento, na ordem da chave, e as unidades separadas por ".".
+  function destinoDaSelecao() {
+    var ids = ${JSON.stringify(chave.split("_"))};
     var qs = location.search.replace(/^\\?/, "");
+    var partes = qs ? qs.split("&").map(function (parte) {
+      if (parte.indexOf("s=") !== 0) return parte;
+      var sel = [];
+      parte.slice(2).split("_").forEach(function (bloco, i) {
+        if (!ids[i]) return;
+        bloco.split(".").forEach(function (cod) { if (cod) sel.push(ids[i] + "~" + cod); });
+      });
+      return "sel=" + sel.join(",");
+    }) : [];
     var raiz = location.pathname.replace(/\\/l\\/sel\\/[^/]*\\/?$/, "/");
-    location.replace(raiz + "?cliente" + (qs ? "&" + qs : ""));
-  })();
+    return raiz + "?cliente" + (partes.length ? "&" + partes.join("&") : "");
+  }
+  location.replace(destinoDaSelecao());
 </script>
 <style>
   *{box-sizing:border-box}
@@ -335,11 +348,7 @@ const paginaDaSelecao = ({ chave, emps }) => {
     <a id="ir" href="../../../?cliente">Ver fotos, plantas e valores</a>
   </div>
   <script>
-    (function () {
-      var qs = location.search.replace(/^\\?/, "");
-      var raiz = location.pathname.replace(/\\/l\\/sel\\/[^/]*\\/?$/, "/");
-      document.getElementById("ir").href = raiz + "?cliente" + (qs ? "&" + qs : "");
-    })();
+    document.getElementById("ir").href = destinoDaSelecao();
   </script>
 </body>
 </html>

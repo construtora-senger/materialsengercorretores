@@ -2620,7 +2620,20 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     const emps = empreendimentosDe(items);
     const sel = items.map((item) => `${item.emp.id}~${encodeURIComponent(String(item.code))}`).join(",");
     if (emps.length === 1) return pontePara(emps[0].id, `sel=${sel}`);
-    return ponteDaMontagem(emps, `sel=${sel}`) || linkCliente(`sel=${sel}`);
+    return ponteDaMontagem(emps, `s=${selCurta(items, emps)}`) || linkCliente(`sel=${sel}`);
+  }
+
+  // v336 — o link da montagem vai CURTO (pedido do dono: "pode encurtar"). Os
+  // empreendimentos ja estao no caminho (l/sel/<ids>/), entao o ?s= leva so os
+  // codigos: um bloco por empreendimento, na mesma ordem alfabetica da chave,
+  // separados por "_", e as unidades do mesmo empreendimento por ".".
+  // Ex.: l/sel/evolutti_quality/?s=504_802A. A ponte traduz de volta para o
+  // ?sel=emp~cod de sempre antes de abrir o portfolio.
+  function selCurta(items, emps) {
+    return emps.map((emp) => emp.id).sort().map((id) => items
+      .filter((item) => item.emp.id === id)
+      .map((item) => encodeURIComponent(String(item.code)).replace(/\./g, "%2E").replace(/_/g, "%5F"))
+      .join(".")).join("_");
   }
 
   function selectedMessage(includePrices) {
