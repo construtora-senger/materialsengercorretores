@@ -38,7 +38,7 @@ const fs = require("fs");
 const path = require("path");
 
 const RAIZ = path.join(__dirname, "..");
-const SITE = "https://sanchaikraemer.github.io/materialsengercorretores";
+const SITE = "https://construtora-senger.github.io/materialsengercorretores";
 
 const { EMPREENDIMENTOS } = new Function(
   fs.readFileSync(path.join(RAIZ, "data.js"), "utf8").replace(/window\.SENGER[\s\S]*$/, "") +
