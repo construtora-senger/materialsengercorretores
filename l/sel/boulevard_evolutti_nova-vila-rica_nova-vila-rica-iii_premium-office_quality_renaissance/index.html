@@ -24,11 +24,24 @@
 <meta name="twitter:description" content="Fotos, plantas, valores e disponibilidade dos imóveis selecionados para você.">
 <meta name="twitter:image" content="https://sanchaikraemer.github.io/materialsengercorretores/assets/preview/sel/boulevard_evolutti_nova-vila-rica_nova-vila-rica-iii_premium-office_quality_renaissance.jpg">
 <script>
-  (function () {
+  // v336 — o link curto (?s=504_802A) vira o ?sel=emp~cod de sempre: um bloco
+  // por empreendimento, na ordem da chave, e as unidades separadas por ".".
+  function destinoDaSelecao() {
+    var ids = ["boulevard","evolutti","nova-vila-rica","nova-vila-rica-iii","premium-office","quality","renaissance"];
     var qs = location.search.replace(/^\?/, "");
+    var partes = qs ? qs.split("&").map(function (parte) {
+      if (parte.indexOf("s=") !== 0) return parte;
+      var sel = [];
+      parte.slice(2).split("_").forEach(function (bloco, i) {
+        if (!ids[i]) return;
+        bloco.split(".").forEach(function (cod) { if (cod) sel.push(ids[i] + "~" + cod); });
+      });
+      return "sel=" + sel.join(",");
+    }) : [];
     var raiz = location.pathname.replace(/\/l\/sel\/[^/]*\/?$/, "/");
-    location.replace(raiz + "?cliente" + (qs ? "&" + qs : ""));
-  })();
+    return raiz + "?cliente" + (partes.length ? "&" + partes.join("&") : "");
+  }
+  location.replace(destinoDaSelecao());
 </script>
 <style>
   *{box-sizing:border-box}
@@ -51,11 +64,7 @@
     <a id="ir" href="../../../?cliente">Ver fotos, plantas e valores</a>
   </div>
   <script>
-    (function () {
-      var qs = location.search.replace(/^\?/, "");
-      var raiz = location.pathname.replace(/\/l\/sel\/[^/]*\/?$/, "/");
-      document.getElementById("ir").href = raiz + "?cliente" + (qs ? "&" + qs : "");
-    })();
+    document.getElementById("ir").href = destinoDaSelecao();
   </script>
 </body>
 </html>

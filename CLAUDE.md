@@ -122,7 +122,7 @@ não era ele.
 | empreendimento | texto: resumo + **link do prédio** (`l/<emp>/`) | capa em cima, resumo embaixo |
 | enviar link | texto curto + link | capa em cima, texto embaixo |
 | seleção de 1 empreendimento | texto + `l/<emp>/?sel=…` | capa em cima |
-| **seleção de 2 a 10 empreendimentos** | texto + **`l/sel/<ids>/?sel=…`** | **a montagem das fachadas** em cima (até 6 fachadas; com mais, a última vira "+N"), o descritivo (ou a lista com link) embaixo |
+| **seleção de 2 a 10 empreendimentos** | texto + **`l/sel/<ids>/?s=…`** (link curto, v336) | **a montagem das fachadas** em cima (até 6 fachadas; com mais, a última vira "+N"), o descritivo (ou a lista com link) embaixo |
 
 **Nenhum envio leva arquivo anexado.** No celular, `sendShare` chama
 `navigator.share({ text })` — só texto, sem `title`, sem `files`. No
@@ -142,6 +142,15 @@ dentro da imagem seguem a ordem do cadastro. `tools/gerar-pontes.js` cria a
 ponte `l/sel/<ids>/` para cada montagem existente, com a montagem como
 `og:image` e redirecionamento para `?cliente&<o que veio>` sem `#emp-`.
 `tools/validar.js` exige as 1.013 montagens e as 1.013 pontes.
+
+**O link da montagem é curto (v336).** Pedido do dono (*"pode encurtar"*),
+depois de ver que o link não pode sumir — sem ele não há foto. Os
+empreendimentos já estão no caminho, então vai só `?s=504_802A`: um bloco por
+empreendimento, na ordem alfabética da chave, separados por `_`, e as
+unidades do mesmo empreendimento por `.` (`selCurta`, no `app.js`). A ponte
+`l/sel/` traduz de volta para o `?sel=emp~cod` de sempre (`destinoDaSelecao`,
+gerada por `tools/gerar-pontes.js`); link antigo com `?sel=` continua abrindo.
+Um empreendimento só segue com `l/<emp>/?sel=…`, como antes.
 
 **Quando trocar a capa de um empreendimento, ou acrescentar/remover um:**
 `node tools/gerar-montagens.js --tudo` (ou sem `--tudo`, para só o que falta)
