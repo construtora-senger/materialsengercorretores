@@ -1027,6 +1027,7 @@
       header.topo .info { display:none; }
       header.topo .direita { gap:6px; }
       header.topo .direita .botao.secundario { display:none; }
+      header.topo .direita #botao-sair { display:inline-flex; }
       .menu-mobile { display:inline-flex; margin:0; padding:8px 10px; min-height:38px; align-items:center; }
       .painel-shell { display:block; min-height:0; }
       .painel-sidebar {
@@ -1178,6 +1179,7 @@
         <span class="pendentes" id="badge-pendentes"></span>
         <button class="botao" id="botao-publicar" disabled>Publicar no site</button>
         <button class="botao secundario" id="botao-descartar" style="display:none">Descartar</button>
+        <button class="botao secundario" id="botao-sair" type="button">Sair</button>
       </div>
     </header>
 
@@ -1518,7 +1520,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 337;
+  const VERSAO_PAINEL = 338;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -6773,6 +6775,12 @@
   $("botao-publicar").addEventListener("click", publicar);
   $("botao-publicar-modulo")?.addEventListener("click", () => $("botao-publicar").click());
   $("botao-descartar-modulo")?.addEventListener("click", () => $("botao-descartar").click());
+
+  // Sair volta para a tela da senha. A chave do GitHub fica no aparelho.
+  $("botao-sair")?.addEventListener("click", () => {
+    try { sessionStorage.removeItem("senger-admin-ok"); } catch (e) { /* modo privado */ }
+    location.reload();
+  });
 
   // Aviso antes de fechar a aba com mudanças não publicadas.
   window.addEventListener("beforeunload", (e) => {
