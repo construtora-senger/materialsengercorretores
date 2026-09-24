@@ -1410,11 +1410,7 @@ const EMPREENDIMENTOS = [
         obs: "Aluguel R$ 1.400,00 · Condomínio e IPTU por conta do inquilino.",
         unidades: [
           { apto: "301B", preco: 470000, status: "alugado" },
-          // Vendido para a compradora em 15/09/2026: apartamento de
-          // investimento, vendido com o inquilino dentro. Por isso sai da
-          // vitrine e fica sem preco, como toda unidade vendida — "alugado" e
-          // so para o que AINDA esta a venda.
-          { apto: "601B", status: "vendido" },
+          { apto: "601B", preco: 490000, status: "alugado" },
         ],
       },
       {
@@ -1557,7 +1553,7 @@ const EMPREENDIMENTOS = [
       { box: "29", vagas: 1, areaPriv: 14.75, status: "vendido", apto: "304A" },
       { box: "30", vagas: 1, areaPriv: 14.15, status: "vendido", apto: "702B" },
       { box: "31", vagas: 1, areaPriv: 14.15, status: "vendido", apto: "203A" },
-      { box: "32", vagas: 1, areaPriv: 13.8, status: "vendido", apto: "601B" },
+      { box: "32", vagas: 1, areaPriv: 13.8, status: "alugado", apto: "601B" },
       { box: "33", vagas: 1, areaPriv: 14.15, status: "vendido", apto: "204A" },
       { box: "34", vagas: 1, areaPriv: 14.15, status: "vendido", apto: "604A" },
       { box: "35", vagas: 1, areaPriv: 12.65, status: "vendido", apto: "804A" },
