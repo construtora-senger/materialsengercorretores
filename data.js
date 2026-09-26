@@ -684,7 +684,7 @@ const EMPREENDIMENTOS = [
           { apto: "405", status: "vendido" },
           { apto: "505", status: "vendido" },
           { apto: "605", status: "vendido" },
-          { apto: "705", preco: 600000, status: "disponivel" },
+          { apto: "705", preco: 600000, status: "vendido" },
           { apto: "805", status: "vendido" },
         ],
       },
