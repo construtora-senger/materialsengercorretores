@@ -575,6 +575,10 @@
     .materiais-lista { display: grid; gap: 14px; }
     .padroes-midia { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:9px; margin:14px 0 18px; }
     .padrao-midia { padding:10px 12px; border:1px solid var(--borda); border-radius:9px; background:var(--fundo); font-size:.76rem; line-height:1.45; color:var(--texto-suave); }
+    /* v349 — os quadros sao botoes: levam a parte certa de cada empreendimento
+       (o dono clicava neles para anexar e nada acontecia). */
+    button.padrao-midia { font:inherit; text-align:left; cursor:pointer; }
+    button.padrao-midia:hover, button.padrao-midia.ativo { border-color:var(--dourado); }
     .padrao-midia strong { display:block; margin-bottom:2px; color:var(--texto); font-size:.8rem; }
     .material-emp { background: var(--fundo); border: 1px solid var(--borda); border-radius: 10px; overflow:hidden; }
     .material-emp > summary { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; cursor:pointer; list-style:none; font-weight:800; }
@@ -1291,12 +1295,12 @@
           <h2>Materiais dos empreendimentos</h2>
           <p class="descricao">Aqui ficam os arquivos comerciais de cada empreendimento. Selecione o arquivo e depois clique em <strong>Publicar no site</strong>. As imagens novas são conferidas pelo painel antes de entrar no site.</p>
           <div class="padroes-midia" aria-label="Padrões de arquivos">
-            <div class="padrao-midia"><strong>Capa principal</strong>WEBP, JPG ou PNG · <b>1600 × 900 px</b> · até 5 MB.</div>
-            <div class="padrao-midia"><strong>Fotos da galeria</strong>WEBP, JPG ou PNG · <b>1600 × 900 px</b> · até 5 MB cada.</div>
-            <div class="padrao-midia"><strong>Plantas</strong>WEBP, JPG ou PNG · <b>2000 × 2000 px</b> · fundo claro · até 6 MB.</div>
-            <div class="padrao-midia"><strong>Logo do empreendimento</strong>PNG ou WEBP · <b>1600 × 600 px</b> · fundo transparente · até 3 MB.</div>
-            <div class="padrao-midia"><strong>Folder</strong>PDF · até 25 MB.</div>
-            <div class="padrao-midia"><strong>Vídeo oficial</strong>MP4, WebM ou Ogg · recomendado <b>1920 × 1080 px</b> · até 80 MB; acima disso, YouTube/Vimeo.</div>
+            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="identidade"><strong>Capa principal</strong>WEBP, JPG ou PNG · <b>1600 × 900 px</b> · até 5 MB.</button>
+            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="galeria"><strong>Fotos da galeria</strong>WEBP, JPG ou PNG · <b>1600 × 900 px</b> · até 5 MB cada.</button>
+            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="plantas"><strong>Plantas</strong>WEBP, JPG ou PNG · <b>2000 × 2000 px</b> · fundo claro · até 6 MB.</button>
+            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="identidade"><strong>Logo do empreendimento</strong>PNG ou WEBP · <b>1600 × 600 px</b> · fundo transparente · até 3 MB.</button>
+            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="comerciais"><strong>Folder</strong>PDF · até 25 MB.</button>
+            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="comerciais"><strong>Vídeo oficial</strong>MP4, WebM ou Ogg · recomendado <b>1920 × 1080 px</b> · até 80 MB; acima disso, YouTube/Vimeo.</button>
           </div>
           <div class="materiais-lista" id="materiais"></div>
         </section>
@@ -1520,7 +1524,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 338;
+  const VERSAO_PAINEL = 350;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3247,6 +3251,10 @@
     const alvo = $("materiais");
     if (!alvo) return;
     const emps = estado.dados.EMPREENDIMENTOS.filter((emp) => emp.id !== "outros");
+    // v349 — redesenhar (seta, remover, anexar) nao fecha o empreendimento
+    // aberto: antes cada toque na seta fechava a gaveta e o dono tinha de abrir
+    // de novo.
+    const abertos = new Set([...alvo.querySelectorAll("details.material-emp[open]")].map((d) => d.dataset.materialEmp));
 
     alvo.innerHTML = emps.map((emp) => {
       const folder = materialAtual(emp, "folder");
@@ -3299,7 +3307,7 @@
       const nomeHero = hero ? hero.split("/").pop() : "Nenhuma capa anexada";
       const nomeLogo = logo ? logo.split("/").pop() : "Nenhuma logo própria cadastrada";
 
-      return `<details class="material-emp" data-material-emp="${escapeHtml(emp.id)}">
+      return `<details class="material-emp" data-material-emp="${escapeHtml(emp.id)}"${abertos.has(emp.id) ? " open" : ""}>
         <summary><span>${escapeHtml(emp.nome)}</span><span class="material-resumo">${escapeHtml(resumo)}</span></summary>
         <div class="material-corpo">
           <div class="material-secao" data-material-secao="identidade">
