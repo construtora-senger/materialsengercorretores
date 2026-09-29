@@ -24,7 +24,6 @@
     }
     .contexto-titulo .botao-voltar:hover { border-color: #b9c4cb; color: #1d272e; }
     .contexto-titulo .botao-voltar[hidden] { display: none; }
-    .contexto-titulo .botao-voltar + .botao-voltar { margin-left: 6px; }
 
     /* Paleta e fontes iguais às do site (styles.css) */
     :root {
@@ -1192,6 +1191,9 @@
       <span class="info" id="info-versao">—</span>
       <div class="direita">
         <span class="pendentes" id="badge-pendentes"></span>
+        <!-- v358 — o Inicio (v352) mora na barra de cima, que fica sempre a
+             vista: no alto do conteudo ele sumia assim que o dono rolava a tela. -->
+        <button class="botao secundario" id="botao-inicio-painel" type="button">⌂ Início</button>
         <button class="botao" id="botao-publicar" disabled>Publicar no site</button>
         <button class="botao secundario" id="botao-descartar" style="display:none">Descartar</button>
         <button class="botao secundario" id="botao-sair" type="button">Sair</button>
@@ -1252,9 +1254,6 @@
                    Nao ha dez botoes: o menu lateral continua sendo o caminho
                    normal, e este resolve o "como eu saio daqui". -->
               <button type="button" class="botao-voltar" id="botao-voltar-modulo" hidden>← Voltar</button>
-              <!-- v352 — pedido do dono: um Inicio que volta direto para a tela
-                   de Materiais, com todos os empreendimentos fechados. -->
-              <button type="button" class="botao-voltar" id="botao-inicio-painel">⌂ Início</button>
               <h2 id="titulo-modulo">Visão geral</h2>
               <p id="descricao-modulo">Resumo do estoque, movimento e pendências do cadastro.</p>
             </div>
@@ -1538,7 +1537,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 357;
+  const VERSAO_PAINEL = 358;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2114,10 +2113,12 @@
   }
 
   $("botao-voltar-modulo")?.addEventListener("click", voltarDeModulo);
+  // v358 — o Inicio leva a Visao geral, no placar dos empreendimentos
+  // (pedido do dono), com qualquer detalhe fechado.
   $("botao-inicio-painel")?.addEventListener("click", () => {
-    estado.empAberto = null;
-    document.querySelectorAll("#materiais details.material-emp[open]").forEach((d) => { d.open = false; });
-    ativarModulo("materiais");
+    estado.visaoEmpAberto = null;
+    ativarModulo("visao", { visaoFiltro: "estoque" });
+    renderDashboard();
   });
 
   document.querySelectorAll("[data-accordion-toggle]").forEach((botao) => {
