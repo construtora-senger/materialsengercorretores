@@ -24,6 +24,7 @@
     }
     .contexto-titulo .botao-voltar:hover { border-color: #b9c4cb; color: #1d272e; }
     .contexto-titulo .botao-voltar[hidden] { display: none; }
+    .contexto-titulo .botao-voltar + .botao-voltar { margin-left: 6px; }
 
     /* Paleta e fontes iguais às do site (styles.css) */
     :root {
@@ -577,7 +578,7 @@
     .padrao-midia { padding:10px 12px; border:1px solid var(--borda); border-radius:9px; background:var(--fundo); font-size:.76rem; line-height:1.45; color:var(--texto-suave); }
     /* v349 — os quadros sao botoes: levam a parte certa de cada empreendimento
        (o dono clicava neles para anexar e nada acontecia). */
-    button.padrao-midia { font:inherit; text-align:left; cursor:pointer; }
+    button.padrao-midia { font-family:inherit; text-align:left; cursor:pointer; display:flex; flex-direction:column; justify-content:flex-start; }
     button.padrao-midia:hover, button.padrao-midia.ativo { border-color:var(--dourado); }
     .padrao-midia strong { display:block; margin-bottom:2px; color:var(--texto); font-size:.8rem; }
     .material-emp { background: var(--fundo); border: 1px solid var(--borda); border-radius: 10px; overflow:hidden; }
@@ -612,6 +613,11 @@
     .galeria-lista, .plantas-lista { display:grid; gap:8px; margin-top:10px; }
     .galeria-item, .planta-item { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; padding:9px; border:1px solid var(--borda); border-radius:8px; background:var(--cartao); }
     .galeria-dados, .planta-dados { min-width:0; }
+    /* v352 — miniatura de cada foto: so pelo nome do arquivo o dono nao sabia
+       qual era qual. */
+    .galeria-item { grid-template-columns:auto minmax(0,1fr) auto; }
+    .galeria-miniatura { width:96px; height:54px; object-fit:cover; border-radius:6px; border:1px solid var(--borda); background:var(--fundo); display:block; }
+    @media (max-width:760px) { .galeria-miniatura { width:72px; height:40px; } }
     .galeria-arquivo, .planta-arquivo { display:block; margin-bottom:5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.7rem; color:var(--texto-suave); }
     .galeria-botoes { display:flex; gap:5px; align-items:center; }
     .mini-botao { min-width:32px; min-height:32px; padding:5px 8px; border:1px solid var(--borda); border-radius:7px; background:var(--fundo); color:var(--texto); cursor:pointer; font-size:.75rem; font-weight:700; }
@@ -1241,6 +1247,9 @@
                    Nao ha dez botoes: o menu lateral continua sendo o caminho
                    normal, e este resolve o "como eu saio daqui". -->
               <button type="button" class="botao-voltar" id="botao-voltar-modulo" hidden>← Voltar</button>
+              <!-- v352 — pedido do dono: um Inicio que volta direto para a tela
+                   de Materiais, com todos os empreendimentos fechados. -->
+              <button type="button" class="botao-voltar" id="botao-inicio-painel">⌂ Início</button>
               <h2 id="titulo-modulo">Visão geral</h2>
               <p id="descricao-modulo">Resumo do estoque, movimento e pendências do cadastro.</p>
             </div>
@@ -1524,7 +1533,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 351;
+  const VERSAO_PAINEL = 352;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2100,6 +2109,11 @@
   }
 
   $("botao-voltar-modulo")?.addEventListener("click", voltarDeModulo);
+  $("botao-inicio-painel")?.addEventListener("click", () => {
+    estado.empAberto = null;
+    document.querySelectorAll("#materiais details.material-emp[open]").forEach((d) => { d.open = false; });
+    ativarModulo("materiais");
+  });
 
   document.querySelectorAll("[data-accordion-toggle]").forEach((botao) => {
     botao.addEventListener("click", () => {
@@ -2779,6 +2793,18 @@
     });
   }
 
+  // v352 — a miniatura da galeria. Foto ja publicada vem do site; foto recem
+  // escolhida (ainda nao publicada) vem do proprio arquivo, no aparelho.
+  const miniaturasLocais = new Map();
+  function previaDaMidia(src) {
+    const op = estado.ops.find((o) => o.tipoOp === "upload" && o.path === src && o.arquivo);
+    if (op) {
+      if (!miniaturasLocais.has(op.arquivo)) miniaturasLocais.set(op.arquivo, URL.createObjectURL(op.arquivo));
+      return miniaturasLocais.get(op.arquivo);
+    }
+    return /^(https?:|data:|blob:)/i.test(src) ? src : `../${String(src).replace(/^\/+/, "")}`;
+  }
+
   function anotarUpload(empId, campo, path, arquivo, rotulo) {
     estado.ops = estado.ops.filter((op) => !(op.tipoOp === "upload" && op.empId === empId && op.campo === campo));
     estado.ops.push({ tipoOp: "upload", empId, campo, path, arquivo, rotulo: rotulo || campo });
@@ -3271,6 +3297,7 @@
 
       const listaFotos = fotos.length ? fotos.map(({ item, index }, pos) => `
         <div class="galeria-item" data-galeria-item="${index}">
+          <img class="galeria-miniatura" src="${escapeHtml(previaDaMidia(item.src))}" alt="" loading="lazy">
           <div class="galeria-dados">
             <span class="galeria-arquivo" title="${escapeHtml(item.src)}">${escapeHtml(String(item.src).split("/").pop())}</span>
             <input type="text" value="${escapeHtml(item.legenda || "")}" placeholder="Legenda da imagem" data-galeria-legenda="${index}" data-emp="${escapeHtml(emp.id)}">
