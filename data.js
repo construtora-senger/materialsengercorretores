@@ -752,7 +752,7 @@ const EMPREENDIMENTOS = [
     // vagas fecham com o que ha em estoque. O site nao le este campo.
     vagasPorTipologia: {
       "3 suítes + lavabo": { duplo: 1 },
-      "2 suítes + lavabo": { simples: 1 },
+      "2 suítes + lavabo": { duplo: 1 },
       "2 dormitórios (1 suíte)": { simples: 1 },
     },
     hero: "assets/bv-hero.webp",
@@ -839,7 +839,7 @@ const EMPREENDIMENTOS = [
         tipo: "2 suítes + lavabo",
         sufixo: "final 04",
         area: "131 m² global · 93 m² privativo",
-        garagem: "1 box simples",
+        garagem: "1 box duplo",
         planta: "bv-planta-tipo4",
         unidades: [
           { apto: "304", preco: 870000, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "165 m² global · 121 m² privativo" },
