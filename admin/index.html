@@ -273,6 +273,14 @@
       border-radius: 10px; padding: 13px;
     }
     .ve-quadro:hover { border-color: var(--dourado); }
+    /* v361 — os loteamentos ficam fora da faixa de cima: fundo areia no
+       quadro e na faixa propria deles, para se ver de relance que nao entram
+       na conta (pedido do dono). */
+    .ve-quadro.loteamento, .ve-total.loteamentos { background: #f7f1e4; border-color: #e6d7b8; }
+    .ve-q-fora { font-size: .66rem; font-weight: 700; color: var(--amarelo); letter-spacing: .02em; }
+    .ve-total.loteamentos { margin: 16px 0 0; }
+    .ve-lot-titulo { font-weight: 700; font-size: .9rem; margin-bottom: 10px; }
+    .ve-lot-titulo span { font-weight: 500; font-size: .76rem; color: var(--texto-suave); }
     .ve-quadro > * { display: block; }
     .ve-quadro .ve-q-nome {
       font-weight: 700; font-size: .84rem; line-height: 1.3; color: var(--texto);
@@ -1547,7 +1555,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 360;
+  const VERSAO_PAINEL = 361;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3153,7 +3161,7 @@
   // custo e lucro bruto. Venda = preco publicado; custo = obra + moveis, do
   // cofre. O lucro so conta a unidade que tem os dois — a que falta custo ou
   // preco fica avisada embaixo, nunca somada no escuro.
-  function renderFinanceiroDaFaixa(emps) {
+  function renderFinanceiroDaFaixa(emps, um = "unidade", varios = "unidades") {
     let venda = 0, vendaComCusto = 0, custo = 0, semCusto = 0, semPreco = 0;
     emps.forEach((emp) => {
       itensDoEmp(emp).forEach((i) => {
@@ -3171,8 +3179,8 @@
     if (!venda) return "";
     const pctFmt = (n) => n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     const avisos = [
-      semCusto ? `${conta(semCusto, "unidade", "unidades")} sem custo lançado — ${semCusto === 1 ? "fica" : "ficam"} fora do custo e do lucro` : "",
-      semPreco ? `${conta(semPreco, "unidade", "unidades")} sem preço — ${semPreco === 1 ? "fica" : "ficam"} fora da venda` : "",
+      semCusto ? `${conta(semCusto, um, varios)} sem custo lançado — ${semCusto === 1 ? "fica" : "ficam"} fora do custo e do lucro` : "",
+      semPreco ? `${conta(semPreco, um, varios)} sem preço — ${semPreco === 1 ? "fica" : "ficam"} fora da venda` : "",
     ].filter(Boolean);
     if (!custo) {
       return `<div class="ve-fin-legenda"><span><i style="background:var(--texto)"></i><b>Venda ${moedaFinanceira(venda)}</b></span><span>Custo: nenhum lançado</span></div>
@@ -3200,7 +3208,9 @@
       const sinal = r.criticas.length ? "critico" : r.atencao.length ? "atencao" : "";
       const aviso = r.criticas.length ? "dado comercial a corrigir"
                   : r.atencao.length ? "ponto de atenção no cadastro" : "";
-      return `<button type="button" class="ve-quadro" data-ve-abrir="${escapeHtml(emp.id)}">
+      const lote = ehLoteamento(emp);
+      return `<button type="button" class="ve-quadro${lote ? " loteamento" : ""}" data-ve-abrir="${escapeHtml(emp.id)}">
+        ${lote ? `<span class="ve-q-fora">dos sócios · fora da conta</span>` : ""}
         <span class="ve-q-nome">${escapeHtml(emp.nome)}${sinal ? `<span class="ve-sinal ${sinal}" title="${aviso}"></span>` : ""}</span>
         <strong class="ve-q-n">${r.aVenda}</strong>
         <span class="ve-q-un">à venda · ${escapeHtml(tipoDeImovel(emp, r.itens).toLowerCase())}</span>
@@ -3209,9 +3219,35 @@
       </button>`;
     }).join("");
     return `<div class="ve-placar">${quadros}</div>
+      ${renderFaixaDosLoteamentos(emps)}
       <p class="ve-nota">Cada quadro responde só uma coisa: <strong>quanto ainda tem para vender ali</strong>.
         Toque no quadro para ver as tipologias, a garagem e o que falta naquele empreendimento.
         A bolinha vermelha ao lado do nome avisa que há dado comercial a corrigir; a amarela, ponto de atenção.</p>`;
+  }
+
+  // v361 — a conta dos loteamentos, a parte da faixa de cima (que nao os
+  // soma): os lotes sao dos dois socios, pessoa fisica, nao do CNPJ — a
+  // Senger vende, mas nao sao dela: terrenos, vendidos e a venda, e a mesma barra de venda, custo e
+  // lucro bruto, so com os lotes. Pedido do dono.
+  function renderFaixaDosLoteamentos(emps) {
+    const lotes = emps.filter(ehLoteamento);
+    if (!lotes.length) return "";
+    const t = lotes.reduce((a, emp) => {
+      const r = resumoDoEmp(emp);
+      return { aVenda: a.aVenda + r.aVenda, vendidos: a.vendidos + r.vendidos, total: a.total + r.total };
+    }, { aVenda: 0, vendidos: 0, total: 0 });
+    const pct = t.total ? Math.round((t.vendidos / t.total) * 100) : 0;
+    return `<div class="ve-total loteamentos">
+      <div class="ve-lot-titulo">Loteamentos <span>— ${lotes.map((e) => escapeHtml(e.nome.replace(/^Loteamento\s+/i, ""))).join(" e ")} · terrenos dos dois sócios (pessoa física), não do CNPJ da Senger — por isso ficam fora da conta de cima</span></div>
+      <div class="ve-total-numeros">
+        <div class="ve-total-n destaque"><strong>${t.aVenda}</strong><span>terrenos à venda</span></div>
+        <div class="ve-total-n"><strong>${t.vendidos}</strong><span>já vendidos</span></div>
+        <div class="ve-total-n"><strong>${t.total}</strong><span>terrenos no cadastro</span></div>
+      </div>
+      <div class="ve-trilho" role="img" aria-label="${pct}% dos terrenos já vendidos"><i style="width:${pct}%"></i></div>
+      <div class="ve-legenda"><span><b>${pct}% já vendido</b> — ${t.vendidos} de ${t.total}</span><span>faltam ${t.aVenda}</span></div>
+      ${renderFinanceiroDaFaixa(lotes, "terreno", "terrenos")}
+    </div>`;
   }
 
   // v357 — um carrinho por vaga na etiqueta de garagem da tipologia.
