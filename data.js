@@ -940,7 +940,7 @@ const EMPREENDIMENTOS = [
       { box: "227", vagas: 1, areaPriv: 15.73, areaGlobal: 19.02, status: "vendido", apto: "502" },
       { box: "228", vagas: 1, areaPriv: 15.73, areaGlobal: 19.02, status: "vendido", apto: "1004" },
       { box: "229", vagas: 1, areaPriv: 16.03, areaGlobal: 19.37, status: "disponivel" },
-      { box: "230", vagas: 2, areaPriv: 31.76, areaGlobal: 38.4, status: "disponivel", obs: "Com depósito" },
+      { box: "230", vagas: 1, areaPriv: 31.76, areaGlobal: 38.4, status: "disponivel", obs: "Com depósito" },
     ],
   },
 
