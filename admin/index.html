@@ -1555,7 +1555,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 361;
+  const VERSAO_PAINEL = 362;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3161,6 +3161,8 @@
   // custo e lucro bruto. Venda = preco publicado; custo = obra + moveis, do
   // cofre. O lucro so conta a unidade que tem os dois — a que falta custo ou
   // preco fica avisada embaixo, nunca somada no escuro.
+  // v362 — pedaco estreito da barra fica sem texto (cortava "Lucro R$ ...");
+  // o valor continua na legenda logo abaixo.
   function renderFinanceiroDaFaixa(emps, um = "unidade", varios = "unidades") {
     let venda = 0, vendaComCusto = 0, custo = 0, semCusto = 0, semPreco = 0;
     emps.forEach((emp) => {
@@ -3190,8 +3192,8 @@
     const pctCusto = Math.min(100, (custo / vendaComCusto) * 100);
     const pctLucro = (lucro / vendaComCusto) * 100;
     return `<div class="ve-fin" role="img" aria-label="Custo ${pctFmt(pctCusto)}% e lucro bruto ${pctFmt(pctLucro)}% da venda">
-        <span class="custo" style="width:${pctCusto}%">Custo ${moedaFinanceira(custo)}</span>
-        ${lucro > 0 ? `<span class="lucro">Lucro ${moedaFinanceira(lucro)}</span>` : ""}
+        <span class="custo" style="width:${pctCusto}%">${pctCusto >= 22 ? `Custo ${moedaFinanceira(custo)}` : ""}</span>
+        ${lucro > 0 ? `<span class="lucro">${pctLucro >= 22 ? `Lucro ${moedaFinanceira(lucro)}` : ""}</span>` : ""}
       </div>
       <div class="ve-fin-legenda">
         <span><i style="background:var(--texto)"></i><b>Venda ${moedaFinanceira(venda)}</b></span>
@@ -3203,7 +3205,10 @@
 
   // O placar: um quadro por empreendimento, so com o que falta vender.
   function renderPlacar(emps) {
-    const quadros = emps.map((emp) => {
+    // v362 — os dois loteamentos dos socios vao para o fim do placar, depois
+    // de "Outros Imoveis" (pedido do dono); os demais seguem a ordem de sempre.
+    const ordem = [...emps.filter((emp) => !ehLoteamento(emp)), ...emps.filter(ehLoteamento)];
+    const quadros = ordem.map((emp) => {
       const r = resumoDoEmp(emp);
       const sinal = r.criticas.length ? "critico" : r.atencao.length ? "atencao" : "";
       const aviso = r.criticas.length ? "dado comercial a corrigir"
