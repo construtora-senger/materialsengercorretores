@@ -1191,9 +1191,6 @@
       <span class="info" id="info-versao">—</span>
       <div class="direita">
         <span class="pendentes" id="badge-pendentes"></span>
-        <!-- v358 — o Inicio (v352) mora na barra de cima, que fica sempre a
-             vista: no alto do conteudo ele sumia assim que o dono rolava a tela. -->
-        <button class="botao secundario" id="botao-inicio-painel" type="button">⌂ Início</button>
         <button class="botao" id="botao-publicar" disabled>Publicar no site</button>
         <button class="botao secundario" id="botao-descartar" style="display:none">Descartar</button>
         <button class="botao secundario" id="botao-sair" type="button">Sair</button>
@@ -1210,6 +1207,9 @@
           <button type="button" class="sidebar-fechar" id="botao-fechar-menu" aria-label="Fechar menu">×</button>
         </div>
         <nav class="nav-admin">
+          <!-- v359 — o Inicio mora no menu, logo abaixo da marca e acima da
+               Visao geral (lugar que o dono apontou no print). Leva ao placar. -->
+          <button type="button" class="nav-item" id="botao-inicio-painel"><span class="nav-icone">⌂</span>Início</button>
           <div class="nav-accordion" data-nav-grupo="visao">
             <button type="button" class="nav-accordion-toggle" data-accordion-toggle="visao" aria-expanded="false"><span class="nav-icone">⌂</span>Visão geral <span class="nav-seta">⌄</span></button>
             <div class="nav-submenu">
@@ -1537,7 +1537,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 358;
+  const VERSAO_PAINEL = 359;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
