@@ -248,9 +248,9 @@
     /* v360 — a venda das unidades a venda dividida em custo e lucro bruto
        (modelo 3, escolhido pelo dono). So o painel ve: o custo e do cofre. */
     .ve-fin { display: flex; height: 26px; border-radius: 8px; overflow: hidden; margin-top: 16px; background: var(--borda); font-size: .74rem; font-weight: 700; color: #fff; }
-    .ve-fin > span { display: flex; align-items: center; padding: 0 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .ve-fin > span { display: flex; align-items: center; padding: 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
     .ve-fin .custo { background: #66727b; }
-    .ve-fin .lucro { background: var(--verde); justify-content: center; flex: 1; }
+    .ve-fin .lucro { background: var(--verde); justify-content: center; flex: 1 0 auto; min-width: 50px; }
     .ve-fin .lucro.negativo { background: var(--vermelho); }
     .ve-fin-legenda { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 8px; font-size: .8rem; color: var(--texto); }
     .ve-fin-legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
@@ -1555,7 +1555,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 362;
+  const VERSAO_PAINEL = 363;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3181,7 +3181,7 @@
     if (!venda) return "";
     const pctFmt = (n) => n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     const avisos = [
-      semCusto ? `${conta(semCusto, um, varios)} sem custo lançado — ${semCusto === 1 ? "fica" : "ficam"} fora do custo e do lucro` : "",
+      semCusto ? `${conta(semCusto, um, varios)} sem custo lançado — ${semCusto === 1 ? "fica" : "ficam"} fora do custo e da margem` : "",
       semPreco ? `${conta(semPreco, um, varios)} sem preço — ${semPreco === 1 ? "fica" : "ficam"} fora da venda` : "",
     ].filter(Boolean);
     if (!custo) {
@@ -3191,14 +3191,14 @@
     const lucro = vendaComCusto - custo;
     const pctCusto = Math.min(100, (custo / vendaComCusto) * 100);
     const pctLucro = (lucro / vendaComCusto) * 100;
-    return `<div class="ve-fin" role="img" aria-label="Custo ${pctFmt(pctCusto)}% e lucro bruto ${pctFmt(pctLucro)}% da venda">
-        <span class="custo" style="width:${pctCusto}%">${pctCusto >= 22 ? `Custo ${moedaFinanceira(custo)}` : ""}</span>
-        ${lucro > 0 ? `<span class="lucro">${pctLucro >= 22 ? `Lucro ${moedaFinanceira(lucro)}` : ""}</span>` : ""}
+    return `<div class="ve-fin" role="img" aria-label="Custo ${pctFmt(pctCusto)}% e margem excedente ${pctFmt(pctLucro)}% da venda">
+        <span class="custo" style="width:${pctCusto}%">${pctCusto >= 22 ? `Custo ${moedaFinanceira(custo)}` : `${pctFmt(pctCusto)}%`}</span>
+        ${lucro > 0 ? `<span class="lucro">${pctLucro >= 22 ? `Margem excedente ${moedaFinanceira(lucro)}` : `${pctFmt(pctLucro)}%`}</span>` : ""}
       </div>
       <div class="ve-fin-legenda">
         <span><i style="background:var(--texto)"></i><b>Venda ${moedaFinanceira(venda)}</b></span>
         <span><i style="background:#66727b"></i>Custo ${moedaFinanceira(custo)} · ${pctFmt(pctCusto)}%</span>
-        <span><i style="background:${lucro < 0 ? "var(--vermelho)" : "var(--verde)"}"></i>Lucro bruto ${moedaFinanceira(lucro)} · ${pctFmt(pctLucro)}%</span>
+        <span><i style="background:${lucro < 0 ? "var(--vermelho)" : "var(--verde)"}"></i>Margem excedente ${moedaFinanceira(lucro)} · ${pctFmt(pctLucro)}%</span>
       </div>
       ${avisos.length ? `<div class="ve-fin-aviso">${avisos.join(" · ")}</div>` : ""}`;
   }
