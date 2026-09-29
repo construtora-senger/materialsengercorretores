@@ -1711,7 +1711,7 @@ const EMPREENDIMENTOS = [
     statusLabel: "Prontos para construir",
     entrega: "Prontos para construir · Financiáveis MCMV I & II",
     ri: [],
-    hero: "assets/nova-vila-rica/capa-rua.webp",
+    hero: "assets/nova-vila-rica/capa.png",
     folder: "",
     video: "",
     galeria: [
