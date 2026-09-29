@@ -445,6 +445,11 @@
     .card .tipos .linha span { padding-left: 10px; border-left: 2px solid var(--verde); }
     /* A regra de garagem anda junto da tipologia, em letra menor. */
     .card .regra { display: block; font-style: normal; font-size: .92em; opacity: .75; }
+    /* v357 — a garagem da tipologia em etiqueta, com um carrinho por vaga:
+       box simples = 1 carrinho, box duplo = 2 (modelo 3, escolhido pelo dono). */
+    .card .regra.regra-carros { display: flex; width: fit-content; align-items: center; gap: 4px; margin-top: 3px; padding: 2px 8px; border-radius: 999px; background: #e3f1f3; color: var(--dourado-escuro); font-weight: 600; font-size: .82em; opacity: 1; }
+    .regra-carros .carros { display: inline-flex; gap: 2px; }
+    .regra-carros svg { width: 18px; height: 12px; fill: currentColor; flex: none; }
     /* Unidade por unidade: o numero da sala ou do apto e, do lado, o box que
        ela leva. E a lista que o dono le no balcao. */
     .card .por-unidade { border-top: 1px solid var(--borda); margin-top: 8px; padding-top: 6px; }
@@ -1533,7 +1538,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 352;
+  const VERSAO_PAINEL = 357;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3152,6 +3157,9 @@
         A bolinha vermelha ao lado do nome avisa que há dado comercial a corrigir; a amarela, ponto de atenção.</p>`;
   }
 
+  // v357 — um carrinho por vaga na etiqueta de garagem da tipologia.
+  const ICONE_CARRO = `<svg viewBox="0 0 24 16"><path d="M5 6l2-4.2C7.3 1.3 7.8 1 8.4 1h7.2c.6 0 1.1.3 1.4.8L19 6h1.5c1.4 0 2.5 1.1 2.5 2.5V12c0 .6-.4 1-1 1h-1.2a2.5 2.5 0 01-4.9 0H8.1a2.5 2.5 0 01-4.9 0H2c-.6 0-1-.4-1-1V8.5C1 7.1 2.1 6 3.5 6H5zm2.2 0h9.6l-1.5-3.2H8.7L7.2 6z"/></svg>`;
+
   // O detalhe de um empreendimento: e o cartao inteiro da v301, que continua
   // valendo — ele so deixou de estar dez vezes na mesma tela.
   function renderDetalheDoEmp(emp) {
@@ -3172,7 +3180,9 @@
       .map(([rot, n]) => {
         const regra = regraDoEmp[rot];
         const leva = regra ? [regra.duplo ? conta(regra.duplo, "box duplo", "box duplos") : "", regra.simples ? conta(regra.simples, "box simples", "box simples") : ""].filter(Boolean).join(" + ") : "";
-        return `<div class="linha"><span>${escapeHtml(rot)}${leva ? ` <em class="regra">${leva} cada</em>` : ""}</span><strong>${n}</strong></div>`;
+        const vagas = regra ? (regra.duplo || 0) * 2 + (regra.simples || 0) : 0;
+        const carros = `<span class="carros" aria-hidden="true">${ICONE_CARRO.repeat(vagas)}</span>`;
+        return `<div class="linha"><span>${escapeHtml(rot)}${leva ? ` <em class="regra regra-carros" title="${vagas} ${vagas === 1 ? "vaga" : "vagas"} de carro">${carros}${leva} cada</em>` : ""}</span><strong>${n}</strong></div>`;
       }).join("");
 
     const blocoGaragem = renderGaragemNoCartao(emp, regraDoEmp, porTipo);
