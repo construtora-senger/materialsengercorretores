@@ -1711,10 +1711,12 @@ const EMPREENDIMENTOS = [
     statusLabel: "Prontos para construir",
     entrega: "Prontos para construir · Financiáveis MCMV I & II",
     ri: [],
-    hero: "assets/nova-vila-rica/galeria/mufv9qdo-design-sem-nome-9.png",
+    hero: "assets/nova-vila-rica/capa-rua.webp",
     folder: "",
     video: "",
-    galeria: [],
+    galeria: [
+      { src: "assets/nova-vila-rica/galeria/mufv9qdo-design-sem-nome-9.png", legenda: "Design sem nome (9)" },
+    ],
     terrenos: [
       { lote: "Nova Vila Rica I", quadra: "144", numero: "01", rua: "Alberto Graeff", area: 325, preco: 125000 },
       { lote: "Nova Vila Rica I", quadra: "145", numero: "01", rua: "Alberto Graeff", area: 345, preco: 125000 },
