@@ -1715,7 +1715,6 @@ const EMPREENDIMENTOS = [
     folder: "",
     video: "",
     galeria: [
-      { src: "assets/nova-vila-rica/galeria/mumosdo0-3.png", legenda: "3" },
       { src: "assets/nova-vila-rica/galeria/mumoquoi-4.png", legenda: "4" },
       { src: "assets/nova-vila-rica/galeria/mumoquoi-5-2.png", legenda: "5" },
       { src: "assets/nova-vila-rica/galeria/mumosmme-design-sem-nome-11.png", legenda: "Design sem nome (11)" },
