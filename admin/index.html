@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 368;
+  const VERSAO_PAINEL = 372;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3501,7 +3501,7 @@
         ${galeria.map((item, index) => ({ item, index })).filter(({ item }) => ehPlantaMidia(item)).map(({ item, index }) => `
         <div class="planta-item">
           <div class="planta-dados">
-            <span class="planta-titulo">${escapeHtml(item.legenda || "Planta")}</span>
+            <input type="text" value="${escapeHtml(item.legenda || "")}" placeholder="Nome que aparece no site" aria-label="Nome da planta no site" data-galeria-legenda="${index}" data-emp="${escapeHtml(emp.id)}">
             <span class="planta-arquivo" title="${escapeHtml(item.src)}">${escapeHtml(String(item.src).split("/").pop())}</span>
           </div>
           <div class="material-acoes">
