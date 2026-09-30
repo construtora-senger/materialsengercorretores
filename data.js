@@ -1609,6 +1609,7 @@ const EMPREENDIMENTOS = [
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-05-vista-geral-obras-3.jpg", legenda: "05 vista geral obras" },
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-07-compactacao-vias-4.jpg", legenda: "07 compactacao vias" },
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-08-obras-infraestrutura-5.jpg", legenda: "08 obras infraestrutura" },
+      { src: "assets/nova-vila-rica-iii/plantas/muoht0fe-urbanismo-23-06-12-final3-02-planta-lotes-a3-2-2.pdf", legenda: "Planta — Urbanismo 23.06.12 FINAL3 02 PLANTA LOTES a3 2 (2)" },
     ],
     terrenos: [
       { quadra: "77", numero: "89", rua: "Laranjeira", area: 348, status: "vendido" },
