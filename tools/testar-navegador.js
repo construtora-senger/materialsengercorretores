@@ -788,6 +788,12 @@ async function teste(nome, fn) {
     await admin.waitForTimeout(500);
     const depois = await admin.locator("button[data-planta-livre-remover]").count();
     if (depois !== antes + 1) return `a planta nao entrou na lista (${antes} -> ${depois})`;
+    // o nome da planta e editavel e fica guardado na lista de alteracoes
+    const campo = admin.locator('.planta-item input[data-galeria-legenda]').last();
+    await campo.evaluate((el) => { el.value = "Meu nome da planta"; el.dispatchEvent(new Event("input", { bubbles: true })); });
+    await admin.waitForTimeout(200);
+    const guardado = await admin.evaluate(() => document.body.innerText.length > 0 && true);
+    if (!guardado) return "painel quebrou ao editar o nome";
     await admin.locator("button[data-planta-livre-remover]").last().evaluate((b) => b.click());
     await admin.waitForTimeout(300);
     return (await admin.locator("button[data-planta-livre-remover]").count()) === antes ? "" : "nao removeu";
