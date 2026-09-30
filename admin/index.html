@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 366;
+  const VERSAO_PAINEL = 368;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3492,7 +3492,22 @@
               data-arquivo-planta data-emp="${escapeHtml(emp.id)}" data-grupo="${a.grupoIndex}" ${a.unidadeIndex == null ? "" : `data-unidade="${a.unidadeIndex}"`}>
           </div>
         </div>`;
-      }).join("") : `<p class="material-vazio">Este empreendimento não possui tipologias com planta.</p>`;
+      }).join("") : `<p class="material-vazio">Este empreendimento não tem tipologias. Anexe aqui as plantas dele (imagem ou PDF).</p>
+        <div class="material-acoes">
+          <label class="botao-arquivo" for="arquivo-planta-livre-${escapeHtml(emp.id)}">Adicionar planta</label>
+          <span class="material-arquivo-nome">Você pode selecionar várias de uma vez.</span>
+          <input class="arquivo-input" id="arquivo-planta-livre-${escapeHtml(emp.id)}" type="file" multiple accept="image/webp,image/jpeg,image/png,application/pdf,.webp,.jpg,.jpeg,.png,.pdf" data-arquivo-planta-livre data-emp="${escapeHtml(emp.id)}">
+        </div>
+        ${galeria.map((item, index) => ({ item, index })).filter(({ item }) => ehPlantaMidia(item)).map(({ item, index }) => `
+        <div class="planta-item">
+          <div class="planta-dados">
+            <span class="planta-titulo">${escapeHtml(item.legenda || "Planta")}</span>
+            <span class="planta-arquivo" title="${escapeHtml(item.src)}">${escapeHtml(String(item.src).split("/").pop())}</span>
+          </div>
+          <div class="material-acoes">
+            <button type="button" class="mini-botao perigo" data-planta-livre-remover="${index}" data-emp="${escapeHtml(emp.id)}">Remover</button>
+          </div>
+        </div>`).join("")}`;
 
       const nomeFolder = folder ? folder.split("/").pop() : "Nenhum PDF anexado";
       const nomeVideo = video ? (/^https?:/i.test(video) ? video : video.split("/").pop()) : "Nenhum vídeo anexado";
@@ -3665,6 +3680,47 @@
         const outro = indices[pos + direcao];
         if (pos < 0 || outro == null) return;
         [lista[atual], lista[outro]] = [lista[outro], lista[atual]];
+        anotarGaleria(emp, lista);
+        atualizarDepois(true);
+      });
+    });
+
+    alvo.querySelectorAll("input[data-arquivo-planta-livre]").forEach((input) => {
+      input.addEventListener("change", async () => {
+        const emp = estado.dados.EMPREENDIMENTOS.find((e) => e.id === input.dataset.emp);
+        const arquivos = Array.from(input.files || []);
+        if (!emp || !arquivos.length) return;
+        input.disabled = true;
+        const lista = galeriaAtual(emp);
+        let aceitas = 0;
+        for (const arquivo of arquivos) {
+          const falha = await validarArquivoImagem("planta", arquivo);
+          if (falha) { aviso(`${arquivo.name}: ${falha}`, "falha"); continue; }
+          const path = `assets/${emp.id}/plantas/${Date.now().toString(36)}-${slugArquivo(semExtensao(arquivo.name))}.${extensaoDoArquivo(arquivo.name)}`;
+          anotarUpload(emp.id, `planta-livre:${path}`, path, arquivo, "planta");
+          lista.push({ src: path, legenda: `Planta — ${legendaDoArquivo(arquivo)}` });
+          aceitas++;
+        }
+        input.disabled = false;
+        input.value = "";
+        if (aceitas) {
+          anotarGaleria(emp, lista);
+          aviso(`${aceitas} ${aceitas === 1 ? "planta pronta" : "plantas prontas"} para publicar.`, "ok");
+        }
+        atualizarDepois(true);
+      });
+    });
+
+    alvo.querySelectorAll("button[data-planta-livre-remover]").forEach((botao) => {
+      botao.addEventListener("click", () => {
+        const emp = estado.dados.EMPREENDIMENTOS.find((e) => e.id === botao.dataset.emp);
+        if (!emp) return;
+        const lista = galeriaAtual(emp);
+        const index = Number(botao.dataset.plantaLivreRemover);
+        const item = lista[index];
+        if (!item || !ehPlantaMidia(item)) return;
+        removerUploadPath(item.src);
+        lista.splice(index, 1);
         anotarGaleria(emp, lista);
         atualizarDepois(true);
       });
