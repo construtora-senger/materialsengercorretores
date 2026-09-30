@@ -762,6 +762,23 @@ async function teste(nome, fn) {
     if (!aberto) return "o menu nao abriu";
     return sobra <= 2 ? "" : `sobram ${sobra}px de rolagem horizontal`;
   });
+  // v366 — planta aceita PDF (sem conferir pixels) e continua recusando o que
+  // nao e imagem nem PDF.
+  await teste("a planta aceita PDF e recusa outros formatos", async () => {
+    await clicarNoMenu('[data-modulo-alvo="materiais"]');
+    await admin.locator("#materiais .material-emp > summary, #materiais details summary").first().click().catch(() => {});
+    const input = admin.locator("input[data-arquivo-planta]").first();
+    if (!(await input.count())) return "nao achei o campo de planta";
+    await input.setInputFiles({ name: "planta-teste.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n%%EOF") });
+    await admin.waitForTimeout(500);
+    const ok = await admin.locator("#aviso").innerText();
+    if (!/Planta pronta/i.test(ok)) return `PDF recusado: ${ok}`;
+    await input.setInputFiles({ name: "planta.txt", mimeType: "text/plain", buffer: Buffer.from("x") });
+    await admin.waitForTimeout(500);
+    const ruim = await admin.locator("#aviso").innerText();
+    return /precisa estar em/i.test(ruim) ? "" : `txt nao foi recusado: ${ruim}`;
+  });
+
   await ctxAdmin.close();
 
   // =============================================================== o PWA
