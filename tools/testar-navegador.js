@@ -779,6 +779,20 @@ async function teste(nome, fn) {
     return /precisa estar em/i.test(ruim) ? "" : `txt nao foi recusado: ${ruim}`;
   });
 
+  // v367 — loteamento nao tem tipologia, mas tambem recebe planta em PDF.
+  await teste("o loteamento aceita planta em PDF e dá para remover", async () => {
+    const input = admin.locator("input[data-arquivo-planta-livre]").first();
+    if (!(await input.count())) return "loteamento sem campo de planta";
+    const antes = await admin.locator("button[data-planta-livre-remover]").count();
+    await input.setInputFiles({ name: "planta-lote.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n%%EOF") });
+    await admin.waitForTimeout(500);
+    const depois = await admin.locator("button[data-planta-livre-remover]").count();
+    if (depois !== antes + 1) return `a planta nao entrou na lista (${antes} -> ${depois})`;
+    await admin.locator("button[data-planta-livre-remover]").last().evaluate((b) => b.click());
+    await admin.waitForTimeout(300);
+    return (await admin.locator("button[data-planta-livre-remover]").count()) === antes ? "" : "nao removeu";
+  });
+
   await ctxAdmin.close();
 
   // =============================================================== o PWA

@@ -70,8 +70,8 @@
     "plantas": 8
   },
   "nova-vila-rica-iii": {
-    "hero": "assets/aerial-vilarica.webp",
-    "logo": "assets/nvr3-logo.webp",
+    "hero": "assets/nova-vila-rica-iii/capa.png",
+    "logo": "",
     "folder": "",
     "video": "",
     "mapa": "",
@@ -80,12 +80,12 @@
     "plantas": 0
   },
   "nova-vila-rica": {
-    "hero": "assets/aerial-vilarica-i-ii.webp",
+    "hero": "assets/nova-vila-rica/capa.png",
     "logo": "",
     "folder": "",
     "video": "",
     "mapa": "",
-    "galeria": 0,
+    "galeria": 3,
     "diferenciais": 0,
     "plantas": 0
   },

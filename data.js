@@ -1598,7 +1598,6 @@ const EMPREENDIMENTOS = [
     hero: "assets/nova-vila-rica-iii/capa.png",
     folder: "",
     video: "",
-    logo: "assets/nvr3-logo.webp",
     destaque: true,
     tagline: "Lotes prontos para construir, no novo loteamento Nova Vila Rica III.",
     localizacao: "Carazinho/RS — Ruas Laranjeira, Figueira, Jatobá, J. Kennedy e H. T. Schutz.",
