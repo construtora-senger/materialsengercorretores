@@ -374,6 +374,24 @@ async function teste(nome, fn) {
     const vazando = await semControlesInternos(cli);
     return vazando.length ? `aparecem: ${vazando.join(", ")}` : "";
   });
+  // v374 — "Ver no mapa": o lote abre o mapa do loteamento com a marca
+  // desenhada, tambem para o cliente (que nao ve os botoes da equipe).
+  await teste("o lote abre o mapa com a marca, inclusive para o cliente", async () => {
+    const lv = await abrir(`/?cliente&${CORRETOR}#emp-nova-vila-rica-iii`);
+    await lv.waitForTimeout(600);
+    const botoes = lv.locator("#unidades .units-table .map-link");
+    if (!(await botoes.count())) return "nenhum botao Ver no mapa na tabela de lotes";
+    await lv.locator("#unidades details.unit-group").first().evaluate((d) => { d.open = true; });
+    await botoes.first().click();
+    await lv.waitForTimeout(800);
+    const aberto = await lv.locator("#lightbox.open").count();
+    if (!aberto) return "o mapa nao abriu";
+    const src = await lv.locator("#lightbox-image").getAttribute("src");
+    if (!/^data:image\/jpeg/.test(src || "")) return "o mapa abriu sem a marca desenhada";
+    const legenda = await lv.locator("#lightbox-caption").innerText();
+    return /Quadra \d+ · Lote \d+/.test(legenda) ? "" : `legenda inesperada: ${legenda}`;
+  });
+
   await teste("o botão do corretor aparece com nome e CRECI", async () => {
     const cta = cli.locator("#corretor-cta");
     if (await cta.getAttribute("hidden") !== null) return "o CTA ficou escondido";

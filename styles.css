@@ -1229,3 +1229,10 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .plant-viewer.planta-unica .plant-viewer-preview { height: auto; padding: 8px; }
   .plant-viewer.planta-unica .plant-viewer-preview img { max-height: 62vh; }
 }
+
+/* Botao "Ver no mapa" da linha do lote (loteamentos). Fica fora do bloco de
+   acoes da equipe, entao o cliente tambem ve. */
+.map-link { display: block; margin-top: 6px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--brand, #138a9a); font-size: 12px; font-weight: 700; cursor: pointer; }
+.map-link:hover { background: var(--brand-soft, #e8f5f7); }
+.mobile-unit-card .map-link { margin: 4px 0 8px; }
+@media print { .map-link { display: none !important; } }
