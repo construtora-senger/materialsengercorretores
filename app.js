@@ -368,7 +368,7 @@
     if (!item) return;
     visor.indice = indice;
     aproximarVisor(false);
-    visor.imagem.src = assetUrl(item.src);
+    visor.imagem.src = item.pronta || assetUrl(item.src);
     visor.imagem.alt = item.legenda || "";
     visor.legenda.textContent = item.legenda || "";
     visor.arquivo.href = assetUrl(item.src);
@@ -1849,7 +1849,7 @@
     const selected = state.selected.has(item.key);
     return `
       <tr data-unit-code="${escapeHtml(String(item.code))}">
-        <td><strong>${escapeHtml(itemLabel(item))}</strong>${description ? `<br><small>${escapeHtml(description)}</small>` : ""}</td>
+        <td><strong>${escapeHtml(itemLabel(item))}</strong>${description ? `<br><small>${escapeHtml(description)}</small>` : ""}${botaoDoMapa(item)}</td>
         <td>${escapeHtml(item.area || "—")}</td>
         <td>${escapeHtml(secondary || "—")}</td>
         <td><span class="status-pill status-${item.status}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></td>
@@ -1866,6 +1866,7 @@
       <article class="mobile-unit-card" data-unit-code="${escapeHtml(String(item.code))}">
         <div class="mobile-unit-head"><strong>${escapeHtml(itemLabel(item))}</strong><span class="status-pill status-${item.status}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></div>
         ${description ? `<p class="mobile-unit-note">${escapeHtml(description)}</p>` : ""}
+        ${botaoDoMapa(item)}
         <div class="mobile-unit-meta">
           <div><span>Área</span><strong>${escapeHtml(item.area || "—")}</strong></div>
           <div><span>Valor</span><strong class="price-value">${item.pricePrefix ? `${escapeHtml(item.pricePrefix)} ` : ""}${money(item.price)}</strong></div>
@@ -1878,6 +1879,58 @@
   function bindInventoryEvents(root) {
     root.querySelectorAll("[data-share-item]").forEach((button) => button.addEventListener("click", () => openSendChoice(itemMap.get(button.dataset.shareItem))));
     root.querySelectorAll("[data-select-item]").forEach((button) => button.addEventListener("click", () => toggleSelection(button.dataset.selectItem)));
+    root.querySelectorAll("[data-map-item]").forEach((button) => button.addEventListener("click", () => abrirMapaDoLote(itemMap.get(button.dataset.mapItem))));
+  }
+
+  // "Ver no mapa" — o loteamento traz o mapa e a posicao de cada lote
+  // (emp.mapaLotes). O ponto e desenhado na propria imagem, num canvas, para
+  // acompanhar o zoom do visor sem precisar de camada por cima.
+  function pontoDoLote(item) {
+    const mapa = item && item.emp && item.emp.mapaLotes;
+    const ponto = mapa && mapa.pontos && mapa.pontos[`${item.quadra}-${item.numero}`];
+    return mapa && ponto ? { mapa, ponto } : null;
+  }
+
+  function botaoDoMapa(item) {
+    if (item.kind !== "land" || !pontoDoLote(item)) return "";
+    return `<button class="map-link" type="button" data-map-item="${item.key}">📍 Ver no mapa</button>`;
+  }
+
+  function marcarLoteNaImagem(img, ponto) {
+    const W = img.naturalWidth, H = img.naturalHeight;
+    const canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    const c = canvas.getContext("2d");
+    c.drawImage(img, 0, 0, W, H);
+    const x = ponto[0] * W, y = ponto[1] * H;
+    const r = W * 0.03;
+    const vermelho = "#e11d2e";
+    // Aro em volta do lote.
+    c.lineWidth = r * 0.5; c.strokeStyle = "#fff"; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.stroke();
+    c.lineWidth = r * 0.26; c.strokeStyle = vermelho; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.stroke();
+    // Seta apontando para o aro (por cima; por baixo quando o lote esta no topo).
+    const abaixo = y - r * 4.4 < 0;
+    const sinal = abaixo ? 1 : -1;
+    const ponta = y + sinal * r * 1.35, base = y + sinal * r * 3.1, topo = y + sinal * r * 4.6, larg = r * 0.85, haste = r * 0.32;
+    c.beginPath();
+    c.moveTo(x, ponta); c.lineTo(x - larg, base); c.lineTo(x - haste, base); c.lineTo(x - haste, topo);
+    c.lineTo(x + haste, topo); c.lineTo(x + haste, base); c.lineTo(x + larg, base); c.closePath();
+    c.lineJoin = "round"; c.lineWidth = r * 0.28; c.strokeStyle = "#fff"; c.stroke();
+    c.fillStyle = vermelho; c.fill();
+    return canvas.toDataURL("image/jpeg", 0.92);
+  }
+
+  function abrirMapaDoLote(item) {
+    const achado = pontoDoLote(item);
+    if (!achado) return;
+    const base = { src: achado.mapa.src, legenda: itemLabel(item) };
+    const img = new Image();
+    img.onload = () => {
+      try { base.pronta = marcarLoteNaImagem(img, achado.ponto); } catch (_) { /* abre sem a marca */ }
+      abrirVisor([base], 0, "O lote está marcado com a seta e o círculo vermelho. Toque na imagem para aproximar.");
+    };
+    img.onerror = () => abrirVisor([base], 0);
+    img.src = assetUrl(achado.mapa.src);
   }
 
   function enterpriseMessage(emp, includePrices) {
