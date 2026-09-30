@@ -273,6 +273,29 @@
       border-radius: 10px; padding: 13px;
     }
     .ve-quadro:hover { border-color: var(--dourado); }
+    .botao-imprimir-visao { float: right; margin: 0 0 8px 12px; }
+    .botao-imprimir-visao[hidden] { display: none; }
+    /* v364 — a impressao da Visao geral: so o quadro "O estoque da Senger"
+       (faixa, placar e loteamentos), numa folha A4 deitada. O JS mede a
+       altura e encolhe o quadro para caber numa folha so. */
+    @media print {
+      @page { size: A4 landscape; margin: 8mm; }
+      body.imprimindo-visao { background: #fff !important; }
+      body.imprimindo-visao * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body.imprimindo-visao header.topo,
+      body.imprimindo-visao .painel-sidebar,
+      body.imprimindo-visao .painel-velho,
+      body.imprimindo-visao .contexto-modulo,
+      body.imprimindo-visao .carregando,
+      body.imprimindo-visao #aviso,
+      body.imprimindo-visao #conteudo > :not(section[data-visao-secao="estoque"]),
+      body.imprimindo-visao .botao-imprimir-visao,
+      body.imprimindo-visao section[data-visao-secao="estoque"] > .descricao,
+      body.imprimindo-visao .ve-nota { display: none !important; }
+      body.imprimindo-visao .painel-shell { display: block !important; }
+      body.imprimindo-visao .painel-conteudo, body.imprimindo-visao .painel-conteudo main { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+      body.imprimindo-visao section[data-visao-secao="estoque"] { margin: 0 !important; box-shadow: none !important; break-inside: avoid; }
+    }
     /* v361 — os loteamentos ficam fora da faixa de cima: fundo areia no
        quadro e na faixa propria deles, para se ver de relance que nao entram
        na conta (pedido do dono). */
@@ -1288,6 +1311,9 @@
 
         <!-- Dashboard -->
         <section class="bloco" data-modulo="visao" data-visao-secao="estoque">
+          <!-- v364 — imprimir ou salvar em PDF este quadro, numa folha em
+               paisagem (pedido do dono). -->
+          <button type="button" class="botao secundario botao-imprimir-visao" id="botao-imprimir-visao">Imprimir / salvar PDF</button>
           <h2>O estoque da Senger</h2>
           <p class="descricao">A contagem que não aparece no site — só aqui no painel.
             Em cima, os prédios e os imóveis avulsos: <strong>os lotes dos loteamentos e os imóveis
@@ -1555,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 363;
+  const VERSAO_PAINEL = 364;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2131,6 +2157,32 @@
   }
 
   $("botao-voltar-modulo")?.addEventListener("click", voltarDeModulo);
+
+  // v364 — imprime so o quadro da Visao geral numa folha A4 deitada. Mede a
+  // altura com a largura da folha e encolhe (zoom) para caber numa folha so.
+  $("botao-imprimir-visao")?.addEventListener("click", () => {
+    const secao = document.querySelector('section[data-visao-secao="estoque"]');
+    if (!secao) return;
+    const LARGURA = 1060, ALTURA = 720; // A4 deitada, menos a margem, em px
+    document.body.classList.add("imprimindo-visao");
+    // Encolher estreita a folha util; entao a largura cresce na mesma
+    // proporcao (1060/zoom), e a conta se repete ate assentar.
+    let zoom = 1;
+    for (let i = 0; i < 4; i++) {
+      secao.style.width = Math.round(LARGURA / zoom) + "px";
+      zoom = Math.min(1, ALTURA / secao.scrollHeight);
+    }
+    secao.style.width = Math.round(LARGURA / zoom) + "px";
+    secao.style.zoom = String(zoom);
+    const limpar = () => {
+      document.body.classList.remove("imprimindo-visao");
+      secao.style.width = "";
+      secao.style.zoom = "";
+      window.removeEventListener("afterprint", limpar);
+    };
+    window.addEventListener("afterprint", limpar);
+    window.print();
+  });
   // v358 — o Inicio leva a Visao geral, no placar dos empreendimentos
   // (pedido do dono), com qualquer detalhe fechado.
   $("botao-inicio-painel")?.addEventListener("click", () => {
@@ -3340,6 +3392,7 @@
     // vez de deixar a tela vazia.
     if (estado.visaoEmpAberto && !aberto) estado.visaoEmpAberto = null;
 
+    if ($("botao-imprimir-visao")) $("botao-imprimir-visao").hidden = Boolean(aberto);
     alvo.innerHTML = aberto
       ? renderDetalheDoEmp(aberto)
       : renderFaixaDaSenger(emps) + renderPlacar(emps);
