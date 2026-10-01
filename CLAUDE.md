@@ -36,6 +36,23 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Até 3 vídeos por empreendimento, sempre centralizados (v378)
+
+Pedido do dono (1/10/2026): o vídeo vertical aparecia como tira estreita entre
+duas faixas pretas no PC, e ele quis poder pôr mais de um vídeo por
+empreendimento, **no máximo 3, lado a lado**.
+
+- Campos no `data.js`: `video` (o oficial), `video2` e `video3` — todos opcionais
+  e do mesmo formato (MP4/WebM/Ogg ou YouTube/Vimeo). O painel (Materiais) tem os
+  três campos, com **Remover**; a gravação é a mesma edição textual
+  (`aplicarMaterial`).
+- **Sempre centralizados**: com 1, 2 ou 3 vídeos o grupo fica no meio da página
+  (`.video-lista`, flex centralizado) — nada de grade de 3 colunas com vão onde
+  não há vídeo. No celular ficam um embaixo do outro.
+- **Vídeo vertical no computador** ganha player na proporção 9:16 (classe
+  `vertical`, posta pelo `app.js` ao ler o tamanho do vídeo); horizontal segue
+  16:9; no celular nada mudou.
+
 ## A faixa da Visão geral não conta os lotes dos loteamentos nem o Campos Elísios (v335)
 
 Dois pedidos do dono em 22/09/2026, com o print da Visão geral na mão:

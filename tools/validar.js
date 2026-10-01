@@ -136,7 +136,9 @@ for (const emp of EMPREENDIMENTOS) {
   if (emp.folder && !/^https?:\/\//i.test(emp.folder) && !/\.pdf(\?|$)/i.test(emp.folder)) {
     erro(`${emp.id}.folder: o padrao comercial pede PDF ("${emp.folder}")`);
   }
-  if (emp.video && !/^https?:\/\//i.test(emp.video)) conferirArquivo(`${emp.id}.video`, emp.video);
+  for (const campoVideo of ["video", "video2", "video3"]) {
+    if (emp[campoVideo] && !/^https?:\/\//i.test(emp[campoVideo])) conferirArquivo(`${emp.id}.${campoVideo}`, emp[campoVideo]);
+  }
   (emp.galeria || []).forEach((g, i) => conferirArquivo(`${emp.id}.galeria[${i}]`, g && g.src));
 
   const apelidos = new Set((emp.galeria || []).map((g) => nomeDaMidia(g && g.src)));
@@ -181,6 +183,8 @@ function retratoAtual() {
       logo: emp.logo || "",
       folder: emp.folder || "",
       video: emp.video || "",
+      video2: emp.video2 || "",
+      video3: emp.video3 || "",
       mapa: emp.mapa || "",
       galeria: (emp.galeria || []).length,
       diferenciais: (emp.diferenciais || []).length,
@@ -197,7 +201,7 @@ if (process.argv.includes("--gravar-retrato")) {
   console.log(`Retrato de materiais gravado em tools/materiais.json (${Object.keys(agora).length} empreendimentos).`);
 } else if (fs.existsSync(RETRATO)) {
   const antes = JSON.parse(fs.readFileSync(RETRATO, "utf8"));
-  const CAMPOS = ["hero", "logo", "folder", "video", "mapa"];
+  const CAMPOS = ["hero", "logo", "folder", "video", "video2", "video3", "mapa"];
   for (const [id, velho] of Object.entries(antes)) {
     const novo = agora[id];
     if (!novo) { erro(`REGRESSAO: o empreendimento "${id}" sumiu do cadastro`); continue; }

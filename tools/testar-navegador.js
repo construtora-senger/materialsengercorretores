@@ -525,7 +525,7 @@ async function teste(nome, fn) {
           : { sha: "pai123", tree: { sha: "arvore123" } };
         return rota.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(corpoGet) });
       }
-      gravacoes.push({ path: url.pathname, metodo });
+      gravacoes.push({ path: url.pathname, metodo, corpo: req.postData() || "" });
       return rota.fulfill({ status: 200, contentType: "application/json",
         body: JSON.stringify({ sha: `novo-${gravacoes.length}`, object: { sha: "novo" } }) });
     }
@@ -768,6 +768,34 @@ async function teste(nome, fn) {
     const tresPuts = ["data.js", "index.html", "sw.js"].every((f) => caminhos.includes(f));
     if (tresPuts) return "caiu no plano B (tres PUT) em vez do commit unico";
     return `envio incompleto: ${caminhos.join(", ")}`;
+  });
+
+  // v378 — ate 3 videos por empreendimento (video, video2, video3). O painel
+  // tem os tres campos e a publicacao grava a linha video2 sem tocar no resto.
+  await teste("o painel aceita um segundo vídeo e grava a linha video2 no data.js", async () => {
+    gravacoes.length = 0;
+    await clicarNoMenu('[data-modulo-alvo="materiais"]');
+    await admin.waitForTimeout(400);
+    await admin.evaluate(() => document.querySelectorAll("#materiais details.material-emp").forEach((d) => { d.hidden = false; d.open = true; }));
+    const campos = await admin.locator('#materiais details[data-material-emp="nova-vila-rica-iii"] [data-material-campo-video]').count();
+    if (campos !== 3) return `esperava 3 campos de vídeo, achei ${campos}`;
+    const link = admin.locator('#materiais input[data-material-link="video2"][data-emp="nova-vila-rica-iii"]');
+    await link.evaluate((el) => {
+      el.value = "https://youtu.be/abc123XYZ00";
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await admin.waitForTimeout(400);
+    admin.on("dialog", (d) => d.accept());
+    await admin.locator("#botao-publicar").click();
+    await admin.waitForTimeout(2500);
+    const blobs = gravacoes.filter((g) => /git\/blobs/.test(g.path)).map((g) => {
+      try { const b = JSON.parse(g.corpo); return b.encoding === "base64" ? Buffer.from(b.content, "base64").toString("utf8") : String(b.content); } catch (e) { return ""; }
+    });
+    const dados = blobs.find((t) => /EMPREENDIMENTOS/.test(t));
+    if (!dados) return "o data.js nao foi enviado";
+    if (!/\n\s*video2:\s*"https:\/\/youtu\.be\/abc123XYZ00",/.test(dados)) return "a linha video2 nao foi gravada";
+    const dentro = (t) => t.slice(t.indexOf('id: "nova-vila-rica-iii"'));
+    return /video:\s*"assets\/nova-vila-rica-iii\/video.mp4"/.test(dentro(dados)) ? "" : "o video principal sumiu";
   });
 
   await teste("o painel no celular abre o menu", async () => {

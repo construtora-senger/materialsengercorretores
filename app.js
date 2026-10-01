@@ -306,17 +306,26 @@
     }
   }
 
+  // v377 — até 3 vídeos por empreendimento (campos video, video2 e video3),
+  // sempre centralizados: com 1, 2 ou 3 o grupo se centraliza, sem sobrar vão.
+  function videosDoEmp(emp) {
+    return ["video", "video2", "video3"].map((campo) => videoDoEmp(emp[campo])).filter(Boolean);
+  }
+
   function renderVideoEmp(emp) {
-    const video = videoDoEmp(emp.video);
-    if (!video) return "";
-    const midia = video.tipo === "embed"
-      ? `<div class="video-frame"><iframe src="${escapeHtml(video.src)}" title="Vídeo ${escapeHtml(emp.nome)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`
-      : video.tipo === "arquivo"
-        ? `<div class="video-frame"><video controls preload="metadata" playsinline onloadedmetadata="this.parentNode.classList.toggle('vertical', this.videoHeight > this.videoWidth)" src="${escapeHtml(video.src)}">Seu navegador não conseguiu reproduzir este vídeo.</video></div>`
-        : `<a class="button button-outline" href="${escapeHtml(video.src)}" target="_blank" rel="noopener">Abrir vídeo</a>`;
+    const videos = videosDoEmp(emp);
+    if (!videos.length) return "";
+    const midias = videos.map((video, i) => {
+      const titulo = videos.length > 1 ? `Vídeo ${i + 1} · ${emp.nome}` : `Vídeo ${emp.nome}`;
+      return video.tipo === "embed"
+        ? `<div class="video-frame"><iframe src="${escapeHtml(video.src)}" title="${escapeHtml(titulo)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`
+        : video.tipo === "arquivo"
+          ? `<div class="video-frame"><video controls preload="metadata" playsinline onloadedmetadata="this.parentNode.classList.toggle('vertical', this.videoHeight > this.videoWidth)" src="${escapeHtml(video.src)}">Seu navegador não conseguiu reproduzir este vídeo.</video></div>`
+          : `<a class="button button-outline" href="${escapeHtml(video.src)}" target="_blank" rel="noopener">Abrir vídeo</a>`;
+    }).join("");
     return `<section class="content-section video-section" data-video-section>
-      <div class="section-title-row"><h2>Vídeo do empreendimento</h2><p>Apresentação oficial</p></div>
-      ${midia}
+      <div class="section-title-row"><h2>${videos.length > 1 ? "Vídeos do empreendimento" : "Vídeo do empreendimento"}</h2><p>Apresentação oficial</p></div>
+      <div class="video-lista" data-n="${videos.length}">${midias}</div>
     </section>`;
   }
 
@@ -1363,7 +1372,7 @@
     // botao de folder — nada de "em breve" ocupando lugar.
     const acoesDeMaterial = `
                 ${local.mapsUrl ? `<a class="button button-outline" href="${escapeHtml(local.mapsUrl)}" target="_blank" rel="noopener">Ver localização</a>` : ""}
-                ${emp.video ? `<button class="button button-outline" type="button" id="watch-video">Assistir vídeo</button>` : ""}
+                ${videosDoEmp(emp).length ? `<button class="button button-outline" type="button" id="watch-video">${videosDoEmp(emp).length > 1 ? "Assistir vídeos" : "Assistir vídeo"}</button>` : ""}
                 ${emp.folder ? `<a class="button button-outline" href="${escapeHtml(assetUrl(emp.folder))}" target="_blank" rel="noopener">${CLIENT_MODE ? "Ver apresentação completa" : "Baixar folder"}</a>` : ""}`;
     // O "voltar" so faz sentido para quem tem para onde voltar: a equipe, e o
     // cliente que recebeu uma LISTA de empreendimentos.
