@@ -1607,8 +1607,8 @@ const EMPREENDIMENTOS = [
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-05-vista-geral-obras-3.jpg", legenda: "05 vista geral obras" },
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-07-compactacao-vias-4.jpg", legenda: "07 compactacao vias" },
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-08-obras-infraestrutura-5.jpg", legenda: "08 obras infraestrutura" },
-      { src: "assets/nova-vila-rica-iii/plantas/muohvgmk-design-sem-nome.pdf", legenda: "Planta — Design sem nome" },
-      { src: "assets/nova-vila-rica-iii/plantas/muohvgml-urbanismo-23-06-12-final3-02-planta-lotes-a3-2-2.pdf", legenda: "Planta — Urbanismo 23.06.12 FINAL3 02 PLANTA LOTES a3 2 (2)" },
+      { src: "assets/nova-vila-rica-iii/plantas/muohvgmk-design-sem-nome.pdf", legenda: "Mapa de disponibilidades e preços" },
+      { src: "assets/nova-vila-rica-iii/plantas/muohvgml-urbanismo-23-06-12-final3-02-planta-lotes-a3-2-2.pdf", legenda: "Planta Urbanismo Satélite" },
     ],
     // Mapa do loteamento (foto aerea com a planta por cima). Cada lote tem a
     // posicao do numero dele no mapa, em fracao da imagem (x da esquerda, y do
