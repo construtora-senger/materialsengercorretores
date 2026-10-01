@@ -1207,6 +1207,15 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   object-fit: contain;
   background: #111;
 }
+/* v377 — vídeo vertical no computador: player estreito e centralizado, sem faixas pretas. */
+@media (min-width: 721px) {
+  .video-frame.vertical {
+    aspect-ratio: 9 / 16;
+    height: min(78vh, 720px);
+    width: auto;
+    margin: 0 auto;
+  }
+}
 @media print {
   .video-section { display: none !important; }
 }
