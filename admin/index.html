@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 372;
+  const VERSAO_PAINEL = 373;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2811,6 +2811,33 @@
     return op ? op.valor : String(emp[campo] || "");
   }
 
+  // v377 — até 3 vídeos por empreendimento, lado a lado no site: os campos são
+  // video, video2 e video3 (o primeiro é o oficial; os outros dois, opcionais).
+  const SLOTS_DE_VIDEO = ["video", "video2", "video3"];
+  const emVideo = (campo) => SLOTS_DE_VIDEO.includes(campo);
+
+  function renderCampoVideo(emp, slot, i) {
+    const video = materialAtual(emp, slot);
+    const id = escapeHtml(emp.id);
+    const nome = video ? (/^https?:/i.test(video) ? video : video.split("/").pop()) : "Nenhum vídeo anexado";
+    const titulo = i === 0 ? "Vídeo oficial" : `Vídeo ${i + 1} (opcional)`;
+    return `<div class="material-campo" data-material-campo-video="${slot}">
+                <div class="material-topo"><b>${titulo}</b><span class="material-status ${video ? "ok" : (i === 0 ? "falta" : "")}">${video ? "OK" : (i === 0 ? "faltando" : "vazio")}</span></div>
+                <div class="material-acoes">
+                  <label class="botao-arquivo" for="arquivo-${slot}-${id}">${video && !/^https?:/i.test(video) ? "Substituir vídeo" : "Anexar vídeo"}</label>
+                  <span class="material-arquivo-nome" title="${escapeHtml(nome)}">${escapeHtml(nome)}</span>
+                  <input class="arquivo-input" id="arquivo-${slot}-${id}" type="file" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogg" data-arquivo-material="${slot}" data-emp="${id}">
+                  ${video ? `<button type="button" class="mini-botao perigo" data-material-remover="${slot}" data-emp="${id}">Remover</button>` : ""}
+                </div>
+                <p class="material-ajuda"><strong>MP4/WebM/Ogg · recomendado 1920 × 1080 px (Full HD)</strong> · até 80 MB. Para arquivo maior, use YouTube/Vimeo.${i === 0 ? " No site, até 3 vídeos aparecem lado a lado." : ""}</p>
+                <details class="material-link">
+                  <summary>Ou usar link do YouTube/Vimeo</summary>
+                  <input type="url" value="${escapeHtml(/^https?:/i.test(video) ? video : "")}" placeholder="https://youtube.com/watch?v=..." data-material-link="${slot}" data-emp="${id}">
+                </details>
+              </div>
+`;
+  }
+
   function materialParecePdf(valor) {
     const v = String(valor || "").trim();
     return !v || /\.pdf(?:$|[?#])/i.test(v);
@@ -2911,7 +2938,7 @@
   function caminhoDoMaterial(emp, campo, arquivo) {
     const ext = extensaoDoArquivo(arquivo?.name);
     if (campo === "folder") return `assets/${emp.id}/folder.pdf`;
-    if (campo === "video") return `assets/${emp.id}/video.${ext || "mp4"}`;
+    if (emVideo(campo)) return `assets/${emp.id}/${campo}.${ext || "mp4"}`;
     if (campo === "hero") return `assets/${emp.id}/capa.${ext || "webp"}`;
     if (campo === "logo") return `assets/${emp.id}/logo.${ext || "png"}`;
     throw new Error(`Tipo de material desconhecido: ${campo}.`);
@@ -2976,7 +3003,7 @@
     if (!arquivo) return "Nenhum arquivo selecionado.";
     const ext = extensaoDoArquivo(arquivo.name);
     if (campo === "folder" && !(arquivo.type === "application/pdf" || ext === "pdf")) return "O folder precisa ser um arquivo PDF.";
-    if (campo === "video" && !(["mp4", "webm", "ogg"].includes(ext) || /^video\/(mp4|webm|ogg)$/i.test(arquivo.type || ""))) return "O vídeo precisa estar em MP4, WebM ou Ogg.";
+    if (emVideo(campo) && !(["mp4", "webm", "ogg"].includes(ext) || /^video\/(mp4|webm|ogg)$/i.test(arquivo.type || ""))) return "O vídeo precisa estar em MP4, WebM ou Ogg.";
     const limite = campo === "folder" ? 25 * 1024 * 1024 : 80 * 1024 * 1024;
     if (arquivo.size > limite) return campo === "folder"
       ? "O PDF passou de 25 MB. Reduza o arquivo antes de anexar."
@@ -3449,7 +3476,8 @@
 
     alvo.innerHTML = emps.map((emp) => {
       const folder = materialAtual(emp, "folder");
-      const video = materialAtual(emp, "video");
+      const video = SLOTS_DE_VIDEO.filter((slot) => materialAtual(emp, slot)).length ? "x" : "";
+      const nVideos = SLOTS_DE_VIDEO.filter((slot) => materialAtual(emp, slot)).length;
       const hero = materialAtual(emp, "hero");
       const logo = materialAtual(emp, "logo");
       const galeria = galeriaAtual(emp);
@@ -3458,7 +3486,7 @@
       const alvos = alvosDePlanta(emp);
       const faltamPlantas = alvos.filter((a) => !plantaAtual(emp, a) && !((emp.grupos || [])[a.grupoIndex]?.plantaNota)).length;
       const pdfOk = Boolean(folder) && materialParecePdf(folder);
-      const resumo = `${fotos.length} fotos · ${plantasMidia.length} plantas · ${pdfOk ? "folder OK" : "sem folder"} · ${video ? "vídeo OK" : "sem vídeo"}`;
+      const resumo = `${fotos.length} fotos · ${plantasMidia.length} plantas · ${pdfOk ? "folder OK" : "sem folder"} · ${nVideos > 1 ? `${nVideos} vídeos` : (video ? "vídeo OK" : "sem vídeo")}`;
 
       const listaFotos = fotos.length ? fotos.map(({ item, index }, pos) => `
         <div class="galeria-item" data-galeria-item="${index}">
@@ -3510,7 +3538,6 @@
         </div>`).join("")}`;
 
       const nomeFolder = folder ? folder.split("/").pop() : "Nenhum PDF anexado";
-      const nomeVideo = video ? (/^https?:/i.test(video) ? video : video.split("/").pop()) : "Nenhum vídeo anexado";
       const nomeHero = hero ? hero.split("/").pop() : "Nenhuma capa anexada";
       const nomeLogo = logo ? logo.split("/").pop() : "Nenhuma logo própria cadastrada";
 
@@ -3570,19 +3597,7 @@
                 </div>
                 <p class="material-ajuda"><strong>PDF · até 25 MB.</strong> Um folder completo por empreendimento.</p>
               </div>
-              <div class="material-campo">
-                <div class="material-topo"><b>Vídeo oficial</b><span class="material-status ${video ? "ok" : "falta"}" data-status-video>${video ? "OK" : "faltando"}</span></div>
-                <div class="material-acoes">
-                  <label class="botao-arquivo" for="arquivo-video-${escapeHtml(emp.id)}">${video && !/^https?:/i.test(video) ? "Substituir vídeo" : "Anexar vídeo"}</label>
-                  <span class="material-arquivo-nome" data-nome-video title="${escapeHtml(nomeVideo)}">${escapeHtml(nomeVideo)}</span>
-                  <input class="arquivo-input" id="arquivo-video-${escapeHtml(emp.id)}" type="file" accept="video/mp4,video/webm,video/ogg,.mp4,.webm,.ogg" data-arquivo-material="video" data-emp="${escapeHtml(emp.id)}">
-                </div>
-                <p class="material-ajuda"><strong>MP4/WebM/Ogg · recomendado 1920 × 1080 px (Full HD)</strong> · até 80 MB. Para arquivo maior, use YouTube/Vimeo.</p>
-                <details class="material-link">
-                  <summary>Ou usar link do YouTube/Vimeo</summary>
-                  <input type="url" value="${escapeHtml(/^https?:/i.test(video) ? video : "")}" placeholder="https://youtube.com/watch?v=..." data-material-link="video" data-emp="${escapeHtml(emp.id)}">
-                </details>
-              </div>
+              ${SLOTS_DE_VIDEO.map((slot, i) => renderCampoVideo(emp, slot, i)).join("")}
             </div>
           </div>
         </div>
@@ -3760,9 +3775,9 @@
         const path = caminhoDoMaterial(emp, campo, arquivo);
         anotarUpload(emp.id, campo, path, arquivo, campo === "folder" ? "folder PDF" : "vídeo");
         anotarMaterial(emp, campo, path);
-        if (campo === "video") {
+        if (emVideo(campo)) {
           const caixa = input.closest(".material-emp");
-          const link = caixa?.querySelector('input[data-material-link="video"]');
+          const link = caixa?.querySelector(`input[data-material-link="${campo}"]`);
           if (link) link.value = "";
         }
         aviso(`${campo === "folder" ? "PDF" : "Vídeo"} pronto para publicar.`, "ok");
@@ -3770,13 +3785,23 @@
       });
     });
 
-    alvo.querySelectorAll('input[data-material-link="video"]').forEach((input) => {
+    alvo.querySelectorAll("button[data-material-remover]").forEach((botao) => {
+      botao.addEventListener("click", () => {
+        const emp = estado.dados.EMPREENDIMENTOS.find((e) => e.id === botao.dataset.emp);
+        if (!emp) return;
+        removerUploadCampo(emp.id, botao.dataset.materialRemover);
+        anotarMaterial(emp, botao.dataset.materialRemover, "");
+        atualizarDepois(true);
+      });
+    });
+
+    alvo.querySelectorAll("input[data-material-link]").forEach((input) => {
       input.addEventListener("input", () => {
         const emp = estado.dados.EMPREENDIMENTOS.find((e) => e.id === input.dataset.emp);
         if (!emp) return;
         const valor = input.value.trim();
-        removerUploadCampo(emp.id, "video");
-        anotarMaterial(emp, "video", valor);
+        removerUploadCampo(emp.id, input.dataset.materialLink);
+        anotarMaterial(emp, input.dataset.materialLink, valor);
         renderDashboard();
         renderCadastro();
         renderCustosMargens();
@@ -6302,14 +6327,16 @@
   }
 
   function aplicarMaterial(texto, op) {
-    if (!["folder", "video", "hero", "logo"].includes(op.campo)) throw new Error(`Campo de material inválido: ${op.campo}.`);
+    if (!["folder", "video", "video2", "video3", "hero", "logo"].includes(op.campo)) throw new Error(`Campo de material inválido: ${op.campo}.`);
     return trocarNoBloco(texto, op.empId, (bloco) => {
       const re = new RegExp(`^\\s*${op.campo}:\\s*[^\\n]*\\n`, "m");
       if (!op.valor) return bloco.replace(re, "");
       const linha = `    ${op.campo}: ${JSON.stringify(op.valor)},\n`;
       if (re.test(bloco)) return bloco.replace(re, linha);
-      const ancoraCampo = op.campo === "hero" ? "entrega" : "hero";
-      const ancora = bloco.match(new RegExp(`^\\s*${ancoraCampo}:\\s*[^\\n]*\\n`, "m"));
+      const ancoraCampo = op.campo === "hero" ? "entrega" : op.campo === "video3" ? "video2" : op.campo === "video2" ? "video" : "hero";
+      let ancora = bloco.match(new RegExp(`^\\s*${ancoraCampo}:\\s*[^\\n]*\\n`, "m"));
+      if (!ancora && op.campo === "video3") ancora = bloco.match(/^\s*video:\s*[^\n]*\n/m);
+      if (!ancora && op.campo.startsWith("video") && op.campo !== "video") ancora = bloco.match(/^\s*hero:\s*[^\n]*\n/m);
       if (!ancora) throw new Error(`Não achei onde inserir ${op.campo} em ${op.empId}.`);
       return bloco.replace(ancora[0], ancora[0] + linha);
     });
@@ -6607,6 +6634,8 @@
     ["logo", "o logo"],
     ["folder", "o folder"],
     ["video", "o vídeo"],
+    ["video2", "o segundo vídeo"],
+    ["video3", "o terceiro vídeo"],
     ["mapa", "o mapa"],
   ];
 

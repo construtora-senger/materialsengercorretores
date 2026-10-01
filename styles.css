@@ -1207,14 +1207,23 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   object-fit: contain;
   background: #111;
 }
-/* v377 — vídeo vertical no computador: player estreito e centralizado, sem faixas pretas. */
+/* v377 — vídeos centralizados (1, 2 ou 3). Vertical no computador: player na
+   proporção do vídeo, sem faixas pretas. No celular fica como sempre. */
+.video-lista {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
 @media (min-width: 721px) {
-  .video-frame.vertical {
+  .video-lista[data-n="2"] .video-frame { width: calc((100% - 20px) / 2); }
+  .video-lista[data-n="3"] .video-frame { width: calc((100% - 40px) / 3); }
+  .video-lista .video-frame.vertical {
     aspect-ratio: 9 / 16;
     height: min(78vh, 720px);
     width: auto;
-    margin: 0 auto;
   }
+  .video-lista:not([data-n="1"]) .video-frame.vertical { height: min(72vh, 620px); }
 }
 @media print {
   .video-section { display: none !important; }
