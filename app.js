@@ -312,7 +312,7 @@
     const midia = video.tipo === "embed"
       ? `<div class="video-frame"><iframe src="${escapeHtml(video.src)}" title="Vídeo ${escapeHtml(emp.nome)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`
       : video.tipo === "arquivo"
-        ? `<div class="video-frame"><video controls preload="metadata" playsinline src="${escapeHtml(video.src)}">Seu navegador não conseguiu reproduzir este vídeo.</video></div>`
+        ? `<div class="video-frame"><video controls preload="metadata" playsinline onloadedmetadata="this.parentNode.classList.toggle('vertical', this.videoHeight > this.videoWidth)" src="${escapeHtml(video.src)}">Seu navegador não conseguiu reproduzir este vídeo.</video></div>`
         : `<a class="button button-outline" href="${escapeHtml(video.src)}" target="_blank" rel="noopener">Abrir vídeo</a>`;
     return `<section class="content-section video-section" data-video-section>
       <div class="section-title-row"><h2>Vídeo do empreendimento</h2><p>Apresentação oficial</p></div>
