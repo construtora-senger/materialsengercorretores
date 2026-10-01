@@ -146,8 +146,8 @@ const EMPREENDIMENTOS = [
         garagem: "1 box duplo",
         planta: "ren-planta-3s-frente-dir",
         unidades: [
-          { apto: "501", preco: 1230000, status: "disponivel", areaUnit: "179 m² global · 117 m² privativo" },
-          { apto: "502", preco: 1230000, status: "disponivel", areaUnit: "179 m² global · 117 m² privativo" },
+          { apto: "501", preco: 1230000, status: "disponivel", areaUnit: "179 m² global · 117 m² privativo", semDestaqueArea: true },
+          { apto: "502", preco: 1230000, status: "disponivel", areaUnit: "179 m² global · 117 m² privativo", semDestaqueArea: true },
           { apto: "601", preco: 1230000, status: "disponivel" },
           { apto: "602", preco: 1230000, status: "disponivel" },
           { apto: "701", preco: 1250000, status: "disponivel" },

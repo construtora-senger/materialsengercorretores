@@ -506,6 +506,7 @@
             price: Number(unit.preco) || 0,
             status: unit.status || "disponivel",
             area: unit.areaUnit || group.area || "",
+            semDestaqueArea: !!unit.semDestaqueArea,
             garage: garagemDaUnidade(emp, group, unit),
             tags: unit.tags || [],
             notes: unit.obs || group.obs || "",
@@ -1654,7 +1655,7 @@
 
   // v103 — a unidade so tem area propria quando ela existe e e diferente da tipologia.
   function hasOwnArea(item) {
-    if (!item || !item.area) return false;
+    if (!item || !item.area || item.semDestaqueArea) return false;
     const groupArea = item.group?.area || "";
     return normalizeText(item.area) !== normalizeText(groupArea);
   }
