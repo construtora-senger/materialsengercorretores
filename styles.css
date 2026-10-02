@@ -1020,8 +1020,8 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .ps-plant img { width: 100%; max-height: 118mm; object-fit: contain; background: #fff; border: .8pt solid #e4e8ea; border-radius: 2mm; }
   .ps-plant figcaption { margin-top: .8mm; color: #55606a; font-size: 8pt; }
 
-  .ps-page { break-after: page; }
-  .ps-page:last-child { break-after: auto; }
+  .ps-page { break-after: auto; margin-bottom: 4mm; }
+  .ps-page:last-child { margin-bottom: 0; }
   .ps-row { display: flex; gap: 3mm; margin-bottom: 3mm; break-inside: avoid; }
   .ps-card { flex: 1; break-inside: avoid; display: flex; flex-direction: column; border: .8pt solid #d7dcdf; border-radius: 3mm; overflow: hidden; }
   .ps-media { display: flex; background: #eceff1; }
