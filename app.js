@@ -1603,6 +1603,36 @@
     blocos.forEach((bloco) => {
       if (bloco.juntou) bloco.units.sort((a, b) => numeroDoApto(a) - numeroDoApto(b));
     });
+    // v381 — UM QUADRO POR FINAL, EM TODO EMPREENDIMENTO. Pedido do dono: todos
+    // seguem a regra do Boulevard, onde cada final tem o seu quadro. No
+    // Renaissance o "2 suites" misturava os finais 03 e 04, e o "3 suites —
+    // frente" os finais 01 e 02. Vale na vitrine e no PDF. Só conta como final
+    // o numero de apartamento com andar (3 digitos ou mais): a "Sala 04" do
+    // terreo nao e final 04 de nada.
+    const finalDoApto = (item) => {
+      const digitos = String(item.code || "").match(/\d+/)?.[0] || "";
+      return digitos.length >= 3 ? digitos.slice(-2) : "";
+    };
+    const porFinal = [];
+    blocos.forEach((bloco) => {
+      const finais = new Map();
+      bloco.units.forEach((it) => {
+        const f = finalDoApto(it);
+        if (!finais.has(f)) finais.set(f, []);
+        finais.get(f).push(it);
+      });
+      const jaTemFinal = /\bfinal\b/i.test(bloco.group.sufixo || "");
+      if (jaTemFinal || (finais.size === 1 && finais.has(""))) {
+        porFinal.push(bloco);
+        return;
+      }
+      [...finais.keys()].sort().forEach((f) => {
+        const sufixo = f ? [bloco.group.sufixo, `final ${f}`].filter(Boolean).join(" · ") : bloco.group.sufixo;
+        porFinal.push({ ...bloco, group: { ...bloco.group, sufixo }, units: finais.get(f) });
+      });
+    });
+    blocos.length = 0;
+    blocos.push(...porFinal);
     // v321 — OS QUADROS SAEM DO MAIS BARATO PARA O MAIS CARO, pelo mesmo
     // "a partir de" que o cliente le no cabecalho de cada um. Pedido do dono:
     // "na ordem de apresentacao dentro de cada empreendimento, coloque pela

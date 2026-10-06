@@ -36,6 +36,20 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Um quadro por final, em todo empreendimento (v381)
+
+Pedido do dono (6/10/2026), com o PDF na mão: o Boulevard saía com um quadro
+por final e o Renaissance misturava os finais (03 e 04 no "2 suítes", 01 e 02
+no "3 suítes — frente"). Ele escolheu: **todos seguem a regra do Boulevard**,
+no PDF **e** na vitrine do site.
+
+`blocosDeTipologia` (no `app.js`) separa cada quadro pelos dois últimos dígitos
+do apartamento e escreve "final 0X" ao lado do nome. Só conta como final o
+número com andar (3 dígitos ou mais) — a "Sala 04" do térreo fica sem. Grupo
+que já traz "final" no `sufixo` não é mexido. **Isto substitui a junção da
+v213** para finais diferentes: tipologias iguais só se juntam se forem do mesmo
+final.
+
 ## Até 3 vídeos por empreendimento, sempre centralizados (v378)
 
 Pedido do dono (1/10/2026): o vídeo vertical aparecia como tira estreita entre
