@@ -31,7 +31,7 @@ const META = {
 
 // status de unidade: "disponivel" | "alugado" | "vendido"
 // Nao existe "reservado": a construtora nao reserva unidades.
-// tags livres por unidade: "Decorado", "Mobiliado", "Casa Suspensa", etc.
+// tags livres por unidade: "Decorado", "Mobiliado", "Casa suspensa", etc.
 
 const EMPREENDIMENTOS = [
 
@@ -74,18 +74,18 @@ const EMPREENDIMENTOS = [
     video: "assets/renaissance/video.mp4",
     logo: "assets/ren-logo.webp",
     destaque: true,
-    tagline: "Alto padrão Renaissance — 2 e 3 suítes, Casa Suspensa, pavimentos superiores e Duplex exclusivo.",
+    tagline: "Alto padrão Renaissance — 2 e 3 suítes, casa suspensa, pavimentos superiores e duplex exclusivo.",
     localizacao: "R. Venâncio Aires — Centro, Carazinho/RS.",
     diferenciais: [
-      { titulo: "Wellness Renaissance Experience", desc: "Ampla área no 4º pavimento dedicada ao lazer, à saúde e à convivência." },
+      { titulo: "Wellness Renaissance experience", desc: "Ampla área no 4º pavimento dedicada ao lazer, à saúde e à convivência." },
       { titulo: "Esporte", desc: "Quadra de areia para esportes." },
       { titulo: "Lazer aquático", desc: "Duas piscinas aquecidas, uma na área externa e outra interna." },
       { titulo: "Fitness e bem-estar", desc: "Área fitness, espaço wellness com área para pilates e sauna." },
       { titulo: "Convivência", desc: "Salão de festas, estar do fogo e playground." },
       { titulo: "Entrada", desc: "Hall de entrada luxuoso, com pé-direito duplo." },
       // naMensagem: false -> fica na ficha do empreendimento, fora da mensagem da unidade.
-      { titulo: "Espaço Care", desc: "Ambientes dedicados ao atendimento de profissionais da área da saúde e bem-estar.", naMensagem: false },
-      { titulo: "Tipologias exclusivas", desc: "Casa Suspensa, pavimentos superiores de 3 suítes e Duplex exclusivo de 4 suítes.", naMensagem: false },
+      { titulo: "Espaço care", desc: "Ambientes dedicados ao atendimento de profissionais da área da saúde e bem-estar.", naMensagem: false },
+      { titulo: "Tipologias exclusivas", desc: "Casa suspensa, pavimentos superiores de 3 suítes e duplex exclusivo de 4 suítes.", naMensagem: false },
       { titulo: "Térreo comercial", desc: "Salas comerciais no pavimento térreo.", naMensagem: false },
     ],
     galeria: [
@@ -101,11 +101,11 @@ const EMPREENDIMENTOS = [
       { src: "assets/ren-planta-3s-frente-esq.webp", legenda: "Planta humanizada — 3 suítes frente (esquerda)" },
       { src: "assets/ren-planta-3s-superior.webp", legenda: "Planta humanizada — 3 suítes superior" },
       { src: "assets/ren-planta-2suites.webp", legenda: "Planta humanizada — 2 suítes" },
-      { src: "assets/ren-planta-504.webp", legenda: "Planta humanizada — Casa Suspensa 2 suítes (504)" },
-      { src: "assets/ren-planta-401.webp", legenda: "Planta humanizada — Casa Suspensa 3 suítes (401)" },
-      { src: "assets/ren-planta-402.webp", legenda: "Planta humanizada — Casa Suspensa 3 suítes (402)" },
-      { src: "assets/ren-planta-1301.webp", legenda: "Planta humanizada — Casa Suspensa 3 suítes (1301)" },
-      { src: "assets/ren-planta-1302.webp", legenda: "Planta humanizada — Casa Suspensa 3 suítes (1302)" },
+      { src: "assets/ren-planta-504.webp", legenda: "Planta humanizada — Casa suspensa 2 suítes (504)" },
+      { src: "assets/ren-planta-401.webp", legenda: "Planta humanizada — Casa suspensa 3 suítes (401)" },
+      { src: "assets/ren-planta-402.webp", legenda: "Planta humanizada — Casa suspensa 3 suítes (402)" },
+      { src: "assets/ren-planta-1301.webp", legenda: "Planta humanizada — Casa suspensa 3 suítes (1301)" },
+      { src: "assets/ren-planta-1302.webp", legenda: "Planta humanizada — Casa suspensa 3 suítes (1302)" },
       { src: "assets/ren-planta-604.webp", legenda: "Planta humanizada — 2 suítes (final 04)" },
       // Planta baixa do terreo: e a planta das salas comerciais. Nao e
       // humanizada, entao vai marcada como tecnica — o visor separa as duas.
@@ -118,7 +118,7 @@ const EMPREENDIMENTOS = [
       // cabecalho ficava sem ela. Separadas, cada quadro anuncia a sua — e e
       // assim que o dono fala delas: frente e superior, como nos outros aptos.
       {
-        tipo: "Casa Suspensa (3 suítes)",
+        tipo: "Casa suspensa (3 suítes)",
         sufixo: "frente",
         estoque: "3 suítes — frente",
         area: "358 a 385 m² global · 258 a 280 m² privativo",
@@ -130,7 +130,7 @@ const EMPREENDIMENTOS = [
         ],
       },
       {
-        tipo: "Casa Suspensa (3 suítes)",
+        tipo: "Casa suspensa (3 suítes)",
         sufixo: "pavimentos superiores",
         estoque: "3 suítes — superiores",
         area: "306 m² global · 208 m² privativo",
@@ -225,7 +225,7 @@ const EMPREENDIMENTOS = [
         ],
       },
       {
-        tipo: "Casa Suspensa (2 suítes)",
+        tipo: "Casa suspensa (2 suítes)",
         area: "205 m² global · 146 m² privativo",
         garagem: "1 box simples",
         planta: "ren-planta-504",
@@ -399,7 +399,7 @@ const EMPREENDIMENTOS = [
         area: "99 m² global · 73 m² privativo",
         garagem: "1 box simples",
         unidades: [
-          { apto: "404", preco: 731800, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "135 m² global · 104 m² privativo" },
+          { apto: "404", preco: 731800, status: "disponivel", tags: ["Casa suspensa"], areaUnit: "135 m² global · 104 m² privativo" },
           { apto: "504", preco: 691700, status: "disponivel" },
           { apto: "604", preco: 701800, status: "disponivel" },
           { apto: "704", preco: 711800, status: "disponivel" },
@@ -412,7 +412,7 @@ const EMPREENDIMENTOS = [
         area: "99 m² global · 73 m² privativo",
         garagem: "1 box simples",
         unidades: [
-          { apto: "403", status: "vendido", tags: ["Casa Suspensa"], areaUnit: "149 m² global · 116 m² privativo" },
+          { apto: "403", status: "vendido", tags: ["Casa suspensa"], areaUnit: "149 m² global · 116 m² privativo" },
           { apto: "503", preco: 741900, status: "disponivel" },
           { apto: "603", status: "vendido" },
           { apto: "703", preco: 761900, status: "disponivel" },
@@ -425,8 +425,8 @@ const EMPREENDIMENTOS = [
         area: "118 m² global · 87 m² privativo",
         garagem: "1 box simples",
         unidades: [
-          { apto: "401", status: "vendido", tags: ["Casa Suspensa"], areaUnit: "215 m² global · 169 m² privativo" },
-          { apto: "402", preco: 852100, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "173 m² global · 133 m² privativo" },
+          { apto: "401", status: "vendido", tags: ["Casa suspensa"], areaUnit: "215 m² global · 169 m² privativo" },
+          { apto: "402", preco: 852100, status: "disponivel", tags: ["Casa suspensa"], areaUnit: "173 m² global · 133 m² privativo" },
           { apto: "501", status: "vendido" },
           { apto: "502", preco: 802000, status: "disponivel" },
           { apto: "601", status: "vendido" },
@@ -539,7 +539,7 @@ const EMPREENDIMENTOS = [
     localizacao: "Rua Cipriano da Luz — em frente à Praça do Hospital de Clínicas de Carazinho.",
     diferenciais: [
       { titulo: "Rooftop", desc: "Conforto e vista privilegiada que transformam a espera do paciente em uma experiência única." },
-      { titulo: "Sunset Lounge", desc: "Espaço privativo dos profissionais, para relaxar e recarregar entre atendimentos." },
+      { titulo: "Sunset lounge", desc: "Espaço privativo dos profissionais, para relaxar e recarregar entre atendimentos." },
       { titulo: "Elevador para maca", desc: "Dois elevadores, sendo um deles preparado para maca." },
       { titulo: "Hall imponente", desc: "Pé direito duplo, com acesso para veículos e ambulâncias na entrada." },
       { titulo: "Personalização", desc: "Possibilidade de unir salas, ajustando o tamanho à sua necessidade." },
@@ -559,7 +559,7 @@ const EMPREENDIMENTOS = [
       { src: "assets/po-r5.webp", legenda: "Escritório / consultório — projeto" },
       { src: "assets/po-r6.webp", legenda: "Sala com divisórias de vidro" },
       { src: "assets/po-rooftop.webp", legenda: "Rooftop" },
-      { src: "assets/po-lounge.webp", legenda: "Sunset Lounge" },
+      { src: "assets/po-lounge.webp", legenda: "Sunset lounge" },
       { src: "assets/po-obra2.webp", legenda: "Terraço / rooftop" },
       { src: "assets/po-vaga.webp", legenda: "Garagem coberta" },
       { src: "assets/po-aerial.webp", legenda: "Vista aérea" },
@@ -782,10 +782,10 @@ const EMPREENDIMENTOS = [
       // ver a planta dos outros tres junto. Os recortes saem da propria prancha
       // — nada foi redesenhado, so separado. A prancha inteira continua logo
       // abaixo, para a apresentacao geral do predio.
-      { src: "assets/bv-planta-tipo1.webp", legenda: "Planta — Tipo 1 · 3 suítes · final 01", secao: "unidade" },
-      { src: "assets/bv-planta-tipo2.webp", legenda: "Planta — Tipo 2 · 3 suítes · final 02", secao: "unidade" },
-      { src: "assets/bv-planta-tipo3.webp", legenda: "Planta — Tipo 3 · 2 dormitórios (1 suíte) · final 03", secao: "unidade" },
-      { src: "assets/bv-planta-tipo4.webp", legenda: "Planta — Tipo 4 · 2 suítes · final 04", secao: "unidade" },
+      { src: "assets/bv-planta-tipo1.webp", legenda: "Planta — tipo 1 · 3 suítes · final 01", secao: "unidade" },
+      { src: "assets/bv-planta-tipo2.webp", legenda: "Planta — tipo 2 · 3 suítes · final 02", secao: "unidade" },
+      { src: "assets/bv-planta-tipo3.webp", legenda: "Planta — tipo 3 · 2 dormitórios (1 suíte) · final 03", secao: "unidade" },
+      { src: "assets/bv-planta-tipo4.webp", legenda: "Planta — tipo 4 · 2 suítes · final 04", secao: "unidade" },
       { src: "assets/bv-planta.webp", legenda: "Planta — pavimento tipo (os quatro finais)", secao: "pavimento" },
       // A planta do lazer e do predio, nao do apartamento: fica em secao
       // propria para nunca ser lida como a planta da unidade enviada.
@@ -843,7 +843,7 @@ const EMPREENDIMENTOS = [
         garagem: "1 box duplo",
         planta: "bv-planta-tipo4",
         unidades: [
-          { apto: "304", preco: 872200, status: "disponivel", tags: ["Casa Suspensa"], areaUnit: "165 m² global · 121 m² privativo" },
+          { apto: "304", preco: 872200, status: "disponivel", tags: ["Casa suspensa"], areaUnit: "165 m² global · 121 m² privativo" },
           { apto: "404", preco: 852100, status: "disponivel" },
           { apto: "504", preco: 862200, status: "disponivel" },
           { apto: "604", status: "vendido" },
@@ -953,7 +953,7 @@ const EMPREENDIMENTOS = [
     categoria: "residencial",
     status: "pronto",
     statusLabel: "Pronto para morar",
-    entrega: "Pronto para morar · Financiável",
+    entrega: "Pronto para morar · financiável",
     ri: ["RI nº 11-38.407"],
     // Quantos box cada tipologia leva. O painel usa isso para conferir se as
     // vagas fecham com o que ha em estoque. O site nao le este campo.
@@ -1169,7 +1169,7 @@ const EMPREENDIMENTOS = [
     categoria: "residencial",
     status: "pronto",
     statusLabel: "Pronto para morar",
-    entrega: "Pronto para morar · Financiável",
+    entrega: "Pronto para morar · financiável",
     ri: ["RI nº 2-45.162"],
     // Quantos box cada tipologia leva. O painel usa isso para conferir se as
     // vagas fecham com o que ha em estoque. O site nao le este campo.
@@ -1347,7 +1347,7 @@ const EMPREENDIMENTOS = [
     categoria: "residencial",
     status: "pronto",
     statusLabel: "Pronto para morar",
-    entrega: "Pronto para morar · Financiável",
+    entrega: "Pronto para morar · financiável",
     ri: ["RI nº 2-34.244"],
     // Quantos box cada tipologia leva. O painel usa isso para conferir se as
     // vagas fecham com o que ha em estoque. O site nao le este campo.
@@ -1408,7 +1408,7 @@ const EMPREENDIMENTOS = [
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-69",
-        obs: "Aluguel R$ 1.400,00 · Condomínio e IPTU por conta do inquilino.",
+        obs: "Aluguel R$ 1.400,00 · condomínio e IPTU por conta do inquilino.",
         unidades: [
           { apto: "301B", preco: 471200, status: "alugado" },
           { apto: "601B", preco: 491200, status: "alugado" },
@@ -1419,7 +1419,7 @@ const EMPREENDIMENTOS = [
         area: "87 m² global · 66 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-3d",
-        obs: "Aluguel R$ 1.600,00 · Condomínio e IPTU por conta do inquilino.",
+        obs: "Aluguel R$ 1.600,00 · condomínio e IPTU por conta do inquilino.",
         unidades: [
           { apto: "501A", preco: 581500, status: "alugado" },
           { apto: "601A", preco: 591500, status: "alugado" },
@@ -1798,7 +1798,7 @@ const EMPREENDIMENTOS = [
     categoria: "terreno",
     status: "pronto",
     statusLabel: "Prontos para construir",
-    entrega: "Prontos para construir · Financiáveis MCMV I & II",
+    entrega: "Prontos para construir · financiáveis MCMV I & II",
     ri: [],
     hero: "assets/nova-vila-rica/capa.png",
     folder: "",
@@ -1831,7 +1831,7 @@ const EMPREENDIMENTOS = [
 
   {
     id: "outros",
-    nome: "Outros Imóveis",
+    nome: "Outros imóveis",
     confirmado: true,
     cidade: "Santa Maria/RS · Carazinho/RS",
     categoria: "outros",
@@ -1868,7 +1868,7 @@ const EMPREENDIMENTOS = [
         foraDaConta: true,
       },
       {
-        nome: "Terreno Loteamento Jardim América",
+        nome: "Terreno loteamento Jardim América",
         preco: 148400,
         local: "Não-Me-Toque/RS",
         descricao:
@@ -1877,7 +1877,7 @@ const EMPREENDIMENTOS = [
         status: "disponivel",
       },
       {
-        nome: "Terreno Bairro Vila Aurora",
+        nome: "Terreno bairro Vila Aurora",
         preco: 135300,
         local: "Carazinho/RS",
         descricao:

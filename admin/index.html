@@ -8,7 +8,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Painel Administrativo — Senger Corretores</title>
+  <title>Painel administrativo — Senger Corretores</title>
   <link rel="icon" href="../icons/favicon.ico" sizes="any">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1134,7 +1134,7 @@
   <!-- ============ TELA: LOGIN ============ -->
   <div class="tela ativa centro" id="tela-login">
     <div class="caixa">
-      <h1>Painel Administrativo</h1>
+      <h1>Painel administrativo</h1>
       <p class="sub">Senger Corretores — acesso restrito</p>
       <label for="campo-senha">Senha</label>
       <div class="campo-senha">
@@ -1270,7 +1270,7 @@
             </div>
           </div>
 
-          <button type="button" class="nav-item" data-modulo-alvo="estoque"><span class="nav-icone">▦</span>Estoque / Unidades</button>
+          <button type="button" class="nav-item" data-modulo-alvo="estoque"><span class="nav-icone">▦</span>Estoque / unidades</button>
           <button type="button" class="nav-item" data-modulo-alvo="clientes"><span class="nav-icone">👤</span>Clientes</button>
           <button type="button" class="nav-item" data-modulo-alvo="precos"><span class="nav-icone">R$</span>Preços e margem</button>
           <button type="button" class="nav-item" data-modulo-alvo="incc"><span class="nav-icone">%</span>Correção pelo INCC</button>
@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 373;
+  const VERSAO_PAINEL = 374;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -1594,8 +1594,26 @@
   // Duas casas, sem degrau nenhum. O custo mora sempre assim: exato.
   const centavos = (n) => Math.round(Number(n) * 100) / 100;
 
+  // v382 — dois imoveis avulsos mudaram so de maiuscula ("Terreno Bairro Vila
+  // Aurora" -> "Terreno bairro Vila Aurora"), e a chave do custo e da ficha
+  // leva o nome. Sem esta troca, o que ja estava guardado no cofre com o nome
+  // antigo ficaria sem dono na tela.
+  const CHAVES_RENOMEADAS = {
+    "outros:o:Terreno Bairro Vila Aurora": "outros:o:Terreno bairro Vila Aurora",
+    "outros:o:Terreno Loteamento Jardim América": "outros:o:Terreno loteamento Jardim América",
+  };
+  function comChavesAtuais(m) {
+    if (!Object.keys(CHAVES_RENOMEADAS).some((k) => k in m)) return m;
+    const saida = {};
+    Object.keys(m).forEach((k) => {
+      const nova = CHAVES_RENOMEADAS[k] || k;
+      if (!(nova in saida) || nova === k) saida[nova] = m[k];
+    });
+    return saida;
+  }
+
   function mapaDeNumeros(m) {
-    return m && typeof m === "object" && !Array.isArray(m) ? m : {};
+    return m && typeof m === "object" && !Array.isArray(m) ? comChavesAtuais(m) : {};
   }
 
   // O CADASTRO DE COMPRADORES (v306). Quem comprou cada unidade vendida.
@@ -1611,6 +1629,7 @@
   // valor, corretor, contrato, obs } — todos os campos opcionais.
   function mapaDeFichas(m) {
     if (!m || typeof m !== "object" || Array.isArray(m)) return {};
+    m = comChavesAtuais(m);
     const saida = {};
     Object.keys(m).forEach((k) => {
       const f = m[k];
@@ -2013,7 +2032,7 @@
   const MODULOS = {
     visao: ["Visão geral", "Resumo do estoque, movimento e pendências do cadastro."],
     materiais: ["Materiais dos empreendimentos", "Capa, galeria, plantas, folder e vídeo em uma área separada por tipo de material."],
-    estoque: ["Estoque / Unidades", "Disponibilidade, preços, garagem e status das unidades do empreendimento escolhido."],
+    estoque: ["Estoque / unidades", "Disponibilidade, preços, garagem e status das unidades do empreendimento escolhido."],
     clientes: ["Clientes", "Quem comprou ou alugou cada unidade. Guardado só na sua conta, nunca no site."],
     precos: ["Preços e margem", "Custo, margem e preço item a item."],
     incc: ["Correção pelo INCC", "Atualização mensal: o índice do mês corrige todos os custos de uma vez. Venda e margem ficam em Preços e margem."],
@@ -5833,7 +5852,7 @@
       mostrarResultadoCompradores(
         `${quantos} ${quantos === 1 ? "comprador entrou" : "compradores entraram"} no cofre privado`
         + (semCorrespondencia ? ` · ${semCorrespondencia} do arquivo não existem no cadastro de hoje` : "")
-        + ". Aparecem na lista abaixo e embaixo do nome da unidade, em Estoque / Unidades.", "ok");
+        + ". Aparecem na lista abaixo e embaixo do nome da unidade, em Estoque / unidades.", "ok");
       aviso(`${quantos} compradores guardados. Guardando também na sua conta…`, "ok");
       await enviarAoCofre();
     } catch (err) {
