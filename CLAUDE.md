@@ -36,6 +36,23 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Maiúsculas: só a primeira letra do título (v382)
+
+Escolha do dono (6/10/2026), entre quatro modelos em imagem: **modelo B**.
+Todo título (tipologia, diferencial, legenda, nome de imóvel avulso, menu do
+painel) leva **só a primeira letra maiúscula**; o que vem depois do "·" ou do
+"—" segue em **minúscula** ("Casa suspensa (3 suítes) · frente · final 01",
+"Pronto para morar · financiável"). Nomes próprios e siglas ficam como são
+(Renaissance, Vila Aurora, Centro, Rua Cipriano da Luz, IPTU, LED, MCMV). As
+etiquetas pequenas que o CSS põe em letra de forma ("A PARTIR DE", cabeçalho das
+tabelas) **continuam assim**. "Sunset lounge", "Espaço care" e "Wellness
+Renaissance experience" seguem a regra, como estavam na imagem escolhida.
+
+Dois avulsos mudaram de nome ("Terreno bairro Vila Aurora", "Terreno loteamento
+Jardim América"): o `?u=` e o `?sel=` comparam sem diferença de maiúscula, para
+link já enviado seguir abrindo, e o painel traduz a chave antiga do cofre
+(`CHAVES_RENOMEADAS`), para custo e ficha não ficarem sem dono.
+
 ## Um quadro por final, em todo empreendimento (v381)
 
 Pedido do dono (6/10/2026), com o PDF na mão: o Boulevard saía com um quadro

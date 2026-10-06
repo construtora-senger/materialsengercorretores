@@ -207,7 +207,9 @@
       const code = par.slice(corte + 1);
       if (!code) return;
       if (!porEmp.has(empId)) porEmp.set(empId, new Set());
-      porEmp.get(empId).add(code);
+      // v382 — sem diferenca de maiuscula: o nome de um imovel avulso pode mudar
+      // de caixa ("Terreno Bairro" -> "Terreno bairro") e o link ja enviado segue valendo.
+      porEmp.get(empId).add(code.toLowerCase());
     });
     return porEmp.size ? porEmp : null;
   })();
@@ -908,7 +910,7 @@
       // valor de cada uma, no lugar dos numeros do predio inteiro ("43 opcoes ativas / a partir
       // de...") — senao parece que a escolha do corretor se perdeu no caminho.
       const selCodes = CLIENT_SEL ? CLIENT_SEL.get(emp.id) : null;
-      const selUnits = selCodes ? itemsFor(emp).filter((it) => selCodes.has(String(it.code))) : null;
+      const selUnits = selCodes ? itemsFor(emp).filter((it) => selCodes.has(String(it.code).toLowerCase())) : null;
       const metricas = selUnits && selUnits.length ? `
             <div class="card-units-sel">
               <span>${selUnits.length === 1 ? "Unidade escolhida para você" : "Unidades escolhidas para você"}</span>
@@ -1201,12 +1203,12 @@
     const focusItems = (() => {
       if (!CLIENT_MODE) return null;
       if (unitParam) {
-        const unico = itemsFor(emp).find((it) => String(it.code) === unitParam);
+        const unico = itemsFor(emp).find((it) => String(it.code).toLowerCase() === unitParam.toLowerCase());
         return unico ? [unico] : null;
       }
       const codes = CLIENT_SEL ? CLIENT_SEL.get(emp.id) : null;
       if (!codes) return null;
-      const escolhidos = itemsFor(emp).filter((it) => codes.has(String(it.code)));
+      const escolhidos = itemsFor(emp).filter((it) => codes.has(String(it.code).toLowerCase()));
       return escolhidos.length ? escolhidos : null;
     })();
     const focusItem = focusItems && focusItems.length === 1 ? focusItems[0] : null;
@@ -1513,7 +1515,7 @@
     // para o cliente ver o empreendimento e os diferenciais antes do preco.
     const unitCode = new URLSearchParams(location.search).get("u");
     if (unitCode) {
-      detail.querySelectorAll(`[data-unit-code="${CSS.escape(unitCode)}"]`).forEach((el) => {
+      [...detail.querySelectorAll("[data-unit-code]")].filter((el) => el.dataset.unitCode.toLowerCase() === unitCode.toLowerCase()).forEach((el) => {
         el.classList.add("unit-highlight");
         abrirGaveta(el);
       });
@@ -1701,7 +1703,7 @@
   // v103 — "Casa Suspensa" nao e uma etiqueta comum: e a unidade da mesma tipologia
   // com area aberta maior (antes chamada de terraco). Fica no grupo dos iguais, so
   // apresentada de forma diferente.
-  const CASA_SUSPENSA = "Casa Suspensa";
+  const CASA_SUSPENSA = "Casa suspensa";
   const isCasaSuspensa = (tag) => normalizeText(tag) === normalizeText(CASA_SUSPENSA);
   const casaSuspensaTag = (item) => (item.tags || []).some(isCasaSuspensa);
   const otherTags = (item) => (item.tags || []).filter((tag) => !isCasaSuspensa(tag));
@@ -2171,7 +2173,7 @@
 
   function itemBullets(item) {
     const bullets = [];
-    // "Casa Suspensa" e nome de produto: mantem as maiusculas na mensagem.
+    // v382 — "Casa suspensa" segue a regra de todo titulo: so a primeira maiuscula.
     const etiquetas = (item.tags || []).map((t) => (isCasaSuspensa(t) ? CASA_SUSPENSA : t.toLowerCase()));
     // A linha do prazo de entrega ja diz se e novo, pronto ou pre-lancamento:
     // aqui so entra o status que muda a oferta (alugado).

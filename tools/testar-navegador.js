@@ -449,7 +449,7 @@ async function teste(nome, fn) {
     const secao = uni.locator(".plant-section");
     if (!(await secao.count())) return "nao ha secao de plantas";
     const texto = await secao.innerText();
-    if (!/Tipo 1/.test(texto)) return `a planta do final 01 nao apareceu: ${texto.slice(0, 120)}`;
+    if (!/tipo 1/i.test(texto)) return `a planta do final 01 nao apareceu: ${texto.slice(0, 120)}`;
     if (/Tipo 2|Tipo 3|Tipo 4/.test(texto)) return "apareceu a planta de outro final";
     if (/área de lazer/i.test(texto)) return "a planta do lazer apareceu como planta da unidade";
     if (/pavimento/i.test(texto)) return "a prancha do pavimento apareceu no link da unidade";
