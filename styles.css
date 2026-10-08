@@ -1370,3 +1370,13 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .header-chip { padding: 4px 7px; }
   .header-chip strong { font-size: 10.5px; }
 }
+
+/* v406 — o "WhatsApp sem preços" saiu, a pedido do dono: ficam tres botoes.
+   No computador, tres colunas iguais; no celular, o "WhatsApp com preços"
+   ocupa a linha de cima e "Enviar link" e "Gerar PDF" dividem a de baixo. */
+@media (min-width: 721px) {
+  .detail-faixa .detail-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .detail-faixa .detail-actions #share-emp-prices { grid-column: 1 / -1; }
+}

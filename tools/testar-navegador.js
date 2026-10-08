@@ -118,10 +118,15 @@ async function teste(nome, fn) {
 
   await teste("a ficha do empreendimento traz as ferramentas da equipe", async () => {
     const faltando = [];
-    for (const id of ["share-emp-prices", "share-emp-no-prices", "share-emp-link", "print-detail", "detail-back"]) {
+    for (const id of ["share-emp-prices", "share-emp-link", "print-detail", "detail-back"]) {
       if (!(await pg.locator(`#${id}`).count())) faltando.push(id);
     }
     return faltando.length ? `sem ${faltando.join(", ")}` : "";
+  });
+
+  // v406 — o "WhatsApp sem preços" saiu a pedido do dono.
+  await teste("a ficha do empreendimento não tem mais o WhatsApp sem preços", async () => {
+    return (await pg.locator("#share-emp-no-prices").count()) === 0 ? "" : "o botao voltou";
   });
 
   await teste("a tipologia abre e fecha como gaveta", async () => {
