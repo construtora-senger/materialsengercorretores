@@ -42,9 +42,16 @@ Pedido do dono (8/10/2026), com o print do Renaissance no PC: *"esses botões
 dava pra padronizar"*. O "WhatsApp com preços" era cheio, na cor da marca e com
 brilho; os outros três, escuros. Mostrei quatro modelos (A escuros, B cor da
 marca, C escuros com ícone, D brancos) e ele escolheu o **C**: os quatro
-**iguais**, escuros com contorno, **do mesmo tamanho** (205 px no computador,
-dois por linha no celular), cantos menos arredondados e **um ícone em cada um**
-(WhatsApp, corrente para o link, folha para o PDF). Nenhum se destaca.
+**iguais**, escuros com contorno, **do mesmo tamanho**, cantos menos
+arredondados e **um ícone em cada um** (WhatsApp, corrente para o link, folha
+para o PDF). Nenhum se destaca.
+
+**Disposição A (v402).** No PC do dono a largura fixa de 205 px não segurou:
+os dois de WhatsApp saíam mais largos e a fileira acabava no meio dos
+quadradinhos — *"no pc não tá legal ainda… só as disposições dos botões e
+ícones, o resto tá bom"*. Entre quatro disposições ele escolheu a **A**: no
+computador, **os quatro numa fileira só, em quatro colunas iguais**, do começo
+do texto até o fim dos quadradinhos. No celular seguem dois por linha.
 Bloco "v401" no fim do `styles.css`; os ícones moram em `ICONES_DA_EQUIPE`,
 no `app.js`. O cliente continua sem ver esses botões.
 
