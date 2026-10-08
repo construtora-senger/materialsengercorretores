@@ -379,7 +379,6 @@ img { max-width: 100%; display: block; }
 .badge.badge-stage { color: #fff; background: rgba(24,33,41,.82); }
 .badge.badge-stage.pronto { background: rgba(20,133,101,.9); }
 .badge.badge-stage.obra { background: rgba(168,112,31,.92); }
-.card-logo { position: absolute; z-index: 2; left: 16px; bottom: 13px; max-width: 128px; max-height: 46px; object-fit: contain; filter: drop-shadow(0 4px 12px rgba(0,0,0,.28)); }
 .card-body { padding: 20px 20px 18px; }
 .card-kicker { color: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .card-title { margin: 7px 0 7px; font-family: var(--font-display); font-size: 23px; line-height: 1.13; letter-spacing: -.025em; font-weight: 600; }
@@ -448,7 +447,6 @@ img { max-width: 100%; display: block; }
 .detail-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11,16,20,.92), rgba(11,16,20,.14) 72%), linear-gradient(90deg, rgba(11,16,20,.66), transparent 68%); }
 .detail-hero-content { position: relative; z-index: 1; padding: 28px 0 36px; }
 .detail-back { margin-bottom: 22px; color: #fff; border-color: rgba(255,255,255,.3); background: rgba(20,28,34,.5); }
-.detail-brand-logo { max-width: 180px; max-height: 85px; object-fit: contain; filter: drop-shadow(0 4px 16px rgba(0,0,0,.35)); }
 .detail-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 27px; }
 .detail-actions .button-outline { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.3); backdrop-filter: blur(8px); }
 .detail-actions .button-outline:hover { background: rgba(255,255,255,.18); }
@@ -722,7 +720,6 @@ img { max-width: 100%; display: block; }
   /* v102 — topo compacto tambem no celular (modelo B). */
   .detail-hero { min-height: 330px; }
   .detail-hero-content { padding: 18px 0 24px; }
-  .detail-brand-logo { margin-top: 24px; max-height: 64px; }
   .detail-back { margin-bottom: 14px; }
   .detail-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .detail-actions .button { min-width: 0; padding-inline: 11px; font-size: 11.5px; }
@@ -1230,7 +1227,6 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 .detail-faixa { padding: 30px 0; background: var(--dark); color: #fff; }
 .detail-faixa-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
 .detail-faixa-grid.sem-fatos { grid-template-columns: 1fr; }
-.detail-faixa .detail-brand-logo { display: block; max-height: 56px; margin: 0 0 14px; }
 .detail-faixa-eyebrow { margin: 0; color: #8fd3dc; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .detail-faixa h1 { margin: 6px 0 0; font-family: var(--font-display); font-size: clamp(32px, 4vw, 46px); font-weight: 600; line-height: 1.05; letter-spacing: -.03em; }
 .detail-faixa-texto > p:not(.detail-faixa-eyebrow):not(.detail-faixa-selecao) { margin: 8px 0 0; color: rgba(255,255,255,.75); font-size: 16px; line-height: 1.5; }

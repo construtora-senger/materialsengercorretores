@@ -929,7 +929,6 @@
         <article class="portfolio-card${filtrando && !napista ? " is-unpicked" : ""}">
           <div class="card-media">
             <img src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}" loading="lazy">
-            ${emp.logo ? `<img class="card-logo" src="${escapeHtml(assetUrl(emp.logo))}" alt="">` : ""}
             <button class="card-pick${napista ? " picked" : ""}" type="button" data-pick-emp="${emp.id}" aria-pressed="${napista}">${napista ? "✓ Na lista" : "+ Lista"}</button>
           </div>
           <div class="card-body">
@@ -1468,7 +1467,6 @@
       <section class="detail-faixa">
         <div class="shell detail-faixa-grid${fatos ? "" : " sem-fatos"}">
           <div class="detail-faixa-texto">
-            ${emp.logo ? `<img class="detail-brand-logo" src="${escapeHtml(assetUrl(emp.logo))}" alt="Logo ${escapeHtml(emp.nome)}">` : ""}
             <p class="detail-faixa-eyebrow">${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria || "")}</p>
             <h1>${escapeHtml(emp.nome)}${focusItem ? ` — ${escapeHtml(itemLabel(focusItem))}` : ""}</h1>
             <p>${escapeHtml(emp.tagline || emp.entrega || "Consulte informações e disponibilidade.")}</p>

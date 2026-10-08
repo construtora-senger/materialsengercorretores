@@ -36,6 +36,18 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Empreendimento não tem logo (v399)
+
+Pedido do dono (8/10/2026), com o print da vitrine no computador: a logo do
+Renaissance aparecia por cima da foto do cartão, e o painel tinha onde anexar
+logo — *"isso não precisa, retire tudo que diz respeito a logo"*. Saíram: o
+campo `logo` do `data.js` (e os arquivos `ren-logo.webp` e `nvr3-logo.webp`),
+a logo do cartão e da faixa escura do empreendimento no `app.js`/`styles.css`,
+e no painel o campo "Logo do empreendimento", o padrão de arquivo e o "e logo"
+do menu (agora **Capa**). A guarda de material e o `tools/validar.js` não
+conferem mais logo. **Não recrie.** A logo da Senger (topo, rodapé, PDF) não
+é logo de empreendimento e ficou.
+
 ## Área global dos box livres do Personalité e do Quality (v393)
 
 O dono mandou as tabelas de vendas (8/10/2026): *"já mandei plantas de box e
@@ -555,7 +567,7 @@ de marca, sem conteúdo), não o folder em PDF.
 por conteúdo genérico.** Falta de folder/vídeo é *material complementar*, não
 erro de cadastro (ver a hierarquia de pendências abaixo).
 
-**Guarda contra regressão (v301).** Uma publicação que apague `hero`, `logo`,
+**Guarda contra regressão (v301).** Uma publicação que apague `hero`,
 `folder`, `video`, `mapa`, fotos da galeria, diferenciais, vínculos de planta ou
 o RI que já estavam no ar **pede confirmação nominal** antes de gravar
 (`perdasDeMaterial`, em `admin/index.html`). O `tools/validar.js` faz a mesma
@@ -851,7 +863,7 @@ atual** — quando divergir da seção "REGRAS ATUAIS", a de cima vale.
 Cada empreendimento usa uma destas formas de estoque, lidas pelo `app.js`:
 `grupos` (unidades por tipologia), `terrenos` ou `outros`.
 
-**Os materiais comerciais também ficam no `data.js`.** Cada empreendimento real deve ter `folder` (PDF) e `video` (YouTube, Vimeo ou arquivo MP4/WebM/Ogg). Capa (`hero`), logo (`logo`), galeria (`galeria`) e vínculos de planta (`planta`) também são administráveis pelo painel. O site lê esses campos; `boxes` continua sendo exclusivamente interno do painel.
+**Os materiais comerciais também ficam no `data.js`.** Cada empreendimento real deve ter `folder` (PDF) e `video` (YouTube, Vimeo ou arquivo MP4/WebM/Ogg). Capa (`hero`), galeria (`galeria`) e vínculos de planta (`planta`) também são administráveis pelo painel. O site lê esses campos; `boxes` continua sendo exclusivamente interno do painel.
 
 Status válidos: `disponivel`, `vendido`, `alugado`. **Não existe "reservado"** —
 a construtora não reserva unidades. `alugado` **continua na oferta**: é o
@@ -1610,13 +1622,12 @@ O padrão comercial é o mesmo para todos os empreendimentos reais (o agrupador 
 - `folder` — exatamente um folder em PDF por empreendimento;
 - `video` — exatamente um vídeo oficial por empreendimento.
 
-O painel possui uma **Central de Materiais** que administra também capa, logo, fotos de galeria e plantas. Os uploads novos vão para pastas organizadas por empreendimento (`assets/<id>/...`), sem migrar ou quebrar os caminhos antigos.
+O painel possui uma **Central de Materiais** que administra também capa, fotos de galeria e plantas. Os uploads novos vão para pastas organizadas por empreendimento (`assets/<id>/...`), sem migrar ou quebrar os caminhos antigos.
 
 Padrões informados e validados no painel:
 - capa: WEBP/JPG/PNG, 1600×900 px, até 5 MB;
 - galeria: WEBP/JPG/PNG, 1600×900 px, até 5 MB por foto;
 - planta: WEBP/JPG/PNG, 2000×2000 px, até 6 MB;
-- logo: PNG/WEBP, 1600×600 px, até 3 MB;
 - folder: PDF, até 25 MB;
 - vídeo: MP4/WebM/Ogg, recomendado 1920×1080, até 80 MB, ou YouTube/Vimeo.
 
