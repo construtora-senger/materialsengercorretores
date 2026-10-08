@@ -673,6 +673,18 @@
     setText("header-version", APP_VERSION);
     setText("header-month", META.mesTabela || "—");
     setText("header-incc", META.incc ? `${META.incc.valor} (${META.incc.variacao})` : "—");
+    // v403 — a mesma tabela e o mesmo INCC, na faixa escura do celular. O
+    // cliente nao ve a tabela nem o INCC, entao ali a linha nem existe.
+    const linhaTabela = document.getElementById("vitrine-tabela");
+    if (CLIENT_MODE) linhaTabela?.remove();
+    else {
+      setText("vitrine-mes", META.mesTabela || "—");
+      setText("vitrine-incc", META.incc ? `${META.incc.valor} (${META.incc.variacao})` : "—");
+    }
+    // v403 — no celular o texto da busca e mais curto, para caber inteiro.
+    if (window.matchMedia("(max-width: 720px)").matches) {
+      document.getElementById("search-input").placeholder = "Buscar por nome, unidade ou cidade";
+    }
 
     // v107 — o tamanho do estoque NAO aparece em lugar nenhum deste site. v400 —
     // o banner com "10 empreendimentos · 4 categorias" saiu (modelo D), e a

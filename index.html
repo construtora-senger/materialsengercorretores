@@ -20,12 +20,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="icons/favicon.ico?v=402" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=402">
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png?v=402">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=402">
+  <link rel="icon" href="icons/favicon.ico?v=403" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=403">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png?v=403">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=403">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css?v=402">
+  <link rel="stylesheet" href="styles.css?v=403">
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -55,6 +55,9 @@
             <div class="vitrine-titulo">
               <h1>Empreendimentos</h1>
               <p id="results-count">—</p>
+              <!-- v403 — no celular a tabela e o INCC moram aqui, dentro da faixa
+                   escura (modelo C). O cliente nao ve: o app.js tira a linha. -->
+              <p class="vitrine-tabela" id="vitrine-tabela"><span>Tabela</span> <strong id="vitrine-mes">—</strong><i aria-hidden="true">·</i><span>INCC</span> <strong id="vitrine-incc">—</strong></p>
             </div>
             <div class="results-actions">
               <!-- O cliente pergunta em apartamento; a vitrine responde em predio.
@@ -280,7 +283,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="data.js?v=402"></script>
-  <script src="app.js?v=402"></script>
+  <script src="data.js?v=403"></script>
+  <script src="app.js?v=403"></script>
 </body>
 </html>
