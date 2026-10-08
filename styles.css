@@ -1317,8 +1317,13 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 }
 .detail-faixa .detail-actions .button:hover { background: rgba(255,255,255,.18); }
 .detail-faixa .detail-actions .button svg { width: 17px; height: 17px; flex: none; fill: none; stroke: #9fdbe3; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* v402 — disposicao A, escolhida pelo dono: no computador os quatro numa
+   fileira so, do mesmo tamanho, indo do comeco do texto ate o fim dos
+   quadradinhos. Com largura fixa os dois de WhatsApp saiam mais largos na
+   tela dele e a fileira acabava no meio dos quadradinhos. */
 @media (min-width: 721px) {
-  .detail-faixa .detail-actions .button { flex: 0 0 205px; }
+  .detail-faixa .detail-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .detail-faixa .detail-actions .button { min-width: 0; }
 }
 @media (max-width: 720px) {
   .detail-faixa .detail-actions { display: grid; grid-template-columns: 1fr 1fr; }
