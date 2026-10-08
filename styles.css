@@ -1313,3 +1313,20 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .sobre-lista p { font-size: 13.5px; line-height: 1.45; }
   .detail-legal { margin-top: 30px; font-size: 11px; }
 }
+
+/* v387 — no computador o topo ficou grande demais: a foto e a faixa escura
+   ocupavam a tela inteira e "Unidades e valores" so aparecia rolando. Pedido
+   do dono, com o print do Evolutti: foto mais baixa, faixa mais justa e menos
+   espaco ate as unidades. No celular nada muda. */
+@media (min-width: 721px) {
+  .detail-hero { height: 280px; }
+  .detail-faixa { padding: 20px 0; }
+  .detail-faixa h1 { font-size: 36px; }
+  .detail-faixa-texto > p:not(.detail-faixa-eyebrow):not(.detail-faixa-selecao) { margin-top: 4px; font-size: 15px; }
+  .detail-faixa-links { margin-top: 10px; }
+  .detail-fato { padding: 12px 10px; }
+  .detail-fato svg { margin-bottom: 5px; }
+  .detail-faixa .detail-actions { margin-top: 16px; }
+  .detail-content { padding-top: 34px; }
+  .detail-content > .content-section:first-child { margin-top: 0; }
+}

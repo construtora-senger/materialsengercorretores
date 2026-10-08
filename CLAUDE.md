@@ -36,6 +36,29 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Box e unidade vendida não guardam custo (v387)
+
+Pedido do dono (8/10/2026), na revisão dos custos: *"por que guardados? por que
+cofre? não mantenha coisa errada à toa"*. O cofre tinha **97 custos de box**
+(65 do Renaissance, 26 do Boulevard, 5 do Personalité, 1 do Prime) — sobra de
+quando o box era venda separada, que acabou na v246 — e o custo da **sala 705
+do Premium Office**, já vendida. Foram apagados do cofre.
+
+Para não voltarem de um aparelho com a cópia velha, o painel apaga sozinho
+(`limparCustosSemUso`) todo custo, margem e móveis de **box** e de **unidade
+vendida** (status publicado no `data.js`): ao abrir, depois de juntar com o
+cofre e antes de cada gravação. Na linha da unidade vendida, em Preços e
+margem, o custo virou texto (como no box) e o "+ móveis" sumiu. **Se uma venda
+for desfeita, o custo tem de ser lançado de novo.**
+
+## O topo da página do empreendimento é mais baixo no computador (v387)
+
+Pedido do dono, com o print do Evolutti no PC: *"não tá meio grande esse
+cabeçalho?"*. Foto de 420 px para 280 px, faixa escura mais justa, nome um
+pouco menor e menos espaço até "Unidades e valores" — as primeiras tipologias
+já aparecem sem rolar. Bloco "v387" no fim do `styles.css`, só acima de 720 px;
+o celular não mudou.
+
 ## A página do empreendimento no modelo E (v385)
 
 Pedido do dono (8/10/2026), com o print do Personalité no celular: *"será que
@@ -46,7 +69,7 @@ versão de computador e mandou aplicar em todos os empreendimentos.
 
 **Ordem da página (link do empreendimento e da seleção, corretor e cliente):**
 
-1. **foto sozinha** no topo (230 px no celular, 420 no computador), só com o
+1. **foto sozinha** no topo (230 px no celular, 280 no computador desde a v387), só com o
    "← Voltar" quando há para onde voltar;
 2. **faixa escura** (`.detail-faixa`): categoria, nome, frase do prédio, os
    links "Ver localização →", vídeo e folder, e **três quadradinhos** — etapa

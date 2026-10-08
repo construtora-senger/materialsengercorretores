@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 374;
+  const VERSAO_PAINEL = 375;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2509,6 +2509,38 @@
     return true;
   }
 
+  // v387 — custo que nao serve para nada sai da conta. Pedido do dono
+  // (8/10/2026): "nao mantenha coisa errada a toa". Box nao tem custo proprio
+  // desde a v246 (o valor dele esta no custo do apartamento) e unidade vendida
+  // nao tem mais o que precificar. O que sobrar deles no aparelho ou no cofre e
+  // apagado na abertura, depois de juntar com o cofre e antes de gravar — sem
+  // isso, um aparelho com a copia velha devolveria o valor ao cofre.
+  function chaveSemCusto(chave, vendidas) {
+    return String(chave).split(":")[1] === "b" || vendidas.has(chave);
+  }
+
+  function limparCustosSemUso() {
+    if (!estado.dados) return false;
+    const vendidas = new Set();
+    estado.dados.EMPREENDIMENTOS.forEach((emp) => {
+      itensDoEmp(emp).forEach((item) => {
+        if ((item.status || "disponivel") === "vendido") vendidas.add(chaveDoItem(emp.id, item));
+      });
+    });
+    let tirou = false;
+    const limpar = (mapa) => {
+      const saida = {};
+      Object.keys(mapa || {}).forEach((k) => { if (chaveSemCusto(k, vendidas)) tirou = true; else saida[k] = mapa[k]; });
+      return saida;
+    };
+    custosInternos = limpar(custosInternos);
+    margensDesejadas = limpar(margensDesejadas);
+    moveisInternos = limpar(moveisInternos);
+    // O "de antes" do Descartar tambem: senao ele devolveria o custo apagado.
+    financeiroSalvo = { custos: limpar(financeiroSalvo.custos), margensDesejadas: limpar(financeiroSalvo.margensDesejadas), moveis: limpar(financeiroSalvo.moveis) };
+    return tirou;
+  }
+
   async function enviarAoCofre() {
     if (!estado.token) { definirCofre("sem-permissao"); return; }
     definirCofre("enviando");
@@ -2518,6 +2550,7 @@
       let remoto = null;
       try { remoto = await cofreLer(); } catch (e) { remoto = null; }
       acatarLimpezaDaConta(remoto?.pacote);
+      if (limparCustosSemUso() && !financeiroSujo) gravarFinanceiroLocal();
       // Os compradores vao JUNTO em toda gravacao: o cofre e um arquivo so, e
       // mandar o pacote sem eles apagaria o cadastro inteiro la de dentro.
       await cofreEnviar({ versao: 2, salvoEm: financeiroSalvoEm, apagadoEm: financeiroApagadoEm, apagadoPorEmp, custos: custosInternos, margensDesejadas, moveis: moveisInternos, compradores: compradoresInternos });
@@ -2579,6 +2612,7 @@
       ? { ...compradoresInternos, ...remotoCompradores }
       : { ...remotoCompradores, ...compradoresInternos };
     renderClientes();
+    limparCustosSemUso();
     const mudou = JSON.stringify([custosInternos, margensDesejadas, moveisInternos]) !== antes;
     if (mudou) {
       financeiroSalvoEm = new Date().toISOString();
@@ -2666,6 +2700,9 @@
     const m = indexHtml.text.match(/data\.js\?v=(\d+)/);
     estado.versao = m ? Number(m[1]) : 0;
     estado.ops = [];
+    if (limparCustosSemUso()) {
+      if (financeiroSujo) guardarRascunhoFinanceiro(); else gravarFinanceiroLocal();
+    }
     renderTudo();
     $("carregando").style.display = "none";
     $("conteudo").style.display = "block";
@@ -5260,12 +5297,14 @@
                 <span class="nome">${escapeHtml(item.rotulo)}</span>${marcaBox}
                 <span class="preco-sub"><span class="st-${situacao}"><span class="bolinha"></span>${escapeHtml(STATUS_LABEL[situacao] || situacao)}</span>${detalhe ? " · " + escapeHtml(detalhe) : ""}</span>
                 ${linhaDoComprador(reg.emp.id, item)}
-                ${semValor || item.tipo === "terreno" ? "" : `<label class="preco-moveis"><span>+ móveis</span><input class="moveis-input" inputmode="decimal" data-moveis-chave="${escapeHtml(chave)}" value="${moveis ? escapeHtml(dinheiroDaLinha(moveis)) : ""}" placeholder="0,00" aria-label="Valor dos móveis de ${escapeHtml(item.rotulo)}"></label>`}
+                ${semValor || vendido || item.tipo === "terreno" ? "" : `<label class="preco-moveis"><span>+ móveis</span><input class="moveis-input" inputmode="decimal" data-moveis-chave="${escapeHtml(chave)}" value="${moveis ? escapeHtml(dinheiroDaLinha(moveis)) : ""}" placeholder="0,00" aria-label="Valor dos móveis de ${escapeHtml(item.rotulo)}"></label>`}
               </div>
             </div>
             <div class="preco-campo">
               <span class="preco-rotulo">Custo</span>
-              ${semValor
+              ${semValor || vendido
+                // v387 — unidade vendida tambem nao: nao ha mais o que
+                // precificar, e o custo dela e apagado da conta.
                 // Box que ja esta dentro do preco do apartamento nao tem custo
                 // proprio: o valor dele foi somado no custo da unidade, entao
                 // pedir custo aqui era convidar a contar a garagem duas vezes
