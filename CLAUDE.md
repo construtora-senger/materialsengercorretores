@@ -55,6 +55,22 @@ do texto até o fim dos quadradinhos. No celular seguem dois por linha.
 Bloco "v401" no fim do `styles.css`; os ícones moram em `ICONES_DA_EQUIPE`,
 no `app.js`. O cliente continua sem ver esses botões.
 
+## Sem o alternador Prédios/Unidades (v405)
+
+Pedido do dono (8/10/2026), com o print da v404 no celular: *"por que
+unidades ali? tem que entrar no empreendimento pra ver as unidades"* — e,
+depois da explicação do que o botão fazia, *"não tem sentido isso"*. O
+alternador **saiu da vitrine, no celular e no computador**. A vitrine é
+**sempre por prédio**, e as unidades se veem entrando no empreendimento.
+
+- `state.view` nasce sempre `"predios"`: quem tinha deixado "Unidades" guardado
+  no aparelho (`senger-view`) não fica preso numa lista sem botão de volta;
+- no celular, Gerar PDF e Enviar lista dividem a fileira meio a meio;
+- o código da lista de unidades (`renderUnitResults`) ficou no `app.js`, só
+  sem caminho até ele. **Não recrie o botão** sem o dono pedir;
+- o teste do envio da seleção selecionava pela lista de unidades; agora entra
+  em dois empreendimentos e seleciona lá dentro, como o corretor faz.
+
 ## O topo da vitrine no celular, no modelo B (v404)
 
 Pedido do dono (8/10/2026), com o print da página inicial no Android: *"tu não
@@ -82,7 +98,8 @@ letra, confirme qual desenho é antes de publicar.
   redondos que quebram linha — nenhum sai da tela;
 - com algum filtro ligado o botão mostra **quantos** (bolinha com o número),
   porque fechado ninguém vê por que a lista encolheu;
-- Prédios/Unidades, Gerar PDF e Enviar lista numa fileira só.
+- Prédios/Unidades, Gerar PDF e Enviar lista numa fileira só (o alternador
+  saiu na v405; ficam Gerar PDF e Enviar lista).
 
 **No computador nada mudou** — o botão "Filtros" nem aparece. Bloco "v404" no
 fim do `styles.css`.
@@ -1793,6 +1810,9 @@ rua. Duas exceções, de propósito:
   **figurinha**: a foto do empreendimento chegaria como sticker.
 
 ## As duas visões do portfólio
+
+> **REGRA ANTIGA — substituída por "Sem o alternador Prédios/Unidades
+> (v405)":** o alternador saiu a pedido do dono; a vitrine é sempre por prédio.
 
 O cliente pergunta em apartamento; a vitrine responde em prédio. Por isso o
 corretor tem um alternador **Prédios / Unidades** na barra de resultados:
