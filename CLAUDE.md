@@ -55,6 +55,29 @@ do texto até o fim dos quadradinhos. No celular seguem dois por linha.
 Bloco "v401" no fim do `styles.css`; os ícones moram em `ICONES_DA_EQUIPE`,
 no `app.js`. O cliente continua sem ver esses botões.
 
+## O topo da vitrine no celular, no modelo C (v403)
+
+Pedido do dono (8/10/2026), com o print da página inicial no Android: *"tu não
+tá vendo como tá feio, desproporcional no celular?"*. Ele confirmou os cinco
+problemas — tabela e INCC em dois selos, um embaixo do outro; o texto da busca
+cortado ("…cida"); os filtros saindo da tela pela direita; o "Enviar lista"
+caindo sozinho numa linha; e a faixa escura alta demais. Mostrei quatro
+modelos (A tudo à mostra, B filtros num botão, C tabela na faixa escura, D
+botões em blocos) e ele escolheu o **C**.
+
+**Como ficou, só no celular (até 720 px):**
+- a parte branca do topo fica só com o logo, a versão e o "Meu contato";
+- **a tabela e o INCC descem para dentro da faixa escura**, numa linha embaixo
+  da contagem (`#vitrine-tabela`). O cliente não vê: no modo cliente o
+  `app.js` tira a linha do HTML, como já acontecia com os selos do topo;
+- o texto da busca vira **"Buscar por nome, unidade ou cidade"**, que cabe
+  inteiro (no computador continua o de antes);
+- os filtros são botões redondos que **quebram linha** — nenhum sai da tela,
+  nada desliza de lado. Abaixo de 360 px, dois por linha;
+- Prédios/Unidades, Gerar PDF e Enviar lista numa fileira só.
+
+**No computador nada mudou.** Bloco "v403" no fim do `styles.css`.
+
 ## A vitrine no modelo D (v400)
 
 Pedido do dono (8/10/2026), com os prints da página inicial no PC: *"o que
@@ -81,7 +104,9 @@ cartão.
 - **"Outros imóveis" é uma faixa larga no fim da lista**, com a foto e cada
   imóvel com o seu valor — sempre por último, qualquer que seja a ordenação;
 - no **celular**, a tabela e o INCC voltam, numa segunda linha do topo, e os
-  filtros viram botões redondos que deslizam de lado.
+  filtros viram botões redondos que deslizam de lado. **REGRA ANTIGA —
+  substituída por "O topo da vitrine no celular, no modelo C (v403)":** a
+  tabela e o INCC moram na faixa escura e os filtros quebram linha.
 
 A lista que o cliente recebe usa os mesmos cartões, sem os botões da equipe.
 Toda a regra visual mora no **fim do `styles.css`** (bloco "v400").

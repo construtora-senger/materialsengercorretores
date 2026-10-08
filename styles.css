@@ -1333,3 +1333,32 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .detail-faixa .detail-actions .button { gap: 6px; padding-inline: 6px; font-size: 11.5px; }
   .detail-faixa .detail-actions .button svg { width: 15px; height: 15px; }
 }
+
+/* v403 — o topo da vitrine no celular, no modelo C escolhido pelo dono
+   (8/10/2026) entre quatro desenhados: a parte branca fica so com o logo, a
+   versao e o "Meu contato"; a tabela e o INCC descem para dentro da faixa
+   escura, embaixo da contagem; os filtros viram botoes redondos que quebram
+   linha (nenhum sai da tela); e os tres botoes da lista ficam numa fileira so.
+   No computador nada muda: a linha da faixa so existe no celular. */
+.vitrine-tabela { display: none; }
+@media (max-width: 720px) {
+  .header-summary { display: none; }
+  .vitrine-titulo h1 { font-size: 22px; }
+  .vitrine-faixa .results-bar p { font-size: 13px; }
+  .vitrine-faixa .results-bar p.vitrine-tabela { display: block; margin-top: 6px; font-size: 12.5px; color: #aeb9c1; }
+  .vitrine-tabela span { color: #9fdbe3; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .vitrine-tabela strong { color: #fff; white-space: nowrap; }
+  .vitrine-tabela i { font-style: normal; margin: 0 7px; opacity: .5; }
+  .vitrine-faixa .filters-body { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; gap: 7px; }
+  .vitrine-faixa .filter-group select { min-height: 34px; padding: 5px 28px 5px 12px; font-size: 13px; }
+  .vitrine-faixa .results-actions { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px; }
+  .vitrine-faixa .results-actions .button { justify-content: center; padding: 8px 6px; font-size: 12.5px; }
+  .vitrine-faixa .view-switch button { padding: 8px 9px; font-size: 12.5px; }
+  .vitrine-faixa #clear-picks:not([hidden]) { grid-column: 1 / -1; }
+}
+@media (max-width: 359px) {
+  .vitrine-faixa .filter-group { flex: 1 1 calc(50% - 4px); }
+  .vitrine-faixa .filter-group select { width: 100%; font-size: 12px; }
+  .vitrine-faixa .results-actions .button,
+  .vitrine-faixa .view-switch button { font-size: 11.5px; padding-inline: 6px; }
+}
