@@ -20,12 +20,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="icons/favicon.ico?v=403" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=403">
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png?v=403">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=403">
+  <link rel="icon" href="icons/favicon.ico?v=404" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=404">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png?v=404">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=404">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css?v=403">
+  <link rel="stylesheet" href="styles.css?v=404">
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -55,9 +55,6 @@
             <div class="vitrine-titulo">
               <h1>Empreendimentos</h1>
               <p id="results-count">—</p>
-              <!-- v403 — no celular a tabela e o INCC moram aqui, dentro da faixa
-                   escura (modelo C). O cliente nao ve: o app.js tira a linha. -->
-              <p class="vitrine-tabela" id="vitrine-tabela"><span>Tabela</span> <strong id="vitrine-mes">—</strong><i aria-hidden="true">·</i><span>INCC</span> <strong id="vitrine-incc">—</strong></p>
             </div>
             <div class="results-actions">
               <!-- O cliente pergunta em apartamento; a vitrine responde em predio.
@@ -77,6 +74,9 @@
               <span class="search-icon" aria-hidden="true">⌕</span>
               <input id="search-input" type="search" placeholder="Buscar empreendimento, unidade, cidade…">
             </label>
+            <!-- v404 — no celular os filtros ficam guardados atras deste botao
+                 (modelo B). No computador ele nao aparece. -->
+            <button class="botao-filtros" id="botao-filtros" type="button" aria-expanded="false" aria-controls="filters-body"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>Filtros<span class="botao-filtros-conta" id="filtros-conta" hidden></span></button>
             <div class="filters-body" id="filters-body">
               <label class="filter-group">
                 <span class="filter-label">Cidade</span>
@@ -283,7 +283,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="data.js?v=403"></script>
-  <script src="app.js?v=403"></script>
+  <script src="data.js?v=404"></script>
+  <script src="app.js?v=404"></script>
 </body>
 </html>

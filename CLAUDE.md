@@ -55,7 +55,7 @@ do texto até o fim dos quadradinhos. No celular seguem dois por linha.
 Bloco "v401" no fim do `styles.css`; os ícones moram em `ICONES_DA_EQUIPE`,
 no `app.js`. O cliente continua sem ver esses botões.
 
-## O topo da vitrine no celular, no modelo C (v403)
+## O topo da vitrine no celular, no modelo B (v404)
 
 Pedido do dono (8/10/2026), com o print da página inicial no Android: *"tu não
 tá vendo como tá feio, desproporcional no celular?"*. Ele confirmou os cinco
@@ -63,20 +63,33 @@ problemas — tabela e INCC em dois selos, um embaixo do outro; o texto da busca
 cortado ("…cida"); os filtros saindo da tela pela direita; o "Enviar lista"
 caindo sozinho numa linha; e a faixa escura alta demais. Mostrei quatro
 modelos (A tudo à mostra, B filtros num botão, C tabela na faixa escura, D
-botões em blocos) e ele escolheu o **C**.
+botões em blocos) e ele escolheu o **B**.
+
+**A v403 publicou o C por engano.** A imagem de comparação tinha cinco colunas
+— a primeira era "Como está hoje" — e ele respondeu "C" contando a terceira
+imagem, que era a B. Com o C no ar ele mandou o print: *"não foi isso que
+escolhi"*, com a B aberta. **Regra que fica:** quando mostrar opções em imagem
+com a tela atual junto, a letra tem de ficar **grudada em cada desenho** e a
+tela atual não pode ser contada como opção — e, se a resposta for só uma
+letra, confirme qual desenho é antes de publicar.
 
 **Como ficou, só no celular (até 720 px):**
-- a parte branca do topo fica só com o logo, a versão e o "Meu contato";
-- **a tabela e o INCC descem para dentro da faixa escura**, numa linha embaixo
-  da contagem (`#vitrine-tabela`). O cliente não vê: no modo cliente o
-  `app.js` tira a linha do HTML, como já acontecia com os selos do topo;
-- o texto da busca vira **"Buscar por nome, unidade ou cidade"**, que cabe
-  inteiro (no computador continua o de antes);
-- os filtros são botões redondos que **quebram linha** — nenhum sai da tela,
-  nada desliza de lado. Abaixo de 360 px, dois por linha;
+- tabela e INCC continuam no topo branco, **numa linha só** (selos menores);
+- a busca divide a linha com o botão **"Filtros"** (`#botao-filtros`), e o
+  texto dela vira **"Buscar nome, unidade"**, que cabe (no computador continua
+  o de antes);
+- os filtros ficam **guardados** e abrem/fecham no botão. Abertos, são botões
+  redondos que quebram linha — nenhum sai da tela;
+- com algum filtro ligado o botão mostra **quantos** (bolinha com o número),
+  porque fechado ninguém vê por que a lista encolheu;
 - Prédios/Unidades, Gerar PDF e Enviar lista numa fileira só.
 
-**No computador nada mudou.** Bloco "v403" no fim do `styles.css`.
+**No computador nada mudou** — o botão "Filtros" nem aparece. Bloco "v404" no
+fim do `styles.css`.
+
+> **REGRA ANTIGA — substituída pela de cima:** a v403 pôs a tabela e o INCC
+> dentro da faixa escura e os filtros sempre à mostra (modelo C). Não era o
+> que o dono escolheu.
 
 ## A vitrine no modelo D (v400)
 
@@ -105,8 +118,8 @@ cartão.
   imóvel com o seu valor — sempre por último, qualquer que seja a ordenação;
 - no **celular**, a tabela e o INCC voltam, numa segunda linha do topo, e os
   filtros viram botões redondos que deslizam de lado. **REGRA ANTIGA —
-  substituída por "O topo da vitrine no celular, no modelo C (v403)":** a
-  tabela e o INCC moram na faixa escura e os filtros quebram linha.
+  substituída por "O topo da vitrine no celular, no modelo B (v404)":** os
+  filtros ficam guardados no botão "Filtros", ao lado da busca.
 
 A lista que o cliente recebe usa os mesmos cartões, sem os botões da equipe.
 Toda a regra visual mora no **fim do `styles.css`** (bloco "v400").

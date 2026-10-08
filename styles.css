@@ -1334,22 +1334,28 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .detail-faixa .detail-actions .button svg { width: 15px; height: 15px; }
 }
 
-/* v403 — o topo da vitrine no celular, no modelo C escolhido pelo dono
-   (8/10/2026) entre quatro desenhados: a parte branca fica so com o logo, a
-   versao e o "Meu contato"; a tabela e o INCC descem para dentro da faixa
-   escura, embaixo da contagem; os filtros viram botoes redondos que quebram
-   linha (nenhum sai da tela); e os tres botoes da lista ficam numa fileira so.
-   No computador nada muda: a linha da faixa so existe no celular. */
-.vitrine-tabela { display: none; }
+/* v404 — o topo da vitrine no celular, no modelo B escolhido pelo dono
+   (8/10/2026) entre quatro desenhados (substitui o modelo C da v403): a
+   tabela e o INCC numa linha so no topo branco; a busca divide a linha com o
+   botao "Filtros", que abre e fecha os filtros; e os tres botoes da lista
+   ficam numa fileira so. No computador nada muda: o botao nem aparece. */
+.botao-filtros { display: none; }
 @media (max-width: 720px) {
-  .header-summary { display: none; }
+  .header-summary { flex-wrap: nowrap; gap: 6px; }
+  .header-chip { padding: 5px 9px; gap: 5px; }
+  .header-chip span { font-size: 8.5px; }
+  .header-chip strong { font-size: 11.5px; }
   .vitrine-titulo h1 { font-size: 22px; }
   .vitrine-faixa .results-bar p { font-size: 13px; }
-  .vitrine-faixa .results-bar p.vitrine-tabela { display: block; margin-top: 6px; font-size: 12.5px; color: #aeb9c1; }
-  .vitrine-tabela span { color: #9fdbe3; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
-  .vitrine-tabela strong { color: #fff; white-space: nowrap; }
-  .vitrine-tabela i { font-style: normal; margin: 0 7px; opacity: .5; }
-  .vitrine-faixa .filters-body { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; gap: 7px; }
+  .vitrine-faixa .filter-panel { flex-direction: row; flex-wrap: wrap; align-items: stretch; }
+  .vitrine-faixa .search-field { flex: 1 1 0; min-width: 0; }
+  .botao-filtros { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 0 14px; min-height: 44px; border-radius: 999px; border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.08); color: #fff; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .botao-filtros svg { width: 16px; height: 16px; fill: none; stroke: #9fdbe3; stroke-width: 2; stroke-linecap: round; }
+  .filtros-abertos .botao-filtros { background: rgba(255,255,255,.18); }
+  .botao-filtros-conta { min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 11px; line-height: 19px; text-align: center; }
+  .botao-filtros-conta[hidden] { display: none; }
+  .vitrine-faixa .filters-body { display: none; flex: 1 1 100%; flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; gap: 7px; }
+  .vitrine-faixa .filter-panel.filtros-abertos .filters-body { display: flex; }
   .vitrine-faixa .filter-group select { min-height: 34px; padding: 5px 28px 5px 12px; font-size: 13px; }
   .vitrine-faixa .results-actions { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px; }
   .vitrine-faixa .results-actions .button { justify-content: center; padding: 8px 6px; font-size: 12.5px; }
@@ -1361,4 +1367,6 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .vitrine-faixa .filter-group select { width: 100%; font-size: 12px; }
   .vitrine-faixa .results-actions .button,
   .vitrine-faixa .view-switch button { font-size: 11.5px; padding-inline: 6px; }
+  .header-chip { padding: 4px 7px; }
+  .header-chip strong { font-size: 10.5px; }
 }

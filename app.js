@@ -673,17 +673,10 @@
     setText("header-version", APP_VERSION);
     setText("header-month", META.mesTabela || "—");
     setText("header-incc", META.incc ? `${META.incc.valor} (${META.incc.variacao})` : "—");
-    // v403 — a mesma tabela e o mesmo INCC, na faixa escura do celular. O
-    // cliente nao ve a tabela nem o INCC, entao ali a linha nem existe.
-    const linhaTabela = document.getElementById("vitrine-tabela");
-    if (CLIENT_MODE) linhaTabela?.remove();
-    else {
-      setText("vitrine-mes", META.mesTabela || "—");
-      setText("vitrine-incc", META.incc ? `${META.incc.valor} (${META.incc.variacao})` : "—");
-    }
-    // v403 — no celular o texto da busca e mais curto, para caber inteiro.
+    // v404 — no celular a busca divide a linha com o botao "Filtros", entao
+    // o texto e mais curto, para caber inteiro.
     if (window.matchMedia("(max-width: 720px)").matches) {
-      document.getElementById("search-input").placeholder = "Buscar por nome, unidade ou cidade";
+      document.getElementById("search-input").placeholder = "Buscar nome, unidade";
     }
 
     // v107 — o tamanho do estoque NAO aparece em lugar nenhum deste site. v400 —
@@ -813,6 +806,13 @@
     // v400 — "Limpar filtros" so aparece quando ha o que limpar.
     document.getElementById("clear-filters").hidden = !(state.query || state.city !== "todos" || state.stage !== "todos"
       || state.rooms !== "todos" || state.price !== "todos" || state.sort !== "destaque");
+    // v404 — com os filtros guardados no botao (celular), o botao diz quantos
+    // estao ligados; sem isso a lista encolheria sem motivo aparente.
+    const ligados = [state.city, state.stage, state.rooms, state.price].filter((v) => v !== "todos").length
+      + (state.sort !== "destaque" ? 1 : 0);
+    const conta = document.getElementById("filtros-conta");
+    conta.hidden = !ligados;
+    conta.textContent = ligados ? String(ligados) : "";
 
     // A contagem diz sempre as DUAS coisas: e o que faz o corretor descobrir
     // que existe a lista de unidades sem ter que adivinhar.
@@ -3033,6 +3033,12 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
 
   function bindGlobalEvents() {
     bindInstallEvents();
+    // v404 — no celular o botao "Filtros" abre e fecha os filtros.
+    document.getElementById("botao-filtros").addEventListener("click", (event) => {
+      const painel = document.getElementById("filters-panel");
+      const aberto = painel.classList.toggle("filtros-abertos");
+      event.currentTarget.setAttribute("aria-expanded", String(aberto));
+    });
     mostrarDicaInstalacaoIOS();
     document.getElementById("brand-home").addEventListener("click", navigateHome);
     document.getElementById("print-list").addEventListener("click", printPortfolio);
