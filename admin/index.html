@@ -617,7 +617,7 @@
     }
     .pend-acao:hover { color:var(--dourado); }
 
-    /* v168 — central de materiais: capa, logo, galeria, plantas, folder e video. */
+    /* v168 — central de materiais: capa, galeria, plantas, folder e video. */
     .materiais-lista { display: grid; gap: 14px; }
     .padroes-midia { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:9px; margin:14px 0 18px; }
     .padrao-midia { padding:10px 12px; border:1px solid var(--borda); border-radius:9px; background:var(--fundo); font-size:.76rem; line-height:1.45; color:var(--texto-suave); }
@@ -1263,7 +1263,7 @@
           <div class="nav-accordion" data-nav-grupo="materiais">
             <button type="button" class="nav-accordion-toggle" data-accordion-toggle="materiais" aria-expanded="false"><span class="nav-icone">▧</span>Materiais <span class="nav-seta">⌄</span></button>
             <div class="nav-submenu">
-              <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="identidade">Capa e logo</button>
+              <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="identidade">Capa</button>
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="galeria">Galeria de fotos</button>
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="plantas">Plantas</button>
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="comerciais">Folder e vídeo</button>
@@ -1355,7 +1355,6 @@
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="identidade"><strong>Capa principal</strong>WEBP, JPG ou PNG · <b>1600 × 900 px</b> · até 5 MB.</button>
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="galeria"><strong>Fotos da galeria</strong>WEBP, JPG ou PNG · <b>1600 × 900 px</b> · até 5 MB cada.</button>
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="plantas"><strong>Plantas</strong>WEBP, JPG ou PNG · <b>2000 × 2000 px</b> · fundo claro · até 6 MB. <b>Ou PDF</b> · até 25 MB.</button>
-            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="identidade"><strong>Logo do empreendimento</strong>PNG ou WEBP · <b>1600 × 600 px</b> · fundo transparente · até 3 MB.</button>
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="comerciais"><strong>Folder</strong>PDF · até 25 MB.</button>
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="comerciais"><strong>Vídeo oficial</strong>MP4, WebM ou Ogg · recomendado <b>1920 × 1080 px</b> · até 80 MB; acima disso, YouTube/Vimeo.</button>
           </div>
@@ -1581,7 +1580,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 376;
+  const VERSAO_PAINEL = 377;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2996,7 +2995,6 @@
     if (campo === "folder") return `assets/${emp.id}/folder.pdf`;
     if (emVideo(campo)) return `assets/${emp.id}/${campo}.${ext || "mp4"}`;
     if (campo === "hero") return `assets/${emp.id}/capa.${ext || "webp"}`;
-    if (campo === "logo") return `assets/${emp.id}/logo.${ext || "png"}`;
     throw new Error(`Tipo de material desconhecido: ${campo}.`);
   }
 
@@ -3018,7 +3016,6 @@
     hero: { largura: 1600, altura: 900, limite: 5 * 1024 * 1024, formatos: ["webp", "jpg", "jpeg", "png"], nome: "A capa" },
     galeria: { largura: 1600, altura: 900, limite: 5 * 1024 * 1024, formatos: ["webp", "jpg", "jpeg", "png"], nome: "A foto da galeria" },
     planta: { largura: 2000, altura: 2000, limite: 6 * 1024 * 1024, formatos: ["webp", "jpg", "jpeg", "png", "pdf"], limitePdf: 25 * 1024 * 1024, nome: "A planta" },
-    logo: { largura: 1600, altura: 600, limite: 3 * 1024 * 1024, formatos: ["webp", "png"], nome: "A logo" },
   };
 
   async function dimensoesDaImagem(arquivo) {
@@ -3535,7 +3532,6 @@
       const video = SLOTS_DE_VIDEO.filter((slot) => materialAtual(emp, slot)).length ? "x" : "";
       const nVideos = SLOTS_DE_VIDEO.filter((slot) => materialAtual(emp, slot)).length;
       const hero = materialAtual(emp, "hero");
-      const logo = materialAtual(emp, "logo");
       const galeria = galeriaAtual(emp);
       const fotos = galeria.map((item, index) => ({ item, index })).filter(({ item }) => !ehPlantaMidia(item));
       const plantasMidia = galeria.filter(ehPlantaMidia);
@@ -3595,13 +3591,12 @@
 
       const nomeFolder = folder ? folder.split("/").pop() : "Nenhum PDF anexado";
       const nomeHero = hero ? hero.split("/").pop() : "Nenhuma capa anexada";
-      const nomeLogo = logo ? logo.split("/").pop() : "Nenhuma logo própria cadastrada";
 
       return `<details class="material-emp" data-material-emp="${escapeHtml(emp.id)}"${abertos.has(emp.id) ? " open" : ""}>
         <summary><span>${escapeHtml(emp.nome)}</span><span class="material-resumo">${escapeHtml(resumo)}</span></summary>
         <div class="material-corpo">
           <div class="material-secao" data-material-secao="identidade">
-            <h4>Identidade visual</h4>
+            <h4>Capa</h4>
             <div class="material-grid">
               <div class="material-campo">
                 <div class="material-topo"><b>Capa principal</b><span class="material-status ${hero ? "ok" : "falta"}">${hero ? "OK" : "faltando"}</span></div>
@@ -3611,15 +3606,6 @@
                   <input class="arquivo-input" id="arquivo-hero-${escapeHtml(emp.id)}" type="file" accept="image/webp,image/jpeg,image/png,.webp,.jpg,.jpeg,.png" data-arquivo-imagem="hero" data-emp="${escapeHtml(emp.id)}">
                 </div>
                 <p class="material-ajuda"><strong>WEBP/JPG/PNG · 1600 × 900 px</strong> · proporção 16:9 · até 5 MB. O painel bloqueia tamanho diferente.</p>
-              </div>
-              <div class="material-campo">
-                <div class="material-topo"><b>Logo do empreendimento</b><span class="material-status ${logo ? "ok" : "opcional"}">${logo ? "OK" : "opcional"}</span></div>
-                <div class="material-acoes">
-                  <label class="botao-arquivo" for="arquivo-logo-${escapeHtml(emp.id)}">${logo ? "Substituir logo" : "Anexar logo"}</label>
-                  <span class="material-arquivo-nome" title="${escapeHtml(nomeLogo)}">${escapeHtml(nomeLogo)}</span>
-                  <input class="arquivo-input" id="arquivo-logo-${escapeHtml(emp.id)}" type="file" accept="image/webp,image/png,.webp,.png" data-arquivo-imagem="logo" data-emp="${escapeHtml(emp.id)}">
-                </div>
-                <p class="material-ajuda"><strong>PNG/WEBP · 1600 × 600 px</strong> · fundo transparente · até 3 MB. JPG não é aceito para preservar transparência.</p>
               </div>
             </div>
           </div>
@@ -3680,9 +3666,9 @@
         input.disabled = false;
         if (falha) { input.value = ""; aviso(falha, "falha"); return; }
         const path = caminhoDoMaterial(emp, campo, arquivo);
-        anotarUpload(emp.id, campo, path, arquivo, campo === "hero" ? "capa" : "logo");
+        anotarUpload(emp.id, campo, path, arquivo, "capa");
         anotarMaterial(emp, campo, path);
-        aviso(`${campo === "hero" ? "Capa" : "Logo"} pronta para publicar.`, "ok");
+        aviso("Capa pronta para publicar.", "ok");
         atualizarDepois(true);
       });
     });
@@ -4711,7 +4697,7 @@
     if (emp.id !== "outros") {
       // Sem capa o cartao do empreendimento sai quebrado no site e na previa do
       // WhatsApp: e o unico material que e dado comercial.
-      if (!materialAtual(emp, "hero")) marca("sem foto de capa — o cartão do site e a prévia do WhatsApp ficam sem imagem", NIVEL.critico, { modulo: "materiais", materialFiltro: "identidade", rotulo: "Corrigir em Capa e logo" });
+      if (!materialAtual(emp, "hero")) marca("sem foto de capa — o cartão do site e a prévia do WhatsApp ficam sem imagem", NIVEL.critico, { modulo: "materiais", materialFiltro: "identidade", rotulo: "Corrigir em Capa" });
       if (!galeriaAtual(emp).some((item) => !ehPlantaMidia(item))) marca("sem fotos na galeria", NIVEL.material, { modulo: "materiais", materialFiltro: "galeria", rotulo: "Corrigir em Galeria de fotos" });
       const folder = materialAtual(emp, "folder");
       const video = materialAtual(emp, "video");
@@ -6399,7 +6385,7 @@
   }
 
   function aplicarMaterial(texto, op) {
-    if (!["folder", "video", "video2", "video3", "hero", "logo"].includes(op.campo)) throw new Error(`Campo de material inválido: ${op.campo}.`);
+    if (!["folder", "video", "video2", "video3", "hero"].includes(op.campo)) throw new Error(`Campo de material inválido: ${op.campo}.`);
     return trocarNoBloco(texto, op.empId, (bloco) => {
       const re = new RegExp(`^\\s*${op.campo}:\\s*[^\\n]*\\n`, "m");
       if (!op.valor) return bloco.replace(re, "");
@@ -6458,7 +6444,7 @@
         if (fimArray < 0) throw new Error(`A galeria de ${op.empId} ficou incompleta no data.js.`);
         return bloco.slice(0, inicioArray) + serial + bloco.slice(fimArray + 1);
       }
-      const ancora = bloco.match(/^\s*(?:logo|hero):\s*[^\n]*\n/m);
+      const ancora = bloco.match(/^\s*hero:\s*[^\n]*\n/m);
       if (!ancora) throw new Error(`Não achei onde inserir a galeria de ${op.empId}.`);
       return bloco.replace(ancora[0], ancora[0] + `    galeria: ${serial},\n`);
     });
@@ -6703,7 +6689,6 @@
   // se perdeu.
   const CAMPOS_DE_MATERIAL = [
     ["hero", "a foto de capa"],
-    ["logo", "o logo"],
     ["folder", "o folder"],
     ["video", "o vídeo"],
     ["video2", "o segundo vídeo"],
@@ -6816,7 +6801,7 @@
         throw new Error("A conferência falhou: o número de box mudou. Nada foi gravado.");
       }
       // v301 — GUARDA DE MATERIAL. Uma publicação de estoque não pode apagar,
-      // sem ninguém ver, o folder, o vídeo, a capa, o logo, o mapa, as fotos
+      // sem ninguém ver, o folder, o vídeo, a capa, o mapa, as fotos
       // da galeria, os diferenciais ou os vínculos de planta que já estavam no
       // ar. Isso já aconteceu neste projeto: os materiais sumiram e ninguém
       // soube quando. Aqui a comparação é entre o data.js que está no GitHub

@@ -131,7 +131,6 @@ const nomeDaMidia = (src) => String(src || "").split("/").pop().replace(/\.[a-z0
 
 for (const emp of EMPREENDIMENTOS) {
   conferirArquivo(`${emp.id}.hero`, emp.hero);
-  conferirArquivo(`${emp.id}.logo`, emp.logo);
   conferirArquivo(`${emp.id}.folder`, emp.folder);
   if (emp.folder && !/^https?:\/\//i.test(emp.folder) && !/\.pdf(\?|$)/i.test(emp.folder)) {
     erro(`${emp.id}.folder: o padrao comercial pede PDF ("${emp.folder}")`);
@@ -171,7 +170,7 @@ for (const emp of ativos) {
 
 // --------------------------------------------------- 5. regressao de material
 // Compara com o retrato anterior (tools/materiais.json). Uma atualizacao de
-// estoque nunca pode zerar folder, video, logo, hero, galeria, mapa ou planta
+// estoque nunca pode zerar folder, video, hero, galeria, mapa ou planta
 // que ja estavam cadastrados — foi assim que materiais sumiram no passado.
 const RETRATO = path.join(__dirname, "materiais.json");
 
@@ -180,7 +179,6 @@ function retratoAtual() {
   for (const emp of EMPREENDIMENTOS) {
     foto[emp.id] = {
       hero: emp.hero || "",
-      logo: emp.logo || "",
       folder: emp.folder || "",
       video: emp.video || "",
       video2: emp.video2 || "",
@@ -201,7 +199,7 @@ if (process.argv.includes("--gravar-retrato")) {
   console.log(`Retrato de materiais gravado em tools/materiais.json (${Object.keys(agora).length} empreendimentos).`);
 } else if (fs.existsSync(RETRATO)) {
   const antes = JSON.parse(fs.readFileSync(RETRATO, "utf8"));
-  const CAMPOS = ["hero", "logo", "folder", "video", "video2", "video3", "mapa"];
+  const CAMPOS = ["hero", "folder", "video", "video2", "video3", "mapa"];
   for (const [id, velho] of Object.entries(antes)) {
     const novo = agora[id];
     if (!novo) { erro(`REGRESSAO: o empreendimento "${id}" sumiu do cadastro`); continue; }

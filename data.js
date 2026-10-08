@@ -73,7 +73,6 @@ const EMPREENDIMENTOS = [
     hero: "assets/renaissance/capa.jpg",
     folder: "assets/renaissance/folder.pdf",
     video: "assets/renaissance/video.mp4",
-    logo: "assets/ren-logo.webp",
     destaque: true,
     tagline: "Alto padrão Renaissance — 2 e 3 suítes, casa suspensa, pavimentos superiores e duplex exclusivo.",
     localizacao: "R. Venâncio Aires — Centro, Carazinho/RS.",
