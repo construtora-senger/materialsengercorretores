@@ -146,14 +146,17 @@ async function teste(nome, fn) {
     for (const id of ["quality", "renaissance", "boulevard", "evolutti"]) {
       await pg.goto(`${base}/#emp-${id}`, { waitUntil: "networkidle" });
       await pg.waitForTimeout(400);
-      // Le o "a partir de" do cabecalho (.unit-group-preco .price-value), nunca
-      // o texto solto do quadro: o bloco dos alugados traz "Aluguel R$ 1.400,00"
-      // antes do preco, e o primeiro "R$" da caixa seria o do aluguel.
+      // Le o menor valor das linhas da tabela (tr .price-value), nunca o texto
+      // solto do quadro: o bloco dos alugados traz "Aluguel R$ 1.400,00" antes
+      // do preco, e o primeiro "R$" da caixa seria o do aluguel. Desde a v383
+      // o cabecalho da tipologia nao traz mais o "a partir de".
       const valores = await pg.evaluate(() =>
         [...document.querySelectorAll("#unidades details.unit-group")]
-          .map((d) => d.querySelector(".unit-group-preco .price-value"))
-          .map((el) => (el ? parseInt(el.textContent.replace(/\D+/g, ""), 10) : null))
-          .filter((v) => v !== null && !Number.isNaN(v)));
+          .map((d) => [...d.querySelectorAll("tr[data-unit-code] .price-value")]
+            .map((el) => parseInt(el.textContent.replace(/\D+/g, ""), 10))
+            .filter((v) => !Number.isNaN(v) && v > 0))
+          .map((lista) => (lista.length ? Math.min(...lista) : null))
+          .filter((v) => v !== null));
       const crescente = valores.every((v, i) => i === 0 || v >= valores[i - 1]);
       if (!crescente) ruins.push(`${id}: ${valores.join(" > ")}`);
     }
