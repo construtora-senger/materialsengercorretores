@@ -55,6 +55,18 @@ do texto até o fim dos quadradinhos. No celular seguem dois por linha.
 Bloco "v401" no fim do `styles.css`; os ícones moram em `ICONES_DA_EQUIPE`,
 no `app.js`. O cliente continua sem ver esses botões.
 
+## Sem o "WhatsApp sem preços" no empreendimento (v406)
+
+Pedido do dono (8/10/2026), com o print da página do Personalité no celular:
+*"WhatsApp sem preços não interessa, pode excluir isso também"*. O botão
+**saiu da página do empreendimento**; ficam **WhatsApp com preços**, **Enviar
+link** e **Gerar PDF**. No computador, os três numa fileira de três colunas
+iguais; no celular, o "WhatsApp com preços" na linha de cima e os outros dois
+dividindo a de baixo. **Não recrie o botão** sem o dono pedir.
+
+O que **não** mudou (não foi pedido): o botão **Enviar** do cartão na
+vitrine, a escolha com/sem preço da **unidade** e o envio da **seleção**.
+
 ## Sem o alternador Prédios/Unidades (v405)
 
 Pedido do dono (8/10/2026), com o print da v404 no celular: *"por que
@@ -496,7 +508,7 @@ segundo toque, tem que ir num só como ia antes"*.
 | botão | o que vai |
 |---|---|
 | Mensagem com foto e preço | capa do empreendimento + a descrição da unidade, com o valor |
-| WhatsApp com preços / sem preços | capa + o resumo do prédio |
+| WhatsApp com preços / sem preços (o "sem preços" saiu na v406) | capa + o resumo do prédio |
 | Enviar link (prédio ou unidade) | capa + o texto curto com o link |
 | Seleção, com e sem preços | a montagem das fachadas + a descrição de cada imóvel |
 

@@ -1392,6 +1392,7 @@
     // v401 — modelo C, escolhido pelo dono: os quatro botoes iguais, do mesmo
     // tamanho, escuros com contorno e um icone em cada um. Antes o primeiro
     // era cheio e com brilho, e os outros tres, escuros.
+    // v406 — o "WhatsApp sem preços" saiu, a pedido do dono: ficam tres.
     const ICONES_DA_EQUIPE = {
       whatsapp: '<path d="M20.5 3.5A11 11 0 0 0 3.6 17.2L2 22l4.9-1.5A11 11 0 1 0 20.5 3.5z"/><path d="M8.5 8.5c.5 2.5 2.5 5 5 6l1.5-1.5 2 1-.5 2c-4 0-8-4-8-8l2-.5 1 2z"/>',
       link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
@@ -1401,7 +1402,6 @@
       `<button class="button button-outline" type="button" id="${id}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES_DA_EQUIPE[icone]}</svg>${texto}</button>`;
     const acoesDaEquipe = CLIENT_MODE ? "" : `
                 ${botaoDaEquipe("share-emp-prices", "whatsapp", "WhatsApp com preços")}
-                ${botaoDaEquipe("share-emp-no-prices", "whatsapp", "WhatsApp sem preços")}
                 ${botaoDaEquipe("share-emp-link", "link", "Enviar link")}
                 ${botaoDaEquipe("print-detail", "pdf", "Gerar PDF")}`;
     // Material comercial: so aparece quando existe mesmo. Sem folder nao ha
@@ -1513,7 +1513,6 @@
     };
     aoClicar("detail-back", navigateHome);
     aoClicar("share-emp-prices", () => shareEnterprise(emp, true));
-    aoClicar("share-emp-no-prices", () => shareEnterprise(emp, false));
     aoClicar("share-emp-link", () => shareClientLink(emp));
     aoClicar("print-detail", (event) => printEnterprise(emp, event));
     const watchVideo = document.getElementById("watch-video");
