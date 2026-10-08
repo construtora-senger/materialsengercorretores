@@ -174,7 +174,10 @@
     // v160 — "predios" (a vitrine de sempre) ou "unidades" (a lista de
     // apartamentos de varios predios lado a lado). O cliente pergunta em
     // apartamento; ate agora a unica resposta possivel era em predio.
-    view: storage.get("senger-view", "predios") === "unidades" ? "unidades" : "predios",
+    // v405 — o alternador saiu a pedido do dono ("tem que entrar no
+    // empreendimento pra ver as unidades"); a vitrine e sempre por predio,
+    // mesmo para quem tinha deixado "Unidades" guardado no aparelho.
+    view: "predios",
     // Unidade que o corretor abriu pela lista: a ficha do empreendimento rola
     // ate ela e a destaca, do mesmo jeito que o link ?u= faz para o cliente.
     foco: null,

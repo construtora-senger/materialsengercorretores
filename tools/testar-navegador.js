@@ -85,13 +85,9 @@ async function teste(nome, fn) {
     return n >= 8 ? "" : `so ${n} cartoes na vitrine`;
   });
 
-  await teste("o alternador Prédios/Unidades troca a lista", async () => {
-    await pg.click('#view-switch button[data-view="unidades"]');
-    await pg.waitForTimeout(250);
-    const visivel = await pg.locator("#portfolio-grid").innerText();
-    await pg.click('#view-switch button[data-view="predios"]');
-    await pg.waitForTimeout(250);
-    return /apto|sala|lote|quadra/i.test(visivel) ? "" : "a visao de unidades nao mostrou unidades";
+  // v405 — o alternador Predios/Unidades saiu a pedido do dono.
+  await teste("a vitrine não tem mais o alternador Prédios/Unidades", async () => {
+    return (await pg.locator("#view-switch").count()) === 0 ? "" : "o alternador voltou para a vitrine";
   });
 
   await teste("a busca por numero de apartamento acha a unidade", async () => {
@@ -266,17 +262,22 @@ async function teste(nome, fn) {
       navigator.canShare = () => true;
     });
     await pagina.goto(base + "/", { waitUntil: "networkidle" });
-    await pagina.getByRole("button", { name: /^Unidades$/ }).first().click().catch(() => {});
-    await pagina.waitForTimeout(600);
-    const chaves = await pagina.evaluate(() => {
-      const porEmp = new Map();
-      for (const el of document.querySelectorAll("[data-select-item]")) {
-        const emp = el.dataset.selectItem.split(":")[0];
-        if (!porEmp.has(emp)) porEmp.set(emp, el.dataset.selectItem);
-      }
-      return [...porEmp.values()].slice(0, 2);
-    });
-    for (const chave of chaves) await pagina.locator(`[data-select-item="${chave}"]`).first().click();
+    // v405 — sem a visao de unidades na vitrine, a unidade e selecionada
+    // dentro do empreendimento, como o corretor faz: os dois primeiros predios.
+    const predios = await pagina.evaluate(() => [...document.querySelectorAll("[data-pick-emp]")].slice(0, 2).map((b) => b.dataset.pickEmp));
+    const chaves = [];
+    for (const id of predios) {
+      await pagina.evaluate((alvo) => { location.hash = "#emp-" + alvo; }, id);
+      await pagina.waitForTimeout(600);
+      const chave = await pagina.evaluate(() => {
+        const botao = [...document.querySelectorAll("[data-select-item]")].find((el) => !el.disabled);
+        botao?.click();
+        return botao?.dataset.selectItem || null;
+      });
+      if (chave) chaves.push(chave);
+    }
+    await pagina.evaluate(() => { location.hash = ""; });
+    await pagina.waitForTimeout(400);
     const resultado = { emps: chaves.map((c) => c.split(":")[0]) };
     for (const [rotulo, id] of [["descricao", "share-selected-prices"], ["link", "share-selected-link"]]) {
       await pagina.evaluate(() => { window.__share = []; });

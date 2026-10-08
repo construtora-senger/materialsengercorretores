@@ -1357,7 +1357,7 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .vitrine-faixa .filters-body { display: none; flex: 1 1 100%; flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; gap: 7px; }
   .vitrine-faixa .filter-panel.filtros-abertos .filters-body { display: flex; }
   .vitrine-faixa .filter-group select { min-height: 34px; padding: 5px 28px 5px 12px; font-size: 13px; }
-  .vitrine-faixa .results-actions { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px; }
+  .vitrine-faixa .results-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .vitrine-faixa .results-actions .button { justify-content: center; padding: 8px 6px; font-size: 12.5px; }
   .vitrine-faixa .view-switch button { padding: 8px 9px; font-size: 12.5px; }
   .vitrine-faixa #clear-picks:not([hidden]) { grid-column: 1 / -1; }
