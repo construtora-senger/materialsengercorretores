@@ -45,16 +45,16 @@ não estão vendidos** (regra da v390): Personalité 111, 130, 134, 136 e 213;
 Quality 01, 12, 32, 40, 42, 51, 52, 57, 59 e 60. Do arquivo saiu só a
 metragem — nome, CPF, telefone e valor de venda ficaram de fora.
 
-A **área privativa não foi mexida**. No Personalité, a da tabela de vendas
-difere da do cadastro em quatro desses box (111: 25,52 × 25,02; 134: 17,93 ×
-17,47; 136: 25,50 × 25,00; 213: 25,52 × 25,02) e em vários vendidos: o
-cadastro veio de outra fonte (a planta de box). Só troca se o dono mandar.
-No Quality as duas fontes batem.
+**Vale o que está na tabela de vendas (v394)** — o dono respondeu *"bota o
+que está nas planilhas"*. A área privativa dos box livres que divergiam foi
+trocada pela da tabela: Personalité 111 (25,52), 134 (17,93), 136 (25,50) e
+213 (25,52); Prime 112 (28,05). Os vendidos não foram mexidos (v390). No
+Quality as duas fontes já batiam.
 
-**Prime:** a tabela não veio; o box 112 segue sem área global.
-**Renaissance · box 203:** o cadastro tem 52,03 / 41,13 m² (os mesmos números
-do box 319); a tabela de vendas diz 75,84 / 56,66. Não foi corrigido sem o
-dono confirmar.
+**Prime (v394):** a tabela veio depois; o box 112 (o único livre) ficou com
+32,19 m² global e 28,05 m² privativa, como na tabela.
+**Renaissance · box 203 (v394):** o cadastro tinha 52,03 / 41,13 m² (os
+números do box 319, copiados); passou a 75,84 / 56,66, como na tabela.
 
 ## Folder em PDF também embaixo das plantas (v392)
 
