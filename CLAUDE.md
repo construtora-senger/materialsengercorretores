@@ -36,18 +36,29 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## A tipologia não mostra mais o "a partir de" (v383)
+## Sem "a partir de" nem "Preço inicial" na página do empreendimento (v383, v384)
 
 Pedido do dono (8/10/2026), com o print do celular: o cabeçalho de cada
 tipologia trazia "A partir de R$ …" e logo embaixo vinham as unidades com o
-preço de cada uma — o mesmo valor duas vezes, e ficava confuso. Agora o
-cabeçalho da tipologia mostra só nome, medidas, garagem e a setinha; **o valor
-fica só nas unidades**. Vale no celular e no computador (escolha dele). O PDF
-não mudou, e a **quadra do loteamento continua com o "a partir de"** — o pedido
-foi sobre a tipologia. `cantoDaGaveta(units, false)` no `renderGroupHeader`.
+preço de cada uma — o mesmo valor duas vezes, e ficava confuso. **O valor fica
+só nas unidades (e nos lotes), cada um com o seu.** Celular e computador.
+
+- **v383** — saiu o "a partir de" do cabeçalho da tipologia.
+- **v384** — ele mandou tirar o resto: *"esses a cima não quero mais que
+  exista"*, sobre a lista do que tinha ficado. Saíram
+  1. o quadro **"Preço inicial"** do Resumo comercial (ficam Etapa e Registro;
+     o quadro "Valores" de quando o link traz unidades escolhidas continua);
+  2. o **"· A partir de R$ …"** do cabeçalho do **PDF do empreendimento**
+     (o PDF continua, com a tabela de unidades e valores);
+  3. o "a partir de" do cabeçalho de cada **quadra** do loteamento.
+
+`cantoDaGaveta()` agora só desenha a setinha. **Não ficou de fora:** o "a
+partir de" do cartão do prédio na vitrine do corretor e a linha "Valores a
+partir de" da mensagem de WhatsApp — não foram pedidos, e a mensagem tem regra
+própria (v328).
 
 A ordem dos quadros continua pelo menor valor (v321); o teste que confere isso
-passou a ler o menor preço das linhas da tabela, não mais o cabeçalho.
+lê o menor preço das linhas da tabela, não mais o cabeçalho.
 
 ## Maiúsculas: só a primeira letra do título (v382)
 

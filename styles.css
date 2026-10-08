@@ -587,9 +587,6 @@ img { max-width: 100%; display: block; }
 .unit-group-header:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
 .unit-group-main { min-width: 0; flex: 1; }
 .unit-group-aside { flex: 0 0 auto; display: grid; justify-items: end; gap: 4px; text-align: right; }
-.unit-group-preco { display: grid; justify-items: end; gap: 1px; }
-.unit-group-desde { white-space: nowrap; font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: rgba(255, 255, 255, .75); }
-.unit-group-aside .price-value { color: #fff; font-size: 17px; white-space: nowrap; }
 /* A setinha gira ao abrir e o texto troca — os dois dizem a mesma coisa, um
    para quem olha e outro para quem le. */
 .unit-group-toggle { display: flex; align-items: center; gap: 5px; white-space: nowrap; font-size: 11.5px; font-weight: 700; color: rgba(255, 255, 255, .88); }
@@ -787,8 +784,6 @@ img { max-width: 100%; display: block; }
   .unit-group-chips span + span::before { content: " · "; white-space: normal; }
   .unit-group-obs { margin-top: 5px; color: var(--muted); font-size: 11px; }
   .unit-group-aside { flex-direction: row; align-items: center; gap: 8px; display: flex; }
-  .unit-group-desde { color: var(--muted); font-size: 8.5px; letter-spacing: .07em; }
-  .unit-group-aside .price-value { color: var(--brand-dark); font-size: 16px; }
   /* So a setinha: o "Ver unidades" escrito roubava a largura do preco. */
   .unit-group-toggle { color: var(--brand); }
   .unit-group-toggle::before { content: "" !important; }
@@ -887,7 +882,6 @@ img { max-width: 100%; display: block; }
      arquivo, entao e ele que manda — cuidado ao mexer. */
   .unit-group-header { flex-direction: row; align-items: center; gap: 10px; }
   .unit-group-aside { display: flex; flex-direction: row; align-items: center; gap: 8px; padding-top: 0; border-top: 0; }
-  .unit-group-preco { display: grid; justify-items: end; gap: 0; }
   .unit-result { flex-direction: column; gap: 10px; }
   .unit-result-media { flex: none; width: 100%; height: 128px; }
   .unit-result-foot { align-items: flex-start; }
