@@ -182,83 +182,8 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   white-space: nowrap;
 }
-.header-chip strong#header-cities {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: min(28vw, 300px);
-}
-
-.hero {
-  position: relative;
-  min-height: 520px;
-  display: grid;
-  align-items: end;
-  overflow: hidden;
-  background: var(--dark);
-  color: #fff;
-}
-.hero-media {
-  position: absolute;
-  inset: 0;
-  background: url("assets/fachada.webp") center/cover no-repeat;
-  transform: scale(1.01);
-}
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(11,16,20,.92) 0%, rgba(11,16,20,.77) 44%, rgba(11,16,20,.24) 76%, rgba(11,16,20,.35) 100%),
-    linear-gradient(0deg, rgba(11,16,20,.82), transparent 55%);
-}
-.hero-content {
-  position: relative;
-  z-index: 1;
-  padding: 58px 0 42px;
-}
-.hero h1 {
-  max-width: 820px;
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(34px, 4vw, 56px);
-  line-height: 1.06;
-  letter-spacing: -.035em;
-  font-weight: 500;
-}
-.hero h1 span { color: #79c2cc; }
-.hero-copy {
-  max-width: 610px;
-  margin: 18px 0 0;
-  color: rgba(255,255,255,.78);
-  font-size: clamp(14px, 1.45vw, 17px);
-  line-height: 1.55;
-}
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.hero-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  /* v107 — sao dois numeros agora (sem "opcoes a venda"): faixa mais curta. */
-  max-width: 580px;
-  margin-top: 38px;
-  border-top: 1px solid rgba(255,255,255,.22);
-}
-.hero-stat { padding: 22px 24px 0 0; }
-.hero-stat strong { display: block; font-family: var(--font-display); font-size: 29px; line-height: 1; }
-.hero-stat span { display: block; margin-top: 7px; color: rgba(255,255,255,.62); font-size: 12px; }
-
-.trust-strip { background: var(--dark); color: #fff; border-top: 1px solid rgba(255,255,255,.08); }
-.trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
-.trust-grid > div { min-height: 92px; padding: 22px 24px; border-left: 1px solid rgba(255,255,255,.09); display: grid; align-content: center; gap: 5px; }
-.trust-grid > div:last-child { border-right: 1px solid rgba(255,255,255,.09); }
-.trust-label { color: rgba(255,255,255,.54); font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.trust-grid strong { font-size: 14px; }
-
-@media (min-width: 1081px) {
-  .trust-strip { display: none; }
-}
 
 .catalog-section { padding: 90px 0 110px; }
-.section-heading { display: block; }
-.section-heading h2 { margin: 0; font-family: var(--font-display); font-size: clamp(32px, 4vw, 50px); line-height: 1.08; letter-spacing: -.035em; font-weight: 500; }
 
 .filter-panel {
   margin-top: 36px;
@@ -268,7 +193,6 @@ img { max-width: 100%; display: block; }
   background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
-.filter-topline { display: flex; gap: 12px; }
 .search-field {
   flex: 1;
   min-height: 50px;
@@ -283,7 +207,6 @@ img { max-width: 100%; display: block; }
 .search-icon { color: var(--muted); font-size: 23px; line-height: 1; transform: rotate(-15deg); }
 .search-field input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 14px; }
 .search-field input::placeholder { color: #89949b; }
-.button-filter-toggle { display: none; }
 /* v107 — no computador os cinco campos ficam lado a lado, todos com o mesmo
    rotulo em cima e a mesma altura. Antes "Ordenar" e "Limpar filtros" caiam
    espremidos numa segunda linha estreita, e o painel parecia desalinhado. */
@@ -308,16 +231,6 @@ img { max-width: 100%; display: block; }
   font-size: 12.5px;
 }
 .filter-group select:focus, .search-field:focus-within { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(23,143,160,.11); }
-.filter-footer {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 13px;
-  border-top: 1px solid var(--line);
-}
-.filter-footer .text-button { white-space: nowrap; }
 
 .results-bar { min-height: 42px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 8px 0; }
 .results-bar p { margin: 0; color: var(--muted); font-size: 13px; }
@@ -382,39 +295,8 @@ img { max-width: 100%; display: block; }
 .card-body { padding: 20px 20px 18px; }
 .card-kicker { color: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .card-title { margin: 7px 0 7px; font-family: var(--font-display); font-size: 23px; line-height: 1.13; letter-spacing: -.025em; font-weight: 600; }
-.card-tagline { min-height: 43px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
-/* v107 — sem o quadrinho "Opcoes ativas", o painel de preco ocupa a faixa toda. */
-.card-metrics { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 18px; }
-.card-metric { padding: 11px 12px; border-radius: 11px; background: var(--bg); }
-.card-metric span { display: block; color: var(--muted); font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
-.card-metric strong { display: block; margin-top: 4px; font-size: 13px; }
-.card-price-panel {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: linear-gradient(135deg, rgba(23,143,160,.12), rgba(23,143,160,.035));
-  border: 1px solid rgba(23,143,160,.16);
-}
-.card-price-icon {
-  width: 38px;
-  height: 38px;
-  display: grid !important;
-  place-items: center;
-  padding-right: 10px;
-  border-right: 1px solid rgba(23,143,160,.32);
-  color: var(--brand);
-}
-.card-price-icon svg { width: 25px; height: 25px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.card-price-copy { min-width: 0; }
-.card-price-copy > span { color: var(--brand-dark); }
-.card-price-copy strong { white-space: nowrap; font-size: 14px; letter-spacing: -.015em; }
 .price-value { font-family: var(--font-display); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .card-footer { position: relative; z-index: 5; padding: 16px 20px 20px; display: flex; align-items: center; gap: 9px; border-top: 1px solid var(--line); pointer-events: none; }
-.card-footer .button { flex: 1; }
-.card-open-label { pointer-events: none; }
 .card-open-overlay { position: absolute; inset: 0; z-index: 4; border-radius: inherit; }
 .card-open-overlay:focus-visible { outline: 3px solid rgba(23,143,160,.5); outline-offset: -3px; }
 .card-share {
@@ -697,23 +579,8 @@ img { max-width: 100%; display: block; }
   .site-header { position: sticky; }
   .header-inner { min-height: 64px; gap: 12px; }
   .brand-button img { height: 41px; }
-  .hero { min-height: 500px; align-items: end; }
-  .hero-overlay { background: linear-gradient(0deg, rgba(9,14,17,.94) 0%, rgba(9,14,17,.42) 72%, rgba(9,14,17,.22) 100%); }
-  .hero-content { padding: 48px 0 28px; }
-  .hero h1 { max-width: 100%; font-size: clamp(30px, 9vw, 43px); line-height: 1.08; }
-  .hero-copy { margin-top: 16px; font-size: 14px; line-height: 1.5; }
-  .hero-stats { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); margin-top: 36px; }
-  .hero-stat { padding-top: 17px; }
-  .hero-stat strong { font-size: 23px; }
-  .trust-grid { grid-template-columns: repeat(2, 1fr); }
-  .trust-grid > div { min-height: 78px; padding: 16px; }
-  .trust-grid > div:last-child { grid-column: 1 / -1; }
   .catalog-section { padding: 48px 0 60px; }
   .filter-panel { padding: 12px; }
-  .button-filter-toggle { display: inline-flex; }
-  .filters-body { display: none; grid-template-columns: 1fr; }
-  .filters-body.open { display: grid; }
-  .filter-footer { justify-content: flex-start; padding-top: 10px; }
   .results-bar { align-items: flex-start; flex-direction: column; padding: 16px 0; }
   .portfolio-grid { grid-template-columns: 1fr; }
   .card-media { height: 230px; }
@@ -761,9 +628,6 @@ img { max-width: 100%; display: block; }
 }
 
 @media (max-width: 430px) {
-  .hero-actions { display: grid; }
-  .hero-actions .button { width: 100%; }
-  .hero-stats { gap: 0 8px; }
   .detail-actions { gap: 8px; }
   .detail-actions .button { padding-inline: 6px; font-size: 10.5px; }
 }
@@ -995,22 +859,11 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 
     *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body { background: #fff !important; color: #000; }
-  .skip-link, .site-header, .hero-actions, .filter-panel, .results-bar, .site-footer, .selection-fab, .selection-drawer, .share-modal, .toast, .detail-actions, .unit-actions, .mobile-unit-actions, .detail-back, .card-footer, .card-open-overlay, .card-pick, .install-banner { display: none !important; }
+  .skip-link, .site-header, .vitrine-faixa, .filter-panel, .results-bar, .site-footer, .selection-fab, .selection-drawer, .share-modal, .toast, .detail-actions, .unit-actions, .mobile-unit-actions, .detail-back, .card-footer, .card-open-overlay, .card-pick, .install-banner { display: none !important; }
   /* Com empreendimentos marcados, o PDF sai so com a lista escolhida. */
   .portfolio-card.is-unpicked { display: none !important; }
   img { break-inside: avoid; }
-  .hero { min-height: auto; color: #000; background: #fff; }
-  .hero-media, .hero-overlay { display: none; }
-  .hero-content { padding: 0 0 14mm; }
-  .hero .eyebrow, .hero h1, .hero h1 span, .hero-copy, .hero-stat span { color: #000; }
-  .hero h1 { font-size: 28pt; }
-  .hero-copy { max-width: none; }
-  .hero-stats { border-color: #bbb; }
-  .trust-strip { color: #000; background: #fff; border: 1px solid #ccc; }
-  .trust-grid > div { min-height: auto; border-color: #ccc; }
-  .trust-label { color: #555; }
   .catalog-section { padding: 10mm 0 0; }
-  .section-heading { display: block; }
   .portfolio-grid, .portfolio-grid.unit-results { display: block; }
   .unit-result { break-inside: avoid; margin-bottom: 5mm; border-radius: 0; box-shadow: none; }
   .portfolio-card { break-inside: avoid; display: grid; grid-template-columns: 70mm 1fr; margin-bottom: 8mm; box-shadow: none; border-radius: 0; }
@@ -1325,4 +1178,125 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .detail-faixa .detail-actions { margin-top: 16px; }
   .detail-content { padding-top: 34px; }
   .detail-content > .content-section:first-child { margin-top: 0; }
+}
+
+/* v400 — a vitrine no modelo D, escolhido pelo dono (8/10/2026) entre quatro
+   desenhados. Sem banner nem titulo gigante: uma faixa escura com o titulo, a
+   contagem, os botoes da lista, a busca e os filtros numa linha so; os cartoes
+   viram quase so foto, com cidade, nome e "a partir de" escritos sobre ela; e
+   "Outros imoveis" vira uma faixa larga no fim. Fica no fim do arquivo de
+   proposito, depois dos dois @media 720px de cima. */
+.catalog-section { padding: 0 0 80px; }
+.vitrine-faixa { background: var(--dark); color: #fff; padding: 22px 0 22px; }
+.vitrine-faixa .results-bar { min-height: 0; padding: 0; align-items: flex-end; gap: 16px 24px; }
+.vitrine-titulo h1 { margin: 0; font-family: var(--font-display); font-size: 30px; line-height: 1.1; letter-spacing: -.02em; font-weight: 600; }
+.vitrine-faixa .results-bar p { margin: 4px 0 0; color: #aeb9c1; font-size: 14px; }
+.vitrine-faixa .results-bar p strong { color: #fff; }
+.vitrine-faixa .view-switch { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.14); }
+.vitrine-faixa .view-switch button { color: #fff; }
+.vitrine-faixa .button-outline { background: transparent; color: #fff; border-color: rgba(255,255,255,.32); }
+.vitrine-faixa .button-outline:hover { background: rgba(255,255,255,.1); }
+.vitrine-faixa .button-primary { box-shadow: none; }
+.vitrine-faixa .text-button { color: #9fdbe3; }
+
+.vitrine-faixa .filter-panel { margin-top: 18px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; display: flex; gap: 10px; align-items: center; }
+.vitrine-faixa .search-field { flex: 2.2 1 0; min-width: 0; min-height: 46px; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+.vitrine-faixa .search-field input { color: #fff; }
+.vitrine-faixa .search-field input::placeholder { color: #aeb9c1; }
+.vitrine-faixa .search-icon { color: #aeb9c1; }
+.vitrine-faixa .search-field { flex: 1 1 300px; }
+.vitrine-faixa .filters-body { flex: 0 1 auto; min-width: 0; margin: 0; display: flex; gap: 10px; align-items: center; }
+.vitrine-faixa .filter-group { position: relative; flex: 0 1 172px; min-width: 0; }
+.vitrine-faixa .filter-group:first-child { flex-basis: 184px; }
+/* O rotulo continua no HTML para o leitor de tela; na tela, o proprio campo
+   ja diz o que e ("Todas as cidades", "Dormitórios", "Faixa de valor"). */
+.vitrine-faixa .filter-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.vitrine-faixa .filter-group select {
+  -webkit-appearance: none; appearance: none;
+  padding: 8px 30px 8px 13px; min-height: 46px; font-size: 14px; color: #fff; cursor: pointer;
+  border-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23aeb9c1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center / 11px 8px;
+}
+.vitrine-faixa .filter-group select option { color: var(--ink); background: #fff; }
+.vitrine-faixa #clear-filters { flex: none; white-space: nowrap; }
+.vitrine-faixa #clear-filters[hidden] { display: none; }
+
+.vitrine-corpo { padding-top: 26px; }
+.portfolio-grid { gap: 26px; }
+.portfolio-card .card-media { height: 300px; }
+.portfolio-card .card-media::after { background: linear-gradient(0deg, rgba(12,18,23,.88) 0%, rgba(12,18,23,.4) 38%, transparent 62%); }
+.card-sobre-foto { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding: 0 20px 16px; color: #fff; pointer-events: none; }
+.card-sobre-foto .card-kicker { color: #9fdbe3; font-size: 11px; }
+.card-sobre-foto .card-title { margin: 3px 0 4px; font-size: 24px; color: #fff; }
+.card-preco { margin: 0; color: #d0d8dd; font-size: 14px; }
+.card-preco .price-value { color: #fff; font-size: 21px; }
+.portfolio-card .card-body { padding: 0 16px 0; }
+.portfolio-card .card-units-sel { margin-top: 14px; }
+.portfolio-card:not(.card-outros) { display: flex; flex-direction: column; }
+.portfolio-card .card-media { flex: none; }
+.portfolio-card .card-footer { margin-top: auto; padding: 13px 16px; border-top: 0; justify-content: space-between; }
+.portfolio-card .card-badges { margin: 0; }
+.card-share { width: auto; height: 38px; padding: 0 14px; display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--brand-dark); cursor: pointer; }
+.card-share svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+.portfolio-card.card-outros { grid-column: 1 / -1; display: grid; grid-template-columns: 300px minmax(0, 1fr); background: var(--dark); color: #fff; border-color: var(--dark); }
+.card-outros .card-media { height: auto; min-height: 210px; }
+.card-outros .card-media img { position: absolute; inset: 0; }
+.card-outros .card-media::after { display: none; }
+.card-outros-corpo { padding: 20px 26px; }
+.card-outros-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.card-outros .card-kicker { color: #9fdbe3; font-size: 11px; }
+.card-outros .card-title { margin: 3px 0 0; font-size: 22px; color: #fff; }
+.card-outros .card-share { position: relative; z-index: 6; background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
+.card-outros-lista { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 30px; }
+.card-outros-lista li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: 15px; }
+.card-outros-lista .price-value { color: #fff; }
+
+@media (max-width: 1080px) {
+  .header-summary { display: flex; }
+  .vitrine-faixa .filter-panel { flex-direction: column; align-items: stretch; }
+  .vitrine-faixa .search-field { flex: none; }
+  .vitrine-faixa .filters-body { flex-wrap: wrap; }
+}
+
+@media (max-width: 720px) {
+  /* No celular a tabela e o INCC voltam, numa segunda linha do topo. */
+  .header-inner { flex-wrap: wrap; row-gap: 8px; padding: 10px 0; }
+  .header-summary { display: flex; width: 100%; margin-left: 0; justify-content: flex-start; gap: 8px; }
+  .header-chip { padding: 6px 11px; }
+  .catalog-section { padding-bottom: 50px; }
+  .vitrine-faixa { padding: 18px 0 16px; }
+  .vitrine-faixa .results-bar { flex-direction: column; align-items: stretch; gap: 0; }
+  .vitrine-titulo h1 { font-size: 24px; }
+  .vitrine-faixa .filter-panel { margin-top: 14px; gap: 10px; }
+  .vitrine-faixa .search-field { min-height: 44px; }
+  /* Os filtros viram botoes redondos que deslizam de lado. */
+  .vitrine-faixa .filters-body { overflow-x: auto; scrollbar-width: none; margin: 0 -15px; padding: 0 15px; gap: 8px; }
+  .vitrine-faixa .filters-body::-webkit-scrollbar { display: none; }
+  .vitrine-faixa .filter-group { flex: none; }
+  .vitrine-faixa .filter-group select { width: auto; min-height: 38px; padding: 6px 30px 6px 13px; border-radius: 999px; font-size: 14px; }
+  /* Os botoes da lista descem para baixo dos filtros, como no desenho. */
+  .vitrine-faixa .shell { display: flex; flex-direction: column; }
+  .vitrine-faixa .results-bar { display: contents; }
+  .vitrine-titulo { order: 1; }
+  .vitrine-faixa .filter-panel { order: 2; }
+  .vitrine-faixa .filters-body { flex-wrap: nowrap; }
+  .vitrine-faixa .results-actions { order: 3; margin-top: 14px; gap: 6px; }
+  .vitrine-faixa .results-actions .button { min-height: 38px; padding: 8px 11px; font-size: 13px; white-space: nowrap; }
+  .vitrine-faixa .view-switch button { padding: 9px 10px; font-size: 13px; white-space: nowrap; }
+  .vitrine-corpo { padding-top: 16px; }
+  .portfolio-grid { gap: 16px; }
+  .portfolio-card .card-media { height: 230px; }
+  .card-sobre-foto { padding: 0 16px 14px; }
+  .card-sobre-foto .card-title { font-size: 21px; }
+  .card-preco .price-value { font-size: 19px; }
+  .portfolio-card .card-footer { padding: 11px 12px; gap: 6px; }
+  .card-share { height: 36px; padding: 0 12px; font-size: 13px; }
+  .portfolio-card.card-outros { grid-template-columns: 1fr; }
+  .card-outros .card-media { min-height: 0; height: 170px; }
+  .card-outros-corpo { padding: 14px 16px 8px; }
+  .card-outros .card-title { font-size: 20px; }
+  .card-outros-lista { grid-template-columns: 1fr; margin-top: 8px; }
+  .card-outros-lista li { font-size: 14px; }
+  .card-outros-lista li:last-child { border-bottom: 0; }
 }

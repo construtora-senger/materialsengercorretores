@@ -36,6 +36,37 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A vitrine no modelo D (v400)
+
+Pedido do dono (8/10/2026), com os prints da página inicial no PC: *"o que
+você percebe nesse layout que poderia melhorar?"*. Mostrei quatro modelos
+desenhados (A limpo, B 5 por fileira, C lista, D faixa escura); ele escolheu o
+**D**, viu a versão de celular e mandou aplicar.
+
+**O que saiu:** o banner "Encontre o imóvel certo" (com "10 empreendimentos ·
+4 categorias" e o "Gerar PDF / imprimir" dele), a faixa da tabela que só
+aparecia no celular (`trust-strip`), o título "Portfólio / Empreendimentos e
+oportunidades", a etiqueta **Cidades** do topo (repetia o filtro), o botão
+preto "Ver empreendimento" (o cartão inteiro já abre) e a frase do prédio no
+cartão.
+
+**Como ficou:**
+- uma **faixa escura** (`.vitrine-faixa`) com "Empreendimentos", a contagem,
+  Prédios/Unidades, Gerar PDF, Enviar lista e, embaixo, a busca e os cinco
+  filtros numa linha só. Os rótulos dos filtros ficam só para o leitor de
+  tela; o próprio campo diz o que é ("Todas as etapas", "Dormitórios",
+  "Faixa de valor"). **"Limpar filtros" só aparece com algum filtro ligado**;
+- o **cartão é quase só foto**: cidade, nome e "a partir de" escritos sobre
+  ela; embaixo, etapa, tipo e o botão **Enviar** (o antigo "↗", agora com o
+  aviãozinho). O "+ Lista" continua no canto da foto;
+- **"Outros imóveis" é uma faixa larga no fim da lista**, com a foto e cada
+  imóvel com o seu valor — sempre por último, qualquer que seja a ordenação;
+- no **celular**, a tabela e o INCC voltam, numa segunda linha do topo, e os
+  filtros viram botões redondos que deslizam de lado.
+
+A lista que o cliente recebe usa os mesmos cartões, sem os botões da equipe.
+Toda a regra visual mora no **fim do `styles.css`** (bloco "v400").
+
 ## Empreendimento não tem logo (v399)
 
 Pedido do dono (8/10/2026), com o print da vitrine no computador: a logo do
