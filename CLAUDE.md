@@ -36,6 +36,21 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Tipologia toda vendida não é conferida; vaga PNE não precisa de área (v388)
+
+Pedido do dono (8/10/2026), com o print do Premium Office: *"sala térrea já foi
+vendida, então deixe sem a opção de ver a planta, nem metragens, nem nada —
+o que vende sai do sistema"*. Em `pendenciasDoEmp`, a tipologia **sem nenhuma
+unidade fora de `vendido`** não entra mais na conferência de planta, metragem
+e garagem. Nada foi apagado do `data.js`.
+
+A **vaga PNE** (`pne: true`) saiu da conta de "box sem área privativa" —
+*"não vai ser vendida, então não interessa área"*. A de área global já a
+deixava de fora.
+
+Na mesma rodada: **box 07 do Premium Office vendido com a sala 705**, a
+pedido do dono (era a "1 sala vendida sem box vinculado").
+
 ## Box e unidade vendida não guardam custo (v387)
 
 Pedido do dono (8/10/2026), na revisão dos custos: *"por que guardados? por que

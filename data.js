@@ -702,7 +702,7 @@ const EMPREENDIMENTOS = [
       { box: "04", vagas: 1, areaPriv: 13.52, areaGlobal: 18.74, status: "vendido", apto: "405" },
       { box: "05", vagas: 1, areaPriv: 16.24, areaGlobal: 22.51, status: "vendido", apto: "703" },
       { box: "06", vagas: 1, areaPriv: 15.94, areaGlobal: 22.09, status: "vendido", apto: "605" },
-      { box: "07", vagas: 1, areaPriv: 13.26, areaGlobal: 18.37, status: "disponivel" },
+      { box: "07", vagas: 1, areaPriv: 13.26, areaGlobal: 18.37, status: "vendido", apto: "705" },
       { box: "08", vagas: 1, areaPriv: 13.52, areaGlobal: 18.74, status: "vendido", apto: "301" },
       { box: "09", vagas: 1, areaPriv: 13.52, areaGlobal: 18.74, status: "vendido", apto: "303" },
       { box: "10", vagas: 1, areaPriv: 13.52, areaGlobal: 18.74, status: "vendido", apto: "403" },

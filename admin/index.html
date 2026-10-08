@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 375;
+  const VERSAO_PAINEL = 376;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -4557,7 +4557,8 @@
       const rot = i.estoque || i.grupo;
       return Boolean(regra[rot]) && !comBox.has(String(i.apto));
     }).length;
-    const semAreaPriv = lista.filter((b) => b.areaPriv == null).length;
+    // A vaga PNE nao se vende: a area dela nao interessa (v388).
+    const semAreaPriv = lista.filter((b) => b.areaPriv == null && !b.pne).length;
     const semAreaGlobal = lista.filter((b) => b.areaGlobal == null && !b.pne).length;
     const itens = [];
     // Vinculo de box errado faz o corretor prometer garagem que nao existe:
@@ -4650,9 +4651,16 @@
     const semArea = [];
     const semPlanta = [];
     const semGaragem = [];
+    const unidadesDoEmp = todos.filter((i) => i.tipo === "unidade");
+    let posicao = 0;
     (emp.grupos || []).forEach((g, grupoIndex) => {
       const rotulo = g.estoque || g.tipo;
       const unidades = g.unidades || [];
+      // v388 — tipologia toda vendida saiu da oferta: nao ha planta, metragem
+      // nem garagem a conferir (a Sala terreo do Premium Office). Regra do dono:
+      // "o que vende sai do sistema".
+      const doGrupo = unidadesDoEmp.slice(posicao, posicao += unidades.length);
+      if (!doGrupo.some((i) => statusAtual(emp.id, i) !== "vendido")) return;
       // v315 — a metragem pode estar na PROPRIA UNIDADE (`areaUnit`), e nao no
       // grupo: e o caso das Lojas do Evolutti, onde cada loja tem a sua e por
       // isso o grupo nao tem uma so. Antes daqui a pendencia acusava "sem a
