@@ -50,7 +50,9 @@ versão de computador e mandou aplicar em todos os empreendimentos.
    "← Voltar" quando há para onde voltar;
 2. **faixa escura** (`.detail-faixa`): categoria, nome, frase do prédio, os
    links "Ver localização →", vídeo e folder, e **três quadradinhos** — etapa
-   (`statusLabel`), pagamento (`condicoesDe`) e cidade. No computador o texto
+   (`statusLabel`), pagamento (`condicoesDe`) e bairro + cidade (v386: o campo
+   `bairro` do `data.js`, "Centro" no Renaissance, Evolutti, Personalité,
+   Prime e Quality, a pedido do dono; quem não tem bairro mostra só a cidade). No computador o texto
    fica à esquerda e os quadradinhos à direita. Os botões da equipe (WhatsApp,
    enviar link, PDF) ficam embaixo, na mesma faixa, e só no modo corretor;
 3. **Unidades e valores**, em lista sóbria: nome da tipologia com as medidas,
