@@ -1392,15 +1392,19 @@
       pagamento: '<rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 10h19M6.5 15h4"/>',
       local: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
     };
-    const fato = (icone, texto) => texto ? `
+    // Cada linha do texto vira uma linha no quadradinho ("Centro" em cima,
+    // "Carazinho/RS" embaixo).
+    const fato = (icone, ...linhas) => linhas.filter(Boolean).length ? `
               <div class="detail-fato">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES_DA_FAIXA[icone]}</svg>
-                <span>${escapeHtml(texto)}</span>
+                <span>${linhas.filter(Boolean).map(escapeHtml).join("<br>")}</span>
               </div>` : "";
+    // v386 — o bairro (`bairro` no data.js) vem antes da cidade. Pedido do
+    // dono: Renaissance, Evolutti, Personalite, Prime e Quality sao Centro.
     const fatos = focusItem ? "" : [
       fato("etapa", emp.statusLabel || emp.entrega || ""),
       fato("pagamento", condicoesDe(emp)),
-      fato("local", emp.cidade || ""),
+      fato("local", emp.bairro || "", emp.cidade || ""),
     ].join("");
 
     const marcaCheck = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
