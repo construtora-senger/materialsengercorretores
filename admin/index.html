@@ -4549,22 +4549,28 @@
     const regra = emp.vagasPorTipologia || {};
     const comBox = new Set(lista.filter((b) => b.apto).map((b) => String(b.apto)));
     const n = nomes(emp);
-    const semApto = lista.filter((b) => !b.pne && statusAtual(emp.id, b) !== "disponivel" && !b.apto).length;
+    // v390 — o que foi vendido "ja era, passou": box vendido nao e conferido
+    // nem no tamanho nem em para quem foi, e a unidade vendida nao e cobrada
+    // pelo box. Regra do dono: "o que importa sao os disponiveis". Fica so o
+    // alugado, que continua na oferta.
+    const semApto = lista.filter((b) => !b.pne && statusAtual(emp.id, b) === "alugado" && !b.apto).length;
     // So conta a unidade cuja tipologia leva box pela regra: sala comercial sem
     // vaga na regra nao e pendencia, e assim mesmo.
     const semBox = itensDoEmp(emp).filter((i) => {
-      if (statusAtual(emp.id, i) === "disponivel") return false;
+      if (statusAtual(emp.id, i) !== "alugado") return false;
       const rot = i.estoque || i.grupo;
       return Boolean(regra[rot]) && !comBox.has(String(i.apto));
     }).length;
-    // A vaga PNE nao se vende: a area dela nao interessa (v388).
-    const semAreaPriv = lista.filter((b) => b.areaPriv == null && !b.pne).length;
-    const semAreaGlobal = lista.filter((b) => b.areaGlobal == null && !b.pne).length;
+    // A vaga PNE nao se vende: a area dela nao interessa (v388). Nem a do box
+    // vendido (v390).
+    const aConferir = lista.filter((b) => !b.pne && statusAtual(emp.id, b) !== "vendido");
+    const semAreaPriv = aConferir.filter((b) => b.areaPriv == null).length;
+    const semAreaGlobal = aConferir.filter((b) => b.areaGlobal == null).length;
     const itens = [];
     // Vinculo de box errado faz o corretor prometer garagem que nao existe:
     // e dado comercial, nao conferencia.
-    if (semApto) itens.push({ texto: `<b>${conta(semApto, "box vendido sem a unidade", "box vendidos sem a unidade")}</b> que levou`, nivel: NIVEL.critico });
-    if (semBox) itens.push({ texto: `<b>${conta(semBox, `${n.sing} vendid${n.os === "as" ? "a" : "o"} sem box`, `${n.plur} vendid${n.os === "as" ? "as" : "os"} sem box`)}</b> vinculado`, nivel: NIVEL.critico });
+    if (semApto) itens.push({ texto: `<b>${conta(semApto, "box alugado sem a unidade", "box alugados sem a unidade")}</b> que o leva`, nivel: NIVEL.critico });
+    if (semBox) itens.push({ texto: `<b>${conta(semBox, `${n.sing} alugad${n.os === "as" ? "a" : "o"} sem box`, `${n.plur} alugad${n.os === "as" ? "as" : "os"} sem box`)}</b> vinculado`, nivel: NIVEL.critico });
     if (semAreaPriv) itens.push({ texto: conta(semAreaPriv, "box sem área privativa", "box sem área privativa"), nivel: NIVEL.atencao });
     if (semAreaGlobal) itens.push({ texto: conta(semAreaGlobal, "box sem área global", "box sem área global"), nivel: NIVEL.atencao });
     return itens;

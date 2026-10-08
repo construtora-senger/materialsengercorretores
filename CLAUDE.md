@@ -36,6 +36,21 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Box vendido não é conferido — nem área, nem para quem (v390)
+
+Pedido do dono (8/10/2026), com o print do Personalité ("65 box sem área
+global"): *"box vendidos não interessa tamanho nem pra quem, já era, passou…
+o que importa são os disponíveis"*. Em `pendenciasDeBox`:
+
+- **área privativa e global** só são cobradas do box que **não** está
+  vendido (e nunca da vaga PNE). No Personalité o aviso caiu de 65 para os
+  **5 box ainda livres**; no Prime fica 1 e no Quality 10;
+- **"box sem a unidade que o levou"** e **"unidade sem box vinculado"** não
+  olham mais o vendido — só o **alugado**, que segue na oferta, e o texto
+  passou a dizer "alugado".
+
+Nada foi apagado do `data.js`.
+
 ## Tipologia toda vendida não é conferida; vaga PNE não precisa de área (v388)
 
 Pedido do dono (8/10/2026), com o print do Premium Office: *"sala térrea já foi
