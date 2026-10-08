@@ -36,6 +36,18 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Os botões da equipe no empreendimento, no modelo C (v401)
+
+Pedido do dono (8/10/2026), com o print do Renaissance no PC: *"esses botões
+dava pra padronizar"*. O "WhatsApp com preços" era cheio, na cor da marca e com
+brilho; os outros três, escuros. Mostrei quatro modelos (A escuros, B cor da
+marca, C escuros com ícone, D brancos) e ele escolheu o **C**: os quatro
+**iguais**, escuros com contorno, **do mesmo tamanho** (205 px no computador,
+dois por linha no celular), cantos menos arredondados e **um ícone em cada um**
+(WhatsApp, corrente para o link, folha para o PDF). Nenhum se destaca.
+Bloco "v401" no fim do `styles.css`; os ícones moram em `ICONES_DA_EQUIPE`,
+no `app.js`. O cliente continua sem ver esses botões.
+
 ## A vitrine no modelo D (v400)
 
 Pedido do dono (8/10/2026), com os prints da página inicial no PC: *"o que

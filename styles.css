@@ -1300,3 +1300,31 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .card-outros-lista li { font-size: 14px; }
   .card-outros-lista li:last-child { border-bottom: 0; }
 }
+
+/* v401 — os botoes da equipe na faixa escura do empreendimento, no modelo C
+   escolhido pelo dono: os quatro iguais (escuros com contorno), do mesmo
+   tamanho, cantos menos arredondados e um icone em cada um. No celular,
+   dois por linha. */
+.detail-faixa .detail-actions .button {
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  border-radius: 12px;
+  box-shadow: none;
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  border-color: rgba(255,255,255,.3);
+}
+.detail-faixa .detail-actions .button:hover { background: rgba(255,255,255,.18); }
+.detail-faixa .detail-actions .button svg { width: 17px; height: 17px; flex: none; fill: none; stroke: #9fdbe3; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (min-width: 721px) {
+  .detail-faixa .detail-actions .button { flex: 0 0 205px; }
+}
+@media (max-width: 720px) {
+  .detail-faixa .detail-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .detail-faixa .detail-actions .button { min-width: 0; padding-inline: 8px; font-size: 12.5px; }
+}
+@media (max-width: 380px) {
+  .detail-faixa .detail-actions .button { gap: 6px; padding-inline: 6px; font-size: 11.5px; }
+  .detail-faixa .detail-actions .button svg { width: 15px; height: 15px; }
+}
