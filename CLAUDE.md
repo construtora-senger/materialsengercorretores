@@ -36,6 +36,19 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A tipologia não mostra mais o "a partir de" (v383)
+
+Pedido do dono (8/10/2026), com o print do celular: o cabeçalho de cada
+tipologia trazia "A partir de R$ …" e logo embaixo vinham as unidades com o
+preço de cada uma — o mesmo valor duas vezes, e ficava confuso. Agora o
+cabeçalho da tipologia mostra só nome, medidas, garagem e a setinha; **o valor
+fica só nas unidades**. Vale no celular e no computador (escolha dele). O PDF
+não mudou, e a **quadra do loteamento continua com o "a partir de"** — o pedido
+foi sobre a tipologia. `cantoDaGaveta(units, false)` no `renderGroupHeader`.
+
+A ordem dos quadros continua pelo menor valor (v321); o teste que confere isso
+passou a ler o menor preço das linhas da tabela, não mais o cabeçalho.
+
 ## Maiúsculas: só a primeira letra do título (v382)
 
 Escolha do dono (6/10/2026), entre quatro modelos em imagem: **modelo B**.

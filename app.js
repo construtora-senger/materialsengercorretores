@@ -1723,7 +1723,7 @@
           ${chips.length ? `<div class="unit-group-chips">${chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}</div>` : ""}
           ${group.obs ? `<p class="unit-group-obs">${escapeHtml(group.obs)}</p>` : ""}
         </div>
-        ${cantoDaGaveta(units)}
+        ${cantoDaGaveta(units, false)}
       </summary>
     `;
   }
@@ -1775,12 +1775,16 @@
     return `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${desenho}</svg>`;
   }
 
-  // O canto direito do cabecalho: o menor valor da tipologia e a setinha.
+  // O canto direito do cabecalho: o menor valor e a setinha.
   // v107 continua valendo — NAO se diz quantas unidades ha, so a partir de
   // quanto. Dizer quantas sobraram tira a urgencia da venda.
-  function cantoDaGaveta(units = []) {
+  // v383 — a tipologia nao mostra mais o "a partir de" (comPreco = false):
+  // pedido do dono, o valor no cabecalho repetia o da primeira unidade logo
+  // abaixo e confundia. Ficam so as unidades, cada uma com o seu valor. A
+  // quadra do loteamento continua com ele.
+  function cantoDaGaveta(units = [], comPreco = true) {
     const precos = units.map((it) => it.price).filter((preco) => preco > 0);
-    const desde = precos.length ? Math.min(...precos) : 0;
+    const desde = comPreco && precos.length ? Math.min(...precos) : 0;
     return `
       <div class="unit-group-aside">
         ${desde ? `<span class="unit-group-preco"><span class="unit-group-desde">A partir de</span><strong class="price-value">${money(desde)}</strong></span>` : ""}
