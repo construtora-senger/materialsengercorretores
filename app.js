@@ -670,32 +670,13 @@
   const filtroDeUnidade = () => Boolean(state.query) || state.rooms !== "todos" || state.price !== "todos";
 
   function renderMetadata() {
-    const cities = unique(EMPREENDIMENTOS.flatMap((emp) => emp.cidade.split(" · ")));
-    const categories = unique(EMPREENDIMENTOS.map((emp) => emp.categoria));
-
     setText("header-version", APP_VERSION);
-    setText("meta-month", META.mesTabela || "—");
-    setText("meta-incc", META.incc ? `${META.incc.valor} (${META.incc.variacao})` : "—");
-    setText("meta-cities", cities.map((city) => city.replace("/RS", "")).join(" · "));
     setText("header-month", META.mesTabela || "—");
     setText("header-incc", META.incc ? `${META.incc.valor} (${META.incc.variacao})` : "—");
-    const citiesLabel = cities.map((city) => city.replace("/RS", "")).join(" · ");
-    setText("header-cities", citiesLabel);
-    document.getElementById("header-cities")?.setAttribute("title", citiesLabel);
 
-    // v107 — o tamanho do estoque NAO aparece mais em lugar nenhum deste site,
-    // nem para o cliente nem para o corretor: nem "182 opcoes a venda" aqui no
-    // topo, nem "Opcoes ativas" no cartao e na ficha, nem a barra acima do
-    // quadro de unidades, nem o "Opcoes" do PDF. Dizer quantas unidades sobraram
-    // tira a urgencia da venda. Decisao do dono: a contagem fica so no painel
-    // administrativo. (Comecou na v100, valendo so para o cliente.)
-    const stats = [
-      [EMPREENDIMENTOS.length, "empreendimentos"],
-      [categories.length, "categorias"],
-    ];
-    document.getElementById("hero-stats").innerHTML = stats.map(([value, label]) => `
-      <div class="hero-stat"><strong>${Number(value).toLocaleString("pt-BR")}</strong><span>${escapeHtml(label)}</span></div>
-    `).join("");
+    // v107 — o tamanho do estoque NAO aparece em lugar nenhum deste site. v400 —
+    // o banner com "10 empreendimentos · 4 categorias" saiu (modelo D), e a
+    // faixa "Cidades" do topo tambem: repetia o filtro de cidade.
 
     const footer = document.getElementById("footer-contacts");
     footer.innerHTML = [
@@ -714,7 +695,7 @@
     // v106 — o filtro tem duas opcoes fixas, 2 e 3 dormitorios. Decisao do dono: o
     // corretor pergunta "quantos dormitorios", nao "quantas suites".
     const roomsSelect = document.getElementById("rooms-filter");
-    roomsSelect.innerHTML = `<option value="todos">Qualquer número</option><option value="2">2 dormitórios</option><option value="3">3 dormitórios</option>`;
+    roomsSelect.innerHTML = `<option value="todos">Dormitórios</option><option value="2">2 dormitórios</option><option value="3">3 dormitórios</option>`;
 
     document.getElementById("search-input").addEventListener("input", (event) => {
       state.query = event.target.value.trim();
@@ -734,13 +715,6 @@
         storage.set("senger-view", state.view);
         renderPortfolio();
       });
-    });
-
-    const filterToggle = document.getElementById("filter-toggle");
-    filterToggle.addEventListener("click", () => {
-      const body = document.getElementById("filters-body");
-      const open = body.classList.toggle("open");
-      filterToggle.setAttribute("aria-expanded", String(open));
     });
   }
 
@@ -824,6 +798,9 @@
     const porUnidade = visaoDeUnidades();
     const lista = porUnidade ? unidades : enterprises;
     document.getElementById("empty-state").hidden = lista.length > 0;
+    // v400 — "Limpar filtros" so aparece quando ha o que limpar.
+    document.getElementById("clear-filters").hidden = !(state.query || state.city !== "todos" || state.stage !== "todos"
+      || state.rooms !== "todos" || state.price !== "todos" || state.sort !== "destaque");
 
     // A contagem diz sempre as DUAS coisas: e o que faz o corretor descobrir
     // que existe a lista de unidades sem ter que adivinhar.
@@ -886,13 +863,20 @@
     updatePicksUi();
   }
 
+  // v400 — o "↗" virou "Enviar", com o aviaozinho: a seta parecia "abrir".
+  const ICONE_ENVIAR = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7z"/></svg>`;
+
   function renderEnterpriseCards(enterprises) {
     const grid = document.getElementById("portfolio-grid");
     grid.classList.remove("unit-results");
     const query = normalizeText(state.query);
     const porUnidade = filtroDeUnidade();
     const filtrando = state.picks.size > 0;
-    grid.innerHTML = enterprises.map((emp) => {
+    // v400 — "Outros imoveis" nao e um predio: vira uma faixa larga no fim da
+    // lista, com cada imovel e o seu valor (modelo D, escolhido pelo dono).
+    const ehOutros = (emp) => emp.categoria === "outros";
+    const ordem = [...enterprises.filter((emp) => !ehOutros(emp)), ...enterprises.filter(ehOutros)];
+    grid.innerHTML = ordem.map((emp) => {
       // v160 — com filtro de unidade ligado, o cartao fala das unidades que
       // COMBINAM: quantas sao e a partir de quanto. Antes anunciava o menor
       // preco do predio inteiro, que podia ser de uma unidade fora do filtro —
@@ -902,7 +886,7 @@
       const valorDoCartao = precos.length ? Math.min(...precos) : 0;
       const rotuloDoPreco = combinam
         ? `${plural(combinam.length, "unidade combina", "unidades combinam")} · a partir de`
-        : "A partir de";
+        : "a partir de";
       const statusClass = emp.status === "pronto" ? "pronto" : "obra";
       const typeLabel = CATEGORY_LABELS[emp.categoria] || emp.categoria;
       const napista = state.picks.has(emp.id);
@@ -911,41 +895,61 @@
       // de...") — senao parece que a escolha do corretor se perdeu no caminho.
       const selCodes = CLIENT_SEL ? CLIENT_SEL.get(emp.id) : null;
       const selUnits = selCodes ? itemsFor(emp).filter((it) => selCodes.has(String(it.code).toLowerCase())) : null;
-      const metricas = selUnits && selUnits.length ? `
+      const escolhidas = selUnits && selUnits.length ? `
             <div class="card-units-sel">
               <span>${selUnits.length === 1 ? "Unidade escolhida para você" : "Unidades escolhidas para você"}</span>
               ${selUnits.slice(0, 4).map((it) => `<div class="card-unit-line"><strong>${escapeHtml(itemLabel(it))}</strong><strong class="price-value">${money(it.price)}</strong></div>`).join("")}
               ${selUnits.length > 4 ? `<div class="card-unit-line"><strong>e mais ${selUnits.length - 4} no detalhe…</strong></div>` : ""}
-            </div>` : `
-            <div class="card-metrics">
-              <div class="card-metric card-price-panel">
-                <span class="card-price-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false"><path d="M4 21V8.5L12 4l8 4.5V21M8 21v-8h8v8M9 9h.01M12 9h.01M15 9h.01"/></svg>
-                </span>
-                <span class="card-price-copy"><span>${escapeHtml(rotuloDoPreco)}</span><strong class="price-value">${valorDoCartao ? money(valorDoCartao) : "Sob consulta"}</strong></span>
+            </div>` : "";
+      const lista = `<button class="card-pick${napista ? " picked" : ""}" type="button" data-pick-emp="${emp.id}" aria-pressed="${napista}">${napista ? "✓ Na lista" : "+ Lista"}</button>`;
+      const enviar = `<button class="card-share" type="button" data-share-emp="${emp.id}" aria-label="Enviar ${escapeHtml(emp.nome)}">${ICONE_ENVIAR}<span>Enviar</span></button>`;
+      const abrir = `<a class="card-open-overlay" href="#emp-${emp.id}" aria-label="Abrir detalhes do empreendimento ${escapeHtml(emp.nome)}"></a>`;
+
+      if (ehOutros(emp)) {
+        const itens = (selUnits && selUnits.length ? selUnits : (combinam || marketableItems(emp)));
+        return `
+        <article class="portfolio-card card-outros${filtrando && !napista ? " is-unpicked" : ""}">
+          <div class="card-media">
+            <img src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}" loading="lazy">
+            ${lista}
+          </div>
+          <div class="card-outros-corpo">
+            <div class="card-outros-topo">
+              <div>
+                <span class="card-kicker">${escapeHtml(emp.cidade)}</span>
+                <h3 class="card-title">${escapeHtml(emp.nome)}</h3>
               </div>
-            </div>`;
+              ${enviar}
+            </div>
+            <ul class="card-outros-lista">
+              ${itens.map((it) => `<li><span>${escapeHtml(itemLabel(it))}</span><strong class="price-value">${money(it.price)}</strong></li>`).join("")}
+            </ul>
+          </div>
+          ${abrir}
+        </article>
+      `;
+      }
+
       return `
         <article class="portfolio-card${filtrando && !napista ? " is-unpicked" : ""}">
           <div class="card-media">
             <img src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}" loading="lazy">
-            <button class="card-pick${napista ? " picked" : ""}" type="button" data-pick-emp="${emp.id}" aria-pressed="${napista}">${napista ? "✓ Na lista" : "+ Lista"}</button>
+            ${lista}
+            <div class="card-sobre-foto">
+              <span class="card-kicker">${escapeHtml(emp.cidade)}</span>
+              <h3 class="card-title">${escapeHtml(emp.nome)}</h3>
+              ${escolhidas ? "" : `<p class="card-preco"><span>${escapeHtml(rotuloDoPreco)}</span> <strong class="price-value">${valorDoCartao ? money(valorDoCartao) : "Sob consulta"}</strong></p>`}
+            </div>
           </div>
-          <div class="card-body">
+          ${escolhidas ? `<div class="card-body">${escolhidas}</div>` : ""}
+          <div class="card-footer">
             <div class="card-badges">
               <span class="badge badge-stage ${statusClass}">${escapeHtml(emp.statusLabel || emp.entrega || "")}</span>
               <span class="badge">${escapeHtml(typeLabel)}</span>
             </div>
-            <span class="card-kicker">${escapeHtml(emp.cidade)}</span>
-            <h3 class="card-title">${escapeHtml(emp.nome)}</h3>
-            <p class="card-tagline">${escapeHtml(emp.tagline || emp.entrega || "Consulte informações e disponibilidade.")}</p>
-            ${metricas}
+            ${enviar}
           </div>
-          <div class="card-footer">
-            <span class="button button-dark card-open-label" aria-hidden="true">${selUnits && selUnits.length ? (selUnits.length > 1 ? "Ver minhas unidades" : "Ver minha unidade") : "Ver empreendimento"}</span>
-            <button class="card-share" type="button" data-share-emp="${emp.id}" aria-label="Compartilhar ${escapeHtml(emp.nome)}">↗</button>
-          </div>
-          <a class="card-open-overlay" href="#emp-${emp.id}" aria-label="Abrir detalhes do empreendimento ${escapeHtml(emp.nome)}"></a>
+          ${abrir}
         </article>
       `;
     }).join("");
@@ -1155,12 +1159,9 @@
   }
 
   function renderHome() {
-    // Lista do cliente: esconde o "palco" do corretor (hero, faixa da tabela, filtros) e deixa
-    // so a vitrine com os empreendimentos escolhidos.
+    // Lista do cliente: esconde os filtros do corretor e deixa so a vitrine
+    // com os empreendimentos escolhidos.
     const vitrineCliente = Boolean(CLIENT_LIST_IDS);
-    document.getElementById("home-hero").hidden = vitrineCliente;
-    const strip = document.querySelector(".trust-strip");
-    if (strip) strip.hidden = vitrineCliente;
     const filtros = document.getElementById("filters-panel");
     if (filtros) filtros.hidden = vitrineCliente;
     document.getElementById("catalogo").hidden = false;
@@ -1183,8 +1184,6 @@
   }
 
   function renderDetail(emp) {
-    document.getElementById("home-hero").hidden = true;
-    document.querySelector(".trust-strip").hidden = true;
     document.getElementById("catalogo").hidden = true;
 
     const detail = document.getElementById("detail-view");
@@ -3014,7 +3013,6 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     bindInstallEvents();
     mostrarDicaInstalacaoIOS();
     document.getElementById("brand-home").addEventListener("click", navigateHome);
-    document.getElementById("print-catalog").addEventListener("click", printPortfolio);
     document.getElementById("print-list").addEventListener("click", printPortfolio);
     document.getElementById("share-portfolio").addEventListener("click", sharePortfolio);
     document.getElementById("clear-picks").addEventListener("click", clearPicks);

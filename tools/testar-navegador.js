@@ -201,7 +201,7 @@ async function teste(nome, fn) {
     await pg.goto(base + "/", { waitUntil: "networkidle" });
     // A vitrine tem imagens: a altura da pagina so estabiliza depois delas.
     // Rolar cedo demais faz o proprio teste medir errado.
-    await pg.waitForFunction(() => document.documentElement.scrollHeight > 2500, null, { timeout: 8000 }).catch(() => {});
+    await pg.waitForFunction(() => document.documentElement.scrollHeight > 1800, null, { timeout: 8000 }).catch(() => {});
     await pg.evaluate(() => window.scrollTo(0, 1200));
     // A altura so para de mudar quando as fotos terminam de carregar, e o
     // Chrome reacomoda a rolagem nesse meio-tempo. Medir antes disso faz o
@@ -217,8 +217,10 @@ async function teste(nome, fn) {
     }));
     const antes = await pg.evaluate(() => window.scrollY);
     if (antes < 400) return "a home nem rolou o suficiente para o teste valer";
-    // Abre um empreendimento pelo cartao, como o corretor faz.
-    await pg.locator("#portfolio-grid .card-open-overlay").first().click();
+    // Abre um empreendimento pelo cartao, como o corretor faz. v400 — sem o
+    // banner, o primeiro cartao fica no alto da pagina: clicar nele faria o
+    // navegador rolar ate la antes do clique. O ultimo esta na tela.
+    await pg.locator("#portfolio-grid .card-open-overlay").last().click();
     await pg.waitForTimeout(500);
     if (await pg.locator("#detail-view").isHidden()) return "o cartao nao abriu a ficha";
     await pg.locator("#detail-back").click();

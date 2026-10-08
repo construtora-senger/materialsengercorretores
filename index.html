@@ -20,12 +20,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="icons/favicon.ico?v=399" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=399">
-  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png?v=399">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=399">
+  <link rel="icon" href="icons/favicon.ico?v=400" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=400">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png?v=400">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=400">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css?v=399">
+  <link rel="stylesheet" href="styles.css?v=400">
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -40,109 +40,83 @@
       <div class="header-summary" aria-label="Resumo da tabela">
         <div class="header-chip"><span>Tabela</span><strong id="header-month">—</strong></div>
         <div class="header-chip"><span>INCC</span><strong id="header-incc">—</strong></div>
-        <div class="header-chip"><span>Cidades</span><strong id="header-cities">—</strong></div>
       </div>
     </div>
   </header>
 
   <main id="conteudo">
-    <section class="hero" id="home-hero">
-      <div class="hero-media" aria-hidden="true"></div>
-      <div class="hero-overlay"></div>
-      <div class="shell hero-content">
-        <p class="eyebrow">Portfólio comercial oficial</p>
-        <h1>Encontre o imóvel certo.<br><span>Apresente com segurança.</span></h1>
-        <p class="hero-copy">Empreendimentos, unidades, plantas, preços e disponibilidade em um único lugar para apoiar o atendimento dos corretores.</p>
-        <div class="hero-actions">
-          <button class="button button-glass" id="print-catalog" type="button">Gerar PDF / imprimir</button>
-        </div>
-        <div class="hero-stats" id="hero-stats"></div>
-      </div>
-    </section>
-
-    <section class="trust-strip" aria-label="Informações da tabela">
-      <div class="shell trust-grid">
-        <div><span class="trust-label">Tabela comercial</span><strong id="meta-month">—</strong></div>
-        <div><span class="trust-label">INCC informado</span><strong id="meta-incc">—</strong></div>
-        <div><span class="trust-label">Abrangência</span><strong id="meta-cities">—</strong></div>
-      </div>
-    </section>
-
     <section class="catalog-section" id="catalogo">
-      <div class="shell">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow dark">Portfólio</p>
-            <h2>Empreendimentos e oportunidades</h2>
+      <!-- v400 — modelo D, escolhido pelo dono: sem banner, sem titulo gigante.
+           A faixa escura junta o titulo, a contagem, os botoes da lista e a
+           busca com os filtros; os cartoes ja aparecem na primeira tela. -->
+      <div class="vitrine-faixa">
+        <div class="shell">
+          <div class="results-bar">
+            <div class="vitrine-titulo">
+              <h1>Empreendimentos</h1>
+              <p id="results-count">—</p>
+            </div>
+            <div class="results-actions">
+              <!-- O cliente pergunta em apartamento; a vitrine responde em predio.
+                   Aqui o corretor troca a resposta sem perder os filtros. -->
+              <div class="view-switch" id="view-switch" role="group" aria-label="Como mostrar os resultados">
+                <button type="button" data-view="predios" aria-pressed="true">Prédios</button>
+                <button type="button" data-view="unidades" aria-pressed="false">Unidades</button>
+              </div>
+              <button class="text-button" id="clear-picks" type="button" hidden>Limpar seleção</button>
+              <button class="button button-outline" id="print-list" type="button">Gerar PDF</button>
+              <button class="button button-primary" id="share-portfolio" type="button">Enviar lista</button>
+            </div>
           </div>
-        </div>
 
-        <div class="filter-panel" id="filters-panel">
-          <div class="filter-topline">
+          <div class="filter-panel" id="filters-panel">
             <label class="search-field" for="search-input">
               <span class="search-icon" aria-hidden="true">⌕</span>
-              <input id="search-input" type="search" placeholder="Buscar empreendimento, unidade, cidade ou característica">
+              <input id="search-input" type="search" placeholder="Buscar empreendimento, unidade, cidade…">
             </label>
-            <button class="button button-dark button-filter-toggle" id="filter-toggle" type="button" aria-expanded="false">Filtros</button>
-          </div>
-
-          <div class="filters-body" id="filters-body">
-            <label class="filter-group">
-              <span class="filter-label">Cidade</span>
-              <select id="city-filter"></select>
-            </label>
-            <label class="filter-group">
-              <span class="filter-label">Etapa</span>
-              <select id="stage-filter">
-                <option value="todos">Todas</option>
-                <option value="pronto">Pronto</option>
-                <option value="obra">Em obras / lançamento</option>
-              </select>
-            </label>
-            <label class="filter-group">
-              <span class="filter-label">Dormitórios</span>
-              <select id="rooms-filter"></select>
-            </label>
-            <label class="filter-group">
-              <span class="filter-label">Faixa de valor</span>
-              <select id="price-filter">
-                <option value="todos">Qualquer valor</option>
-                <option value="0-300000">Até R$ 300 mil</option>
-                <option value="300000-600000">R$ 300 a 600 mil</option>
-                <option value="600000-1000000">R$ 600 mil a 1 milhão</option>
-                <option value="1000000-inf">Acima de R$ 1 milhão</option>
-              </select>
-            </label>
-            <label class="filter-group">
-              <span class="filter-label">Ordenar por</span>
-              <select id="sort-filter">
-                <option value="destaque">Destaques</option>
-                <option value="menor-preco">Menor preço</option>
-                <option value="maior-preco">Maior preço</option>
-                <option value="nome">Nome</option>
-              </select>
-            </label>
-            <div class="filter-footer">
-              <button class="text-button" id="clear-filters" type="button">Limpar filtros</button>
+            <div class="filters-body" id="filters-body">
+              <label class="filter-group">
+                <span class="filter-label">Cidade</span>
+                <select id="city-filter"></select>
+              </label>
+              <label class="filter-group">
+                <span class="filter-label">Etapa</span>
+                <select id="stage-filter">
+                  <option value="todos">Todas as etapas</option>
+                  <option value="pronto">Pronto</option>
+                  <option value="obra">Em obras / lançamento</option>
+                </select>
+              </label>
+              <label class="filter-group">
+                <span class="filter-label">Dormitórios</span>
+                <select id="rooms-filter"></select>
+              </label>
+              <label class="filter-group">
+                <span class="filter-label">Faixa de valor</span>
+                <select id="price-filter">
+                  <option value="todos">Faixa de valor</option>
+                  <option value="0-300000">Até R$ 300 mil</option>
+                  <option value="300000-600000">R$ 300 a 600 mil</option>
+                  <option value="600000-1000000">R$ 600 mil a 1 milhão</option>
+                  <option value="1000000-inf">Acima de R$ 1 milhão</option>
+                </select>
+              </label>
+              <label class="filter-group">
+                <span class="filter-label">Ordenar por</span>
+                <select id="sort-filter">
+                  <option value="destaque">Destaques</option>
+                  <option value="menor-preco">Menor preço</option>
+                  <option value="maior-preco">Maior preço</option>
+                  <option value="nome">Nome</option>
+                </select>
+              </label>
+              <button class="text-button" id="clear-filters" type="button" hidden>Limpar filtros</button>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="results-bar">
-          <p id="results-count">—</p>
-          <div class="results-actions">
-            <!-- O cliente pergunta em apartamento; a vitrine responde em predio.
-                 Aqui o corretor troca a resposta sem perder os filtros. -->
-            <div class="view-switch" id="view-switch" role="group" aria-label="Como mostrar os resultados">
-              <button type="button" data-view="predios" aria-pressed="true">Prédios</button>
-              <button type="button" data-view="unidades" aria-pressed="false">Unidades</button>
-            </div>
-            <button class="text-button" id="clear-picks" type="button" hidden>Limpar seleção</button>
-            <button class="button button-outline" id="print-list" type="button">Gerar PDF</button>
-            <button class="button button-primary" id="share-portfolio" type="button">Enviar lista</button>
-          </div>
-        </div>
-
+      <div class="shell vitrine-corpo">
         <div class="portfolio-grid" id="portfolio-grid"></div>
         <div class="empty-state" id="empty-state" hidden>
           <strong>Nenhuma opção encontrada.</strong>
@@ -306,7 +280,7 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="data.js?v=399"></script>
-  <script src="app.js?v=399"></script>
+  <script src="data.js?v=400"></script>
+  <script src="app.js?v=400"></script>
 </body>
 </html>
