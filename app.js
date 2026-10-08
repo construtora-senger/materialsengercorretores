@@ -1311,8 +1311,17 @@
     // para a posicao dentro do proprio grupo: humanizada e tecnica dividem o
     // mesmo visor.
     const plantButton = (item, rotulo) => `<button class="plant-link ${plantImages.indexOf(item) === 0 ? "active" : ""}" type="button" data-plant-preview="${plantImages.indexOf(item)}">${escapeHtml(item.legenda || rotulo)}</button>`;
+    // v391 — o folder em PDF tambem fica embaixo das plantas, a pedido do dono.
+    // So aparece quando o empreendimento tem folder cadastrado.
+    const folderNasPlantas = emp.folder ? `
+              <div class="plant-link-group">
+                <h3>Folder</h3>
+                <div class="plant-link-list">
+                  <a class="plant-link" href="${escapeHtml(assetUrl(emp.folder))}" target="_blank" rel="noopener" download>${CLIENT_MODE ? "Ver apresentação completa" : "Baixar folder em PDF"}</a>
+                </div>
+              </div>` : "";
     const visorDePlantas = (plantImages.length || plantFiles.length) ? `
-        <div class="plant-viewer${plantImages.length === 1 && !plantFiles.length ? " planta-unica" : ""}">
+        <div class="plant-viewer${plantImages.length === 1 && !plantFiles.length && !folderNasPlantas ? " planta-unica" : ""}">
           <div class="plant-viewer-list">
             ${plantFiles.length ? `
               <div class="plant-link-group">
@@ -1330,6 +1339,7 @@
                 </div>
               </div>
             `).join("")}
+            ${folderNasPlantas}
           </div>
           ${plantImages.length ? `
             <div class="plant-viewer-preview" data-plant-open role="button" tabindex="0" aria-label="Abrir a planta em tela cheia">

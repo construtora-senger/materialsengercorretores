@@ -36,6 +36,16 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Folder em PDF também embaixo das plantas (v392)
+
+Pedido do dono (8/10/2026), com o print do Premium Office no computador: um
+link para baixar o folder em PDF logo abaixo da lista de plantas. Virou o
+grupo **"Folder"** no fim da lista do visor de plantas ("Baixar folder em
+PDF" no modo corretor, "Ver apresentação completa" no modo cliente, como o
+link da faixa escura). Só aparece quando o empreendimento tem `folder`
+cadastrado — **o Premium Office ainda não tem**: o PDF entra pelo painel, em
+Materiais > Folder e vídeo.
+
 ## Box vendido não é conferido — nem área, nem para quem (v390)
 
 Pedido do dono (8/10/2026), com o print do Personalité ("65 box sem área
