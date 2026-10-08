@@ -535,7 +535,7 @@ const EMPREENDIMENTOS = [
     },
     hero: "assets/po-render-3.webp",
     folder: "",
-    video: "",
+    video: "assets/premium-office/video.mp4",
     destaque: true,
     tagline: "Não é só um moderno centro clínico — é o futuro da área da saúde de Carazinho.",
     localizacao: "Rua Cipriano da Luz — em frente à Praça do Hospital de Clínicas de Carazinho.",
