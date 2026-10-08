@@ -36,6 +36,46 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A página do empreendimento no modelo E (v385)
+
+Pedido do dono (8/10/2026), com o print do Personalité no celular: *"será que
+conseguimos melhorar essa abertura, início, composição, andamento das infos?"*.
+Mostrei quatro modelos desenhados (A limpo, B cartão, C compacto, D premium); ele
+gostou do C e do D, pediu uma mistura dos dois — o **modelo E** — viu também a
+versão de computador e mandou aplicar em todos os empreendimentos.
+
+**Ordem da página (link do empreendimento e da seleção, corretor e cliente):**
+
+1. **foto sozinha** no topo (230 px no celular, 420 no computador), só com o
+   "← Voltar" quando há para onde voltar;
+2. **faixa escura** (`.detail-faixa`): categoria, nome, frase do prédio, os
+   links "Ver localização →", vídeo e folder, e **três quadradinhos** — etapa
+   (`statusLabel`), pagamento (`condicoesDe`) e cidade. No computador o texto
+   fica à esquerda e os quadradinhos à direita. Os botões da equipe (WhatsApp,
+   enviar link, PDF) ficam embaixo, na mesma faixa, e só no modo corretor;
+3. **Unidades e valores**, em lista sóbria: nome da tipologia com as medidas,
+   uma linha escura embaixo e as unidades em linhas finas, valor em preto;
+4. **Imagens e planta** numa seção só: grade de miniaturas (cada uma abre o
+   visor em tela cheia) e a planta ao lado no computador, embaixo no celular;
+5. **Sobre o empreendimento**: o texto e as características em lista com ✓
+   (uma coluna no celular, duas no computador);
+6. vídeo, quando houver;
+7. **o RI no rodapé**, em letra pequena (`.detail-legal`).
+
+**Saíram:** o quadro "Resumo comercial" (a etapa foi para os quadradinhos e o
+RI para o rodapé), a nota de pagamento dentro do "Sobre", a foto grande com
+faixa de miniaturas e o ícone por palavra de cada característica
+(`iconeDeDiferencial` foi apagado — agora é o ✓ verde do modelo).
+
+**A ficha de uma unidade (`?u=`) mantém a ordem da v301** (ficha, planta da
+unidade, fotos, sobre, vídeo) e ganhou o mesmo topo, **sem os quadradinhos e
+sem o RI no rodapé** — a ficha já diz entrega, pagamento e registro. O
+"Localização" do desenho era uma das fotos da galeria; no site a localização
+segue sendo o link do Google Maps, na faixa escura.
+
+Toda a regra visual mora no **fim do `styles.css`** (bloco "v385"), depois dos
+dois `@media 720px` de cima, de propósito.
+
 ## Sem "a partir de" nem "Preço inicial" na página do empreendimento (v383, v384)
 
 Pedido do dono (8/10/2026), com o print do celular: o cabeçalho de cada
@@ -1521,6 +1561,11 @@ referência. Vale a regra geral: **nunca troque um `sticky`/`relative` por
 `static` num elemento que tem filho absoluto.**
 
 ## O celular ganhou três layouts escolhidos pelo dono (v237)
+
+> **REGRA ANTIGA — substituída por "A página do empreendimento no modelo E
+> (v385)", em REGRAS ATUAIS.** O "só o ícone" das características e o "preço
+> em destaque" do resumo comercial não existem mais; o cabeçalho da tipologia
+> também já não tem o "a partir de" (v383).
 
 Mostrei quatro modelos de cada parte em imagem e ele escolheu; o que está no ar
 é a escolha dele, não a minha.
