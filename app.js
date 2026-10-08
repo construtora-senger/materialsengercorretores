@@ -1194,7 +1194,6 @@
 
     const media = mediaFor(emp);
     const local = LOCAIS[emp.id] || {};
-    const minimum = minPrice(emp);
     const statusClass = emp.status === "pronto" ? "pronto" : "obra";
     // Link do cliente com unidade (?cliente&u=501): a pagina mostra so essa
     // unidade — sem os precos das demais nem as plantas das outras tipologias.
@@ -1407,9 +1406,7 @@
               ${focusRange ? `
                 <div class="fact-card"><span>Unidades selecionadas</span><strong>${focusItems.length}</strong></div>
                 <div class="fact-card destaque"><span>Valores</span><strong class="price-value">${focusRange}</strong></div>
-              ` : `
-                <div class="fact-card destaque"><span>Preço inicial</span><strong class="price-value">${minimum ? money(minimum) : "Sob consulta"}</strong></div>
-              `}
+              ` : ""}
               <div class="fact-card"><span>Registro</span><strong>${escapeHtml((emp.ri || []).join(" · ") || "Não informado")}</strong></div>
             </div>
           </article>`;
@@ -1723,7 +1720,7 @@
           ${chips.length ? `<div class="unit-group-chips">${chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}</div>` : ""}
           ${group.obs ? `<p class="unit-group-obs">${escapeHtml(group.obs)}</p>` : ""}
         </div>
-        ${cantoDaGaveta(units, false)}
+        ${cantoDaGaveta()}
       </summary>
     `;
   }
@@ -1775,19 +1772,14 @@
     return `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${desenho}</svg>`;
   }
 
-  // O canto direito do cabecalho: o menor valor e a setinha.
-  // v107 continua valendo — NAO se diz quantas unidades ha, so a partir de
-  // quanto. Dizer quantas sobraram tira a urgencia da venda.
-  // v383 — a tipologia nao mostra mais o "a partir de" (comPreco = false):
-  // pedido do dono, o valor no cabecalho repetia o da primeira unidade logo
-  // abaixo e confundia. Ficam so as unidades, cada uma com o seu valor. A
-  // quadra do loteamento continua com ele.
-  function cantoDaGaveta(units = [], comPreco = true) {
-    const precos = units.map((it) => it.price).filter((preco) => preco > 0);
-    const desde = comPreco && precos.length ? Math.min(...precos) : 0;
+  // O canto direito do cabecalho: so a setinha. v383/v384 — o "a partir de"
+  // saiu da tipologia e da quadra, a pedido do dono: o valor no cabecalho
+  // repetia o da primeira unidade logo abaixo e confundia. O valor fica so
+  // nas unidades (e nos lotes), cada um com o seu. Quantas ha continua fora
+  // (v107).
+  function cantoDaGaveta() {
     return `
       <div class="unit-group-aside">
-        ${desde ? `<span class="unit-group-preco"><span class="unit-group-desde">A partir de</span><strong class="price-value">${money(desde)}</strong></span>` : ""}
         <span class="unit-group-toggle"></span>
       </div>
     `;
@@ -1861,7 +1853,7 @@
                   return ruas.length ? `<div class="unit-group-chips">${ruas.map((rua) => `<span>${escapeHtml(rua)}</span>`).join("")}</div>` : "";
                 })()}
               </div>
-              ${cantoDaGaveta(lotes)}
+              ${cantoDaGaveta()}
             </summary>
             <table class="units-table">
               <thead><tr><th>Lote</th><th>Área</th><th>Rua</th><th>Status</th><th>Valor</th><th></th></tr></thead>
@@ -2885,7 +2877,6 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     // O PDF sai assinado por quem gerou; sem dados preenchidos, vale o contato da empresa.
     const contato = [assinaturaTexto() || META.contato?.telefones?.[0], META.contato?.instagram, META.contato?.site].filter(Boolean).join(" · ");
     const prazo = semPonto(emp.entrega || emp.statusLabel || "");
-    const minimo = minPrice(emp);
     const media = mediaFor(emp);
     const isPlant = (item) => /planta/i.test(`${item?.src || ""} ${item?.legenda || ""}`);
     const photos = media.filter((item) => !isPlant(item) && !/\.pdf(?:$|\?)/i.test(item.src || "")).slice(0, 8);
@@ -2914,7 +2905,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
         <div>
           <p class="ps-eyebrow">${escapeHtml(emp.cidade)} · ${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria)}</p>
           <h1>${escapeHtml(emp.nome)}</h1>
-          <p class="ps-meta">${escapeHtml(prazo)}${minimo ? ` · A partir de ${money(minimo)}` : ""} · Tabela ${escapeHtml(META.mesTabela || "")}</p>
+          <p class="ps-meta">${escapeHtml(prazo)} · Tabela ${escapeHtml(META.mesTabela || "")}</p>
           ${condicoesDe(emp) ? `<p class="ps-meta">Pagamento: ${escapeHtml(condicoesDe(emp))}</p>` : ""}
           <p class="ps-contact">${contato ? `${escapeHtml(contato)} — ` : ""}Valores e disponibilidade sujeitos a alteração sem aviso prévio. Imagens meramente ilustrativas.</p>
         </div>
