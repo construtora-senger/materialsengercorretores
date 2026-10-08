@@ -1286,35 +1286,22 @@
       .map(([chave, titulo]) => ({ titulo, itens: plantImages.filter((item) => secaoDaPlanta(item) === chave) }))
       .filter(({ itens }) => itens.length);
 
-    const THUMB_W = 84;
-    const THUMB_GAP = 10;
-    // A largura das miniaturas nao pode mais encolher a imagem principal: com 3
-    // fotos a galeria inteira ficava com 272px e nao se lia nada. Agora a faixa
-    // de miniaturas se acomoda embaixo de uma imagem de tamanho decente.
-    const stripWidth = photoMedia.length > 1
-      ? Math.max(photoMedia.length * THUMB_W + (photoMedia.length - 1) * THUMB_GAP, 720)
-      : 0;
-
+    // v385 — modelo E (escolhido pelo dono em 8/10/2026): as fotos viram uma
+    // grade de miniaturas, cada uma abre o visor em tela cheia. A foto grande
+    // com a faixa de miniaturas embaixo saiu.
+    const gradeDeFotos = photoMedia.length ? `
+        <div class="galeria-grade">
+          ${photoMedia.map((item, index) => `
+            <button class="galeria-foto" type="button" data-gallery-index="${index}" aria-label="Ver ${escapeHtml(item.legenda || emp.nome)} em tela cheia">
+              <img src="${escapeHtml(assetUrl(item.src))}" alt="${escapeHtml(item.legenda || emp.nome)}" loading="lazy">
+            </button>
+          `).join("")}
+        </div>` : "";
     const gallery = photoMedia.length ? `
       <section class="content-section">
-        <div class="section-title-row"><h2>Imagens</h2><p>${photoMedia.length} ${photoMedia.length === 1 ? "imagem disponível" : "imagens disponíveis"}</p></div>
-        <p class="section-note">${AVISO_FOTOS}</p>
-        <div class="gallery-showcase" data-gallery-showcase${stripWidth ? ` style="max-width:${stripWidth}px"` : ""}>
-          <div class="gallery-featured" data-gallery-open role="button" tabindex="0" aria-label="Abrir a imagem em tela cheia">
-            <img src="${escapeHtml(assetUrl(photoMedia[0].src))}" alt="${escapeHtml(photoMedia[0].legenda || emp.nome)}" data-gallery-featured>
-            ${photoMedia.length > 1 ? `<span class="gallery-counter" data-gallery-counter>1 / ${photoMedia.length}</span>` : ""}
-            <span class="image-zoom-hint">Toque para ver maior</span>
-          </div>
-          ${photoMedia.length > 1 ? `
-            <div class="gallery-strip">
-              ${photoMedia.map((item, index) => `
-                <button class="gallery-thumb ${index === 0 ? "active" : ""}" type="button" data-gallery-thumb="${index}" aria-label="Exibir ${escapeHtml(item.legenda || emp.nome)} na imagem principal">
-                  <img src="${escapeHtml(assetUrl(item.src))}" alt="" loading="lazy">
-                </button>
-              `).join("")}
-            </div>
-          ` : ""}
-        </div>
+        <div class="section-title-row"><h2>Imagens</h2></div>
+        <p class="section-note">Toque numa foto para ver maior. ${AVISO_FOTOS}</p>
+        ${gradeDeFotos}
       </section>
     ` : "";
 
@@ -1324,11 +1311,7 @@
     // para a posicao dentro do proprio grupo: humanizada e tecnica dividem o
     // mesmo visor.
     const plantButton = (item, rotulo) => `<button class="plant-link ${plantImages.indexOf(item) === 0 ? "active" : ""}" type="button" data-plant-preview="${plantImages.indexOf(item)}">${escapeHtml(item.legenda || rotulo)}</button>`;
-    const plantSection = (plantImages.length || plantFiles.length || plantaNota) ? `
-      <section class="content-section plant-section">
-        <div class="section-title-row"><h2>Plantas</h2></div>
-        ${plantaNota ? `<p class="section-note">${escapeHtml(plantaNota)}</p>` : ""}
-        ${(plantImages.length || plantFiles.length) ? `
+    const visorDePlantas = (plantImages.length || plantFiles.length) ? `
         <div class="plant-viewer${plantImages.length === 1 && !plantFiles.length ? " planta-unica" : ""}">
           <div class="plant-viewer-list">
             ${plantFiles.length ? `
@@ -1355,7 +1338,26 @@
             </div>
           ` : ""}
         </div>
-        ` : ""}
+    ` : "";
+    const temPlanta = Boolean(visorDePlantas || plantaNota);
+    const plantSection = temPlanta ? `
+      <section class="content-section plant-section">
+        <div class="section-title-row"><h2>Plantas</h2></div>
+        ${plantaNota ? `<p class="section-note">${escapeHtml(plantaNota)}</p>` : ""}
+        ${visorDePlantas}
+      </section>
+    ` : "";
+    // Pagina do empreendimento: fotos e planta numa secao so, a planta ao lado
+    // das fotos no computador e embaixo delas no celular.
+    const imagensEPlanta = (photoMedia.length || temPlanta) ? `
+      <section class="content-section plant-section imagens-e-planta">
+        <div class="section-title-row"><h2>${photoMedia.length && temPlanta ? "Imagens e planta" : photoMedia.length ? "Imagens" : "Plantas"}</h2></div>
+        ${photoMedia.length ? `<p class="section-note">Toque numa foto para ver maior. ${AVISO_FOTOS}</p>` : ""}
+        ${plantaNota ? `<p class="section-note">${escapeHtml(plantaNota)}</p>` : ""}
+        <div class="imagens-e-planta-grade${photoMedia.length && visorDePlantas ? " lado-a-lado" : ""}">
+          ${gradeDeFotos}
+          ${visorDePlantas}
+        </div>
       </section>
     ` : "";
 
@@ -1370,91 +1372,99 @@
                 <button class="button button-outline" type="button" id="share-emp-link">Enviar link</button>
                 <button class="button button-outline" type="button" id="print-detail">Gerar PDF</button>`;
     // Material comercial: so aparece quando existe mesmo. Sem folder nao ha
-    // botao de folder — nada de "em breve" ocupando lugar.
-    const acoesDeMaterial = `
-                ${local.mapsUrl ? `<a class="button button-outline" href="${escapeHtml(local.mapsUrl)}" target="_blank" rel="noopener">Ver localização</a>` : ""}
-                ${videosDoEmp(emp).length ? `<button class="button button-outline" type="button" id="watch-video">${videosDoEmp(emp).length > 1 ? "Assistir vídeos" : "Assistir vídeo"}</button>` : ""}
-                ${emp.folder ? `<a class="button button-outline" href="${escapeHtml(assetUrl(emp.folder))}" target="_blank" rel="noopener">${CLIENT_MODE ? "Ver apresentação completa" : "Baixar folder"}</a>` : ""}`;
+    // link de folder — nada de "em breve" ocupando lugar. v385: viraram links
+    // discretos na faixa escura, como no modelo E.
+    const acoesDeMaterial = [
+      local.mapsUrl ? `<a class="faixa-link" href="${escapeHtml(local.mapsUrl)}" target="_blank" rel="noopener">Ver localização →</a>` : "",
+      videosDoEmp(emp).length ? `<button class="faixa-link" type="button" id="watch-video">${videosDoEmp(emp).length > 1 ? "Assistir vídeos" : "Assistir vídeo"} →</button>` : "",
+      emp.folder ? `<a class="faixa-link" href="${escapeHtml(assetUrl(emp.folder))}" target="_blank" rel="noopener">${CLIENT_MODE ? "Ver apresentação completa" : "Baixar folder"} →</a>` : "",
+    ].filter(Boolean).join("");
     // O "voltar" so faz sentido para quem tem para onde voltar: a equipe, e o
     // cliente que recebeu uma LISTA de empreendimentos.
     const podeVoltar = !CLIENT_MODE || Boolean(CLIENT_LIST_IDS);
 
-    const apresentacao = `
-          <article class="info-card">
-            <p class="eyebrow dark">Apresentação</p>
-            <h2>Sobre o empreendimento</h2>
-            <p>${escapeHtml(emp.localizacao || emp.tagline || "Consulte a equipe comercial para mais informações.")}</p>
-            ${condicoesDe(emp) ? `<div class="condition-note"><strong>Pagamento:</strong> ${escapeHtml(condicoesDe(emp))}</div>` : ""}
-            ${(emp.diferenciais || []).length ? `
-              <div class="info-differentials">
-                ${emp.diferenciais.map((item) => `
-                  <div class="info-differential">
-                    <span class="diff-icone" aria-hidden="true">${iconeDeDiferencial(item.titulo)}</span>
-                    <div><h4>${escapeHtml(item.titulo)}</h4><p>${escapeHtml(item.desc)}</p></div>
-                  </div>
-                `).join("")}
-              </div>
-            ` : ""}
-          </article>`;
+    // v385 — modelo E: os tres quadradinhos da faixa escura (etapa, pagamento
+    // e cidade). Substituem o "Resumo comercial" e a nota de pagamento que
+    // ficava dentro do "Sobre". Na ficha de UMA unidade eles nao aparecem: a
+    // propria ficha ja diz entrega, pagamento e registro.
+    const ICONES_DA_FAIXA = {
+      etapa: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/>',
+      pagamento: '<rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 10h19M6.5 15h4"/>',
+      local: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    };
+    const fato = (icone, texto) => texto ? `
+              <div class="detail-fato">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES_DA_FAIXA[icone]}</svg>
+                <span>${escapeHtml(texto)}</span>
+              </div>` : "";
+    const fatos = focusItem ? "" : [
+      fato("etapa", emp.statusLabel || emp.entrega || ""),
+      fato("pagamento", condicoesDe(emp)),
+      fato("local", emp.cidade || ""),
+    ].join("");
 
-    const resumoComercial = `
-          <article class="info-card">
-            <p class="eyebrow dark">Resumo comercial</p>
-            <h2>Informações principais</h2>
-            <div class="fact-grid">
-              <div class="fact-card"><span>Etapa</span><strong>${escapeHtml(emp.entrega || emp.statusLabel || "—")}</strong></div>
-              ${focusRange ? `
-                <div class="fact-card"><span>Unidades selecionadas</span><strong>${focusItems.length}</strong></div>
-                <div class="fact-card destaque"><span>Valores</span><strong class="price-value">${focusRange}</strong></div>
-              ` : ""}
-              <div class="fact-card"><span>Registro</span><strong>${escapeHtml((emp.ri || []).join(" · ") || "Não informado")}</strong></div>
-            </div>
-          </article>`;
+    const marcaCheck = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+    const apresentacao = `
+      <section class="content-section sobre-secao">
+        <div class="section-title-row"><h2>Sobre o empreendimento</h2></div>
+        <p class="sobre-texto">${escapeHtml(emp.localizacao || emp.tagline || "Consulte a equipe comercial para mais informações.")}</p>
+        ${(emp.diferenciais || []).length ? `
+          <ul class="sobre-lista">
+            ${emp.diferenciais.map((item) => `
+              <li>${marcaCheck}<p><strong>${escapeHtml(item.titulo)}:</strong> ${escapeHtml(item.desc)}</p></li>
+            `).join("")}
+          </ul>
+        ` : ""}
+      </section>`;
+
+    // O registro de incorporacao desce para o rodape, em letra pequena: e
+    // informacao legal, nao o assunto da pagina. Na ficha da unidade ele ja
+    // esta dentro da ficha. O aviso de "valores sujeitos a alteracao" nao se
+    // repete aqui: o rodape do site ja o traz logo abaixo.
+    const rodapeLegal = (emp.ri || []).length ? `
+        <p class="detail-legal">${escapeHtml(emp.ri.join(" · "))}</p>` : "";
 
     // UMA unidade enviada ao cliente: a pagina e a ficha dela. A ordem muda —
     // identificacao e resumo, planta DAQUELA unidade, fotos, diferenciais,
     // video e folder — e a tabela de unidades sai, porque com uma linha so ela
     // repetia o que a ficha ja diz melhor. O link do empreendimento inteiro
-    // continua exploratorio, com a vitrine de sempre.
+    // continua exploratorio. v385 — ordem do modelo E: unidades e valores logo
+    // depois da faixa, depois imagens e planta, o "Sobre", o video e o RI.
     const miolo = focusItem ? `
         <div class="detail-summary-grid ficha-grid">
           ${fichaDaUnidade(emp, focusItem)}
         </div>
         ${plantSection}
         ${gallery}
-        <div class="detail-summary-grid">${apresentacao}</div>
+        ${apresentacao}
         ${videoSection}
     ` : `
-        <div class="detail-summary-grid">
-          ${apresentacao}
-          ${resumoComercial}
-        </div>
         ${inventory}
-        ${gallery}
+        ${imagensEPlanta}
+        ${apresentacao}
         ${videoSection}
-        ${plantSection}
+        ${rodapeLegal}
     `;
 
     detail.innerHTML = `
       <section class="detail-hero">
         <img class="detail-hero-image" src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}">
-        <div class="shell detail-hero-content">
-          ${podeVoltar ? `<button class="button detail-back" type="button" id="detail-back">← ${CLIENT_MODE ? "Voltar aos imóveis" : "Voltar ao portfólio"}</button>` : ""}
-          <div class="detail-title-row">
-            <div>
-              <div class="detail-badges">
-                <span class="badge badge-stage ${statusClass}">${escapeHtml(emp.statusLabel || emp.entrega || "")}</span>
-                <span class="badge">${escapeHtml(emp.cidade)}</span>
-                <span class="badge">${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria)}</span>
-              </div>
-              <h1>${escapeHtml(emp.nome)}${focusItem ? ` — ${escapeHtml(itemLabel(focusItem))}` : ""}</h1>
-              <p>${escapeHtml(emp.tagline || emp.entrega || "Consulte informações e disponibilidade.")}</p>
-              <div class="detail-actions">${acoesDaEquipe}${acoesDeMaterial}
-              </div>
-            </div>
+        ${podeVoltar ? `<div class="shell detail-hero-content"><button class="button detail-back" type="button" id="detail-back">← ${CLIENT_MODE ? "Voltar aos imóveis" : "Voltar ao portfólio"}</button></div>` : ""}
+      </section>
+      <section class="detail-faixa">
+        <div class="shell detail-faixa-grid${fatos ? "" : " sem-fatos"}">
+          <div class="detail-faixa-texto">
             ${emp.logo ? `<img class="detail-brand-logo" src="${escapeHtml(assetUrl(emp.logo))}" alt="Logo ${escapeHtml(emp.nome)}">` : ""}
+            <p class="detail-faixa-eyebrow">${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria || "")}</p>
+            <h1>${escapeHtml(emp.nome)}${focusItem ? ` — ${escapeHtml(itemLabel(focusItem))}` : ""}</h1>
+            <p>${escapeHtml(emp.tagline || emp.entrega || "Consulte informações e disponibilidade.")}</p>
+            ${focusRange ? `<p class="detail-faixa-selecao">${focusItems.length} unidades selecionadas · <strong class="price-value">${focusRange}</strong></p>` : ""}
+            ${acoesDeMaterial ? `<div class="detail-faixa-links">${acoesDeMaterial}</div>` : ""}
           </div>
+          ${fatos ? `<div class="detail-fatos">${fatos}</div>` : ""}
         </div>
+        ${acoesDaEquipe ? `<div class="shell detail-actions">${acoesDaEquipe}
+        </div>` : ""}
       </section>
 
       <div class="shell detail-content">${miolo}</div>
@@ -1475,22 +1485,10 @@
       const section = detail.querySelector("[data-video-section]");
       if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
     });
-    const featuredImage = detail.querySelector("[data-gallery-featured]");
-    const featuredCounter = detail.querySelector("[data-gallery-counter]");
-    let galleryIndex = 0;
-    ligarAberturaDoVisor(detail.querySelector("[data-gallery-open]"), () => photoMedia, () => galleryIndex, AVISO_FOTOS);
-    detail.querySelectorAll("[data-gallery-thumb]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const index = Number(button.dataset.galleryThumb);
-        const item = photoMedia[index];
-        if (!item || !featuredImage) return;
-        galleryIndex = index;
-        featuredImage.src = assetUrl(item.src);
-        featuredImage.alt = item.legenda || emp.nome;
-        if (featuredCounter) featuredCounter.textContent = `${index + 1} / ${photoMedia.length}`;
-        detail.querySelectorAll("[data-gallery-thumb]").forEach((thumb) => thumb.classList.remove("active"));
-        button.classList.add("active");
-      });
+    // Cada miniatura abre o visor em tela cheia, ja na foto tocada.
+    detail.querySelectorAll("[data-gallery-index]").forEach((botao) => {
+      const indice = Number(botao.dataset.galleryIndex);
+      botao.addEventListener("click", () => abrirVisor(photoMedia, indice, AVISO_FOTOS));
     });
     const plantPreviewImage = detail.querySelector("[data-plant-preview-image]");
     let plantIndex = 0;
@@ -1723,53 +1721,6 @@
         ${cantoDaGaveta()}
       </summary>
     `;
-  }
-
-  // Um icone para cada diferencial, escolhido pelo titulo que o dono escreveu
-  // no data.js — sao 34 titulos diferentes e crescendo, entao a escolha e por
-  // palavra, nunca por lista fixa: titulo novo cai no icone generico e nada
-  // quebra. Traco simples, na cor verde clara da paleta (o CSS pinta).
-  const DESENHOS = {
-    piscina: '<path d="M3 18c1.5 0 1.5 1 3 1s1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1"/><path d="M7 13V6a2 2 0 0 1 4 0"/><path d="M13 13V6a2 2 0 0 1 4 0"/><path d="M7 10h10"/>',
-    halter: '<path d="M4 9v6M20 9v6M7 6v12M17 6v12M7 12h10"/>',
-    taca: '<path d="M5 21h14M12 21v-6M6 4h12l-2.5 7a4 4 0 0 1-7 0z"/>',
-    maquina: '<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4"/><path d="M8 7h2"/>',
-    pincel: '<path d="M4 20h16M6 16l9-9 3 3-9 9H6z"/><path d="M14 5l2-2 3 3-2 2"/>',
-    escudo: '<path d="M12 3l7 3v6c0 4-3 7.5-7 9-4-1.5-7-5-7-9V6z"/><path d="M9.5 12l1.8 1.8L15 10"/>',
-    pin: '<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
-    carro: '<path d="M4 16v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2M16 16v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2"/><path d="M3 16v-4l2-5h14l2 5v4z"/><path d="M7 13h.01M17 13h.01"/>',
-    folha: '<path d="M5 19C5 10 12 5 20 5c0 8-5 14-14 14z"/><path d="M9 15c2-3 5-5 8-6"/>',
-    acessivel: '<circle cx="12" cy="5" r="1.6"/><path d="M9 9h6M12 9v5h4l2 5"/><path d="M12 14a4 4 0 1 1-4 4"/>',
-    predio: '<path d="M4 21V6l8-3 8 3v15"/><path d="M9 21v-5h6v5"/><path d="M9 9h.01M15 9h.01M9 12.5h.01M15 12.5h.01"/>',
-    sol: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-    pessoas: '<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 11a3 3 0 1 0-1.5-5.6"/><path d="M17.5 20a5.5 5.5 0 0 0-2.2-4.4"/>',
-    sofa: '<path d="M4 12V9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3"/><path d="M3 12a2 2 0 0 1 2 2v3h14v-3a2 2 0 0 1 2-2"/><path d="M6 17v2M18 17v2"/>',
-    diamante: '<path d="M6 3h12l3 6-9 12L3 9z"/><path d="M3 9h18M9 3l-3 6 6 12M15 3l3 6-6 12"/>',
-    estrela: '<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9L3.5 9.7l5.9-.8z"/>',
-  };
-  // A ordem importa: a primeira palavra que casar decide.
-  const PALAVRAS_DO_ICONE = [
-    [/piscina|aquat|lazer/, "piscina"],
-    [/fitness|academia|esporte|wellness|bem-?estar|pilates|sauna/, "halter"],
-    [/festa|sal[aã]o|salões|lounge|sunset|pub|churrasq/, "taca"],
-    [/pratic|lavanderia|comodidade/, "maquina"],
-    [/acabamento|personaliz|design|led/, "pincel"],
-    [/seguran|portaria|monitor/, "escudo"],
-    [/localiza/, "pin"],
-    [/garagem|box|ve[ií]cul|el[eé]tric|estacion/, "carro"],
-    [/energia|renov[aá]vel|sustent|solar/, "folha"],
-    [/acess[ií]vel|acessibilidade|wc|maca|elevador/, "acessivel"],
-    [/rooftop|terra[cç]o|sol/, "sol"],
-    [/conviv|care|fam[ií]lia|kids|playground|pessoas/, "pessoas"],
-    [/conforto|aquec|churrasq|sacada|living/, "sofa"],
-    [/alto padr[aã]o|refinad|exclusiv|premium|luxo/, "diamante"],
-    [/estrutura|hall|entrada|t[eé]rreo|comercial|tipologia|predio|pr[eé]dio/, "predio"],
-  ];
-  function iconeDeDiferencial(titulo) {
-    const limpo = String(titulo || "").toLowerCase();
-    const achado = PALAVRAS_DO_ICONE.find(([regra]) => regra.test(limpo));
-    const desenho = DESENHOS[achado ? achado[1] : "estrela"];
-    return `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${desenho}</svg>`;
   }
 
   // O canto direito do cabecalho: so a setinha. v383/v384 — o "a partir de"
