@@ -36,6 +36,26 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Área global dos box livres do Personalité e do Quality (v393)
+
+O dono mandou as tabelas de vendas (8/10/2026): *"já mandei plantas de box e
+planilhas com metragens em outros momentos"*. A **área global** dos box nunca
+tinha entrado no cadastro desses dois prédios; entrou agora, **só nos box que
+não estão vendidos** (regra da v390): Personalité 111, 130, 134, 136 e 213;
+Quality 01, 12, 32, 40, 42, 51, 52, 57, 59 e 60. Do arquivo saiu só a
+metragem — nome, CPF, telefone e valor de venda ficaram de fora.
+
+A **área privativa não foi mexida**. No Personalité, a da tabela de vendas
+difere da do cadastro em quatro desses box (111: 25,52 × 25,02; 134: 17,93 ×
+17,47; 136: 25,50 × 25,00; 213: 25,52 × 25,02) e em vários vendidos: o
+cadastro veio de outra fonte (a planta de box). Só troca se o dono mandar.
+No Quality as duas fontes batem.
+
+**Prime:** a tabela não veio; o box 112 segue sem área global.
+**Renaissance · box 203:** o cadastro tem 52,03 / 41,13 m² (os mesmos números
+do box 319); a tabela de vendas diz 75,84 / 56,66. Não foi corrigido sem o
+dono confirmar.
+
 ## Folder em PDF também embaixo das plantas (v392)
 
 Pedido do dono (8/10/2026), com o print do Premium Office no computador: um
