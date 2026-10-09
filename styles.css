@@ -1380,3 +1380,25 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 @media (max-width: 720px) {
   .detail-faixa .detail-actions #share-emp-prices { grid-column: 1 / -1; }
 }
+
+/* v407 — Unidades e valores em abas (modelo B), em todo empreendimento que
+   tem `aba` nos grupos, e o "a partir de" de volta ao lado do "Ver unidades".
+   No celular a fileira de abas desliza de lado, sem mexer na pagina. */
+.abas-tipologia { display: flex; gap: 4px; margin: 0 0 18px; border-bottom: 2px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.abas-tipologia::-webkit-scrollbar { display: none; }
+.aba-tipologia { flex: none; margin-bottom: -2px; padding: 11px 18px; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted); font: 600 15px var(--font-body); white-space: nowrap; cursor: pointer; }
+.aba-tipologia:hover { color: var(--ink); }
+.aba-tipologia[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--brand); }
+.aba-tipologia:focus-visible { outline: 3px solid var(--brand); outline-offset: -3px; }
+.painel-tipologia[hidden] { display: none; }
+.detail-view #unidades .unit-group-aside { display: flex; flex-direction: row; align-items: center; gap: 14px; }
+.unit-group-preco { white-space: nowrap; font-size: 13px; }
+.unit-group-desde { color: var(--muted); font-weight: 500; }
+.detail-view #unidades .unit-group-preco .price-value { color: var(--ink); font-size: 15px; font-weight: 700; }
+@media (max-width: 720px) {
+  .abas-tipologia { margin-bottom: 12px; gap: 0; }
+  .aba-tipologia { padding: 10px 11px; font-size: 13px; }
+  .detail-view #unidades .unit-group-aside { gap: 8px; }
+  .unit-group-preco { display: grid; justify-items: end; font-size: 11px; line-height: 1.25; }
+  .detail-view #unidades .unit-group-preco .price-value { font-size: 13.5px; }
+}

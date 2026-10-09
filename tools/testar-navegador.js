@@ -135,7 +135,9 @@ async function teste(nome, fn) {
   });
 
   await teste("cada final do Boulevard virou um quadro próprio", async () => {
-    const texto = await pg.locator("#unidades").innerText();
+    // textContent, nao innerText: desde a v407 os finais 01 e 02 moram na aba
+    // "3 suítes", escondida ate o toque.
+    const texto = await pg.locator("#unidades").evaluate((el) => el.textContent);
     const finais = ["final 01", "final 02", "final 03", "final 04"].filter((f) => texto.includes(f));
     return finais.length === 4 ? "" : `so apareceram ${finais.join(", ") || "nenhum"}`;
   });
@@ -151,17 +153,53 @@ async function teste(nome, fn) {
       // solto do quadro: o bloco dos alugados traz "Aluguel R$ 1.400,00" antes
       // do preco, e o primeiro "R$" da caixa seria o do aluguel. Desde a v383
       // o cabecalho da tipologia nao traz mais o "a partir de".
-      const valores = await pg.evaluate(() =>
-        [...document.querySelectorAll("#unidades details.unit-group")]
-          .map((d) => [...d.querySelectorAll("tr[data-unit-code] .price-value")]
-            .map((el) => parseInt(el.textContent.replace(/\D+/g, ""), 10))
-            .filter((v) => !Number.isNaN(v) && v > 0))
-          .map((lista) => (lista.length ? Math.min(...lista) : null))
-          .filter((v) => v !== null));
-      const crescente = valores.every((v, i) => i === 0 || v >= valores[i - 1]);
-      if (!crescente) ruins.push(`${id}: ${valores.join(" > ")}`);
+      // v407 — com abas, a ordem crescente vale dentro de cada aba.
+      const porAba = await pg.evaluate(() => {
+        const paineis = [...document.querySelectorAll("#unidades .painel-tipologia")];
+        return (paineis.length ? paineis : [document.querySelector("#unidades")]).map((painel) =>
+          [...painel.querySelectorAll("details.unit-group")]
+            .map((d) => [...d.querySelectorAll("tr[data-unit-code] .price-value")]
+              .map((el) => parseInt(el.textContent.replace(/\D+/g, ""), 10))
+              .filter((v) => !Number.isNaN(v) && v > 0))
+            .map((lista) => (lista.length ? Math.min(...lista) : null))
+            .filter((v) => v !== null));
+      });
+      porAba.forEach((valores) => {
+        const crescente = valores.every((v, i) => i === 0 || v >= valores[i - 1]);
+        if (!crescente) ruins.push(`${id}: ${valores.join(" > ")}`);
+      });
     }
     return ruins.length ? `fora de ordem — ${ruins.join(" | ")}` : "";
+  });
+
+  // v407 — modelo B, escolhido pelo dono: abas na ordem dele e o "a partir
+  // de" ao lado do "Ver unidades".
+  await teste("o Renaissance abre em abas, salas comerciais por último", async () => {
+    await pg.goto(`${base}/#emp-renaissance`, { waitUntil: "networkidle" });
+    await pg.waitForTimeout(400);
+    const abas = await pg.$$eval(".aba-tipologia", (els) => els.map((el) => el.textContent.trim()));
+    const esperado = "2 suítes | 3 suítes frente | 3 suítes superiores | Salas comerciais";
+    if (abas.join(" | ") !== esperado) return `abas: ${abas.join(" | ")}`;
+    const visiveis = await pg.$$eval(".painel-tipologia", (els) => els.filter((el) => !el.hidden).length);
+    if (visiveis !== 1) return `${visiveis} grupos na tela ao mesmo tempo`;
+    await pg.locator(".aba-tipologia", { hasText: "Salas comerciais" }).click();
+    const titulos = await pg.locator(".painel-tipologia:not([hidden]) .unit-group-header h3").allInnerTexts();
+    return titulos.length === 1 && /Salas comerciais/.test(titulos[0]) ? "" : `a aba das salas mostrou: ${titulos.join(" / ")}`;
+  });
+
+  await teste("o cabeçalho da tipologia traz o \"a partir de\" ao lado do Ver unidades", async () => {
+    const texto = await pg.locator(".painel-tipologia:not([hidden]) .unit-group-aside").first().innerText();
+    return /a partir de\s*R\$\s*1\.142\.900/.test(texto) ? "" : `o canto diz: ${texto.replace(/\s+/g, " ")}`;
+  });
+
+  await teste("Personalité e Prime, com uma tipologia só, ficam sem abas", async () => {
+    const com = [];
+    for (const id of ["personalite", "prime"]) {
+      await pg.goto(`${base}/#emp-${id}`, { waitUntil: "networkidle" });
+      await pg.waitForTimeout(300);
+      if (await pg.locator(".abas-tipologia").count()) com.push(id);
+    }
+    return com.length ? `com abas: ${com.join(", ")}` : "";
   });
 
   await teste("compartilhar unidade abre a escolha de envio", async () => {
@@ -488,6 +526,10 @@ async function teste(nome, fn) {
       [...new Set(els.map((el) => el.dataset.unitCode))]);
     const sobrando = codigos.filter((c) => !["501", "801"].includes(c));
     return sobrando.length ? `apareceram tambem: ${sobrando.join(", ")}` : "";
+  });
+  // v407 — 501 e 801 sao da mesma aba ("3 suítes"): uma aba sozinha nao aparece.
+  await teste("seleção de um grupo só vem sem abas", async () => {
+    return (await sel.locator(".abas-tipologia").count()) ? "apareceram abas com um grupo so" : "";
   });
   await sel.close();
 
