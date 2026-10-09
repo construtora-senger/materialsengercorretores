@@ -36,6 +36,40 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Unidades e valores em abas, com o "a partir de" (v407)
+
+Pedido do dono (9/10/2026), com o print do Renaissance no PC: *"vamos mudar a
+ordenação dos produtos"* — a lista de tipologias uma embaixo da outra *"ficou
+ruim de se achar"*. Ele quis os grupos separados (2 suítes, 3 suítes frente,
+3 suítes superior e salas comerciais por último), viu quatro modelos (A
+títulos, B abas, C colunas, D blocos com atalhos) e escolheu o **B**, para
+**todos os empreendimentos**. Aprovou as imagens antes de publicar.
+
+- **Abas.** Cada grupo do `data.js` diz a sua aba no campo **`aba`**; só a aba
+  escolhida fica na tela (`abasDeTipologia`, no `app.js`). Hoje:
+  Renaissance (2 suítes · 3 suítes frente · 3 suítes superiores · Salas
+  comerciais — cada casa suspensa vai com o apartamento de mesma suíte e
+  posição), Evolutti e Quality (2 dormitórios · 3 dormitórios), Boulevard
+  (2 dormitórios · 3 suítes), Premium Office (Demais pavimentos · 2º
+  pavimento). Ordem: da aba mais barata para a mais cara, **sala e loja sempre
+  por último**; dentro da aba segue a v321 (do mais barato ao mais caro).
+- **Sem abas** quando nenhum grupo tem `aba` (Personalité, Prime — uma
+  tipologia só à venda), quando sobra uma aba só (link do cliente com unidades
+  de um grupo só) e nos loteamentos. Tipologia nova sem `aba` num prédio que
+  tem abas cai numa aba com o próprio nome — **ao cadastrar grupo, preencha
+  `aba`**.
+- **"a partir de R$ …"** de volta no cabeçalho de cada tipologia e de cada
+  quadra, **à esquerda do "Ver unidades"/"Ver lotes"** (print do dono com o
+  lugar marcado: *"só aqui"*). Em todos os empreendimentos. O PDF, o resumo e a
+  mensagem continuam sem — não foi pedido.
+- No celular a fileira de abas desliza de lado. Link que abre uma unidade
+  ativa a aba dela antes de abrir a gaveta (`abrirGaveta`).
+
+Bloco "v407" no fim do `styles.css`.
+
+> **REGRA ANTIGA — substituída pela de cima:** a v383/v384 tiraram o "a partir
+> de" do cabeçalho da tipologia e da quadra.
+
 ## Os botões da equipe no empreendimento, no modelo C (v401)
 
 Pedido do dono (8/10/2026), com o print do Renaissance no PC: *"esses botões
@@ -291,6 +325,10 @@ Toda a regra visual mora no **fim do `styles.css`** (bloco "v385"), depois dos
 dois `@media 720px` de cima, de propósito.
 
 ## Sem "a partir de" nem "Preço inicial" na página do empreendimento (v383, v384)
+
+> **REGRA ANTIGA em parte — substituída por "Unidades e valores em abas, com
+> o \"a partir de\" (v407)":** o "a partir de" voltou ao cabeçalho da
+> tipologia e da quadra. O "Preço inicial" do resumo e o PDF seguem sem.
 
 Pedido do dono (8/10/2026), com o print do celular: o cabeçalho de cada
 tipologia trazia "A partir de R$ …" e logo embaixo vinham as unidades com o
