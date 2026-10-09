@@ -1577,6 +1577,9 @@
 
   // Abre a gaveta (tipologia ou quadra) que contem esta linha.
   function abrirGaveta(el) {
+    // v407 — a linha pode estar numa aba escondida: ativa a aba dela antes.
+    const painel = el.closest(".painel-tipologia");
+    if (painel && painel.hidden) ativarAbaDeTipologia(painel.parentElement, painel.id.replace("painel-tipologia-", ""));
     const gaveta = el.closest("details.unit-group");
     if (gaveta) gaveta.open = true;
   }
@@ -1696,31 +1699,80 @@
     // escolher, e no link do cliente ele recebeu unidades escolhidas, nao um
     // catalogo: nos dois casos ja abre aberta.
     const abertoDeSaida = blocos.length <= 1 || Boolean(focusKeys);
+    const abas = abasDeTipologia(blocos);
+
+    const renderBloco = ({ group, units }) => {
+      // v103 — a area da tipologia fica so no cabecalho. A coluna Area da tabela
+      // aparece apenas quando alguma unidade tem area diferente da do grupo.
+      const showArea = true;
+      // v251 — a coluna Garagem so aparece quando as unidades do quadro
+      // levam garagens diferentes; senao ela ja esta na etiqueta do topo.
+      const garagem = garagemComum(units);
+      const showGarage = !garagem && units.some((it) => it.garage);
+      return `
+        <details class="unit-group"${abertoDeSaida ? " open" : ""}>
+          ${renderGroupHeader(group, units, garagem)}
+          <table class="units-table${showGarage ? " com-garagem" : ""}">
+            <thead><tr><th>Unidade</th>${showArea ? "<th>Área</th>" : ""}${showGarage ? "<th>Garagem</th>" : ""}<th>Status</th><th>Valor</th><th></th></tr></thead>
+            <tbody>${units.map((item) => renderUnitRow(item, showArea, showGarage)).join("")}</tbody>
+          </table>
+          <div class="mobile-units">${units.map((item) => renderMobileUnit(item, showGarage)).join("")}</div>
+        </details>
+      `;
+    };
+
+    // v407 — modelo B: uma aba por grupo e so o grupo escolhido na tela.
+    const corpo = abas
+      ? `
+        <div class="abas-tipologia" role="tablist" aria-label="Tipologias">
+          ${abas.map((aba, i) => `<button type="button" role="tab" class="aba-tipologia" id="aba-tipologia-${i}" aria-controls="painel-tipologia-${i}" aria-selected="${i === 0}" data-aba-tipologia="${i}">${escapeHtml(aba.nome)}</button>`).join("")}
+        </div>
+        ${abas.map((aba, i) => `<div class="painel-tipologia" role="tabpanel" id="painel-tipologia-${i}" aria-labelledby="aba-tipologia-${i}"${i === 0 ? "" : " hidden"}>${aba.blocos.map(renderBloco).join("")}</div>`).join("")}
+      `
+      : blocos.map(renderBloco).join("");
 
     return `
       <section class="content-section" id="unidades">
         <div class="section-title-row"><h2>${focusItems ? (focusItems.length > 1 ? "Suas unidades" : "Sua unidade") : "Unidades e valores"}</h2><p>Toque na tipologia para ver as unidades</p></div>
-        ${blocos.map(({ group, units }) => {
-          // v103 — a area da tipologia fica so no cabecalho. A coluna Area da tabela
-          // aparece apenas quando alguma unidade tem area diferente da do grupo.
-          const showArea = true;
-          // v251 — a coluna Garagem so aparece quando as unidades do quadro
-          // levam garagens diferentes; senao ela ja esta na etiqueta do topo.
-          const garagem = garagemComum(units);
-          const showGarage = !garagem && units.some((it) => it.garage);
-          return `
-            <details class="unit-group"${abertoDeSaida ? " open" : ""}>
-              ${renderGroupHeader(group, units, garagem)}
-              <table class="units-table${showGarage ? " com-garagem" : ""}">
-                <thead><tr><th>Unidade</th>${showArea ? "<th>Área</th>" : ""}${showGarage ? "<th>Garagem</th>" : ""}<th>Status</th><th>Valor</th><th></th></tr></thead>
-                <tbody>${units.map((item) => renderUnitRow(item, showArea, showGarage)).join("")}</tbody>
-              </table>
-              <div class="mobile-units">${units.map((item) => renderMobileUnit(item, showGarage)).join("")}</div>
-            </details>
-          `;
-        }).join("")}
+        ${corpo}
       </section>
     `;
+  }
+
+  // v407 — AS ABAS DA PAGINA DO EMPREENDIMENTO. Pedido do dono (9/10/2026),
+  // com o print do Renaissance: a lista de tipologias uma embaixo da outra
+  // ficava ruim de achar. Ele escolheu o modelo B (abas) e mandou valer em
+  // todos. Cada grupo do data.js diz a sua aba no campo `aba`; a tipologia sem
+  // `aba` num empreendimento que tem abas cai numa aba com o proprio nome.
+  //
+  // Ordem das abas: da mais barata para a mais cara (o mesmo menor valor da
+  // v321), e sala e loja sempre por ultimo — no Renaissance isso da 2 suites,
+  // 3 suites frente, 3 suites superiores e Salas comerciais, como ele pediu.
+  // Dentro da aba os quadros seguem do mais barato para o mais caro.
+  //
+  // Sem abas quando nenhum grupo tem `aba` (Personalite, Prime) ou quando sobra
+  // uma aba so — no link do cliente com unidades de um grupo so, por exemplo.
+  function abasDeTipologia(blocos) {
+    if (!blocos.some((bloco) => bloco.group.aba)) return null;
+    const porNome = new Map();
+    blocos.forEach((bloco) => {
+      const nome = bloco.group.aba || bloco.group.tipo;
+      if (!porNome.has(nome)) porNome.set(nome, { nome, blocos: [] });
+      porNome.get(nome).blocos.push(bloco);
+    });
+    if (porNome.size < 2) return null;
+    const comercial = (aba) => (/\b(salas?|lojas?)\b/i.test(aba.nome) ? 1 : 0);
+    const menorPreco = (aba) => Math.min(...aba.blocos.flatMap((b) => b.units.map((it) => it.price || Number.MAX_SAFE_INTEGER)));
+    return [...porNome.values()].sort((a, b) => comercial(a) - comercial(b) || menorPreco(a) - menorPreco(b));
+  }
+
+  function ativarAbaDeTipologia(root, indice) {
+    root.querySelectorAll("[data-aba-tipologia]").forEach((aba) => {
+      aba.setAttribute("aria-selected", String(aba.dataset.abaTipologia === String(indice)));
+    });
+    root.querySelectorAll(".painel-tipologia").forEach((painel) => {
+      painel.hidden = painel.id !== `painel-tipologia-${indice}`;
+    });
   }
 
   // v103 — a unidade so tem area propria quando ela existe e e diferente da tipologia.
@@ -1753,19 +1805,21 @@
           ${chips.length ? `<div class="unit-group-chips">${chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}</div>` : ""}
           ${group.obs ? `<p class="unit-group-obs">${escapeHtml(group.obs)}</p>` : ""}
         </div>
-        ${cantoDaGaveta()}
+        ${cantoDaGaveta(units)}
       </summary>
     `;
   }
 
-  // O canto direito do cabecalho: so a setinha. v383/v384 — o "a partir de"
-  // saiu da tipologia e da quadra, a pedido do dono: o valor no cabecalho
-  // repetia o da primeira unidade logo abaixo e confundia. O valor fica so
-  // nas unidades (e nos lotes), cada um com o seu. Quantas ha continua fora
-  // (v107).
-  function cantoDaGaveta() {
+  // O canto direito do cabecalho: o "a partir de" e a setinha. v383/v384
+  // tinham tirado o valor da tipologia e da quadra; v407 — o dono pediu de
+  // volta, so ali, ao lado do "Ver unidades" (print de 9/10/2026). O PDF e o
+  // resumo continuam sem. Quantas ha continua fora (v107).
+  function cantoDaGaveta(units = []) {
+    const precos = units.map((it) => it.price).filter((preco) => preco > 0);
+    const desde = precos.length ? Math.min(...precos) : 0;
     return `
       <div class="unit-group-aside">
+        ${desde ? `<span class="unit-group-preco"><span class="unit-group-desde">a partir de</span> <strong class="price-value">${money(desde)}</strong></span>` : ""}
         <span class="unit-group-toggle"></span>
       </div>
     `;
@@ -1839,7 +1893,7 @@
                   return ruas.length ? `<div class="unit-group-chips">${ruas.map((rua) => `<span>${escapeHtml(rua)}</span>`).join("")}</div>` : "";
                 })()}
               </div>
-              ${cantoDaGaveta()}
+              ${cantoDaGaveta(lotes)}
             </summary>
             <table class="units-table">
               <thead><tr><th>Lote</th><th>Área</th><th>Rua</th><th>Status</th><th>Valor</th><th></th></tr></thead>
@@ -1900,6 +1954,7 @@
   }
 
   function bindInventoryEvents(root) {
+    root.querySelectorAll("[data-aba-tipologia]").forEach((aba) => aba.addEventListener("click", () => ativarAbaDeTipologia(aba.closest("#unidades"), aba.dataset.abaTipologia)));
     root.querySelectorAll("[data-share-item]").forEach((button) => button.addEventListener("click", () => openSendChoice(itemMap.get(button.dataset.shareItem))));
     root.querySelectorAll("[data-select-item]").forEach((button) => button.addEventListener("click", () => toggleSelection(button.dataset.selectItem)));
     root.querySelectorAll("[data-map-item]").forEach((button) => button.addEventListener("click", () => abrirMapaDoLote(itemMap.get(button.dataset.mapItem))));

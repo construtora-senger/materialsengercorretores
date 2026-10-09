@@ -119,6 +119,7 @@ const EMPREENDIMENTOS = [
       // assim que o dono fala delas: frente e superior, como nos outros aptos.
       {
         tipo: "Casa suspensa (3 suítes)",
+        aba: "3 suítes frente",
         sufixo: "frente",
         estoque: "3 suítes — frente",
         area: "358 a 385 m² global · 258 a 280 m² privativo",
@@ -131,6 +132,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Casa suspensa (3 suítes)",
+        aba: "3 suítes superiores",
         sufixo: "pavimentos superiores",
         estoque: "3 suítes — superiores",
         area: "306 m² global · 208 m² privativo",
@@ -143,6 +145,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "3 suítes — frente",
+        aba: "3 suítes frente",
         area: "180 m² global · 117 m² privativo",
         garagem: "1 box duplo",
         planta: "ren-planta-3s-frente-dir",
@@ -167,6 +170,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "3 suítes — pavimentos superiores",
+        aba: "3 suítes superiores",
         // No cartao do painel a linha e mais curta, para nao quebrar em duas.
         estoque: "3 suítes — superiores",
         area: "243 m² global · 159 m² privativo",
@@ -203,6 +207,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 suítes",
+        aba: "2 suítes",
         area: "130 m² global · 86 m² privativo",
         garagem: "1 box simples",
         planta: "ren-planta-2suites",
@@ -226,6 +231,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Casa suspensa (2 suítes)",
+        aba: "2 suítes",
         area: "205 m² global · 146 m² privativo",
         garagem: "1 box simples",
         planta: "ren-planta-504",
@@ -236,6 +242,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Salas comerciais — térreo",
+        aba: "Salas comerciais",
         // No painel, a contagem de estoque chama de "Sala comercial": nao e
         // apartamento e nao entra na divisao das vagas de garagem.
         estoque: "Sala comercial",
@@ -387,6 +394,7 @@ const EMPREENDIMENTOS = [
         // Lojas do terreo, as tres vendidas. Cada uma tem a sua metragem, por
         // isso a area vai na propria unidade e nao no grupo.
         tipo: "Lojas",
+        aba: "Lojas",
         planta: "evo-planta-terreo",
         unidades: [
           { apto: "Loja 101", status: "vendido", areaUnit: "148 m² global · 108 m² privativo" },
@@ -396,6 +404,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios (1 suíte)",
+        aba: "2 dormitórios",
         planta: "evo-p2",
         area: "99 m² global · 73 m² privativo",
         garagem: "1 box simples",
@@ -409,6 +418,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios (1 suíte)",
+        aba: "2 dormitórios",
         planta: "evo-p2",
         area: "99 m² global · 73 m² privativo",
         garagem: "1 box simples",
@@ -422,6 +432,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios (2 suítes)",
+        aba: "2 dormitórios",
         planta: "evo-p2",
         area: "118 m² global · 87 m² privativo",
         garagem: "1 box simples",
@@ -454,6 +465,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "3 dormitórios (3 suítes)",
+        aba: "3 dormitórios",
         planta: "evo-p3",
         area: "179 m² global · 132 m² privativo",
         garagem: "1 box duplo",
@@ -584,6 +596,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Salas comerciais",
+        aba: "2º pavimento",
         sufixo: "2º pavimento",
         area: "Áreas variadas",
         garagem: "1 box simples",
@@ -602,6 +615,7 @@ const EMPREENDIMENTOS = [
       // vendida) segue sem planta, e o painel cobra.
       {
         tipo: "Sala comercial",
+        aba: "Demais pavimentos",
         sufixo: "final 01",
         area: "115 m² global · 65 m² privativo",
         garagem: "1 box simples",
@@ -618,6 +632,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Sala comercial",
+        aba: "Demais pavimentos",
         sufixo: "final 02",
         area: "129 m² global · 73 m² privativo",
         garagem: "1 box simples",
@@ -629,6 +644,7 @@ const EMPREENDIMENTOS = [
       // 802 no estoque do painel e ja estao todas vendidas.
       {
         tipo: "Sala comercial",
+        aba: "Demais pavimentos",
         sufixo: "final 02",
         area: "Áreas variadas",
         garagem: "1 box simples",
@@ -644,6 +660,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Sala comercial",
+        aba: "Demais pavimentos",
         sufixo: "final 03",
         area: "54 m² global · 31 m² privativo",
         garagem: "1 box simples",
@@ -660,6 +677,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Sala comercial",
+        aba: "Demais pavimentos",
         sufixo: "final 04",
         area: "72 m² global · 40 m² privativo",
         garagem: "1 box simples",
@@ -676,6 +694,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "Sala comercial",
+        aba: "Demais pavimentos",
         sufixo: "final 05",
         area: "76 m² global · 43 m² privativo",
         garagem: "1 box simples",
@@ -797,6 +816,7 @@ const EMPREENDIMENTOS = [
     grupos: [
       {
         tipo: "3 suítes + lavabo",
+        aba: "3 suítes",
         sufixo: "final 01",
         area: "212 m² global · 149 m² privativo",
         garagem: "1 box duplo",
@@ -819,6 +839,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "3 suítes + lavabo",
+        aba: "3 suítes",
         sufixo: "final 02",
         area: "212 m² global · 149 m² privativo",
         garagem: "1 box duplo",
@@ -839,6 +860,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 suítes + lavabo",
+        aba: "2 dormitórios",
         sufixo: "final 04",
         area: "131 m² global · 93 m² privativo",
         garagem: "1 box duplo",
@@ -859,6 +881,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios (1 suíte)",
+        aba: "2 dormitórios",
         sufixo: "final 03",
         area: "127 m² global · 91 m² privativo",
         garagem: "1 box simples",
@@ -1396,6 +1419,7 @@ const EMPREENDIMENTOS = [
     grupos: [
       {
         tipo: "2 dormitórios c/ móveis",
+        aba: "2 dormitórios",
         area: "57 m² global · 43 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-57",
@@ -1403,6 +1427,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios c/ móveis",
+        aba: "2 dormitórios",
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-69",
@@ -1410,6 +1435,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios — já alugados",
+        aba: "2 dormitórios",
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-69",
@@ -1421,6 +1447,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "3 dormitórios — já alugados",
+        aba: "3 dormitórios",
         area: "87 m² global · 66 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-3d",
@@ -1433,6 +1460,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "3 dormitórios (1 suíte)",
+        aba: "3 dormitórios",
         area: "87 m² global · 66 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-3d",
@@ -1449,6 +1477,7 @@ const EMPREENDIMENTOS = [
       // disponivel — servem para o painel contar os dois blocos inteiros.
       {
         tipo: "2 dormitórios",
+        aba: "2 dormitórios",
         sufixo: "bloco A · final 02",
         area: "57 m² global · 43 m² privativo",
         garagem: "1 box simples",
@@ -1464,6 +1493,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios",
+        aba: "2 dormitórios",
         sufixo: "bloco A",
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
@@ -1489,6 +1519,7 @@ const EMPREENDIMENTOS = [
       },
       {
         tipo: "2 dormitórios",
+        aba: "2 dormitórios",
         sufixo: "bloco B",
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
