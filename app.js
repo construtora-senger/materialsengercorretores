@@ -1798,10 +1798,17 @@
       .filter(Boolean);
     const box = String(garagem === null ? group.garagem || "" : garagem).trim();
     if (box) chips.push(box);
+    // v408 — `titulo` troca o nome so neste cabecalho (pedido do dono, com o
+    // print do Renaissance: "Casa suspensa frente" e "Casa suspensa
+    // superior"). O titulo ja diz frente/superior, entao do sufixo fica so o
+    // "final 0X". Mensagem, PDF e ficha seguem com o `tipo`.
+    const sufixo = group.titulo
+      ? String(group.sufixo || "").split(" · ").filter((parte) => /^final\b/i.test(parte)).join(" · ")
+      : group.sufixo;
     return `
       <summary class="unit-group-header">
         <div class="unit-group-main">
-          <h3>${escapeHtml(group.tipo)}${group.sufixo ? ` <span class="unit-group-sufixo">${escapeHtml(group.sufixo)}</span>` : ""}</h3>
+          <h3>${escapeHtml(group.titulo || group.tipo)}${sufixo ? ` <span class="unit-group-sufixo">${escapeHtml(sufixo)}</span>` : ""}</h3>
           ${chips.length ? `<div class="unit-group-chips">${chips.map((chip) => `<span>${escapeHtml(chip)}</span>`).join("")}</div>` : ""}
           ${group.obs ? `<p class="unit-group-obs">${escapeHtml(group.obs)}</p>` : ""}
         </div>

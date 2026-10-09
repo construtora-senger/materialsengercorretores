@@ -120,6 +120,7 @@ const EMPREENDIMENTOS = [
       {
         tipo: "Casa suspensa (3 suítes)",
         aba: "3 suítes frente",
+        titulo: "Casa suspensa frente",
         sufixo: "frente",
         estoque: "3 suítes — frente",
         area: "358 a 385 m² global · 258 a 280 m² privativo",
@@ -133,6 +134,7 @@ const EMPREENDIMENTOS = [
       {
         tipo: "Casa suspensa (3 suítes)",
         aba: "3 suítes superiores",
+        titulo: "Casa suspensa superior",
         sufixo: "pavimentos superiores",
         estoque: "3 suítes — superiores",
         area: "306 m² global · 208 m² privativo",
