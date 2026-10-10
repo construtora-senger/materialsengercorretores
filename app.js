@@ -1248,7 +1248,8 @@
     // O apelido pelo qual a tipologia chama a planta e o nome do arquivo, sem
     // a pasta e sem a extensao: "assets/po-planta.webp" -> "po-planta".
     const nomeDaPlanta = (item) => (item?.src || "").split("/").pop().replace(/\.[a-z0-9]+$/i, "");
-    const photoMedia = media.filter((item) => !isPlantMedia(item)).slice(0, 12);
+    // v408 — ate 50 fotos na galeria (pedido do dono); eram 12.
+    const photoMedia = media.filter((item) => !isPlantMedia(item)).slice(0, 50);
     // Planta que abre no visor (imagem) e planta que so se baixa (PDF). A
     // planta marcada como tecnica no data.js abre no visor do mesmo jeito, mas
     // fica sob o titulo certo: planta baixa de obra nao e planta humanizada.
