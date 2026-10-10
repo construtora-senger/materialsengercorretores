@@ -36,6 +36,16 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Renaissance: "Tipologias exclusivas" sem o duplex e "2 piscinas" (v409)
+
+Pedido do dono (10/10/2026), com o print do "Sobre o empreendimento": o
+**duplex de 4 suítes foi vendido** e é projeto personalizado — não está à
+venda. A característica "Tipologias exclusivas" passou a dizer só **"Plantas
+personalizáveis."**. Na mesma rodada, a pedido dele, "Lazer aquático"
+virou **"2 piscinas: Ambas aquecidas, uma na área externa e outra interna."**
+Só essas duas mudaram; a frase do prédio (`tagline`) não estava no
+print e não foi mexida.
+
 ## Até 50 fotos na galeria do empreendimento (v408)
 
 Pedido do dono (10/10/2026), depois de perguntar se havia limite de fotos:
