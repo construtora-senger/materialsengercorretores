@@ -806,7 +806,7 @@ const EMPREENDIMENTOS = [
       "2 dormitórios (1 suíte)": { simples: 1 },
     },
     hero: "assets/boulevard/capa.jpg",
-    folder: "",
+    folder: "assets/boulevard/folder.pdf",
     video: "",
     destaque: true,
     tagline: "Onde morar é sinônimo de bem-estar.",
