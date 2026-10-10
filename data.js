@@ -79,13 +79,13 @@ const EMPREENDIMENTOS = [
     diferenciais: [
       { titulo: "Wellness Renaissance experience", desc: "Ampla área no 4º pavimento dedicada ao lazer, à saúde e à convivência." },
       { titulo: "Esporte", desc: "Quadra de areia para esportes." },
-      { titulo: "Lazer aquático", desc: "Duas piscinas aquecidas, uma na área externa e outra interna." },
+      { titulo: "2 piscinas", desc: "Ambas aquecidas, uma na área externa e outra interna." },
       { titulo: "Fitness e bem-estar", desc: "Área fitness, espaço wellness com área para pilates e sauna." },
       { titulo: "Convivência", desc: "Salão de festas, estar do fogo e playground." },
       { titulo: "Entrada", desc: "Hall de entrada luxuoso, com pé-direito duplo." },
       // naMensagem: false -> fica na ficha do empreendimento, fora da mensagem da unidade.
       { titulo: "Espaço care", desc: "Ambientes dedicados ao atendimento de profissionais da área da saúde e bem-estar.", naMensagem: false },
-      { titulo: "Tipologias exclusivas", desc: "Casa suspensa, pavimentos superiores de 3 suítes e duplex exclusivo de 4 suítes.", naMensagem: false },
+      { titulo: "Tipologias exclusivas", desc: "Plantas personalizáveis.", naMensagem: false },
       { titulo: "Térreo comercial", desc: "Salas comerciais no pavimento térreo.", naMensagem: false },
     ],
     galeria: [
