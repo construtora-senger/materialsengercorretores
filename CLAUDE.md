@@ -36,6 +36,25 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Até 50 fotos na galeria do empreendimento (v408)
+
+Pedido do dono (10/10/2026), depois de perguntar se havia limite de fotos:
+*"vamos deixar liberado pra mais fotos então, até 50 fotos na galeria"*. A
+página do empreendimento mostrava **só as 12 primeiras** (a capa conta como a
+primeira) — o Premium Office tinha 19 e perdia 7. Agora são **até 50**
+(`photoMedia`, no `app.js`). Passando de 50, ficam as primeiras na ordem do
+painel.
+
+O que **não** mudou (não foi pedido): o **PDF do empreendimento** continua com
+**até 8 fotos**, e o painel continua sem limite de quantidade.
+
+**Na mesma rodada, o visor em tela cheia (v408).** Print do dono no PC:
+*"quando clico pra ver a planta, ela abre grande demais"*. A grade do visor
+(`.lightbox-stage`) crescia com a imagem: a planta quadrada saía com 1888 px
+de altura numa tela de 740, e era preciso rolar. As fotos também passavam da
+altura. Agora a imagem inteira cabe na tela; o **Aproximar** continua igual. No
+celular já estava certo. Bloco "v408" no fim do `styles.css`.
+
 ## Unidades e valores em abas, com o "a partir de" (v407)
 
 Pedido do dono (9/10/2026), com o print do Renaissance no PC: *"vamos mudar a

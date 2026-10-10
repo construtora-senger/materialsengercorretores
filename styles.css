@@ -1402,3 +1402,9 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .unit-group-preco { display: grid; justify-items: end; font-size: 11px; line-height: 1.25; }
   .detail-view #unidades .unit-group-preco .price-value { font-size: 13.5px; }
 }
+
+/* v408 — a planta abria grande demais no computador (print do dono, 10/10/2026):
+   a linha da grade do visor crescia com a imagem, e a planta quadrada saia com
+   1888 px de altura numa tela de 740. Travando a grade no tamanho do quadro, a
+   imagem inteira cabe na tela. Aproximado continua como era. */
+.lightbox-stage:not(.zoom) { grid-template: minmax(0, 1fr) / minmax(0, 1fr); }
