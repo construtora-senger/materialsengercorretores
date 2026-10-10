@@ -1416,7 +1416,7 @@ const EMPREENDIMENTOS = [
       "2 dormitórios": { simples: 1 },
     },
     hero: "assets/quality/capa.jpg",
-    folder: "",
+    folder: "assets/quality/folder.pdf",
     video: "",
     destaque: true,
     tagline: "Piscina, academia e 3 salões de festas — pronto para morar e financiável.",
