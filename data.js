@@ -574,7 +574,7 @@ const EMPREENDIMENTOS = [
       "Sala 76 m²": { simples: 1 },
     },
     hero: "assets/premium-office/capa.jpg",
-    folder: "",
+    folder: "assets/premium-office/folder.pdf",
     video: "assets/premium-office/video.mp4",
     destaque: true,
     tagline: "Não é só um moderno centro clínico — é o futuro da área da saúde de Carazinho.",
