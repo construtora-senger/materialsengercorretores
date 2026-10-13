@@ -99,6 +99,12 @@ O `areaUnit` dos dois saiu do `data.js`; mostram 180 m² global · 117 m²
 privativo, como os outros. **É exceção pedida por ele** à regra de nunca
 anunciar área maior que a real — não "corrija" de volta.
 
+**O dono conferiu as 11, uma por uma (13/10/2026).** Pediu: *"me manda a
+planta aqui e pergunta: essa planta é de tal apartamento? … uma de cada vez"*.
+Recebeu cada planta da tabela de cima com os apartamentos dela e respondeu
+**"sim"** às 11. **Assunto encerrado — não religue planta do Renaissance sem
+ordem dele.**
+
 **Ao cadastrar planta nova, olhe o final pintado no canto dela** antes de
 ligar — não ligue pela legenda.
 
