@@ -55,17 +55,43 @@ planta** (os quatro finais, com o do apartamento pintado) — o mesmo do folder
 | 3 suítes frente | **02** | **`ren-planta-3s-frente-esq`** — na unidade |
 | 2 suítes | 03 | `ren-planta-2suites` (a do grupo; mesma disposição do final 03 do folder, em outro estilo de desenho) |
 | 2 suítes | **04** | **`ren-planta-604`** — na unidade |
+| 3 suítes superiores | 01 | `ren-planta-3s-superior` (a do grupo) |
+| 3 suítes superiores | **02** | **`ren-planta-3s-superior-02`** — na unidade |
+| casas suspensas | 401, 402, 1301, 1302, 504 | cada uma com a sua (já estavam certas) |
 
 Antes os finais 02 mostravam a planta da direita e os finais 04 a do final 03,
 com as plantas certas paradas na galeria sem ligação. Vale para a miniatura da
 linha, a ficha da unidade e a planta da seleção. Só entrou o campo `planta` nas
-15 linhas; preço e situação não foram tocados. O retrato
-(`tools/materiais.json`) subiu só as plantas do Renaissance (9 → 24).
+unidades; preço e situação não foram tocados.
+
+**A 3 suítes superior do final 02 não existia como arquivo** — só a do 01.
+Na revisão que o dono pediu antes de publicar (*"revise as demais tb se estão
+certas nos lugares certos"*), os 1402, 1502, 1602 e 1702 mostravam a do 01.
+A planta do 02 é a da **página 8 do folder** ("Final 01 / 02", com o 02
+pintado), tirada do próprio PDF sem redesenhar: `ren-planta-3s-superior-02.webp`,
+546 × 546 px — legível, mas menor que as outras. Se o dono mandar o original em
+alta, é só trocar o arquivo pelo mesmo nome. O retrato (`tools/materiais.json`)
+subiu só as plantas do Renaissance (9 → 28).
+
+**Conferidas na mesma revisão, e certas:** Evolutti (as plantas mostram o
+andar com cada final escrito), Premium Office (pavimento tipo, 2º e 3º
+pavimento), Boulevard (um tipo por final, v301), Quality (o desenho dos blocos
+no canto bate: 57 m² = final 2 do bloco A, 69 m² = final 1 do bloco B,
+3 dormitórios = final 1 do bloco A). Personalité e Prime têm uma planta só,
+sem desenho do andar.
+
+**501 e 502: a metragem da tipologia (v421).** Os dois tinham metragem própria
+(179 m² global, contra 180 da tipologia), e o 502 saía em destaque na linha.
+Ordem do dono: *"1 m² a mais ou a menos não precisa diferenciar dos demais"*.
+O `areaUnit` dos dois saiu do `data.js`; mostram 180 m² global · 117 m²
+privativo, como os outros. **É exceção pedida por ele** à regra de nunca
+anunciar área maior que a real — não "corrija" de volta.
 
 **Ao cadastrar planta nova, olhe o final pintado no canto dela** antes de
 ligar — não ligue pela legenda.
 
-Teste: *"no Renaissance a planta da linha é a do final do apartamento"*.
+Testes: *"no Renaissance a planta da linha é a do final do apartamento"* e
+*"no Renaissance o 501 e o 502 têm a metragem da tipologia, sem destaque"*.
 
 ## Os botões da linha: WhatsApp e caixinha de marcar, modelo C (v421)
 

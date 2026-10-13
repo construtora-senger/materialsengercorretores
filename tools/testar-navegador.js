@@ -206,19 +206,39 @@ async function teste(nome, fn) {
 
   // v421 — no Renaissance cada final tem a sua planta (pedido do dono, conferido
   // no desenho do andar que vem no canto de cada planta e no folder): final 01
-  // a da direita, final 02 a da esquerda, final 04 a "2 suites (final 04)".
+  // a da direita, final 02 a da esquerda, final 04 a "2 suites (final 04)";
+  // na 3 suites superior, o final 02 tem a planta da pagina 8 do folder.
   await teste("no Renaissance a planta da linha é a do final do apartamento", async () => {
     const p = await abrir("/#emp-renaissance");
     await p.waitForTimeout(500);
     const r = await p.evaluate(() => {
       const planta = (cod) => document.querySelector(`#unidades tr[data-unit-code="${cod}"] .planta-mini img`)?.getAttribute("src") || "";
-      return { "501": planta("501"), "502": planta("502"), "603": planta("603"), "604": planta("604") };
+      return Object.fromEntries(["501", "502", "603", "604", "1401", "1402"].map((cod) => [cod, planta(cod)]));
     });
     await p.close();
     if (!r["501"].includes("ren-planta-3s-frente-dir")) return `501 mostra ${r["501"]}`;
     if (!r["502"].includes("ren-planta-3s-frente-esq")) return `502 mostra ${r["502"]}`;
     if (!r["603"].includes("ren-planta-2suites")) return `603 mostra ${r["603"]}`;
     if (!r["604"].includes("ren-planta-604")) return `604 mostra ${r["604"]}`;
+    if (!/ren-planta-3s-superior\.webp/.test(r["1401"])) return `1401 mostra ${r["1401"]}`;
+    if (!r["1402"].includes("ren-planta-3s-superior-02")) return `1402 mostra ${r["1402"]}`;
+    return "";
+  });
+
+  // v421 — pedido do dono: 1 m² a mais ou a menos nao diferencia a unidade;
+  // o 501 e o 502 levam a mesma metragem da tipologia, sem destaque.
+  await teste("no Renaissance o 501 e o 502 têm a metragem da tipologia, sem destaque", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => ["501", "502", "602"].map((cod) => {
+      const td = document.querySelector(`#unidades tr[data-unit-code="${cod}"] td:nth-child(2)`);
+      return { cod, texto: td?.textContent.trim() || "", destaque: !!td?.classList.contains("unit-own-area") };
+    }));
+    await p.close();
+    for (const l of r) {
+      if (l.destaque) return `${l.cod} ainda sai destacado`;
+      if (l.texto !== r[2].texto) return `${l.cod} mostra "${l.texto}", o 602 "${r[2].texto}"`;
+    }
     return "";
   });
 
