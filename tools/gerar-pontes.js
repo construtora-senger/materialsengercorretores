@@ -15,6 +15,8 @@
 //   l/<empreendimento>/            -> a previa fala do predio
 //   l/<empreendimento>/u/<codigo>/ -> a previa fala DAQUELA unidade
 //   l/sel/<ids>/                   -> a previa e a MONTAGEM de varios predios
+// e mais uma ponte avulsa (v418):
+//   l/portfolio/                   -> o link do SISTEMA, para outro corretor
 //
 // A terceira (v333) existe porque o envio nao leva mais foto anexada — o
 // WhatsApp do celular passou a descartar a legenda — e a foto vem pela previa.
@@ -378,5 +380,80 @@ if (fs.existsSync(dirMontagens)) {
   console.log("  (sem assets/preview/sel/ — rode node tools/gerar-montagens.js para as pontes de selecao)");
 }
 
-console.log(`\n${pontes} ponte(s) de empreendimento, ${unidades} de unidade e ${selecoes} de seleção.`);
+// ------------------------------------------------ a ponte do portfolio (v418)
+// O link do sistema, que o botao Compartilhar do topo manda para outros
+// corretores (o app instalado nao mostra o endereco, e ninguem decora o link
+// do GitHub). A previa e assets/preview/portfolio.jpg, gravada por
+// tools/gerar-montagens.js. O destino e o portfolio no modo CORRETOR — sem
+// ?cliente: quem recebe e corretor e usa o sistema inteiro.
+const paginaDoPortfolio = () => {
+  const foto = `${SITE}/assets/preview/portfolio.jpg`;
+  const titulo = "Construtora Senger — Portfólio de empreendimentos";
+  const desc = "Fotos, plantas, valores e disponibilidade dos empreendimentos da Construtora Senger, sempre atualizados.";
+  const caminho = "l/portfolio/";
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#182129">
+<title>${esc(titulo)}</title>
+<meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${SITE}/${caminho}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Construtora Senger">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="${esc(titulo)}">
+<meta property="og:description" content="${esc(desc)}">
+<meta property="og:url" content="${SITE}/${caminho}">
+<meta property="og:image" content="${foto}">
+<meta property="og:image:secure_url" content="${foto}">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(titulo)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(titulo)}">
+<meta name="twitter:description" content="${esc(desc)}">
+<meta name="twitter:image" content="${foto}">
+<script>
+  location.replace(location.pathname.replace(/\\/l\\/portfolio\\/?$/, "/"));
+</script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       padding:24px;background:#182129;color:#fff;
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .cartao{width:100%;max-width:420px;text-align:center}
+  img{width:100%;height:auto;border-radius:14px;display:block;margin-bottom:20px}
+  h1{margin:0 0 6px;font-size:22px;line-height:1.25}
+  p{margin:0 0 22px;opacity:.75;line-height:1.5;font-size:15px}
+  a{display:block;padding:15px 20px;border-radius:999px;background:#fff;color:#182129;
+    text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+  <!-- So aparece se o JavaScript estiver desligado ou o redirecionamento falhar. -->
+  <div class="cartao">
+    <img src="../../assets/preview/portfolio.jpg" alt="${esc(titulo)}">
+    <h1>Portfólio de empreendimentos</h1>
+    <p>Construtora Senger</p>
+    <a href="../../">Abrir o portfólio</a>
+  </div>
+</body>
+</html>
+`;
+};
+
+let portfolio = 0;
+if (fs.existsSync(path.join(RAIZ, "assets", "preview", "portfolio.jpg"))) {
+  fs.mkdirSync(path.join(RAIZ, "l", "portfolio"), { recursive: true });
+  fs.writeFileSync(path.join(RAIZ, "l", "portfolio", "index.html"), paginaDoPortfolio());
+  portfolio = 1;
+  console.log("  l/portfolio/");
+} else {
+  console.error("  ! falta assets/preview/portfolio.jpg — rode node tools/gerar-montagens.js (ponte l/portfolio/ NAO gerada)");
+}
+
+console.log(`\n${pontes} ponte(s) de empreendimento, ${unidades} de unidade, ${selecoes} de seleção e ${portfolio} do portfólio.`);
 if (semPrevia.length) console.log(`Sem previa (nada gerado): ${semPrevia.join(", ")}`);

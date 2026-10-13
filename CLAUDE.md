@@ -36,6 +36,41 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Compartilhar, no topo: o link do sistema para outro corretor (v418)
+
+Pedido do dono (13/10/2026), com o print da vitrine no app instalado: *"não
+consigo enviar o link do sistema para os corretores de imóvel. Eu abro o
+aplicativo e não aparece ali, porque eu não estou no navegador web… bota aí em
+cima, no cabeçalho, uma opção compartilhar. E daí ele vai enviar por WhatsApp o
+link com uma imagem bonita, os empreendimentos"*.
+
+- **Botão "Compartilhar"** no topo, logo depois do "Meu contato"
+  (`#compartilhar-sistema`, com o ícone de compartilhar). **Só no modo
+  corretor**: no `?cliente` ele sai do HTML (`.remove()`, regra da v301) e o
+  CSS é a segunda barreira. Cabe na mesma linha até em tela de 360 px.
+- **O que vai** (`compartilharSistema`, no `app.js`): texto curto + o link
+  **`l/portfolio/`**, pelo `sendShare` de sempre — no celular
+  `navigator.share({ text })`, **sem arquivo** (regra da v333); no computador,
+  a janela de copiar com o texto e a imagem.
+- **A foto vem pela prévia do link.** A ponte `l/portfolio/` (gerada por
+  `tools/gerar-pontes.js`) tem como `og:image` a
+  **`assets/preview/portfolio.jpg`**: as fachadas dos **7 prédios**
+  (loteamentos e "Outros Imóveis" ficam fora da imagem), no estilo da montagem
+  da seleção, com "Portfólio de empreendimentos". Quem desenha é
+  `desenharPortfolio`, em `tools/gerar-montagens.js` — **não** o
+  `montarMosaicoLista`, para a montagem da seleção continuar idêntica.
+- **A ponte abre o sistema no modo corretor** — sem `?cliente` e sem os dados
+  de "Meu contato" no link: quem recebe é corretor e usa o sistema inteiro.
+- **Ao trocar a capa de um prédio, ou acrescentar um:**
+  `node tools/gerar-montagens.js --tudo` regrava também a prévia do portfólio;
+  depois `node tools/gerar-pontes.js`. O `tools/validar.js` exige a imagem e a
+  ponte.
+
+Testes (`tools/testar-navegador.js`): *"o Compartilhar do topo manda o link do
+sistema, só texto"* e *"a ponte do portfólio mostra a montagem dos prédios e
+abre o sistema no modo corretor"*; o botão entrou na lista do que o cliente não
+pode ver.
+
 ## Renaissance: "Tipologias exclusivas" sem o duplex e "2 piscinas" (v409)
 
 Pedido do dono (10/10/2026), com o print do "Sobre o empreendimento": o
@@ -516,6 +551,7 @@ não era ele.
 | enviar link | texto curto + link | capa em cima, texto embaixo |
 | seleção de 1 empreendimento | texto + `l/<emp>/?sel=…` | capa em cima |
 | **seleção de 2 a 10 empreendimentos** | texto + **`l/sel/<ids>/?s=…`** (link curto, v336) | **a montagem das fachadas** em cima (até 6 fachadas; com mais, a última vira "+N"), o descritivo (ou a lista com link) embaixo |
+| Compartilhar do topo (o sistema, para outro corretor — v418) | texto curto + **`l/portfolio/`** | as fachadas dos 7 prédios em cima, o texto embaixo |
 
 **Nenhum envio leva arquivo anexado.** No celular, `sendShare` chama
 `navigator.share({ text })` — só texto, sem `title`, sem `files`. No
