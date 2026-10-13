@@ -36,6 +36,37 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Renaissance: cada final com a sua planta (v421)
+
+Pergunta do dono ao ver a miniatura da planta na linha (13/10/2026): *"como
+você vai ligar a planta ao apto? sabe qual é qual?"*. A ligação é a do cadastro
+(`planta` no grupo ou na unidade, feita no painel em Materiais → Plantas) —
+e no Renaissance ela estava errada em dois lugares. Ordem dele: *"final 04 é
+final 04 e ponto final… 3 suítes final 01 é de um lado e final 02 é de outro
+lado (não tudo na direita)"*.
+
+**Quem decide qual é qual é o desenho do andar que vem no canto de cada
+planta** (os quatro finais, com o do apartamento pintado) — o mesmo do folder
+(`assets/renaissance/folder.pdf`, páginas 6 e 7):
+
+| tipologia | final | planta |
+|---|---|---|
+| 3 suítes frente | 01 | `ren-planta-3s-frente-dir` (a do grupo) |
+| 3 suítes frente | **02** | **`ren-planta-3s-frente-esq`** — na unidade |
+| 2 suítes | 03 | `ren-planta-2suites` (a do grupo; mesma disposição do final 03 do folder, em outro estilo de desenho) |
+| 2 suítes | **04** | **`ren-planta-604`** — na unidade |
+
+Antes os finais 02 mostravam a planta da direita e os finais 04 a do final 03,
+com as plantas certas paradas na galeria sem ligação. Vale para a miniatura da
+linha, a ficha da unidade e a planta da seleção. Só entrou o campo `planta` nas
+15 linhas; preço e situação não foram tocados. O retrato
+(`tools/materiais.json`) subiu só as plantas do Renaissance (9 → 24).
+
+**Ao cadastrar planta nova, olhe o final pintado no canto dela** antes de
+ligar — não ligue pela legenda.
+
+Teste: *"no Renaissance a planta da linha é a do final do apartamento"*.
+
 ## Os botões da linha: WhatsApp e caixinha de marcar, modelo C (v421)
 
 Pedido do dono (13/10/2026), com o print da v420 no PC: *"o ícone

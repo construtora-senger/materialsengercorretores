@@ -204,6 +204,24 @@ async function teste(nome, fn) {
     return "";
   });
 
+  // v421 — no Renaissance cada final tem a sua planta (pedido do dono, conferido
+  // no desenho do andar que vem no canto de cada planta e no folder): final 01
+  // a da direita, final 02 a da esquerda, final 04 a "2 suites (final 04)".
+  await teste("no Renaissance a planta da linha é a do final do apartamento", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => {
+      const planta = (cod) => document.querySelector(`#unidades tr[data-unit-code="${cod}"] .planta-mini img`)?.getAttribute("src") || "";
+      return { "501": planta("501"), "502": planta("502"), "603": planta("603"), "604": planta("604") };
+    });
+    await p.close();
+    if (!r["501"].includes("ren-planta-3s-frente-dir")) return `501 mostra ${r["501"]}`;
+    if (!r["502"].includes("ren-planta-3s-frente-esq")) return `502 mostra ${r["502"]}`;
+    if (!r["603"].includes("ren-planta-2suites")) return `603 mostra ${r["603"]}`;
+    if (!r["604"].includes("ren-planta-604")) return `604 mostra ${r["604"]}`;
+    return "";
+  });
+
   // v420 — modelo D: a miniatura da planta na linha de cada unidade, que abre
   // a planta DAQUELA unidade; o cliente tambem ve (fora dos botoes da equipe).
   await teste("a linha da unidade traz a miniatura da planta e abre a planta dela", async () => {
