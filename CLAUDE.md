@@ -36,6 +36,35 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Os botões da linha: WhatsApp e caixinha de marcar, modelo C (v421)
+
+Pedido do dono (13/10/2026), com o print da v420 no PC: *"o ícone
+'compartilhar' quero que bote símbolo do whats, e o selecionar um 'v' tipo
+certinho de marcado… assim fica tudo padrão com a planta… mande-me 4 modelos"*.
+Viu quatro (A quadrados com ícone em cima, B quadrados coloridos, C botões
+deitados, D só ícones) e respondeu **"c"**.
+
+- Na linha de cada unidade, lote e imóvel avulso, os dois botões ficam
+  **deitados, da mesma altura**, com ícone e nome lado a lado: **símbolo do
+  WhatsApp + "Compartilhar"** e **caixinha de marcar + "Selecionar"** (marcado:
+  botão azul, caixinha com ✓ e "Selecionado"). No computador a planta vira um
+  botão deitado igual (miniatura menor + "Ver planta"); no celular ela continua
+  à esquerda do cartão e os dois botões dividem a linha.
+- **O que cada botão faz não mudou**: o WhatsApp abre a mesma escolha de envio
+  de sempre, e a caixinha marca para a seleção. `botaoCompartilharDaLinha` e
+  `botaoSelecionarDaLinha`, no `app.js`; ao marcar, `toggleSelection` troca só o
+  nome (`.rotulo-selecao`), para a caixinha não sumir.
+- **A tabela da página passou a medir pelo conteúdo** (`table-layout: auto`
+  em `#unidades .units-table`, coluna dos botões do tamanho deles). Com as
+  larguras fixas da v251 os botões passavam por cima do preço em computador
+  menor e na tabela dos lotes — já acontecia em 1024 px antes da v421. Em
+  tablet em pé (até 960 px) os botões quebram em duas linhas. O PDF não mudou.
+- Bloco "v421" no fim do `styles.css`.
+
+Teste (`tools/testar-navegador.js`): *"os botões da linha têm WhatsApp e
+caixinha, e não cobrem o preço"* (apartamentos em 1024 e 800 px, lotes em
+1280 px, marcar e desmarcar).
+
 ## A planta na linha da unidade: modelo D (v420)
 
 Pedido do dono (13/10/2026), com o print do Renaissance no PC e "PLANTAS"

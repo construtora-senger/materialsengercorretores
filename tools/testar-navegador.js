@@ -165,6 +165,45 @@ async function teste(nome, fn) {
     return gavetas >= 2 ? "" : `so ${gavetas} gaveta(s) de tipologia`;
   });
 
+  // v421 — modelo C: o Compartilhar da linha leva o simbolo do WhatsApp e o
+  // Selecionar uma caixinha de marcar, que nao some ao marcar e desmarcar; e
+  // os botoes nunca passam por cima do preco (apartamentos e lotes).
+  await teste("os botões da linha têm WhatsApp e caixinha, e não cobrem o preço", async () => {
+    for (const [rota, largura] of [["/#emp-renaissance", 1024], ["/#emp-renaissance", 800], ["/#emp-nova-vila-rica-iii", 1280]]) {
+      const ctx = await navegador.newContext({ viewport: { width: largura, height: 900 } });
+      const p = await ctx.newPage();
+      await p.goto(base + rota, { waitUntil: "networkidle" });
+      await p.waitForTimeout(500);
+      const r = await p.evaluate(() => {
+        localStorage.removeItem("senger-selection");
+        document.querySelectorAll("#unidades details.unit-group").forEach((d) => { d.open = true; });
+        let cobre = "";
+        document.querySelectorAll("#unidades .units-table tbody tr").forEach((tr) => {
+          if (cobre || !tr.offsetParent) return;
+          const preco = tr.querySelector(".price-value");
+          const botoes = [...tr.querySelectorAll("td:last-child button")].filter((b) => b.offsetParent);
+          if (!preco || !botoes.length) return;
+          const fimPreco = preco.getBoundingClientRect().right;
+          if (botoes.some((b) => b.getBoundingClientRect().left < fimPreco)) cobre = tr.dataset.unitCode;
+        });
+        const linha = [...document.querySelectorAll("#unidades .units-table tbody tr")].find((tr) => tr.offsetParent);
+        return { cobre, wa: !!linha.querySelector("[data-share-item] .ic-wa"), caixa: !!linha.querySelector("[data-select-item] .caixa-marcar") };
+      });
+      if (r.cobre) { await ctx.close(); return `${rota} em ${largura}px: os botoes cobrem o preco em ${r.cobre}`; }
+      if (!r.wa) { await ctx.close(); return `${rota}: o Compartilhar esta sem o simbolo do WhatsApp`; }
+      if (!r.caixa) { await ctx.close(); return `${rota}: o Selecionar esta sem a caixinha`; }
+      const sel = p.locator("#unidades .units-table [data-select-item]:visible").first();
+      await sel.click(); await p.waitForTimeout(200);
+      const marcado = await sel.evaluate((b) => ({ sel: b.classList.contains("selected"), caixa: !!b.querySelector(".caixa-marcar"), texto: b.textContent.trim() }));
+      await sel.click(); await p.waitForTimeout(200);
+      const desmarcado = await sel.evaluate((b) => ({ sel: b.classList.contains("selected"), caixa: !!b.querySelector(".caixa-marcar"), texto: b.textContent.trim() }));
+      await ctx.close();
+      if (!marcado.sel || !marcado.caixa || marcado.texto !== "Selecionado") return `${rota}: marcar deixou ${JSON.stringify(marcado)}`;
+      if (desmarcado.sel || !desmarcado.caixa || desmarcado.texto !== "Selecionar") return `${rota}: desmarcar deixou ${JSON.stringify(desmarcado)}`;
+    }
+    return "";
+  });
+
   // v420 — modelo D: a miniatura da planta na linha de cada unidade, que abre
   // a planta DAQUELA unidade; o cliente tambem ve (fora dos botoes da equipe).
   await teste("a linha da unidade traz a miniatura da planta e abre a planta dela", async () => {

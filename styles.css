@@ -1455,3 +1455,50 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 .mobile-unit-card.com-planta > :not(.planta-mini) { grid-column: 2; }
 .mobile-unit-card.com-planta .planta-mini img { width: 84px; height: 58px; }
 @media print { .planta-mini { display: none !important; } }
+
+/* v421 — os botoes da linha no modelo C (escolhido pelo dono): deitados, da
+   mesma altura, com o icone e o nome lado a lado — a planta (miniatura menor),
+   o WhatsApp no Compartilhar e a caixinha de marcar no Selecionar. No celular
+   a planta continua a esquerda do cartao, e os dois botoes dividem a linha. */
+.botao-linha {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 40px;
+  padding: 3px 9px 3px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.unit-action.botao-linha { color: var(--ink); }
+.selection-control.botao-linha { color: var(--brand-dark); }
+.selection-control.botao-linha.selected { background: var(--brand); border-color: var(--brand); color: #fff; }
+.botao-linha .ic-wa { width: 21px; height: 21px; flex: none; }
+.caixa-marcar { flex: none; display: grid; place-items: center; width: 19px; height: 19px; border: 2px solid var(--brand); border-radius: 5px; }
+.caixa-marcar svg { width: 15px; height: 15px; fill: none; stroke: transparent; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.selected .caixa-marcar { border-color: #fff; }
+.selected .caixa-marcar svg { stroke: #fff; }
+.unit-linha-fim, .unit-linha-fim .unit-actions { gap: 5px; }
+.units-table .planta-mini { flex-direction: row; gap: 5px; min-height: 40px; padding: 3px 8px 3px 3px; border-radius: 9px; }
+.units-table .planta-mini img { width: 32px; height: 32px; }
+.units-table .planta-mini span { font-size: 10.5px; }
+.mobile-unit-actions .botao-linha { flex: 1; justify-content: center; }
+/* Os botoes deitados tem largura propria: com as larguras fixas em
+   porcentagem (v251) eles passavam por cima do preco em computador menor e
+   na tabela dos lotes, que tem a coluna Rua a mais. A tabela da pagina passa a
+   medir pelo conteudo: botoes e preco nunca quebram nem sao cortados, e quem
+   cede espaco e o texto da area. */
+#unidades .units-table { table-layout: auto; }
+#unidades .units-table th, #unidades .units-table td { width: auto; }
+#unidades .units-table th:last-child, #unidades .units-table td:last-child { width: 1%; white-space: nowrap; }
+#unidades .units-table .price-value { white-space: nowrap; }
+.planta-mini span { white-space: nowrap; }
+/* Tablet em pe (721 a 960 px): nao cabem a planta e os dois botoes numa
+   linha so ao lado do preco. Eles quebram em duas linhas, em vez de encostar
+   no preco. */
+@media (max-width: 960px) {
+  .unit-linha-fim { flex-wrap: wrap; row-gap: 5px; }
+}
