@@ -1429,3 +1429,29 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 .compartilhar-tag svg { width: 14px; height: 14px; flex: none; fill: none; stroke: var(--brand); stroke-width: 2.2; stroke-linecap: round; }
 .compartilhar-tag:hover { border-color: var(--brand); color: var(--brand-dark); }
 .client-mode .compartilhar-tag { display: none !important; }
+
+/* v420 — a planta na linha da unidade (modelo D, escolhido pelo dono): uma
+   miniatura da planta daquela unidade, que abre em tela cheia no toque. Fica
+   fora da caixa dos botoes da equipe, para o cliente tambem ver. No celular a
+   miniatura vai a esquerda do cartao. */
+.unit-linha-fim { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+.planta-mini {
+  flex: none;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+}
+.planta-mini img { display: block; width: 64px; height: 44px; object-fit: contain; border-radius: 6px; background: #fff; }
+.planta-mini span { font-size: 10.5px; font-weight: 700; line-height: 1; color: var(--brand-dark); }
+.planta-mini:hover { border-color: var(--brand); }
+.mobile-unit-card.com-planta { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; }
+.mobile-unit-card.com-planta > .planta-mini { grid-row: 1 / span 6; align-self: start; }
+.mobile-unit-card.com-planta > :not(.planta-mini) { grid-column: 2; }
+.mobile-unit-card.com-planta .planta-mini img { width: 84px; height: 58px; }
+@media print { .planta-mini { display: none !important; } }

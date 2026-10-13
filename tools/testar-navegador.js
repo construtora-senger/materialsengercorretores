@@ -90,6 +90,37 @@ async function teste(nome, fn) {
     return (await pg.locator("#view-switch").count()) === 0 ? "" : "o alternador voltou para a vitrine";
   });
 
+  // v419 — pedido do dono: a vitrine e o PDF da home saem do predio mais
+  // barato para o mais caro; os loteamentos e "Outros Imoveis" vao para o fim.
+  await teste("a vitrine e o PDF da home vão do prédio mais barato ao mais caro, loteamentos e outros no fim", async () => {
+    const r = await pg.evaluate(async () => {
+      const porId = new Map(window.SENGER.EMPREENDIMENTOS.map((e) => [e.id, e]));
+      const cartoes = [...document.querySelectorAll("#portfolio-grid .portfolio-card")].map((c) => {
+        const emp = porId.get(c.querySelector("[data-pick-emp]")?.dataset.pickEmp);
+        const preco = Number(((c.textContent.match(/R\$\s?([\d.]+)/) || [])[1] || "0").replace(/\./g, ""));
+        const bloco = emp?.categoria === "outros" ? 2 : (emp?.terrenos || []).length ? 1 : 0;
+        return { nome: emp?.nome, bloco, preco };
+      });
+      const original = window.print;
+      window.print = () => {};
+      document.getElementById("print-sheet").innerHTML = "";
+      document.getElementById("print-list").click();
+      await new Promise((ok) => setTimeout(ok, 1500));
+      window.print = original;
+      const pdf = [...document.querySelectorAll("#print-sheet .ps-section")].map((h) => h.textContent.trim());
+      return { cartoes, pdf };
+    });
+    const { cartoes, pdf } = r;
+    if (cartoes.some((c) => !c.nome)) return "cartao sem empreendimento identificado";
+    for (let i = 1; i < cartoes.length; i++) {
+      const [a, b] = [cartoes[i - 1], cartoes[i]];
+      if (b.bloco < a.bloco) return `${b.nome} saiu depois de ${a.nome} (loteamento/outros tem de ir para o fim)`;
+      if (a.bloco === 0 && b.bloco === 0 && b.preco < a.preco) return `${b.nome} (${b.preco}) saiu depois de ${a.nome} (${a.preco})`;
+    }
+    if (pdf.join(" | ") !== cartoes.map((c) => c.nome).join(" | ")) return `o PDF saiu em outra ordem: ${pdf.join(", ")}`;
+    return "";
+  });
+
   await teste("a busca por numero de apartamento acha a unidade", async () => {
     await pg.fill("#search-input", "501");
     await pg.waitForTimeout(350);
@@ -132,6 +163,37 @@ async function teste(nome, fn) {
   await teste("a tipologia abre e fecha como gaveta", async () => {
     const gavetas = await pg.locator("#unidades details.unit-group").count();
     return gavetas >= 2 ? "" : `so ${gavetas} gaveta(s) de tipologia`;
+  });
+
+  // v420 — modelo D: a miniatura da planta na linha de cada unidade, que abre
+  // a planta DAQUELA unidade; o cliente tambem ve (fora dos botoes da equipe).
+  await teste("a linha da unidade traz a miniatura da planta e abre a planta dela", async () => {
+    for (const rota of ["/#emp-renaissance", "/?cliente#emp-renaissance"]) {
+      const p = await abrir(rota);
+      await p.waitForTimeout(600);
+      const r = await p.evaluate(() => {
+        const linhas = [...document.querySelectorAll("#unidades tr[data-unit-code]")];
+        const semPlanta = linhas.filter((tr) => !tr.querySelector(".planta-mini")).map((tr) => tr.dataset.unitCode);
+        const gaveta = [...document.querySelectorAll("#unidades details.unit-group")].find((d) => d.offsetParent !== null);
+        gaveta.open = true;
+        const tr = gaveta.querySelector("tr[data-unit-code]");
+        const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "renaissance");
+        let esperado = "";
+        for (const g of emp.grupos) for (const u of g.unidades || []) if (String(u.apto) === tr.dataset.unitCode) esperado = u.planta || g.planta;
+        return { linhas: linhas.length, semPlanta, codigo: tr.dataset.unitCode, esperado };
+      });
+      if (!r.linhas) { await p.close(); return `${rota}: nenhuma linha de unidade`; }
+      if (r.semPlanta.length) { await p.close(); return `${rota}: sem miniatura em ${r.semPlanta.join(", ")}`; }
+      const mini = p.locator(`#unidades tr[data-unit-code="${r.codigo}"] .planta-mini`);
+      if (!(await mini.isVisible())) { await p.close(); return `${rota}: a miniatura do ${r.codigo} nao aparece`; }
+      await mini.click();
+      await p.waitForTimeout(500);
+      const src = await p.evaluate(() => document.getElementById("lightbox")?.classList.contains("open") ? document.getElementById("lightbox-image").getAttribute("src") : "");
+      await p.close();
+      if (!src) return `${rota}: o toque na miniatura nao abriu o visor`;
+      if (!src.includes(`/${r.esperado}.`)) return `${rota}: abriu ${src}, esperado a planta ${r.esperado}`;
+    }
+    return "";
   });
 
   await teste("cada final do Boulevard virou um quadro próprio", async () => {
