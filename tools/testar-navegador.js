@@ -207,7 +207,8 @@ async function teste(nome, fn) {
   // v421 — no Renaissance cada final tem a sua planta (pedido do dono, conferido
   // no desenho do andar que vem no canto de cada planta e no folder): final 01
   // a da direita, final 02 a da esquerda, final 04 a "2 suites (final 04)";
-  // na 3 suites superior, o final 02 tem a planta da pagina 8 do folder.
+  // na 3 suites superior, o final 02 tem a planta da pagina 8 do folder;
+  // o final 03 da 2 suites tem a planta que o dono mandou (espelho do 04).
   await teste("no Renaissance a planta da linha é a do final do apartamento", async () => {
     const p = await abrir("/#emp-renaissance");
     await p.waitForTimeout(500);
@@ -218,7 +219,7 @@ async function teste(nome, fn) {
     await p.close();
     if (!r["501"].includes("ren-planta-3s-frente-dir")) return `501 mostra ${r["501"]}`;
     if (!r["502"].includes("ren-planta-3s-frente-esq")) return `502 mostra ${r["502"]}`;
-    if (!r["603"].includes("ren-planta-2suites")) return `603 mostra ${r["603"]}`;
+    if (!r["603"].includes("ren-planta-2suites-03")) return `603 mostra ${r["603"]}`;
     if (!r["604"].includes("ren-planta-604")) return `604 mostra ${r["604"]}`;
     if (!/ren-planta-3s-superior\.webp/.test(r["1401"])) return `1401 mostra ${r["1401"]}`;
     if (!r["1402"].includes("ren-planta-3s-superior-02")) return `1402 mostra ${r["1402"]}`;

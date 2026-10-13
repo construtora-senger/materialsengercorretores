@@ -99,7 +99,7 @@ const EMPREENDIMENTOS = [
       { src: "assets/ren-planta-3s-frente-esq.webp", legenda: "Planta humanizada — 3 suítes frente (esquerda)" },
       { src: "assets/ren-planta-3s-superior.webp", legenda: "Planta humanizada — 3 suítes superior" },
       { src: "assets/ren-planta-3s-superior-02.webp", legenda: "Planta humanizada — 3 suítes superior (final 02)" },
-      { src: "assets/ren-planta-2suites.webp", legenda: "Planta humanizada — 2 suítes" },
+      { src: "assets/ren-planta-2suites-03.webp", legenda: "Planta humanizada — 2 suítes (final 03)" },
       { src: "assets/ren-planta-504.webp", legenda: "Planta humanizada — Casa suspensa 2 suítes (504)" },
       { src: "assets/ren-planta-401.webp", legenda: "Planta humanizada — Casa suspensa 3 suítes (401)" },
       { src: "assets/ren-planta-402.webp", legenda: "Planta humanizada — Casa suspensa 3 suítes (402)" },
@@ -240,7 +240,7 @@ const EMPREENDIMENTOS = [
         aba: "2 suítes",
         area: "130 m² global · 86 m² privativo",
         garagem: "1 box simples",
-        planta: "ren-planta-2suites",
+        planta: "ren-planta-2suites-03",
         unidades: [
           { apto: "503", preco: 812100, status: "disponivel" },
           { apto: "603", preco: 812100, status: "disponivel" },

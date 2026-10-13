@@ -53,7 +53,7 @@ planta** (os quatro finais, com o do apartamento pintado) — o mesmo do folder
 |---|---|---|
 | 3 suítes frente | 01 | `ren-planta-3s-frente-dir` (a do grupo) |
 | 3 suítes frente | **02** | **`ren-planta-3s-frente-esq`** — na unidade |
-| 2 suítes | 03 | `ren-planta-2suites` (a do grupo; mesma disposição do final 03 do folder, em outro estilo de desenho) |
+| 2 suítes | 03 | **`ren-planta-2suites-03`** (a do grupo) — a planta que o dono mandou |
 | 2 suítes | **04** | **`ren-planta-604`** — na unidade |
 | 3 suítes superiores | 01 | `ren-planta-3s-superior` (a do grupo) |
 | 3 suítes superiores | **02** | **`ren-planta-3s-superior-02`** — na unidade |
@@ -72,6 +72,18 @@ pintado), tirada do próprio PDF sem redesenhar: `ren-planta-3s-superior-02.webp
 546 × 546 px — legível, mas menor que as outras. Se o dono mandar o original em
 alta, é só trocar o arquivo pelo mesmo nome. O retrato (`tools/materiais.json`)
 subiu só as plantas do Renaissance (9 → 28).
+
+**A 2 suítes do final 03 é a planta do dono (v421).** Na planta técnica do andar tipo (prancha A06, que o
+dono mandou) o 03 é o **espelho exato** do 04 — as mesmas medidas, suítes à
+esquerda e cozinha junto da escada. O dono mandou a planta humanizada pronta,
+espelhada e com o 03 pintado no mapinha: *"coloque essa planta em todos os
+apartamentos duas suítes final 03"*. Entrou como está
+(`ren-planta-2suites-03.webp`, 1600 × 1600 px) e virou a `planta` do grupo
+"2 suítes" — os finais 04 seguem com a deles na unidade. Na lista de plantas
+ela tomou o lugar da antiga "2 suítes" (outro estilo de desenho, sem o
+mapinha) com o nome **"2 suítes (final 03)"**, como o do 04 — pedido dele com
+os dois circulados no print. O arquivo antigo (`ren-planta-2suites.webp`)
+ficou em `assets/`, sem uso.
 
 **Conferidas na mesma revisão, e certas:** Evolutti (as plantas mostram o
 andar com cada final escrito), Premium Office (pavimento tipo, 2º e 3º
