@@ -1839,6 +1839,31 @@
     `;
   }
 
+  // v420 — a planta na linha da unidade (modelo D, escolhido pelo dono em
+  // 13/10/2026 entre quatro desenhados): uma miniatura da planta DAQUELA
+  // unidade, que abre em tela cheia no toque. Antes as plantas ficavam todas
+  // juntas em "Imagens e planta", e era ruim de achar a de cada apartamento.
+  // Fica fora da caixa dos botoes da equipe (.unit-actions), que o cliente nao
+  // ve: a planta o cliente tambem ve. So aparece quando a unidade aponta para
+  // uma planta em imagem que existe na galeria.
+  function plantaDaUnidade(item) {
+    if (!item || item.kind !== "unit" || !item.planta) return null;
+    const nome = (src) => String(src || "").split("/").pop().replace(/\.[a-z0-9]+$/i, "");
+    return mediaFor(item.emp).find((m) => nome(m.src) === item.planta && !/\.pdf(?:$|\?)/i.test(m.src)) || null;
+  }
+
+  function miniaturaDaPlanta(item) {
+    const planta = plantaDaUnidade(item);
+    if (!planta) return "";
+    return `<button class="planta-mini" type="button" data-planta-item="${escapeHtml(item.key)}" aria-label="Ver a planta do ${escapeHtml(itemLabel(item))}"><img src="${escapeHtml(assetUrl(planta.src))}" alt="" loading="lazy"><span>Ver planta</span></button>`;
+  }
+
+  function abrirPlantaDaUnidade(item) {
+    const planta = plantaDaUnidade(item);
+    if (!planta) return;
+    abrirVisor([{ src: planta.src, legenda: `${itemLabel(item)} — ${planta.legenda || "Planta"}` }], 0);
+  }
+
   function renderUnitRow(item, showArea = true, showGarage = true) {
     const selectable = isMarketable(item.status);
     const selected = state.selected.has(item.key);
@@ -1853,7 +1878,7 @@
         ${showGarage ? `<td>${escapeHtml(item.garage || "—")}</td>` : ""}
         <td><span class="status-pill status-${item.status}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></td>
         <td><strong class="price-value">${money(item.price)}</strong></td>
-        <td><div class="unit-actions"><button class="unit-action" type="button" data-share-item="${item.key}">Compartilhar</button><button class="selection-control ${selected ? "selected" : ""}" type="button" data-select-item="${item.key}" ${selectable ? "" : "disabled"}>${selected ? "Selecionado" : "Selecionar"}</button></div></td>
+        <td><div class="unit-linha-fim">${miniaturaDaPlanta(item)}<div class="unit-actions"><button class="unit-action" type="button" data-share-item="${item.key}">Compartilhar</button><button class="selection-control ${selected ? "selected" : ""}" type="button" data-select-item="${item.key}" ${selectable ? "" : "disabled"}>${selected ? "Selecionado" : "Selecionar"}</button></div></div></td>
       </tr>
     `;
   }
@@ -1862,7 +1887,8 @@
     const selectable = isMarketable(item.status);
     const selected = state.selected.has(item.key);
     return `
-      <article class="mobile-unit-card" data-unit-code="${escapeHtml(String(item.code))}">
+      <article class="mobile-unit-card${plantaDaUnidade(item) ? " com-planta" : ""}" data-unit-code="${escapeHtml(String(item.code))}">
+        ${miniaturaDaPlanta(item)}
         <div class="mobile-unit-line">
           <div class="mobile-unit-id">
             <strong>${escapeHtml(itemLabel(item))}</strong>
@@ -1972,6 +1998,7 @@
     root.querySelectorAll("[data-share-item]").forEach((button) => button.addEventListener("click", () => openSendChoice(itemMap.get(button.dataset.shareItem))));
     root.querySelectorAll("[data-select-item]").forEach((button) => button.addEventListener("click", () => toggleSelection(button.dataset.selectItem)));
     root.querySelectorAll("[data-map-item]").forEach((button) => button.addEventListener("click", () => abrirMapaDoLote(itemMap.get(button.dataset.mapItem))));
+    root.querySelectorAll("[data-planta-item]").forEach((button) => button.addEventListener("click", () => abrirPlantaDaUnidade(itemMap.get(button.dataset.plantaItem))));
   }
 
   // "Ver no mapa" — o loteamento traz o mapa e a posicao de cada lote

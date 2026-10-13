@@ -165,6 +165,37 @@ async function teste(nome, fn) {
     return gavetas >= 2 ? "" : `so ${gavetas} gaveta(s) de tipologia`;
   });
 
+  // v420 — modelo D: a miniatura da planta na linha de cada unidade, que abre
+  // a planta DAQUELA unidade; o cliente tambem ve (fora dos botoes da equipe).
+  await teste("a linha da unidade traz a miniatura da planta e abre a planta dela", async () => {
+    for (const rota of ["/#emp-renaissance", "/?cliente#emp-renaissance"]) {
+      const p = await abrir(rota);
+      await p.waitForTimeout(600);
+      const r = await p.evaluate(() => {
+        const linhas = [...document.querySelectorAll("#unidades tr[data-unit-code]")];
+        const semPlanta = linhas.filter((tr) => !tr.querySelector(".planta-mini")).map((tr) => tr.dataset.unitCode);
+        const gaveta = [...document.querySelectorAll("#unidades details.unit-group")].find((d) => d.offsetParent !== null);
+        gaveta.open = true;
+        const tr = gaveta.querySelector("tr[data-unit-code]");
+        const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "renaissance");
+        let esperado = "";
+        for (const g of emp.grupos) for (const u of g.unidades || []) if (String(u.apto) === tr.dataset.unitCode) esperado = u.planta || g.planta;
+        return { linhas: linhas.length, semPlanta, codigo: tr.dataset.unitCode, esperado };
+      });
+      if (!r.linhas) { await p.close(); return `${rota}: nenhuma linha de unidade`; }
+      if (r.semPlanta.length) { await p.close(); return `${rota}: sem miniatura em ${r.semPlanta.join(", ")}`; }
+      const mini = p.locator(`#unidades tr[data-unit-code="${r.codigo}"] .planta-mini`);
+      if (!(await mini.isVisible())) { await p.close(); return `${rota}: a miniatura do ${r.codigo} nao aparece`; }
+      await mini.click();
+      await p.waitForTimeout(500);
+      const src = await p.evaluate(() => document.getElementById("lightbox")?.classList.contains("open") ? document.getElementById("lightbox-image").getAttribute("src") : "");
+      await p.close();
+      if (!src) return `${rota}: o toque na miniatura nao abriu o visor`;
+      if (!src.includes(`/${r.esperado}.`)) return `${rota}: abriu ${src}, esperado a planta ${r.esperado}`;
+    }
+    return "";
+  });
+
   await teste("cada final do Boulevard virou um quadro próprio", async () => {
     // textContent, nao innerText: desde a v407 os finais 01 e 02 moram na aba
     // "3 suítes", escondida ate o toque.

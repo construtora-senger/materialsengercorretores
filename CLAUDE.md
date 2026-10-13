@@ -36,6 +36,34 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A planta na linha da unidade: modelo D (v420)
+
+Pedido do dono (13/10/2026), com o print do Renaissance no PC e "PLANTAS"
+escrito ao lado do Compartilhar: *"quero um link pra ver a planta ao lado da
+desc do apto… qualquer dúvida me mande 4 modelos que escolho… pois todas juntas
+lá embaixo tá ruim de ideia"*. Viu quatro modelos (A link escrito, B botão com
+ícone, C link embaixo do nome, D miniatura da planta) e respondeu **"d"**.
+
+- Cada linha de unidade (tabela do computador e cartão do celular) traz uma
+  **miniatura da planta daquela unidade** com "Ver planta" embaixo; o toque
+  abre a planta em tela cheia no visor de sempre, com a legenda
+  "Apto 503 — Planta humanizada — 2 suítes" (`miniaturaDaPlanta`,
+  `plantaDaUnidade` e `abrirPlantaDaUnidade`, no `app.js`).
+- No computador ela fica antes do Compartilhar; no celular, à esquerda do
+  cartão.
+- **O cliente também vê.** A miniatura fica **fora** da caixa dos botões da
+  equipe (`.unit-actions`/`.mobile-unit-actions`, que o modo cliente esconde),
+  dentro de `.unit-linha-fim`.
+- Só aparece quando a unidade aponta (`planta`, na unidade ou no grupo) para
+  uma planta **em imagem** que existe na galeria; lote e imóvel avulso não
+  têm. Hoje todos os apartamentos e salas à venda têm.
+- **O que não mudou:** a seção "Imagens e planta" continua com as plantas
+  (não foi pedido tirar), e o PDF não leva miniatura. Bloco "v420" no fim do
+  `styles.css`.
+
+Teste (`tools/testar-navegador.js`): *"a linha da unidade traz a miniatura da
+planta e abre a planta dela"*, no modo corretor e no modo cliente.
+
 ## A vitrine e o PDF da home: do prédio mais barato ao mais caro (v419)
 
 Pedido do dono (13/10/2026), com o print da home em "Menor preço" e um X nos
