@@ -2183,6 +2183,28 @@
     await sendShare(text, "Seleção Construtora Senger", enterprises.map(coverPhoto));
   }
 
+  // v418 — Compartilhar, no topo: manda o link do SISTEMA para outro corretor.
+  // Pedido do dono (13/10/2026): no app instalado nao aparece o endereco, e
+  // ninguem decora o link do GitHub. Vai como texto, igual a todo envio (v333):
+  // a foto vem pela previa da ponte l/portfolio/ — a montagem dos predios,
+  // gravada por tools/gerar-montagens.js. Sem ?cliente e sem os dados de "Meu
+  // contato" no link: quem recebe e corretor e usa o sistema inteiro.
+  function linkDoSistema() {
+    const raiz = location.pathname.replace(/\/[^/]*$/, "/");
+    return `${location.origin}${raiz}l/portfolio/`;
+  }
+
+  async function compartilharSistema() {
+    const text = [
+      "*Construtora Senger — Portfólio de empreendimentos*",
+      "Fotos, plantas, valores e disponibilidade, sempre atualizados.",
+      "",
+      "👇 Clique no link abaixo para abrir:",
+      linkDoSistema(),
+    ].join("\n");
+    await sendShare(text, "Construtora Senger", [{ src: "assets/preview/portfolio.jpg", nome: "Portfólio Construtora Senger" }]);
+  }
+
   const semPonto = (texto = "") => String(texto).trim().replace(/\.$/, "");
 
   // "172 m² global · 132 m² privativo" -> "172m² global e 132m² privativos"
@@ -3101,6 +3123,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     document.getElementById("brand-home").addEventListener("click", navigateHome);
     document.getElementById("print-list").addEventListener("click", printPortfolio);
     document.getElementById("share-portfolio").addEventListener("click", sharePortfolio);
+    document.getElementById("compartilhar-sistema")?.addEventListener("click", compartilharSistema);
     document.getElementById("clear-picks").addEventListener("click", clearPicks);
     document.getElementById("selection-fab").addEventListener("click", openDrawer);
     document.querySelectorAll("[data-close-drawer]").forEach((button) => button.addEventListener("click", closeDrawer));
@@ -3184,6 +3207,9 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
   }
 
   if (CLIENT_MODE) document.body.classList.add("client-mode");
+  // v418 — o cliente nao recebe o botao de mandar o sistema (v301: botao da
+  // equipe nao fica no HTML do cliente; o CSS e a segunda barreira).
+  if (CLIENT_MODE) document.getElementById("compartilhar-sistema")?.remove();
   if (CLIENT_LIST_IDS) document.body.classList.add("client-list");
   buildInventory();
   bindVisor();

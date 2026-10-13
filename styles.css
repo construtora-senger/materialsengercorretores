@@ -1408,3 +1408,24 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
    1888 px de altura numa tela de 740. Travando a grade no tamanho do quadro, a
    imagem inteira cabe na tela. Aproximado continua como era. */
 .lightbox-stage:not(.zoom) { grid-template: minmax(0, 1fr) / minmax(0, 1fr); }
+
+/* v418 — "Compartilhar", no topo: manda o link do sistema para outro corretor
+   (o app instalado nao mostra o endereco). Mesmo feitio do "Meu contato", com
+   o icone de compartilhar. O cliente nao recebe o botao. */
+.compartilhar-tag {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.compartilhar-tag svg { width: 14px; height: 14px; flex: none; fill: none; stroke: var(--brand); stroke-width: 2.2; stroke-linecap: round; }
+.compartilhar-tag:hover { border-color: var(--brand); color: var(--brand-dark); }
+.client-mode .compartilhar-tag { display: none !important; }

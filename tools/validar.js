@@ -262,6 +262,13 @@ for (const emp of ativos) {
     for (const nome of fs.readdirSync(dirSel)) if (!validas.has(nome)) erro(`ponte orfa: l/sel/${nome}/ — combinacao fora do cadastro`);
   }
 }
+// v418 — a ponte do link do sistema (Compartilhar do topo). Sem a imagem, a
+// previa do WhatsApp sai sem foto; sem a ponte, o link cai em pagina inexistente.
+pontesEsperadas++;
+if (!existe("assets/preview/portfolio.jpg")) erro("falta assets/preview/portfolio.jpg — rode node tools/gerar-montagens.js");
+if (existe("l/portfolio/index.html")) pontesAchadas++;
+else erro("ponte ausente: l/portfolio/ — rode node tools/gerar-pontes.js");
+if (ativos.some((e) => e.id === "portfolio" || e.id === "sel")) erro("empreendimento com id \"portfolio\" ou \"sel\" colide com as pontes l/portfolio/ e l/sel/");
 
 // Ponte sobrando aponta para unidade que saiu do cadastro.
 for (const emp of ativos) {

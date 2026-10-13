@@ -397,11 +397,55 @@ async function teste(nome, fn) {
     return "";
   });
 
+  // v418 — o Compartilhar do topo manda o link do SISTEMA para outro corretor:
+  // so texto (regra da v333), com a ponte l/portfolio/, que da a previa com a
+  // montagem dos predios e abre o portfolio no modo corretor (sem ?cliente).
+  await teste("o Compartilhar do topo manda o link do sistema, só texto", async () => {
+    const ctx = await navegador.newContext({ userAgent: ANDROID, viewport: { width: 390, height: 844 } });
+    const pagina = await ctx.newPage();
+    await pagina.addInitScript(() => {
+      window.__share = [];
+      navigator.share = async (d) => { window.__share.push({ title: d.title ?? null, texto: d.text || "", arquivos: (d.files || []).length }); };
+      navigator.canShare = () => true;
+    });
+    await pagina.goto(base + "/", { waitUntil: "networkidle" });
+    await pagina.locator("#compartilhar-sistema").click();
+    await pagina.waitForTimeout(600);
+    const r = await pagina.evaluate(() => ({
+      envios: window.__share,
+      janela: document.getElementById("share-modal")?.classList.contains("open") || false,
+    }));
+    await ctx.close();
+    const envio = r.envios[0];
+    if (!envio) return "nao houve envio nenhum";
+    if (r.envios.length !== 1) return `${r.envios.length} envios, esperado 1`;
+    if (envio.arquivos !== 0) return `foi com ${envio.arquivos} arquivo(s) — o WhatsApp descarta a legenda`;
+    if (!/https?:\/\/\S+\/l\/portfolio\/$/.test(envio.texto)) return "o texto nao termina com o link l/portfolio/";
+    if (/cliente/.test(envio.texto)) return "o link do sistema saiu no modo cliente";
+    if (r.janela) return "abriu a janela de copiar no celular";
+    return "";
+  });
+
+  await teste("a ponte do portfólio mostra a montagem dos prédios e abre o sistema no modo corretor", async () => {
+    const html = fs.readFileSync(path.join(RAIZ, "l", "portfolio", "index.html"), "utf8");
+    if (!html.includes('og:image" content="https://construtora-senger.github.io/materialsengercorretores/assets/preview/portfolio.jpg"')) return "og:image nao aponta para a previa do portfolio";
+    if (!fs.existsSync(path.join(RAIZ, "assets", "preview", "portfolio.jpg"))) return "assets/preview/portfolio.jpg nao existe";
+    const pagina = await contexto.newPage();
+    await pagina.goto(`${base}/l/portfolio/`, { waitUntil: "networkidle" });
+    await pagina.waitForTimeout(500);
+    const url = pagina.url();
+    const temBotao = await pagina.locator("#compartilhar-sistema").count();
+    await pagina.close();
+    if (url !== `${base}/`) return `redirecionou para ${url}`;
+    if (!temBotao) return "o portfolio abriu sem os botoes do corretor";
+    return "";
+  });
+
   // ================================================================= o cliente
   grupo("MODO CLIENTE");
 
   const INTERNOS = ["#share-emp-prices", "#share-emp-no-prices", "#share-emp-link", "#print-detail",
-    "#print-list", "#share-portfolio", "#corretor-button", ".version-tag", "[data-select-item]", "[data-share-item]"];
+    "#print-list", "#share-portfolio", "#corretor-button", "#compartilhar-sistema", ".version-tag", "[data-select-item]", "[data-share-item]"];
 
   const semControlesInternos = async (pagina) => {
     const vazando = [];

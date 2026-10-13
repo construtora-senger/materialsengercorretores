@@ -21,6 +21,10 @@
 //
 // Rodar depois de trocar a capa de um empreendimento, ou de acrescentar um.
 // Depois, node tools/gerar-pontes.js, que cria as pontes l/sel/.
+//
+// v418 — grava tambem assets/preview/portfolio.jpg, a previa do link do
+// sistema (l/portfolio/), que o botao Compartilhar do topo manda para outros
+// corretores. Ver desenharPortfolio, logo abaixo.
 
 const fs = require("fs");
 const path = require("path");
@@ -69,6 +73,102 @@ function combinacoes(ids) {
 
 const chave = (ids) => [...ids].sort().join("_");
 
+// v418 — a previa do link do sistema: as fachadas de todos os predios (os
+// empreendimentos com unidades; loteamentos e "Outros Imoveis" ficam fora da
+// imagem), no estilo da montagem da selecao — faixas diagonais, filetes bronze,
+// a marca em serifada. Desenhada aqui, e nao pelo montarMosaicoLista, para a
+// montagem da selecao continuar exatamente como esta: la sao no maximo 6
+// faixas, com o "+N", e o nome fica centrado mais para a esquerda. Roda dentro
+// da pagina (pagina.evaluate), por isso nao usa nada de fora dela.
+async function desenharPortfolio() {
+  const emps = window.SENGER.EMPREENDIMENTOS.filter((e) => e.confirmado !== false && (e.grupos || []).length && e.hero);
+  const carregar = (src) => new Promise((ok) => {
+    const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = src;
+  });
+  const imgs = await Promise.all(emps.map((e) => carregar(e.hero)));
+  const blocos = emps.map((emp, i) => ({ emp, img: imgs[i] })).filter((b) => b.img);
+  if (blocos.length < 2) return null;
+  const SERIF = "Georgia, 'Times New Roman', serif";
+  const SANS = "system-ui, -apple-system, sans-serif";
+  const BRONZE = "#b08d57";
+  const W = 1200, H = 630, HEAD = 100, FOOT = 72, SKEW = 80, LINHA = 5;
+  const y0 = HEAD, y1 = H - FOOT;
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  ctx.imageSmoothingQuality = "high";
+  ctx.fillStyle = "#14181c";
+  ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#f4efe8";
+  ctx.font = `600 40px ${SERIF}`;
+  ctx.fillText("Construtora Senger", W / 2, 42);
+  ctx.fillStyle = BRONZE;
+  ctx.font = `500 19px ${SANS}`;
+  ctx.fillText("PORTFÓLIO DE EMPREENDIMENTOS", W / 2, 80);
+  // As faixas das pontas ficam iguais: a primeira perde SKEW/2 a esquerda e a
+  // ultima SKEW/2 a direita (cada uma se estende para fora da imagem).
+  const passo = W / blocos.length, ultima = blocos.length - 1;
+  blocos.forEach(({ emp, img }, i) => {
+    const xTopo = -SKEW / 2 + i * passo, xBase = xTopo + SKEW;
+    const antes = i === 0 ? SKEW : 0, depois = i === ultima ? SKEW : 0;
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(xTopo - antes, y0);
+    ctx.lineTo(xTopo + passo + depois, y0);
+    ctx.lineTo(xBase + passo + depois, y1);
+    ctx.lineTo(xBase - antes, y1);
+    ctx.closePath();
+    ctx.clip();
+    // A foto cobre a faixa inteira, centrada nela.
+    const caixa = passo + SKEW + 40, xCaixa = xTopo - 20;
+    const s = Math.max(caixa / img.width, (y1 - y0) / img.height);
+    ctx.drawImage(img, xCaixa + (caixa - img.width * s) / 2, y0 + (y1 - y0 - img.height * s) / 2, img.width * s, img.height * s);
+    const grad = ctx.createLinearGradient(0, y1 - 120, 0, y1);
+    grad.addColorStop(0, "rgba(0,0,0,0)");
+    grad.addColorStop(1, "rgba(0,0,0,.8)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(xTopo - SKEW * 2, y1 - 120, passo + SKEW * 4, 120);
+    // O nome no meio da base da faixa (a parte que aparece). Nome que nao
+    // cabe numa linha quebra em duas, em vez de sair espremido.
+    const ini = Math.max(xBase - antes, 0), fim = Math.min(xBase + passo + depois, W);
+    const largura = fim - ini - 22, cx = (ini + fim) / 2 - 4;
+    ctx.fillStyle = "#f4efe8";
+    ctx.font = `600 19px ${SERIF}`;
+    ctx.textBaseline = "bottom";
+    const palavras = emp.nome.split(" ");
+    const linhas = ctx.measureText(emp.nome).width <= largura || palavras.length < 2
+      ? [emp.nome]
+      : [palavras.slice(0, Math.ceil(palavras.length / 2)).join(" "), palavras.slice(Math.ceil(palavras.length / 2)).join(" ")];
+    linhas.forEach((linha, n) => ctx.fillText(linha, cx, y1 - 14 - (linhas.length - 1 - n) * 22, largura));
+    ctx.restore();
+    if (i > 0) { // filete bronze na divisa
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(xTopo - LINHA / 2, y0);
+      ctx.lineTo(xTopo + LINHA / 2, y0);
+      ctx.lineTo(xBase + LINHA / 2, y1);
+      ctx.lineTo(xBase - LINHA / 2, y1);
+      ctx.closePath();
+      const lg = ctx.createLinearGradient(0, y0, 0, y1);
+      lg.addColorStop(0, "#d8b87e");
+      lg.addColorStop(0.5, "#b08d57");
+      lg.addColorStop(1, "#d8b87e");
+      ctx.fillStyle = lg;
+      ctx.fill();
+      ctx.restore();
+    }
+  });
+  ctx.fillStyle = BRONZE;
+  ctx.fillRect(0, y1, W, 3);
+  ctx.fillStyle = "#9aa4ab";
+  ctx.font = `500 20px ${SANS}`;
+  ctx.textBaseline = "middle";
+  ctx.fillText("Fotos, plantas, valores e disponibilidade, sempre atualizados", W / 2, y1 + FOOT / 2 + 2);
+  return canvas.toDataURL("image/jpeg", 0.82).split(",")[1];
+}
+
 (async () => {
   const { server, base } = await servir();
   const navegador = await chromium.launch();
@@ -107,10 +207,20 @@ const chave = (ids) => [...ids].sort().join("_");
     if (!validas.has(nome)) { fs.unlinkSync(path.join(DESTINO, nome)); removidas++; }
   }
 
+  // v418 — a previa do link do sistema (Compartilhar do topo).
+  const PORTFOLIO = path.join(RAIZ, "assets", "preview", "portfolio.jpg");
+  let portfolio = "ja existia";
+  if (TUDO || !fs.existsSync(PORTFOLIO)) {
+    const base64 = await pagina.evaluate(desenharPortfolio);
+    if (base64) { fs.writeFileSync(PORTFOLIO, Buffer.from(base64, "base64")); portfolio = "gravada"; }
+    else { falhas++; portfolio = "FALHOU"; console.error("  ! sem previa do portfolio"); }
+  }
+
   await navegador.close();
   server.close();
   const total = fs.readdirSync(DESTINO).reduce((s, n) => s + fs.statSync(path.join(DESTINO, n)).size, 0);
   console.log(`${geradas} montagem(ns) gerada(s), ${puladas} ja existiam, ${falhas} falha(s), ${removidas} removida(s).`);
   console.log(`${todas.length} combinacoes de 2 a ${MAX} empreendimentos · ${(total / 1024 / 1024).toFixed(1)} MB em assets/preview/sel/`);
+  console.log(`Previa do portfolio (assets/preview/portfolio.jpg): ${portfolio}.`);
   process.exit(falhas ? 1 : 0);
 })();
