@@ -36,6 +36,110 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Renaissance: cada final com a sua planta (v421)
+
+Pergunta do dono ao ver a miniatura da planta na linha (13/10/2026): *"como
+você vai ligar a planta ao apto? sabe qual é qual?"*. A ligação é a do cadastro
+(`planta` no grupo ou na unidade, feita no painel em Materiais → Plantas) —
+e no Renaissance ela estava errada em dois lugares. Ordem dele: *"final 04 é
+final 04 e ponto final… 3 suítes final 01 é de um lado e final 02 é de outro
+lado (não tudo na direita)"*.
+
+**Quem decide qual é qual é o desenho do andar que vem no canto de cada
+planta** (os quatro finais, com o do apartamento pintado) — o mesmo do folder
+(`assets/renaissance/folder.pdf`, páginas 6 e 7):
+
+| tipologia | final | planta |
+|---|---|---|
+| 3 suítes frente | 01 | `ren-planta-3s-frente-dir` (a do grupo) |
+| 3 suítes frente | **02** | **`ren-planta-3s-frente-esq`** — na unidade |
+| 2 suítes | 03 | **`ren-planta-2suites-03`** (a do grupo) — a planta que o dono mandou |
+| 2 suítes | **04** | **`ren-planta-604`** — na unidade |
+| 3 suítes superiores | 01 | `ren-planta-3s-superior` (a do grupo) |
+| 3 suítes superiores | **02** | **`ren-planta-3s-superior-02`** — na unidade |
+| casas suspensas | 401, 402, 1301, 1302, 504 | cada uma com a sua (já estavam certas) |
+
+Antes os finais 02 mostravam a planta da direita e os finais 04 a do final 03,
+com as plantas certas paradas na galeria sem ligação. Vale para a miniatura da
+linha, a ficha da unidade e a planta da seleção. Só entrou o campo `planta` nas
+unidades; preço e situação não foram tocados.
+
+**A 3 suítes superior do final 02 não existia como arquivo** — só a do 01.
+Na revisão que o dono pediu antes de publicar (*"revise as demais tb se estão
+certas nos lugares certos"*), os 1402, 1502, 1602 e 1702 mostravam a do 01.
+A planta do 02 é a da **página 8 do folder** ("Final 01 / 02", com o 02
+pintado), tirada do próprio PDF sem redesenhar: `ren-planta-3s-superior-02.webp`,
+546 × 546 px — legível, mas menor que as outras. Se o dono mandar o original em
+alta, é só trocar o arquivo pelo mesmo nome. O retrato (`tools/materiais.json`)
+subiu só as plantas do Renaissance (9 → 28).
+
+**A 2 suítes do final 03 é a planta do dono (v421).** Na planta técnica do andar tipo (prancha A06, que o
+dono mandou) o 03 é o **espelho exato** do 04 — as mesmas medidas, suítes à
+esquerda e cozinha junto da escada. O dono mandou a planta humanizada pronta,
+espelhada e com o 03 pintado no mapinha: *"coloque essa planta em todos os
+apartamentos duas suítes final 03"*. Entrou como está
+(`ren-planta-2suites-03.webp`, 1600 × 1600 px) e virou a `planta` do grupo
+"2 suítes" — os finais 04 seguem com a deles na unidade. Na lista de plantas
+ela tomou o lugar da antiga "2 suítes" (outro estilo de desenho, sem o
+mapinha) com o nome **"2 suítes (final 03)"**, como o do 04 — pedido dele com
+os dois circulados no print. O arquivo antigo (`ren-planta-2suites.webp`)
+ficou em `assets/`, sem uso.
+
+**Conferidas na mesma revisão, e certas:** Evolutti (as plantas mostram o
+andar com cada final escrito), Premium Office (pavimento tipo, 2º e 3º
+pavimento), Boulevard (um tipo por final, v301), Quality (o desenho dos blocos
+no canto bate: 57 m² = final 2 do bloco A, 69 m² = final 1 do bloco B,
+3 dormitórios = final 1 do bloco A). Personalité e Prime têm uma planta só,
+sem desenho do andar.
+
+**501 e 502: a metragem da tipologia (v421).** Os dois tinham metragem própria
+(179 m² global, contra 180 da tipologia), e o 502 saía em destaque na linha.
+Ordem do dono: *"1 m² a mais ou a menos não precisa diferenciar dos demais"*.
+O `areaUnit` dos dois saiu do `data.js`; mostram 180 m² global · 117 m²
+privativo, como os outros. **É exceção pedida por ele** à regra de nunca
+anunciar área maior que a real — não "corrija" de volta.
+
+**O dono conferiu as 11, uma por uma (13/10/2026).** Pediu: *"me manda a
+planta aqui e pergunta: essa planta é de tal apartamento? … uma de cada vez"*.
+Recebeu cada planta da tabela de cima com os apartamentos dela e respondeu
+**"sim"** às 11. **Assunto encerrado — não religue planta do Renaissance sem
+ordem dele.**
+
+**Ao cadastrar planta nova, olhe o final pintado no canto dela** antes de
+ligar — não ligue pela legenda.
+
+Testes: *"no Renaissance a planta da linha é a do final do apartamento"* e
+*"no Renaissance o 501 e o 502 têm a metragem da tipologia, sem destaque"*.
+
+## Os botões da linha: WhatsApp e caixinha de marcar, modelo C (v421)
+
+Pedido do dono (13/10/2026), com o print da v420 no PC: *"o ícone
+'compartilhar' quero que bote símbolo do whats, e o selecionar um 'v' tipo
+certinho de marcado… assim fica tudo padrão com a planta… mande-me 4 modelos"*.
+Viu quatro (A quadrados com ícone em cima, B quadrados coloridos, C botões
+deitados, D só ícones) e respondeu **"c"**.
+
+- Na linha de cada unidade, lote e imóvel avulso, os dois botões ficam
+  **deitados, da mesma altura**, com ícone e nome lado a lado: **símbolo do
+  WhatsApp + "Compartilhar"** e **caixinha de marcar + "Selecionar"** (marcado:
+  botão azul, caixinha com ✓ e "Selecionado"). No computador a planta vira um
+  botão deitado igual (miniatura menor + "Ver planta"); no celular ela continua
+  à esquerda do cartão e os dois botões dividem a linha.
+- **O que cada botão faz não mudou**: o WhatsApp abre a mesma escolha de envio
+  de sempre, e a caixinha marca para a seleção. `botaoCompartilharDaLinha` e
+  `botaoSelecionarDaLinha`, no `app.js`; ao marcar, `toggleSelection` troca só o
+  nome (`.rotulo-selecao`), para a caixinha não sumir.
+- **A tabela da página passou a medir pelo conteúdo** (`table-layout: auto`
+  em `#unidades .units-table`, coluna dos botões do tamanho deles). Com as
+  larguras fixas da v251 os botões passavam por cima do preço em computador
+  menor e na tabela dos lotes — já acontecia em 1024 px antes da v421. Em
+  tablet em pé (até 960 px) os botões quebram em duas linhas. O PDF não mudou.
+- Bloco "v421" no fim do `styles.css`.
+
+Teste (`tools/testar-navegador.js`): *"os botões da linha têm WhatsApp e
+caixinha, e não cobrem o preço"* (apartamentos em 1024 e 800 px, lotes em
+1280 px, marcar e desmarcar).
+
 ## A planta na linha da unidade: modelo D (v420)
 
 Pedido do dono (13/10/2026), com o print do Renaissance no PC e "PLANTAS"

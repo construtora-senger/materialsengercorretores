@@ -1864,6 +1864,22 @@
     abrirVisor([{ src: planta.src, legenda: `${itemLabel(item)} — ${planta.legenda || "Planta"}` }], 0);
   }
 
+  // v421 — os botoes da linha no modelo C (escolhido pelo dono em 13/10/2026
+  // entre quatro desenhados): deitados, da mesma altura da planta, com o
+  // simbolo do WhatsApp no Compartilhar e uma caixinha de marcar no
+  // Selecionar. O que cada um faz nao mudou: o WhatsApp abre a mesma escolha de
+  // envio, e a caixinha marca a unidade para a selecao.
+  const ICONE_WHATSAPP_LINHA = '<svg class="ic-wa" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="#25D366" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/><path fill="#fff" d="M8.6 7.2c.2-.4.4-.4.7-.4h.5c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.4.6c-.1.2-.3.3-.1.6.5.9 1.2 1.7 2 2.3.6.4 1 .6 1.3.7.2.1.4 0 .5-.1l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.2.1.4.2.4.4 0 .6-.2 1.3-.7 1.7-.6.5-1.4.7-2.2.5-1.6-.4-3.1-1.3-4.3-2.5-1.1-1.1-2-2.4-2.5-3.8-.3-.9 0-1.9.6-2.6z"/></svg>';
+  const CAIXA_DE_MARCAR = '<span class="caixa-marcar" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>';
+
+  function botaoCompartilharDaLinha(item) {
+    return `<button class="unit-action botao-linha" type="button" data-share-item="${item.key}">${ICONE_WHATSAPP_LINHA}<span>Compartilhar</span></button>`;
+  }
+
+  function botaoSelecionarDaLinha(item, selected, selectable) {
+    return `<button class="selection-control botao-linha ${selected ? "selected" : ""}" type="button" data-select-item="${item.key}" ${selectable ? "" : "disabled"}>${CAIXA_DE_MARCAR}<span class="rotulo-selecao">${selected ? "Selecionado" : "Selecionar"}</span></button>`;
+  }
+
   function renderUnitRow(item, showArea = true, showGarage = true) {
     const selectable = isMarketable(item.status);
     const selected = state.selected.has(item.key);
@@ -1878,7 +1894,7 @@
         ${showGarage ? `<td>${escapeHtml(item.garage || "—")}</td>` : ""}
         <td><span class="status-pill status-${item.status}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></td>
         <td><strong class="price-value">${money(item.price)}</strong></td>
-        <td><div class="unit-linha-fim">${miniaturaDaPlanta(item)}<div class="unit-actions"><button class="unit-action" type="button" data-share-item="${item.key}">Compartilhar</button><button class="selection-control ${selected ? "selected" : ""}" type="button" data-select-item="${item.key}" ${selectable ? "" : "disabled"}>${selected ? "Selecionado" : "Selecionar"}</button></div></div></td>
+        <td><div class="unit-linha-fim">${miniaturaDaPlanta(item)}<div class="unit-actions">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, selected, selectable)}</div></div></td>
       </tr>
     `;
   }
@@ -1901,7 +1917,7 @@
           : hasOwnArea(item) ? `<p class="mobile-unit-area">Esta unidade: ${escapeHtml(item.area)}</p>` : ""}
         ${showGarage && item.garage ? `<p class="mobile-unit-area">Garagem: ${escapeHtml(item.garage)}</p>` : ""}
         ${otherTags(item).length ? `<p class="mobile-unit-tags">${escapeHtml(otherTags(item).join(" · "))}</p>` : ""}
-        <div class="mobile-unit-actions"><button class="unit-action" type="button" data-share-item="${item.key}">Compartilhar</button><button class="selection-control ${selected ? "selected" : ""}" type="button" data-select-item="${item.key}" ${selectable ? "" : "disabled"}>${selected ? "Selecionado" : "Selecionar"}</button></div>
+        <div class="mobile-unit-actions">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, selected, selectable)}</div>
       </article>
     `;
   }
@@ -1971,7 +1987,7 @@
         <td>${escapeHtml(secondary || "—")}</td>
         <td><span class="status-pill status-${item.status}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></td>
         <td><strong class="price-value">${item.pricePrefix ? `${escapeHtml(item.pricePrefix)} ` : ""}${money(item.price)}</strong></td>
-        <td><div class="unit-actions"><button class="unit-action" type="button" data-share-item="${item.key}">Compartilhar</button><button class="selection-control ${selected ? "selected" : ""}" type="button" data-select-item="${item.key}" ${selectable ? "" : "disabled"}>${selected ? "Selecionado" : "Selecionar"}</button></div></td>
+        <td><div class="unit-actions">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, selected, selectable)}</div></td>
       </tr>
     `;
   }
@@ -1988,7 +2004,7 @@
           <div><span>Área</span><strong>${escapeHtml(item.area || "—")}</strong></div>
           <div><span>Valor</span><strong class="price-value">${item.pricePrefix ? `${escapeHtml(item.pricePrefix)} ` : ""}${money(item.price)}</strong></div>
         </div>
-        <div class="mobile-unit-actions"><button class="unit-action" type="button" data-share-item="${item.key}">Compartilhar</button><button class="selection-control ${selected ? "selected" : ""}" type="button" data-select-item="${item.key}" ${selectable ? "" : "disabled"}>${selected ? "Selecionado" : "Selecionar"}</button></div>
+        <div class="mobile-unit-actions">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, selected, selectable)}</div>
       </article>
     `;
   }
@@ -2721,7 +2737,8 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       if (button.dataset.selectItem !== key) return;
       const selected = state.selected.has(key);
       button.classList.toggle("selected", selected);
-      button.textContent = selected ? "Selecionado" : "Selecionar";
+      const rotulo = button.querySelector(".rotulo-selecao") || button;
+      rotulo.textContent = selected ? "Selecionado" : "Selecionar";
     });
     showToast(state.selected.has(key) ? "Imóvel adicionado à seleção." : "Imóvel removido da seleção.");
   }

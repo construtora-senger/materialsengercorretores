@@ -165,6 +165,84 @@ async function teste(nome, fn) {
     return gavetas >= 2 ? "" : `so ${gavetas} gaveta(s) de tipologia`;
   });
 
+  // v421 — modelo C: o Compartilhar da linha leva o simbolo do WhatsApp e o
+  // Selecionar uma caixinha de marcar, que nao some ao marcar e desmarcar; e
+  // os botoes nunca passam por cima do preco (apartamentos e lotes).
+  await teste("os botões da linha têm WhatsApp e caixinha, e não cobrem o preço", async () => {
+    for (const [rota, largura] of [["/#emp-renaissance", 1024], ["/#emp-renaissance", 800], ["/#emp-nova-vila-rica-iii", 1280]]) {
+      const ctx = await navegador.newContext({ viewport: { width: largura, height: 900 } });
+      const p = await ctx.newPage();
+      await p.goto(base + rota, { waitUntil: "networkidle" });
+      await p.waitForTimeout(500);
+      const r = await p.evaluate(() => {
+        localStorage.removeItem("senger-selection");
+        document.querySelectorAll("#unidades details.unit-group").forEach((d) => { d.open = true; });
+        let cobre = "";
+        document.querySelectorAll("#unidades .units-table tbody tr").forEach((tr) => {
+          if (cobre || !tr.offsetParent) return;
+          const preco = tr.querySelector(".price-value");
+          const botoes = [...tr.querySelectorAll("td:last-child button")].filter((b) => b.offsetParent);
+          if (!preco || !botoes.length) return;
+          const fimPreco = preco.getBoundingClientRect().right;
+          if (botoes.some((b) => b.getBoundingClientRect().left < fimPreco)) cobre = tr.dataset.unitCode;
+        });
+        const linha = [...document.querySelectorAll("#unidades .units-table tbody tr")].find((tr) => tr.offsetParent);
+        return { cobre, wa: !!linha.querySelector("[data-share-item] .ic-wa"), caixa: !!linha.querySelector("[data-select-item] .caixa-marcar") };
+      });
+      if (r.cobre) { await ctx.close(); return `${rota} em ${largura}px: os botoes cobrem o preco em ${r.cobre}`; }
+      if (!r.wa) { await ctx.close(); return `${rota}: o Compartilhar esta sem o simbolo do WhatsApp`; }
+      if (!r.caixa) { await ctx.close(); return `${rota}: o Selecionar esta sem a caixinha`; }
+      const sel = p.locator("#unidades .units-table [data-select-item]:visible").first();
+      await sel.click(); await p.waitForTimeout(200);
+      const marcado = await sel.evaluate((b) => ({ sel: b.classList.contains("selected"), caixa: !!b.querySelector(".caixa-marcar"), texto: b.textContent.trim() }));
+      await sel.click(); await p.waitForTimeout(200);
+      const desmarcado = await sel.evaluate((b) => ({ sel: b.classList.contains("selected"), caixa: !!b.querySelector(".caixa-marcar"), texto: b.textContent.trim() }));
+      await ctx.close();
+      if (!marcado.sel || !marcado.caixa || marcado.texto !== "Selecionado") return `${rota}: marcar deixou ${JSON.stringify(marcado)}`;
+      if (desmarcado.sel || !desmarcado.caixa || desmarcado.texto !== "Selecionar") return `${rota}: desmarcar deixou ${JSON.stringify(desmarcado)}`;
+    }
+    return "";
+  });
+
+  // v421 — no Renaissance cada final tem a sua planta (pedido do dono, conferido
+  // no desenho do andar que vem no canto de cada planta e no folder): final 01
+  // a da direita, final 02 a da esquerda, final 04 a "2 suites (final 04)";
+  // na 3 suites superior, o final 02 tem a planta da pagina 8 do folder;
+  // o final 03 da 2 suites tem a planta que o dono mandou (espelho do 04).
+  await teste("no Renaissance a planta da linha é a do final do apartamento", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => {
+      const planta = (cod) => document.querySelector(`#unidades tr[data-unit-code="${cod}"] .planta-mini img`)?.getAttribute("src") || "";
+      return Object.fromEntries(["501", "502", "603", "604", "1401", "1402"].map((cod) => [cod, planta(cod)]));
+    });
+    await p.close();
+    if (!r["501"].includes("ren-planta-3s-frente-dir")) return `501 mostra ${r["501"]}`;
+    if (!r["502"].includes("ren-planta-3s-frente-esq")) return `502 mostra ${r["502"]}`;
+    if (!r["603"].includes("ren-planta-2suites-03")) return `603 mostra ${r["603"]}`;
+    if (!r["604"].includes("ren-planta-604")) return `604 mostra ${r["604"]}`;
+    if (!/ren-planta-3s-superior\.webp/.test(r["1401"])) return `1401 mostra ${r["1401"]}`;
+    if (!r["1402"].includes("ren-planta-3s-superior-02")) return `1402 mostra ${r["1402"]}`;
+    return "";
+  });
+
+  // v421 — pedido do dono: 1 m² a mais ou a menos nao diferencia a unidade;
+  // o 501 e o 502 levam a mesma metragem da tipologia, sem destaque.
+  await teste("no Renaissance o 501 e o 502 têm a metragem da tipologia, sem destaque", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => ["501", "502", "602"].map((cod) => {
+      const td = document.querySelector(`#unidades tr[data-unit-code="${cod}"] td:nth-child(2)`);
+      return { cod, texto: td?.textContent.trim() || "", destaque: !!td?.classList.contains("unit-own-area") };
+    }));
+    await p.close();
+    for (const l of r) {
+      if (l.destaque) return `${l.cod} ainda sai destacado`;
+      if (l.texto !== r[2].texto) return `${l.cod} mostra "${l.texto}", o 602 "${r[2].texto}"`;
+    }
+    return "";
+  });
+
   // v420 — modelo D: a miniatura da planta na linha de cada unidade, que abre
   // a planta DAQUELA unidade; o cliente tambem ve (fora dos botoes da equipe).
   await teste("a linha da unidade traz a miniatura da planta e abre a planta dela", async () => {
