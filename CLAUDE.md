@@ -36,6 +36,32 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A vitrine e o PDF da home: do prédio mais barato ao mais caro (v419)
+
+Pedido do dono (13/10/2026), com o print da home em "Menor preço" e um X nos
+dois loteamentos e em "Outros Imóveis": *"quero que a lista de pdf gerada na
+home, de todos empreendimentos, seja apresentada na ordem de preço crescente
+(exceto terrenos e outros)… os que fiz x ficam por último… a apresentação dos
+itens na home pode alterar para essa forma também"*.
+
+- A **ordem de abertura** (opção "Destaques", que é a que vem marcada) passou
+  a ser: **os prédios do mais barato para o mais caro**, pelo "a partir de";
+  depois **os loteamentos** (também pelo valor); e **"Outros Imóveis"** por
+  último. Hoje: Quality · Premium Office · Evolutti · Renaissance · Boulevard
+  · Prime · Personalité · Nova Vila Rica III · Nova Vila Rica I & II · Outros.
+- Vale para a **vitrine** e para o **PDF da home** ("Gerar PDF"), que sai na
+  mesma ordem da vitrine (`portfolioList` → `filteredEnterprises`). Quem decide
+  é `blocoDaOrdem` (0 prédio, 1 loteamento, 2 outros) e depois o `minPrice`.
+- O campo `destaque` do `data.js` **deixou de mexer na ordem**. Antes a ordem
+  era a do cadastro, com os marcados como destaque na frente.
+- **O que não mudou** (não foi pedido): as opções "Menor preço", "Maior preço"
+  e "Nome" do menu continuam ordenando como antes — no "Menor preço" os
+  loteamentos seguem no começo. A lista que o cliente recebe com vários
+  empreendimentos usa a mesma vitrine, então também abre nesta ordem.
+
+Teste (`tools/testar-navegador.js`): *"a vitrine e o PDF da home vão do
+prédio mais barato ao mais caro, loteamentos e outros no fim"*.
+
 ## Compartilhar, no topo: o link do sistema para outro corretor (v418)
 
 Pedido do dono (13/10/2026), com o print da vitrine no app instalado: *"não

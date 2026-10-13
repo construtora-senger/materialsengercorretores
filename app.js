@@ -759,8 +759,21 @@
       if (state.sort === "menor-preco") return (minPrice(a) || Infinity) - (minPrice(b) || Infinity);
       if (state.sort === "maior-preco") return maxPrice(b) - maxPrice(a);
       if (state.sort === "nome") return a.nome.localeCompare(b.nome, "pt-BR");
-      return Number(Boolean(b.destaque)) - Number(Boolean(a.destaque)) || EMPREENDIMENTOS.indexOf(a) - EMPREENDIMENTOS.indexOf(b);
+      // v419 — a ordem de abertura (a vitrine e o PDF da home, que sai nesta
+      // mesma ordem) e a que o dono pediu (13/10/2026): os predios do mais
+      // barato para o mais caro, pelo "a partir de"; depois os loteamentos
+      // (tambem pelo valor) e "Outros Imoveis" por ultimo. Antes era a ordem
+      // do cadastro, com os marcados como `destaque` na frente.
+      return blocoDaOrdem(a) - blocoDaOrdem(b)
+        || (minPrice(a) || Infinity) - (minPrice(b) || Infinity)
+        || EMPREENDIMENTOS.indexOf(a) - EMPREENDIMENTOS.indexOf(b);
     });
+  }
+
+  // 0 = predio, 1 = loteamento, 2 = "Outros Imoveis".
+  function blocoDaOrdem(emp) {
+    if (emp.categoria === "outros") return 2;
+    return (emp.terrenos || []).length ? 1 : 0;
   }
 
   // v160 — as unidades de todos os empreendimentos que passam nos filtros,

@@ -90,6 +90,37 @@ async function teste(nome, fn) {
     return (await pg.locator("#view-switch").count()) === 0 ? "" : "o alternador voltou para a vitrine";
   });
 
+  // v419 — pedido do dono: a vitrine e o PDF da home saem do predio mais
+  // barato para o mais caro; os loteamentos e "Outros Imoveis" vao para o fim.
+  await teste("a vitrine e o PDF da home vão do prédio mais barato ao mais caro, loteamentos e outros no fim", async () => {
+    const r = await pg.evaluate(async () => {
+      const porId = new Map(window.SENGER.EMPREENDIMENTOS.map((e) => [e.id, e]));
+      const cartoes = [...document.querySelectorAll("#portfolio-grid .portfolio-card")].map((c) => {
+        const emp = porId.get(c.querySelector("[data-pick-emp]")?.dataset.pickEmp);
+        const preco = Number(((c.textContent.match(/R\$\s?([\d.]+)/) || [])[1] || "0").replace(/\./g, ""));
+        const bloco = emp?.categoria === "outros" ? 2 : (emp?.terrenos || []).length ? 1 : 0;
+        return { nome: emp?.nome, bloco, preco };
+      });
+      const original = window.print;
+      window.print = () => {};
+      document.getElementById("print-sheet").innerHTML = "";
+      document.getElementById("print-list").click();
+      await new Promise((ok) => setTimeout(ok, 1500));
+      window.print = original;
+      const pdf = [...document.querySelectorAll("#print-sheet .ps-section")].map((h) => h.textContent.trim());
+      return { cartoes, pdf };
+    });
+    const { cartoes, pdf } = r;
+    if (cartoes.some((c) => !c.nome)) return "cartao sem empreendimento identificado";
+    for (let i = 1; i < cartoes.length; i++) {
+      const [a, b] = [cartoes[i - 1], cartoes[i]];
+      if (b.bloco < a.bloco) return `${b.nome} saiu depois de ${a.nome} (loteamento/outros tem de ir para o fim)`;
+      if (a.bloco === 0 && b.bloco === 0 && b.preco < a.preco) return `${b.nome} (${b.preco}) saiu depois de ${a.nome} (${a.preco})`;
+    }
+    if (pdf.join(" | ") !== cartoes.map((c) => c.nome).join(" | ")) return `o PDF saiu em outra ordem: ${pdf.join(", ")}`;
+    return "";
+  });
+
   await teste("a busca por numero de apartamento acha a unidade", async () => {
     await pg.fill("#search-input", "501");
     await pg.waitForTimeout(350);
