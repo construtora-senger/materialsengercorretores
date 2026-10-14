@@ -1502,3 +1502,21 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 @media (max-width: 960px) {
   .unit-linha-fim { flex-wrap: wrap; row-gap: 5px; }
 }
+
+/* v428 — ABAS EM DESTAQUE, MODELO A. Pedido do dono (14/10/2026): "destaque
+   todas abas para vermos melhor, pois muitos não têm percebido onde ver as
+   demais opções". Entre quatro modelos ele escolheu o A: cada aba vira um
+   botão redondo com contorno na cor da marca, a escolhida pintada, e
+   "Escolha a tipologia:" na frente. No celular o rótulo fica numa linha e os
+   botões quebram linha embaixo — nenhum some de lado. */
+#unidades .abas-tipologia { border-bottom: 0; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 22px; overflow: visible; }
+#unidades .abas-tipologia::before { content: "Escolha a tipologia:"; color: var(--muted); font: 600 14px var(--font-body); margin-right: 2px; }
+#unidades .aba-tipologia { margin: 0; padding: 9px 20px; border: 2px solid var(--brand); border-radius: 999px; background: #fff; color: var(--brand); font-size: 15px; }
+#unidades .aba-tipologia:hover { background: var(--brand-soft); color: var(--brand-dark); }
+#unidades .aba-tipologia[aria-selected="true"] { background: var(--brand); color: #fff; box-shadow: 0 6px 16px rgba(23, 143, 160, .3); }
+#unidades .aba-tipologia:focus-visible { outline: 3px solid var(--brand-dark); outline-offset: 2px; }
+@media (max-width: 720px) {
+  #unidades .abas-tipologia { gap: 8px; margin-bottom: 14px; }
+  #unidades .abas-tipologia::before { flex-basis: 100%; font-size: 13px; }
+  #unidades .aba-tipologia { padding: 8px 14px; font-size: 13px; }
+}
