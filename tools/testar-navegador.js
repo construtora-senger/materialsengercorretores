@@ -243,7 +243,7 @@ async function teste(nome, fn) {
     return "";
   });
 
-  // v426 — no Boulevard o final 01 e o final 02 tem plantas diferentes (o
+  // v427 — no Boulevard o final 01 e o final 02 tem plantas diferentes (o
   // painel gravava as duas no mesmo arquivo, e uma apagava a outra).
   await teste("no Boulevard o final 01 e o final 02 abrem plantas diferentes", async () => {
     const p = await abrir("/#emp-boulevard");
@@ -340,6 +340,24 @@ async function teste(nome, fn) {
     await pg.locator(".aba-tipologia", { hasText: "Salas comerciais" }).click();
     const titulos = await pg.locator(".painel-tipologia:not([hidden]) .unit-group-header h3").allInnerTexts();
     return titulos.length === 1 && /Salas comerciais/.test(titulos[0]) ? "" : `a aba das salas mostrou: ${titulos.join(" / ")}`;
+  });
+
+  // v428 — modelo A, escolhido pelo dono: as abas viram botoes redondos, com
+  // "Escolha a tipologia:" na frente, para ninguem deixar de ver as outras.
+  await teste("as abas são botões redondos, com \"Escolha a tipologia\" na frente", async () => {
+    const r = await pg.evaluate(() => {
+      const lista = document.querySelector(".abas-tipologia");
+      const sel = document.querySelector('.aba-tipologia[aria-selected="true"]');
+      const outra = document.querySelector('.aba-tipologia[aria-selected="false"]');
+      const cs = (el) => getComputedStyle(el);
+      return { rotulo: getComputedStyle(lista, "::before").content, raio: parseFloat(cs(sel).borderTopLeftRadius),
+        fundoSel: cs(sel).backgroundColor, borda: cs(outra).borderTopColor };
+    });
+    if (!/Escolha a tipologia/.test(r.rotulo)) return `sem o rótulo: ${r.rotulo}`;
+    if (r.raio < 15) return `cantos de ${r.raio}px`;
+    if (r.fundoSel !== "rgb(23, 143, 160)") return `a aba escolhida não está pintada: ${r.fundoSel}`;
+    if (r.borda !== "rgb(23, 143, 160)") return `as outras abas sem contorno: ${r.borda}`;
+    return "";
   });
 
   await teste("o cabeçalho da tipologia traz o \"a partir de\" ao lado do Ver unidades", async () => {
@@ -1099,7 +1117,7 @@ async function teste(nome, fn) {
     return (await admin.locator("button[data-planta-livre-remover]").count()) === antes ? "" : "nao removeu";
   });
 
-  // v426 — duas tipologias com o mesmo nome (finais 01 e 02 do Boulevard,
+  // v427 — duas tipologias com o mesmo nome (finais 01 e 02 do Boulevard,
   // "3 suítes + lavabo") nao podem gravar no mesmo arquivo, e regravar a
   // galeria nao pode perder a secao (unidade / pavimento / lazer).
   await teste("plantas de finais diferentes vão para arquivos diferentes, e a galeria guarda a seção", async () => {

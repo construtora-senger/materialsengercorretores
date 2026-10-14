@@ -3004,7 +3004,7 @@
     return `assets/${emp.id}/galeria/${carimbo}-${slugArquivo(semExtensao(arquivo.name))}.${ext}`;
   }
 
-  // v426 — cada planta enviada ganha um nome só dela. Antes o nome era só o da
+  // v427 — cada planta enviada ganha um nome só dela. Antes o nome era só o da
   // tipologia: no Boulevard o final 01 e o final 02 se chamam os dois
   // "3 suítes + lavabo", então os dois envios gravavam no mesmo arquivo, um
   // apagava o outro e os dois finais ficavam com a mesma planta. E, com o
@@ -3130,7 +3130,7 @@
     const novo = { src: path, legenda: `Planta — ${alvo.rotulo.replace(/^Tipologia — |^Unidade /, "")}` };
     if (itemAnterior?.secao) novo.secao = itemAnterior.secao;
     if (itemAnterior?.tecnica) novo.tecnica = true;
-    // v426 — se outra tipologia/unidade ainda usa a planta antiga, ela fica na
+    // v427 — se outra tipologia/unidade ainda usa a planta antiga, ela fica na
     // galeria e a nova entra ao lado; trocar no lugar tiraria a planta do outro.
     const outroUsa = antiga && alvosDePlanta(emp).some((a) => (a.grupoIndex !== alvo.grupoIndex
       || (a.unidadeIndex ?? null) !== (alvo.unidadeIndex ?? null)) && plantaAtual(emp, a) === antiga);
@@ -6461,7 +6461,7 @@
     if (!(lista || []).length) return "[]";
     const linhas = lista.map((item) => {
       const campos = [`src: ${JSON.stringify(item.src)}`, `legenda: ${JSON.stringify(item.legenda || "")}`];
-      // v426 — a secao ("unidade", "pavimento", "lazer") tem de sobreviver a
+      // v427 — a secao ("unidade", "pavimento", "lazer") tem de sobreviver a
       // regravacao: sem ela a planta do lazer e a prancha do andar voltam a
       // aparecer como planta do apartamento no link do cliente (regra da v301).
       if (item.secao) campos.push(`secao: ${JSON.stringify(item.secao)}`);

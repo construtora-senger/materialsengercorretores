@@ -36,7 +36,24 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## Plantas do Boulevard pelo painel: o defeito do nome repetido (v426)
+## As abas das tipologias em destaque: modelo A (v428)
+
+Pedido do dono (14/10/2026), com o print do Quality e as abas circuladas:
+*"destaque todas abas para vermos melhor, pois muitos não têm percebido onde
+ver as demais opções… me mande 4 modelos"*. Viu quatro (A botões redondos com
+"Escolha a tipologia:", B barra larga dividida, C cartões com o "a partir de",
+D faixa colorida com aviso) e respondeu **"A"**.
+
+- Cada aba é um **botão redondo com contorno na cor da marca**; a escolhida
+  fica **pintada**, com sombra. Na frente, **"Escolha a tipologia:"**
+  (`::before` de `.abas-tipologia`). No celular o rótulo fica numa linha e os
+  botões quebram linha embaixo — nenhum some de lado.
+- Só o visual mudou: as abas, a ordem e o que cada uma mostra são os da v407.
+  Bloco "v428" no fim do `styles.css`.
+
+Teste: *"as abas são botões redondos, com \"Escolha a tipologia\" na frente"*.
+
+## Plantas do Boulevard pelo painel: o defeito do nome repetido (v427)
 
 **O que aconteceu (14/10/2026).** O dono trocou as quatro plantas do Boulevard
 pelo painel, pelas do Gamma dele (com o mapinha "Final 1…4"), e reclamou:
@@ -46,13 +63,13 @@ mas nada… continua a mesma"*. Ele tinha razão — **o defeito era do painel**
 1. `caminhoDaPlanta` dava ao arquivo o **nome da tipologia**, não o do envio.
    O final 01 e o final 02 se chamam os dois "3 suítes + lavabo", então os dois
    envios gravaram em `assets/boulevard/plantas/3-suites-lavabo.png`: um apagou
-   o outro e os dois finais ficaram com a mesma planta (v423/v424/v425).
+   o outro e os dois finais ficaram com a mesma planta (v423 a v426).
 2. Com o endereço sempre igual, o navegador seguia mostrando a imagem antiga.
 3. `serializarGaleria` regravava a galeria **sem a `secao`** — a planta do
    lazer e a prancha do andar voltaram a aparecer no link de uma unidade
    (regra da v301).
 
-**Conserto (v426):** o arquivo de planta ganha carimbo de hora e o final no
+**Conserto (v427):** o arquivo de planta ganha carimbo de hora e o final no
 nome (`<carimbo>-3-suites-lavabo-final-02.png`); a `secao` passa pela
 regravação e pela troca de planta; e, se outra tipologia ainda usa a planta
 antiga, a nova entra ao lado em vez de tomar o lugar dela. As duas versões que
