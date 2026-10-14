@@ -1580,7 +1580,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 377;
+  const VERSAO_PAINEL = 378;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3004,12 +3004,20 @@
     return `assets/${emp.id}/galeria/${carimbo}-${slugArquivo(semExtensao(arquivo.name))}.${ext}`;
   }
 
+  // v426 — cada planta enviada ganha um nome só dela. Antes o nome era só o da
+  // tipologia: no Boulevard o final 01 e o final 02 se chamam os dois
+  // "3 suítes + lavabo", então os dois envios gravavam no mesmo arquivo, um
+  // apagava o outro e os dois finais ficavam com a mesma planta. E, com o
+  // endereço sempre igual, o navegador seguia mostrando a imagem antiga — o
+  // dono enviava, publicava e "continua a mesma". O carimbo de hora (como na
+  // galeria) e o final no nome resolvem as duas coisas.
   function caminhoDaPlanta(emp, alvo, arquivo) {
     const ext = extensaoDoArquivo(arquivo.name) || "webp";
+    const carimbo = Date.now().toString(36);
     const base = alvo.unidadeIndex != null
       ? `${slugArquivo(alvo.tipoGrupo)}-${slugArquivo(alvo.apto)}`
-      : slugArquivo(alvo.tipoGrupo);
-    return `assets/${emp.id}/plantas/${base}.${ext}`;
+      : [slugArquivo(alvo.tipoGrupo), slugArquivo(alvo.final || "")].filter((x) => x && x !== "arquivo").join("-");
+    return `assets/${emp.id}/plantas/${carimbo}-${base}.${ext}`;
   }
 
   const PADROES_IMAGEM = {
@@ -3077,6 +3085,22 @@
     return base ? base.charAt(0).toUpperCase() + base.slice(1) : "Imagem do empreendimento";
   }
 
+  // v423 — o nome de cada planta diz o final dela ("· final 01"). Pedido do
+  // dono, que não sabia qual linha era de qual final: *"quero escrito 'final
+  // tal'"*. Mesma regra do site (blocosDeTipologia): o final são os dois
+  // últimos dígitos do apartamento com andar (3 dígitos ou mais).
+  function finalDoApto(apto) {
+    const digitos = String(apto || "").match(/\d+/)?.[0] || "";
+    return digitos.length >= 3 ? digitos.slice(-2) : "";
+  }
+
+  function textoDosFinais(aptos) {
+    const finais = [...new Set(aptos.map(finalDoApto))].sort();
+    if (!finais.length || finais.includes("")) return "";
+    if (finais.length === 1) return `final ${finais[0]}`;
+    return `finais ${finais.slice(0, -1).join(", ")} e ${finais[finais.length - 1]}`;
+  }
+
   function alvosDePlanta(emp) {
     const alvos = [];
     (emp.grupos || []).forEach((g, grupoIndex) => {
@@ -3086,11 +3110,13 @@
       // padrao artificial para a tipologia. Nos demais casos, a tipologia pode
       // receber/substituir a planta que vale para as unidades sem planta propria.
       if (g.planta || !unidades.length || comPropria.length < unidades.length) {
-        alvos.push({ grupoIndex, unidadeIndex: null, tipoGrupo: g.tipo, apto: "", rotulo: `Tipologia — ${g.tipo}` });
+        const fim = /\bfinal\b/i.test(g.sufixo || "") ? g.sufixo : textoDosFinais(unidades.filter((u) => !u.planta).map((u) => u.apto));
+        alvos.push({ grupoIndex, unidadeIndex: null, tipoGrupo: g.tipo, apto: "", final: fim, rotulo: `Tipologia — ${g.tipo}${fim ? ` · ${fim}` : ""}` });
       }
       unidades.forEach((u, unidadeIndex) => {
         if (!u.planta) return;
-        alvos.push({ grupoIndex, unidadeIndex, tipoGrupo: g.tipo, apto: String(u.apto), rotulo: `Unidade ${u.apto} — ${g.tipo}` });
+        const fim = textoDosFinais([u.apto]);
+        alvos.push({ grupoIndex, unidadeIndex, tipoGrupo: g.tipo, apto: String(u.apto), rotulo: `Unidade ${u.apto} — ${g.tipo}${fim ? ` · ${fim}` : ""}` });
       });
     });
     return alvos;
@@ -3102,8 +3128,15 @@
     const indice = antiga ? lista.findIndex((item) => nomeDaMidia(item) === antiga) : -1;
     const itemAnterior = indice >= 0 ? lista[indice] : null;
     const novo = { src: path, legenda: `Planta — ${alvo.rotulo.replace(/^Tipologia — |^Unidade /, "")}` };
+    if (itemAnterior?.secao) novo.secao = itemAnterior.secao;
     if (itemAnterior?.tecnica) novo.tecnica = true;
-    if (indice >= 0) lista.splice(indice, 1, novo); else lista.push(novo);
+    // v426 — se outra tipologia/unidade ainda usa a planta antiga, ela fica na
+    // galeria e a nova entra ao lado; trocar no lugar tiraria a planta do outro.
+    const outroUsa = antiga && alvosDePlanta(emp).some((a) => (a.grupoIndex !== alvo.grupoIndex
+      || (a.unidadeIndex ?? null) !== (alvo.unidadeIndex ?? null)) && plantaAtual(emp, a) === antiga);
+    if (indice >= 0 && !outroUsa) lista.splice(indice, 1, novo);
+    else if (indice >= 0) lista.splice(indice + 1, 0, novo);
+    else lista.push(novo);
     anotarGaleria(emp, lista);
   }
 
@@ -6428,6 +6461,10 @@
     if (!(lista || []).length) return "[]";
     const linhas = lista.map((item) => {
       const campos = [`src: ${JSON.stringify(item.src)}`, `legenda: ${JSON.stringify(item.legenda || "")}`];
+      // v426 — a secao ("unidade", "pavimento", "lazer") tem de sobreviver a
+      // regravacao: sem ela a planta do lazer e a prancha do andar voltam a
+      // aparecer como planta do apartamento no link do cliente (regra da v301).
+      if (item.secao) campos.push(`secao: ${JSON.stringify(item.secao)}`);
       if (item.tecnica) campos.push("tecnica: true");
       return `      { ${campos.join(", ")} },`;
     });

@@ -243,6 +243,21 @@ async function teste(nome, fn) {
     return "";
   });
 
+  // v426 — no Boulevard o final 01 e o final 02 tem plantas diferentes (o
+  // painel gravava as duas no mesmo arquivo, e uma apagava a outra).
+  await teste("no Boulevard o final 01 e o final 02 abrem plantas diferentes", async () => {
+    const p = await abrir("/#emp-boulevard");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => Object.fromEntries(["501", "602", "403", "404"].map((cod) => [cod,
+      document.querySelector(`#unidades tr[data-unit-code="${cod}"] .planta-mini img`)?.getAttribute("src") || ""])));
+    await p.close();
+    if (!r["501"].includes("final-01")) return `501 mostra ${r["501"]}`;
+    if (!r["602"].includes("final-02")) return `602 mostra ${r["602"]}`;
+    if (!r["403"].includes("2-dormitorios")) return `403 mostra ${r["403"]}`;
+    if (!r["404"].includes("2-suites")) return `404 mostra ${r["404"]}`;
+    return "";
+  });
+
   // v420 — modelo D: a miniatura da planta na linha de cada unidade, que abre
   // a planta DAQUELA unidade; o cliente tambem ve (fora dos botoes da equipe).
   await teste("a linha da unidade traz a miniatura da planta e abre a planta dela", async () => {
@@ -682,8 +697,10 @@ async function teste(nome, fn) {
     const secao = uni.locator(".plant-section");
     if (!(await secao.count())) return "nao ha secao de plantas";
     const texto = await secao.innerText();
-    if (!/tipo 1/i.test(texto)) return `a planta do final 01 nao apareceu: ${texto.slice(0, 120)}`;
-    if (/Tipo 2|Tipo 3|Tipo 4/.test(texto)) return "apareceu a planta de outro final";
+    // v423 — as legendas do Boulevard nao dizem mais "tipo N" (tipo e o
+    // pavimento, nao o final); quem identifica a planta e o final.
+    if (!/final 01/i.test(texto)) return `a planta do final 01 nao apareceu: ${texto.slice(0, 120)}`;
+    if (/final 0[234]/i.test(texto)) return "apareceu a planta de outro final";
     if (/área de lazer/i.test(texto)) return "a planta do lazer apareceu como planta da unidade";
     if (/pavimento/i.test(texto)) return "a prancha do pavimento apareceu no link da unidade";
     return "";
@@ -1080,6 +1097,58 @@ async function teste(nome, fn) {
     await admin.locator("button[data-planta-livre-remover]").last().evaluate((b) => b.click());
     await admin.waitForTimeout(300);
     return (await admin.locator("button[data-planta-livre-remover]").count()) === antes ? "" : "nao removeu";
+  });
+
+  // v426 — duas tipologias com o mesmo nome (finais 01 e 02 do Boulevard,
+  // "3 suítes + lavabo") nao podem gravar no mesmo arquivo, e regravar a
+  // galeria nao pode perder a secao (unidade / pavimento / lazer).
+  await teste("plantas de finais diferentes vão para arquivos diferentes, e a galeria guarda a seção", async () => {
+    gravacoes.length = 0;
+    // o teste do menu no celular deixou a tela estreita; o botao de publicar
+    // e o do computador
+    await admin.setViewportSize({ width: 1366, height: 900 });
+    await admin.waitForTimeout(400);
+    await clicarNoMenu('[data-modulo-alvo="materiais"]');
+    await admin.waitForTimeout(400);
+    await admin.evaluate(() => document.querySelectorAll("#materiais details.material-emp").forEach((d) => { d.hidden = false; d.open = true; }));
+    for (const g of ["0", "1"]) {
+      const input = admin.locator(`input[data-arquivo-planta][data-emp="boulevard"][data-grupo="${g}"]`);
+      if (!(await input.count())) return `sem o campo da planta do grupo ${g}`;
+      await input.setInputFiles({ name: "3-suites-lavabo.pdf", mimeType: "application/pdf", buffer: Buffer.from(`%PDF-1.4\n% grupo ${g}\n%%EOF`) });
+      await admin.waitForTimeout(400);
+    }
+    await admin.locator("#botao-publicar").evaluate((b) => b.click());
+    await admin.waitForTimeout(2500);
+    const blobs = gravacoes.filter((g) => /git\/blobs/.test(g.path)).map((g) => {
+      try { const b = JSON.parse(g.corpo); return b.encoding === "base64" ? Buffer.from(b.content, "base64").toString("utf8") : String(b.content); } catch (e) { return ""; }
+    });
+    const dados = blobs.find((t) => /EMPREENDIMENTOS/.test(t));
+    if (!dados) return "o data.js nao foi enviado";
+    const ini = dados.indexOf('id: "boulevard"');
+    const bv = dados.slice(ini, dados.indexOf('id: "', ini + 5));
+    const plantas = [...bv.matchAll(/\n\s*planta:\s*"([^"]+)"/g)].map((m) => m[1]);
+    if (plantas.length < 2) return "nao achei as plantas dos grupos";
+    if (plantas[0] === plantas[1]) return `os finais 01 e 02 ficaram com a mesma planta: ${plantas[0]}`;
+    if (!/secao:\s*"lazer"/.test(bv) || !/secao:\s*"pavimento"/.test(bv)) return "a galeria perdeu a secao do lazer ou do pavimento";
+    if (!/legenda:\s*"Planta — 3 suítes \+ lavabo · final 02"/.test(bv)) return "a legenda nova nao diz o final";
+    return "";
+  });
+
+  // v423 — o nome de cada planta no painel diz o final (pedido do dono:
+  // "quero escrito 'final tal'"). No Boulevard as linhas nao saem na ordem
+  // 1, 2, 3, 4, e duas tem o mesmo nome de tipologia.
+  await teste("no painel, cada planta diz o final dela", async () => {
+    const nomes = await admin.evaluate(() => [...document.querySelectorAll(".planta-titulo")].map((el) => el.textContent.trim()));
+    const esperados = [
+      "Tipologia — 3 suítes + lavabo · final 01",
+      "Tipologia — 3 suítes + lavabo · final 02",
+      "Tipologia — 2 suítes + lavabo · final 04",
+      "Tipologia — 2 dormitórios (1 suíte) · final 03",
+      "Tipologia — 2 suítes · final 03",
+      "Unidade 604 — 2 suítes · final 04",
+    ];
+    const faltam = esperados.filter((n) => !nomes.includes(n));
+    return faltam.length ? `faltam: ${faltam.join(" | ")}` : "";
   });
 
   await ctxAdmin.close();

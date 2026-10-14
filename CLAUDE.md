@@ -36,6 +36,48 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Plantas do Boulevard pelo painel: o defeito do nome repetido (v426)
+
+**O que aconteceu (14/10/2026).** O dono trocou as quatro plantas do Boulevard
+pelo painel, pelas do Gamma dele (com o mapinha "Final 1…4"), e reclamou:
+*"aptos 3 suítes puxa a mesma ambos os finais 1 e 2… diz que aceitou, publica,
+mas nada… continua a mesma"*. Ele tinha razão — **o defeito era do painel**:
+
+1. `caminhoDaPlanta` dava ao arquivo o **nome da tipologia**, não o do envio.
+   O final 01 e o final 02 se chamam os dois "3 suítes + lavabo", então os dois
+   envios gravaram em `assets/boulevard/plantas/3-suites-lavabo.png`: um apagou
+   o outro e os dois finais ficaram com a mesma planta (v423/v424/v425).
+2. Com o endereço sempre igual, o navegador seguia mostrando a imagem antiga.
+3. `serializarGaleria` regravava a galeria **sem a `secao`** — a planta do
+   lazer e a prancha do andar voltaram a aparecer no link de uma unidade
+   (regra da v301).
+
+**Conserto (v426):** o arquivo de planta ganha carimbo de hora e o final no
+nome (`<carimbo>-3-suites-lavabo-final-02.png`); a `secao` passa pela
+regravação e pela troca de planta; e, se outra tipologia ainda usa a planta
+antiga, a nova entra ao lado em vez de tomar o lugar dela. As duas versões que
+o dono enviou estavam no histórico: a do Final 1 virou
+`3-suites-lavabo-final-01.png` e a do Final 2, `3-suites-lavabo-final-02.png`.
+As de 2 suítes (Final 4) e 2 dormitórios (Final 3) já estavam certas.
+
+**O painel diz o final de cada planta** — pedido do dono: *"não sei quais os
+finais dos aptos no painel… quero escrito 'final tal'"*. Toda linha termina com
+o final ("Tipologia — 3 suítes + lavabo · final 01", "Unidade 604 — 2 suítes ·
+final 04"), pela regra do site: os dois últimos dígitos do apartamento com
+andar; grupo cujo `sufixo` já diz "final" usa o sufixo; vários finais viram
+"finais 01 e 02" (`finalDoApto`, `textoDosFinais`). A legenda gravada na troca
+leva o final junto.
+
+**Sem "tipo" nas legendas do Boulevard** — *"tipo é outra coisa, é o
+pavimento, não o final do apto"*. As quatro são "Planta — 3 suítes + lavabo ·
+final 01/02", "Planta — 2 dormitórios (1 suíte) · final 03" e "Planta — 2
+suítes + lavabo · final 04". **"Pavimento tipo"** (a prancha do andar) fica:
+ali "tipo" é o pavimento.
+
+Testes: *"no Boulevard o final 01 e o final 02 abrem plantas diferentes"*,
+*"plantas de finais diferentes vão para arquivos diferentes, e a galeria guarda
+a seção"* e *"no painel, cada planta diz o final dela"*.
+
 ## Renaissance: cada final com a sua planta (v421)
 
 Pergunta do dono ao ver a miniatura da planta na linha (13/10/2026): *"como
