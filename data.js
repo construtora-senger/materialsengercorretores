@@ -827,19 +827,12 @@ const EMPREENDIMENTOS = [
       { src: "assets/bv-6.webp", legenda: "Espaço pub" },
       { src: "assets/bv-7.webp", legenda: "Salão de festas" },
       { src: "assets/bv-8.webp", legenda: "Espaço kids" },
-      // Uma planta por final. A prancha do pavimento (bv-planta.webp) mostra os
-      // quatro tipos de uma vez: quem recebe o link do apartamento 501 nao pode
-      // ver a planta dos outros tres junto. Os recortes saem da propria prancha
-      // — nada foi redesenhado, so separado. A prancha inteira continua logo
-      // abaixo, para a apresentacao geral do predio.
-      { src: "assets/bv-planta-tipo1.webp", legenda: "Planta — tipo 1 · 3 suítes · final 01", secao: "unidade" },
-      { src: "assets/bv-planta-tipo2.webp", legenda: "Planta — tipo 2 · 3 suítes · final 02", secao: "unidade" },
-      { src: "assets/bv-planta-tipo3.webp", legenda: "Planta — tipo 3 · 2 dormitórios (1 suíte) · final 03", secao: "unidade" },
-      { src: "assets/bv-planta-tipo4.webp", legenda: "Planta — tipo 4 · 2 suítes · final 04", secao: "unidade" },
-      { src: "assets/bv-planta.webp", legenda: "Planta — pavimento tipo (os quatro finais)", secao: "pavimento" },
-      // A planta do lazer e do predio, nao do apartamento: fica em secao
-      // propria para nunca ser lida como a planta da unidade enviada.
-      { src: "assets/bv-planta-lazer.webp", legenda: "Planta — área de lazer", secao: "lazer" },
+      { src: "assets/boulevard/plantas/3-suites-lavabo.png", legenda: "Planta — 3 suítes + lavabo" },
+      { src: "assets/boulevard/plantas/3-suites-lavabo.png", legenda: "Planta — 3 suítes + lavabo" },
+      { src: "assets/boulevard/plantas/2-dormitorios-1-suite.png", legenda: "Planta — 2 dormitórios (1 suíte)" },
+      { src: "assets/boulevard/plantas/2-suites-lavabo.png", legenda: "Planta — 2 suítes + lavabo" },
+      { src: "assets/bv-planta.webp", legenda: "Planta — pavimento tipo (os quatro finais)" },
+      { src: "assets/bv-planta-lazer.webp", legenda: "Planta — área de lazer" },
       { src: "assets/bv-folder.webp", legenda: "Capa do folder impresso" },
       { src: "assets/bv-map.webp", legenda: "Rua Getúlio Vargas — frente à Praça Gen. Osório" },
     ],
@@ -852,7 +845,7 @@ const EMPREENDIMENTOS = [
         garagem: "1 box duplo",
         // Tipo 1 da prancha. O final 02 e a planta espelhada deste — por isso
         // os dois finais sao grupos separados e cada um tem a sua planta.
-        planta: "bv-planta-tipo1",
+        planta: "3-suites-lavabo",
         unidades: [
           { apto: "301", status: "vendido" },
           { apto: "401", status: "vendido" },
@@ -873,7 +866,7 @@ const EMPREENDIMENTOS = [
         sufixo: "final 02",
         area: "212 m² global · 149 m² privativo",
         garagem: "1 box duplo",
-        planta: "bv-planta-tipo2",
+        planta: "3-suites-lavabo",
         unidades: [
           { apto: "302", status: "vendido" },
           { apto: "402", status: "vendido" },
@@ -894,7 +887,7 @@ const EMPREENDIMENTOS = [
         sufixo: "final 04",
         area: "131 m² global · 93 m² privativo",
         garagem: "1 box duplo",
-        planta: "bv-planta-tipo4",
+        planta: "2-suites-lavabo",
         unidades: [
           { apto: "304", preco: 872200, status: "disponivel", tags: ["Casa suspensa"], areaUnit: "165 m² global · 121 m² privativo" },
           { apto: "404", preco: 852100, status: "disponivel" },
@@ -915,7 +908,7 @@ const EMPREENDIMENTOS = [
         sufixo: "final 03",
         area: "127 m² global · 91 m² privativo",
         garagem: "1 box simples",
-        planta: "bv-planta-tipo3",
+        planta: "2-dormitorios-1-suite",
         // Falta o 303 neste final: ele nao esta no estoque e nenhum box vendido
         // aponta para ele, entao nao da para dizer se foi vendido ou se ainda
         // esta a venda. Fica de fora ate a construtora confirmar.
