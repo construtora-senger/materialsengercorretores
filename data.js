@@ -827,12 +827,15 @@ const EMPREENDIMENTOS = [
       { src: "assets/bv-6.webp", legenda: "Espaço pub" },
       { src: "assets/bv-7.webp", legenda: "Salão de festas" },
       { src: "assets/bv-8.webp", legenda: "Espaço kids" },
-      { src: "assets/boulevard/plantas/3-suites-lavabo.png", legenda: "Planta — 3 suítes + lavabo" },
-      { src: "assets/boulevard/plantas/3-suites-lavabo.png", legenda: "Planta — 3 suítes + lavabo" },
-      { src: "assets/boulevard/plantas/2-dormitorios-1-suite.png", legenda: "Planta — 2 dormitórios (1 suíte)" },
-      { src: "assets/boulevard/plantas/2-suites-lavabo.png", legenda: "Planta — 2 suítes + lavabo" },
-      { src: "assets/bv-planta.webp", legenda: "Planta — pavimento tipo (os quatro finais)" },
-      { src: "assets/bv-planta-lazer.webp", legenda: "Planta — área de lazer" },
+      // Uma planta por final, as que o dono mandou (com o mapinha do andar).
+      // A "secao" separa a planta do apartamento da prancha do andar e da do
+      // lazer: sem ela, as duas apareceriam no link de uma unidade.
+      { src: "assets/boulevard/plantas/3-suites-lavabo-final-01.png", legenda: "Planta — 3 suítes + lavabo · final 01", secao: "unidade" },
+      { src: "assets/boulevard/plantas/3-suites-lavabo-final-02.png", legenda: "Planta — 3 suítes + lavabo · final 02", secao: "unidade" },
+      { src: "assets/boulevard/plantas/2-dormitorios-1-suite.png", legenda: "Planta — 2 dormitórios (1 suíte) · final 03", secao: "unidade" },
+      { src: "assets/boulevard/plantas/2-suites-lavabo.png", legenda: "Planta — 2 suítes + lavabo · final 04", secao: "unidade" },
+      { src: "assets/bv-planta.webp", legenda: "Planta — pavimento tipo (os quatro finais)", secao: "pavimento" },
+      { src: "assets/bv-planta-lazer.webp", legenda: "Planta — área de lazer", secao: "lazer" },
       { src: "assets/bv-folder.webp", legenda: "Capa do folder impresso" },
       { src: "assets/bv-map.webp", legenda: "Rua Getúlio Vargas — frente à Praça Gen. Osório" },
     ],
@@ -845,7 +848,7 @@ const EMPREENDIMENTOS = [
         garagem: "1 box duplo",
         // Tipo 1 da prancha. O final 02 e a planta espelhada deste — por isso
         // os dois finais sao grupos separados e cada um tem a sua planta.
-        planta: "3-suites-lavabo",
+        planta: "3-suites-lavabo-final-01",
         unidades: [
           { apto: "301", status: "vendido" },
           { apto: "401", status: "vendido" },
@@ -866,7 +869,7 @@ const EMPREENDIMENTOS = [
         sufixo: "final 02",
         area: "212 m² global · 149 m² privativo",
         garagem: "1 box duplo",
-        planta: "3-suites-lavabo",
+        planta: "3-suites-lavabo-final-02",
         unidades: [
           { apto: "302", status: "vendido" },
           { apto: "402", status: "vendido" },
