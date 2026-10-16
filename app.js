@@ -1591,6 +1591,9 @@
 
   // Abre a gaveta (tipologia ou quadra) que contem esta linha.
   function abrirGaveta(el) {
+    // v429 — a linha pode estar na lista escondida atras do "Ver no prédio".
+    const lista = el.closest(".vista-lista");
+    if (lista && lista.hidden) mostrarVistaDeUnidades(lista.closest("#unidades"), "lista");
     // v407 — a linha pode estar numa aba escondida: ativa a aba dela antes.
     const painel = el.closest(".painel-tipologia");
     if (painel && painel.hidden) ativarAbaDeTipologia(painel.parentElement, painel.id.replace("painel-tipologia-", ""));
@@ -1745,12 +1748,166 @@
       `
       : blocos.map(renderBloco).join("");
 
+    // v429 — com mapa do predio, a pagina abre no desenho ("Ver no prédio") e a
+    // lista de sempre fica a um toque, em "Ver em lista".
+    const mapa = focusItems ? "" : renderMapaDoPredio(emp);
+    const vistas = mapa
+      ? `
+        <div class="vistas-unidades" role="tablist" aria-label="Como ver as unidades">
+          <button type="button" role="tab" data-vista-unidades="predio" aria-selected="true">Ver no prédio</button>
+          <button type="button" role="tab" data-vista-unidades="lista" aria-selected="false">Ver em lista</button>
+        </div>
+        ${mapa}
+        <div class="vista-lista" hidden>${corpo}</div>
+      `
+      : corpo;
+
     return `
       <section class="content-section" id="unidades">
-        <div class="section-title-row"><h2>${focusItems ? (focusItems.length > 1 ? "Suas unidades" : "Sua unidade") : "Unidades e valores"}</h2><p>Toque na tipologia para ver as unidades</p></div>
-        ${corpo}
+        <div class="section-title-row"><h2>${focusItems ? (focusItems.length > 1 ? "Suas unidades" : "Sua unidade") : "Unidades e valores"}</h2><p>${mapa ? DICA_DO_PREDIO : DICA_DA_LISTA}</p></div>
+        ${vistas}
       </section>
     `;
+  }
+
+  // v429 — O MAPA DO PREDIO ("Ver no prédio"). Pedido do dono (16/10/2026),
+  // depois de ver o mapa antigo de disponibilidade do Renaissance: tocar no
+  // apartamento, no desenho do predio, e abrir a ficha dele ao lado. Entre os
+  // desenhos mostrados ele escolheu o do predio inteiro com a ficha a direita
+  // (embaixo, no celular), com os apartamentos dos fundos num cinza mais claro.
+  // Preco, situacao, area, garagem e planta saem do cadastro — o mapa antigo
+  // esta com a tabela de agosto e nao vale.
+  //
+  // So no modo corretor: o cliente nao ve unidade vendida nem quanto sobrou
+  // (v107/v113), e o desenho mostraria as duas coisas. So para quem tem
+  // `mapaPredio` no data.js (hoje, o Renaissance).
+  const DICA_DO_PREDIO = "Toque no apartamento para ver a ficha";
+  const DICA_DA_LISTA = "Toque na tipologia para ver as unidades";
+
+  // Os dois ultimos digitos do apartamento com andar; a "Sala 04" nao tem final.
+  function finalDoCodigo(codigo) {
+    const digitos = String(codigo || "").match(/\d+/)?.[0] || "";
+    return digitos.length >= 3 ? digitos.slice(-2) : "";
+  }
+
+  function renderMapaDoPredio(emp) {
+    const mapa = emp.mapaPredio;
+    if (CLIENT_MODE || !mapa || !(emp.grupos || []).length) return "";
+    const colunas = mapa.colunas || [];
+    const fundos = new Set(mapa.fundos || []);
+    const terreo = mapa.terreo || [];
+
+    // Todas as unidades do cadastro, inclusive as vendidas: elas ficam fora do
+    // itemMap (v113), e por isso o desenho as mostra como "Vendido", sem ficha.
+    const andares = new Map();
+    const doTerreo = [];
+    (emp.grupos || []).forEach((group, gi) => (group.unidades || []).forEach((unit, ui) => {
+      const u = { code: String(unit.apto), item: itemMap.get(`${emp.id}:unit:${gi}:${ui}`) || null };
+      const andar = andarDe(u.code);
+      if (andar === null) { doTerreo.push(u); return; }
+      if (!andares.has(andar)) andares.set(andar, []);
+      andares.get(andar).push(u);
+    }));
+
+    const celula = (u, { fundo = false, larga = false } = {}) => {
+      if (!u) return `<span class="predio-u predio-vazio" aria-hidden="true"></span>`;
+      const classes = ["predio-u", fundo ? "predio-fundos" : "", larga ? "predio-larga" : ""].filter(Boolean).join(" ");
+      if (!u.item) return `<span class="${classes} predio-vendido" title="${escapeHtml(u.code)} — vendido">Vendido</span>`;
+      return `<button type="button" class="${classes} predio-disp" data-predio-item="${u.item.key}" aria-pressed="false" aria-label="${escapeHtml(itemLabel(u.item))}">${escapeHtml(u.code)}<i aria-hidden="true"></i></button>`;
+    };
+    const linha = (rotulo, conteudo) => `<div class="predio-andar"><span class="predio-n">${rotulo}</span><div class="predio-us">${conteudo}</div></div>`;
+
+    const linhas = [...andares.keys()].sort((a, b) => b - a).map((andar) => {
+      const us = andares.get(andar);
+      // Andar de uma unidade so (o 18º) ocupa o meio do predio inteiro.
+      if (us.length === 1) return linha(`${andar}º`, celula(us[0], { larga: true }));
+      const porFinal = new Map(us.map((u) => [finalDoCodigo(u.code), u]));
+      const fora = us.filter((u) => !colunas.includes(finalDoCodigo(u.code)));
+      return linha(`${andar}º`, colunas.map((f) => celula(porFinal.get(f), { fundo: fundos.has(f) })).join("") + fora.map((u) => celula(u)).join(""));
+    });
+    if (doTerreo.length) {
+      const ordem = (u) => { const i = terreo.indexOf(u.code); return i < 0 ? terreo.length : i; };
+      doTerreo.sort((a, b) => ordem(a) - ordem(b));
+      linhas.push(linha("Térreo", doTerreo.map((u) => celula(u)).join("")));
+    }
+
+    return `
+      <div class="vista-predio">
+        <div class="predio-desenho">
+          <p class="predio-tit">Toque no apartamento</p>
+          <div class="predio-andares" style="--colunas: ${Math.max(colunas.length, 1)}">${linhas.join("")}</div>
+          <p class="predio-legenda">
+            <span class="lg-disp">Disponível</span>
+            ${fundos.size ? `<span class="lg-fundos">Fundos</span>` : ""}
+            <span class="lg-vend">Vendido</span>
+            <span class="lg-sel">Escolhido</span>
+          </p>
+        </div>
+        <div class="predio-ficha" aria-live="polite">${fichaDoPredio(null)}</div>
+      </div>
+    `;
+  }
+
+  function fichaDoPredio(item) {
+    if (!item) {
+      return `
+        <p class="predio-ficha-tag">Ficha da unidade</p>
+        <p class="predio-ficha-vazia">Toque num apartamento do desenho para ver o valor, as áreas, a garagem e a planta.</p>
+      `;
+    }
+    const sufixoDoGrupo = item.group?.sufixo || "";
+    const final = finalDoCodigo(item.code);
+    const sufixo = /\bfinal\b/i.test(sufixoDoGrupo) || !final ? sufixoDoGrupo : [sufixoDoGrupo, `final ${final}`].filter(Boolean).join(" · ");
+    const tipo = [item.group?.tipo, sufixo].filter(Boolean).join(" · ");
+    const areas = areasDe(item.area || "");
+    const andar = andarDe(item.code);
+    // "Box opcional (consultar)" nao e garagem incluida (mesma regra da ficha).
+    const garagem = item.garage && !/opcional|consultar/i.test(item.garage) ? item.garage : "";
+    const linhas = [
+      ["Andar", andar ? `${andar}º andar` : ""],
+      ["Área global", areas.global],
+      ["Área privativa", areas.privativa],
+      ["Área", areas.solta],
+      ["Garagem", garagem],
+      ["Situação", STATUS_LABELS[item.status] || item.status],
+    ].filter(([, valor]) => valor);
+    return `
+      <p class="predio-ficha-tag">Ficha da unidade</p>
+      <h3>${escapeHtml(itemLabel(item))}</h3>
+      ${tipo ? `<p class="predio-ficha-tipo">${escapeHtml(tipo)}</p>` : ""}
+      <div class="predio-ficha-valor"><span>Valor</span><strong class="price-value">${money(item.price)}</strong></div>
+      <dl class="predio-ficha-dados">
+        ${linhas.map(([rotulo, valor]) => `<div><dt>${escapeHtml(rotulo)}</dt><dd${rotulo === "Situação" ? ` class="situacao-${item.status}"` : ""}>${escapeHtml(valor)}</dd></div>`).join("")}
+      </dl>
+      ${miniaturaDaPlanta(item)}
+      <div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>
+    `;
+  }
+
+  function escolherNoPredio(botao) {
+    const item = itemMap.get(botao.dataset.predioItem);
+    const vista = botao.closest(".vista-predio");
+    if (!item || !vista) return;
+    vista.querySelectorAll("[data-predio-item]").forEach((b) => {
+      b.classList.toggle("predio-sel", b === botao);
+      b.setAttribute("aria-pressed", String(b === botao));
+    });
+    const ficha = vista.querySelector(".predio-ficha");
+    ficha.innerHTML = fichaDoPredio(item);
+    bindInventoryEvents(ficha);
+    // No celular a ficha fica embaixo do desenho: a tela desce ate ela.
+    if (window.matchMedia("(max-width: 720px)").matches) ficha.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
+  function mostrarVistaDeUnidades(secao, vista) {
+    if (!secao) return;
+    secao.querySelectorAll("[data-vista-unidades]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.vistaUnidades === vista)));
+    const predio = secao.querySelector(".vista-predio");
+    const lista = secao.querySelector(".vista-lista");
+    if (predio) predio.hidden = vista !== "predio";
+    if (lista) lista.hidden = vista !== "lista";
+    const dica = secao.querySelector(".section-title-row p");
+    if (dica) dica.textContent = vista === "predio" ? DICA_DO_PREDIO : DICA_DA_LISTA;
   }
 
   // v407 — AS ABAS DA PAGINA DO EMPREENDIMENTO. Pedido do dono (9/10/2026),
@@ -2015,6 +2172,8 @@
     root.querySelectorAll("[data-select-item]").forEach((button) => button.addEventListener("click", () => toggleSelection(button.dataset.selectItem)));
     root.querySelectorAll("[data-map-item]").forEach((button) => button.addEventListener("click", () => abrirMapaDoLote(itemMap.get(button.dataset.mapItem))));
     root.querySelectorAll("[data-planta-item]").forEach((button) => button.addEventListener("click", () => abrirPlantaDaUnidade(itemMap.get(button.dataset.plantaItem))));
+    root.querySelectorAll("[data-vista-unidades]").forEach((button) => button.addEventListener("click", () => mostrarVistaDeUnidades(button.closest("#unidades"), button.dataset.vistaUnidades)));
+    root.querySelectorAll("[data-predio-item]").forEach((button) => button.addEventListener("click", () => escolherNoPredio(button)));
   }
 
   // "Ver no mapa" — o loteamento traz o mapa e a posicao de cada lote

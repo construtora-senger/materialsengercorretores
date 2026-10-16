@@ -1520,3 +1520,70 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   #unidades .abas-tipologia::before { flex-basis: 100%; font-size: 13px; }
   #unidades .aba-tipologia { padding: 8px 14px; font-size: 13px; }
 }
+
+/* v429 — O MAPA DO PREDIO ("Ver no prédio"). Pedido do dono (16/10/2026),
+   depois de ver o mapa antigo de disponibilidade do Renaissance: o predio
+   desenhado andar por andar, tocar no apartamento e a ficha abre ao lado
+   (embaixo, no celular). Ele escolheu este desenho e pediu os apartamentos
+   dos FUNDOS num cinza mais claro, para separar da frente. So no modo
+   corretor e so para quem tem `mapaPredio` no data.js. */
+.vistas-unidades { display: inline-flex; gap: 2px; padding: 4px; margin: 0 0 18px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
+.vistas-unidades button { padding: 9px 18px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: 600 15px var(--font-body); cursor: pointer; }
+.vistas-unidades button[aria-selected="true"] { background: var(--brand); color: #fff; }
+.vistas-unidades button:focus-visible { outline: 3px solid var(--brand-dark); outline-offset: 2px; }
+.vista-predio { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.predio-desenho { padding: 20px 22px 16px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+.predio-tit { margin: 0 0 12px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.predio-andar { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; }
+.predio-n { flex: none; width: 48px; text-align: right; color: var(--muted); font-size: 12.5px; font-weight: 700; }
+.predio-us { flex: 1; display: grid; grid-template-columns: repeat(var(--colunas, 4), minmax(0, 1fr)); gap: 6px; }
+.predio-u { position: relative; display: flex; align-items: center; justify-content: center; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font: 600 13.5px var(--font-body); }
+.predio-u i { position: absolute; right: 6px; bottom: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--verde); }
+button.predio-u { cursor: pointer; }
+button.predio-u:hover { border-color: var(--brand); }
+button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-offset: 1px; }
+.predio-u.predio-fundos { border-color: #dde2e5; background: #f3f5f6; }
+.predio-u.predio-vendido { border-color: transparent; background: #e9ecee; color: #8a949b; font-size: 12px; }
+.predio-u.predio-vazio { border: 0; background: transparent; }
+.predio-u.predio-larga { grid-column: 2 / -2; }
+.predio-u.predio-sel { border-color: var(--brand); background: var(--brand); color: #fff; box-shadow: 0 4px 12px rgba(23, 143, 160, .35); }
+.predio-u.predio-sel i { background: #fff; }
+.predio-legenda { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 12px 0 0; color: var(--muted); font-size: 13px; }
+.predio-legenda span::before { content: ""; display: inline-block; width: 11px; height: 11px; margin-right: 6px; border-radius: 3px; vertical-align: -1px; }
+.predio-legenda .lg-disp::before { border: 1px solid #b9c2c8; background: #fff; }
+.predio-legenda .lg-fundos::before { border: 1px solid #dde2e5; background: #f3f5f6; }
+.predio-legenda .lg-vend::before { background: #e9ecee; }
+.predio-legenda .lg-sel::before { background: var(--brand); }
+.predio-ficha { position: sticky; top: 96px; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: #fff; scroll-margin-top: 96px; }
+.predio-ficha-tag { display: inline-block; margin: 0; padding: 5px 10px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.predio-ficha-vazia { margin: 14px 0 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+.predio-ficha h3 { margin: 12px 0 0; color: var(--ink); font-size: 30px; font-weight: 700; }
+.predio-ficha-tipo { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+.predio-ficha-valor { margin: 14px 0 6px; }
+.predio-ficha-valor span { display: block; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.predio-ficha-valor strong { display: block; color: var(--ink); font-size: 28px; font-weight: 700; }
+.predio-ficha-dados { margin: 8px 0 14px; }
+.predio-ficha-dados div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+.predio-ficha-dados dt { color: var(--muted); }
+.predio-ficha-dados dd { margin: 0; color: var(--ink); font-weight: 600; text-align: right; }
+.predio-ficha-dados dd.situacao-disponivel { color: #1f8a6f; }
+.predio-ficha .planta-mini { display: flex; flex-direction: row; justify-content: flex-start; gap: 12px; width: 100%; margin: 0 0 10px; padding: 8px; }
+.predio-ficha .planta-mini img { width: 64px; height: 64px; border: 1px solid var(--line); }
+.predio-ficha .planta-mini span { color: var(--ink); font-size: 15px; font-weight: 600; }
+.predio-ficha-botoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.predio-ficha-botoes .botao-linha { justify-content: center; min-height: 44px; font-size: 14px; }
+@media (max-width: 720px) {
+  .vista-predio { grid-template-columns: 1fr; gap: 16px; }
+  .predio-desenho { padding: 14px 10px 12px; }
+  .predio-n { width: 40px; font-size: 11.5px; }
+  .predio-andar { gap: 8px; }
+  .predio-us { gap: 4px; }
+  .predio-u { height: 32px; font-size: 12.5px; }
+  .predio-u.predio-vendido { font-size: 11px; }
+  .predio-ficha { position: static; padding: 18px; scroll-margin-top: 100px; }
+  .vistas-unidades button { padding: 8px 14px; font-size: 14px; }
+}
+@media (max-width: 720px) {
+  /* O "Sala 04" nao encosta na bolinha verde. */
+  .predio-u { padding: 0 11px 0 4px; }
+}
