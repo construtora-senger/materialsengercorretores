@@ -76,6 +76,13 @@ async function teste(nome, fn) {
     return pagina;
   };
 
+  // v429 — o Renaissance abre no desenho do predio ("Ver no prédio"); a lista
+  // fica a um toque, em "Ver em lista", como o corretor faz.
+  const verEmLista = async (p) => {
+    const botao = p.locator("[data-vista-unidades=lista]");
+    if (await botao.count()) { await botao.click(); await p.waitForTimeout(200); }
+  };
+
   // ================================================================ o corretor
   grupo("SITE / CORRETOR");
   let pg = await abrir("/");
@@ -174,6 +181,7 @@ async function teste(nome, fn) {
       const p = await ctx.newPage();
       await p.goto(base + rota, { waitUntil: "networkidle" });
       await p.waitForTimeout(500);
+      await verEmLista(p);
       const r = await p.evaluate(() => {
         localStorage.removeItem("senger-selection");
         document.querySelectorAll("#unidades details.unit-group").forEach((d) => { d.open = true; });
@@ -264,6 +272,7 @@ async function teste(nome, fn) {
     for (const rota of ["/#emp-renaissance", "/?cliente#emp-renaissance"]) {
       const p = await abrir(rota);
       await p.waitForTimeout(600);
+      await verEmLista(p);
       const r = await p.evaluate(() => {
         const linhas = [...document.querySelectorAll("#unidades tr[data-unit-code]")];
         const semPlanta = linhas.filter((tr) => !tr.querySelector(".planta-mini")).map((tr) => tr.dataset.unitCode);
@@ -332,6 +341,7 @@ async function teste(nome, fn) {
   await teste("o Renaissance abre em abas, salas comerciais por último", async () => {
     await pg.goto(`${base}/#emp-renaissance`, { waitUntil: "networkidle" });
     await pg.waitForTimeout(400);
+    await verEmLista(pg);
     const abas = await pg.$$eval(".aba-tipologia", (els) => els.map((el) => el.textContent.trim()));
     const esperado = "2 suítes | 3 suítes frente | 3 suítes superiores | Salas comerciais";
     if (abas.join(" | ") !== esperado) return `abas: ${abas.join(" | ")}`;
@@ -363,6 +373,102 @@ async function teste(nome, fn) {
   await teste("o cabeçalho da tipologia traz o \"a partir de\" ao lado do Ver unidades", async () => {
     const texto = await pg.locator(".painel-tipologia:not([hidden]) .unit-group-aside").first().innerText();
     return /a partir de\s*R\$\s*1\.142\.900/.test(texto) ? "" : `o canto diz: ${texto.replace(/\s+/g, " ")}`;
+  });
+
+  // v429 — o mapa do predio, pedido do dono (16/10/2026): o Renaissance abre
+  // no desenho, o toque no apartamento abre a ficha ao lado, com o preco do
+  // cadastro; os dos fundos (finais 03 e 04) num cinza mais claro; vendido
+  // aparece como "Vendido", sem ficha. So no modo corretor.
+  await teste("o Renaissance abre no prédio, e o toque no apartamento abre a ficha dele", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => {
+      const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "renaissance");
+      const unidades = emp.grupos.flatMap((g) => g.unidades);
+      const vendidas = unidades.filter((u) => u.status === "vendido").map((u) => String(u.apto)).sort();
+      const fundosEsperado = unidades.filter((u) => /^\d+0[34]$/.test(u.apto) && u.status !== "vendido").map((u) => String(u.apto)).sort();
+      return {
+        predio: !document.querySelector(".vista-predio").hidden,
+        lista: !document.querySelector(".vista-lista").hidden,
+        botoes: document.querySelectorAll("button.predio-u").length,
+        aVenda: unidades.filter((u) => u.status !== "vendido").length,
+        vendidas: vendidas.join(","),
+        naTela: [...document.querySelectorAll(".predio-vendido")].map((el) => el.title.replace(" — vendido", "")).sort().join(","),
+        fundos: [...document.querySelectorAll("button.predio-fundos")].map((el) => el.textContent.trim()).sort().join(","),
+        fundosEsperado: fundosEsperado.join(","),
+        preco: unidades.find((u) => u.apto === "1302").preco,
+      };
+    });
+    if (!r.predio || r.lista) { await p.close(); return `abriu com prédio ${r.predio} e lista ${r.lista}`; }
+    if (r.botoes !== r.aVenda) { await p.close(); return `${r.botoes} apartamentos para tocar, ${r.aVenda} à venda no cadastro`; }
+    if (r.naTela !== r.vendidas) { await p.close(); return `vendidos no desenho: ${r.naTela} — no cadastro: ${r.vendidas}`; }
+    if (r.fundos !== r.fundosEsperado) { await p.close(); return `fundos no desenho: ${r.fundos}`; }
+    await p.locator("button.predio-u", { hasText: /^1302$/ }).click();
+    await p.waitForTimeout(300);
+    const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
+    const preco = r.preco.toLocaleString("pt-BR");
+    if (!/Apto 1302/.test(ficha) || !ficha.includes(`R$ ${preco}`) || !/1 box duplo \+ 1 box simples/.test(ficha) || !/13º andar/.test(ficha)) { await p.close(); return `a ficha diz: ${ficha}`; }
+    const sel = p.locator(".predio-ficha [data-select-item]");
+    await sel.click(); await p.waitForTimeout(200);
+    const marcado = (await sel.innerText()).trim();
+    await sel.click(); await p.waitForTimeout(200);
+    if (marcado !== "Selecionado") { await p.close(); return `o Selecionar da ficha deixou "${marcado}"`; }
+    await p.locator(".predio-ficha .planta-mini").click();
+    await p.waitForTimeout(400);
+    const src = await p.evaluate(() => document.getElementById("lightbox")?.classList.contains("open") ? document.getElementById("lightbox-image").getAttribute("src") : "");
+    await p.keyboard.press("Escape");
+    if (!/ren-planta-1302/.test(src)) { await p.close(); return `o Ver planta abriu "${src}"`; }
+    await verEmLista(p);
+    const depois = await p.evaluate(() => [document.querySelector(".vista-predio").hidden, document.querySelector(".vista-lista").hidden, document.querySelectorAll(".aba-tipologia").length]);
+    await p.close();
+    return depois[0] && !depois[1] && depois[2] ? "" : `o "Ver em lista" deixou prédio escondido ${depois[0]}, lista escondida ${depois[1]}, ${depois[2]} abas`;
+  });
+
+  await teste("no desenho do prédio os apartamentos dos fundos ficam num cinza mais claro", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(400);
+    const r = await p.evaluate(() => {
+      const cor = (sel) => { const el = document.querySelector(sel); return el ? getComputedStyle(el).backgroundColor : ""; };
+      return { frente: cor("button.predio-u:not(.predio-fundos)"), fundos: cor("button.predio-u.predio-fundos"), vendido: cor(".predio-vendido") };
+    });
+    await p.close();
+    if (r.frente !== "rgb(255, 255, 255)") return `a frente está ${r.frente}`;
+    if (!r.fundos || r.fundos === r.frente || r.fundos === r.vendido) return `fundos ${r.fundos}, frente ${r.frente}, vendido ${r.vendido}`;
+    const luz = (c) => c.match(/\d+/g).slice(0, 3).reduce((a, n) => a + Number(n), 0);
+    return luz(r.fundos) > luz(r.vendido) ? "" : `o cinza dos fundos (${r.fundos}) não é mais claro que o do vendido (${r.vendido})`;
+  });
+
+  await teste("no celular a ficha abre embaixo do prédio e a tela desce até ela", async () => {
+    const p = await abrir("/#emp-renaissance", { mobile: true });
+    await p.waitForTimeout(500);
+    const largura = await p.evaluate(() => document.documentElement.scrollWidth);
+    await p.locator("button.predio-u", { hasText: /^1203$/ }).click();
+    await p.waitForTimeout(1200);
+    const r = await p.evaluate(() => {
+      const ficha = document.querySelector(".predio-ficha").getBoundingClientRect();
+      const topo = document.querySelector(".site-header").getBoundingClientRect().bottom;
+      const desenho = document.querySelector(".predio-desenho").getBoundingClientRect();
+      return { ficha: Math.round(ficha.top), topo: Math.round(topo), embaixo: ficha.top >= desenho.bottom, tela: innerHeight,
+        texto: document.querySelector(".predio-ficha h3")?.textContent || "" };
+    });
+    await p.close();
+    if (largura > 390) return `a página passou da largura do celular (${largura}px)`;
+    if (!r.embaixo) return "a ficha não ficou embaixo do desenho";
+    if (r.texto !== "Apto 1203") return `a ficha mostra "${r.texto}"`;
+    return r.ficha >= r.topo && r.ficha < r.tela / 2 ? "" : `a ficha ficou em ${r.ficha}px (cabeçalho até ${r.topo}px)`;
+  });
+
+  await teste("o cliente não vê o desenho do prédio", async () => {
+    for (const rota of ["/?cliente#emp-renaissance", "/?cliente&u=1302#emp-renaissance"]) {
+      const p = await abrir(rota);
+      await p.waitForTimeout(400);
+      const r = await p.evaluate(() => ({ predio: !!document.querySelector(".vista-predio, [data-vista-unidades], .predio-u"), linhas: document.querySelectorAll("#unidades tr[data-unit-code]").length }));
+      await p.close();
+      if (r.predio) return `${rota}: o desenho do prédio apareceu para o cliente`;
+      // Com ?u= a pagina e a ficha daquela unidade, sem tabela (v301).
+      if (!r.linhas && !rota.includes("u=")) return `${rota}: sumiu a lista de unidades do cliente`;
+    }
+    return "";
   });
 
   await teste("Personalité e Prime, com uma tipologia só, ficam sem abas", async () => {

@@ -70,6 +70,18 @@ const EMPREENDIMENTOS = [
       // A cobertura levou os box 116 a 119 — quatro simples, ja vendidos com ela.
       "18º pavimento": { simples: 4 },
     },
+    // v429 — MAPA DO PREDIO ("Ver no prédio"), pedido do dono em 16/10/2026.
+    // O desenho sai das unidades do cadastro (andar e final pelo numero do
+    // apartamento); aqui fica so o que o numero nao diz, tirado do mapa antigo
+    // de disponibilidade do Renaissance: a ordem dos finais em cada andar, da
+    // esquerda para a direita (03 lateral esquerda, 02 frente esquerda,
+    // 01 frente direita, 04 lateral direita), quais finais sao os dos fundos
+    // (cinza mais claro, pedido do dono) e a ordem das salas do terreo.
+    mapaPredio: {
+      colunas: ["03", "02", "01", "04"],
+      fundos: ["03", "04"],
+      terreo: ["Sala 04", "Sala 03", "Sala 02", "Sala 01"],
+    },
     hero: "assets/renaissance/capa.jpg",
     folder: "assets/renaissance/folder.pdf",
     video: "assets/renaissance/video.mp4",

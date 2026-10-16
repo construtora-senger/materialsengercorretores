@@ -36,6 +36,46 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## O mapa do prédio no Renaissance: "Ver no prédio" (v429)
+
+Pedido do dono (16/10/2026), depois de mostrar o mapa antigo de
+disponibilidade do Renaissance (`construtora-senger.github.io/renaissancedisponibilidades`):
+*"vc viu q joia q da pra clicar na unidade no apto e abrir mais infos?"* e
+*"teria como colocarmos esse mapa de escolha dentro do sistema novo tb?"*.
+Viu o desenho do prédio inteiro com a ficha ao lado, pediu que os dos fundos
+ficassem diferentes, recusou os quatro modelos que separavam frente e fundos
+(*"nao gostei, prefiro como era antes"*) e escolheu o primeiro desenho com
+uma mudança: *"so deixa os de fundos num cinzinha mais claro"*.
+
+- **Os preços do mapa antigo não valem** — palavra dele: *"os q valem hoje é
+  os q estao no portfolio"*. Aquele mapa ficou com a tabela de agosto. O
+  desenho daqui lê preço, situação, área, garagem e planta do `data.js`.
+- Em "Unidades e valores" entram **Ver no prédio** (abre assim) e **Ver em
+  lista** (a lista e as abas de sempre). O prédio sai andar por andar; tocar no
+  apartamento abre a ficha **ao lado** no computador e **embaixo** no celular
+  (a tela desce até ela): tipologia e final, valor, andar, áreas, garagem,
+  situação, a planta e os botões **Compartilhar** e **Selecionar** de sempre.
+- **Fundos** = finais 03 e 04, num **cinza mais claro** que o do vendido.
+  Vendido aparece **"Vendido"**, em cinza, sem ficha.
+- O desenho sai das unidades do cadastro (andar e final pelo número). O que o
+  número não diz fica em **`mapaPredio`** no `data.js`: a ordem dos finais no
+  andar (03 · 02 · 01 · 04, como as posições do mapa antigo), quais são os
+  fundos e a ordem das salas do térreo. Andar com uma unidade só (o 18º) ocupa
+  o meio. Só tem mapa quem tem `mapaPredio` — hoje, só o Renaissance.
+- **Só no modo corretor.** O cliente não vê unidade vendida nem quanto sobrou
+  (v107/v113), e o desenho mostraria as duas coisas. O dono **ainda não
+  decidiu** o que o cliente vê nesse mapa — enquanto ele não disser, o link do
+  cliente segue com a lista, como antes.
+- Funções no `app.js`: `renderMapaDoPredio`, `fichaDoPredio`,
+  `escolherNoPredio`, `mostrarVistaDeUnidades`; `abrirGaveta` passa para a
+  lista quando a linha procurada está nela. Bloco "v429" no fim do `styles.css`.
+
+Testes: *"o Renaissance abre no prédio, e o toque no apartamento abre a ficha
+dele"*, *"no desenho do prédio os apartamentos dos fundos ficam num cinza mais
+claro"*, *"no celular a ficha abre embaixo do prédio e a tela desce até ela"* e
+*"o cliente não vê o desenho do prédio"*. Os testes que mexem na lista do
+Renaissance tocam antes em "Ver em lista" (`verEmLista`).
+
 ## As abas das tipologias em destaque: modelo A (v428)
 
 Pedido do dono (14/10/2026), com o print do Quality e as abas circuladas:
