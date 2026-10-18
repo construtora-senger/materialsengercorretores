@@ -438,6 +438,29 @@ async function teste(nome, fn) {
     return luz(r.fundos) > luz(r.vendido) ? "" : `o cinza dos fundos (${r.fundos}) não é mais claro que o do vendido (${r.vendido})`;
   });
 
+  // v430 — pedido do dono: a planta tecnica do andar, em PDF, na ficha,
+  // como no mapa antigo (pranchas A05 a A09).
+  await teste("a ficha do prédio traz a planta técnica do andar, em PDF", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(400);
+    const esperado = { "402": "pavimento-04", "503": "pavimento-05", "1004": "pavimento-06-a-12", "1302": "pavimento-13", "1701": "pavimento-14-a-17", "Sala 04": "" };
+    for (const [cod, arquivo] of Object.entries(esperado)) {
+      await p.locator("button.predio-u", { hasText: new RegExp(`^${cod}$`) }).click();
+      await p.waitForTimeout(200);
+      const r = await p.evaluate(async () => {
+        const a = document.querySelector(".predio-ficha .planta-tecnica");
+        if (!a) return { href: "" };
+        return { href: a.getAttribute("href"), alvo: a.target, status: (await fetch(a.href, { method: "HEAD" })).status };
+      });
+      if (!arquivo) { if (r.href) { await p.close(); return `${cod} não devia ter planta técnica e mostra ${r.href}`; } continue; }
+      if (!r.href.includes(`/${arquivo}.pdf`)) { await p.close(); return `${cod} abre "${r.href}", esperado ${arquivo}.pdf`; }
+      if (r.status !== 200) { await p.close(); return `${cod}: o PDF respondeu ${r.status}`; }
+      if (r.alvo !== "_blank") { await p.close(); return `${cod}: o PDF não abre em outra aba`; }
+    }
+    await p.close();
+    return "";
+  });
+
   await teste("no celular a ficha abre embaixo do prédio e a tela desce até ela", async () => {
     const p = await abrir("/#emp-renaissance", { mobile: true });
     await p.waitForTimeout(500);
