@@ -81,6 +81,16 @@ const EMPREENDIMENTOS = [
       colunas: ["03", "02", "01", "04"],
       fundos: ["03", "04"],
       terreo: ["Sala 04", "Sala 03", "Sala 02", "Sala 01"],
+      // v430 — a planta tecnica (planta baixa do andar, em PDF) na ficha do
+      // apartamento, pedido do dono em 18/10/2026: as mesmas pranchas do mapa
+      // antigo (A05 a A09), cada uma valendo para os andares do carimbo dela.
+      plantasTecnicas: [
+        { de: 4, ate: 4, pdf: "assets/renaissance/plantas-tecnicas/pavimento-04.pdf", legenda: "4º pavimento" },
+        { de: 5, ate: 5, pdf: "assets/renaissance/plantas-tecnicas/pavimento-05.pdf", legenda: "5º pavimento" },
+        { de: 6, ate: 12, pdf: "assets/renaissance/plantas-tecnicas/pavimento-06-a-12.pdf", legenda: "6º ao 12º pavimento" },
+        { de: 13, ate: 13, pdf: "assets/renaissance/plantas-tecnicas/pavimento-13.pdf", legenda: "13º pavimento" },
+        { de: 14, ate: 17, pdf: "assets/renaissance/plantas-tecnicas/pavimento-14-a-17.pdf", legenda: "14º ao 17º pavimento" },
+      ],
     },
     hero: "assets/renaissance/capa.jpg",
     folder: "assets/renaissance/folder.pdf",

@@ -70,8 +70,21 @@ uma mudança: *"so deixa os de fundos num cinzinha mais claro"*.
   `escolherNoPredio`, `mostrarVistaDeUnidades`; `abrirGaveta` passa para a
   lista quando a linha procurada está nela. Bloco "v429" no fim do `styles.css`.
 
+**A planta técnica do andar, em PDF (v430).** Pedido do dono (18/10/2026),
+com o print da ficha do mapa antigo: *"veja que tem uma planta humanizada, eu
+quero também as plantas técnicas como tem nesse link"*. Na ficha, logo embaixo
+do "Ver planta", entra **"Planta técnica em PDF"** com o andar escrito
+embaixo; abre o PDF em outra aba. São **as mesmas pranchas do mapa antigo**
+(A05 a A09, copiadas sem mexer para `assets/renaissance/plantas-tecnicas/`),
+conferidas pelo carimbo de cada uma: 4º pavimento (401, 402), 5º (501–504),
+6º ao 12º, 13º (1301, 1302) e 14º ao 17º. Quem liga andar e prancha é
+`mapaPredio.plantasTecnicas` no `data.js` (`de`/`ate`, `pdf`, `legenda`);
+`botaoDaPlantaTecnica`, no `app.js`. As salas do térreo e o 18º não têm
+prancha (no mapa antigo também não). Só na ficha do mapa — a lista e a seção
+"Imagens e planta" não mudaram.
+
 Testes: *"o Renaissance abre no prédio, e o toque no apartamento abre a ficha
-dele"*, *"no desenho do prédio os apartamentos dos fundos ficam num cinza mais
+dele"*, *"a ficha do prédio traz a planta técnica do andar, em PDF"*, *"no desenho do prédio os apartamentos dos fundos ficam num cinza mais
 claro"*, *"no celular a ficha abre embaixo do prédio e a tela desce até ela"* e
 *"o cliente não vê o desenho do prédio"*. Os testes que mexem na lista do
 Renaissance tocam antes em "Ver em lista" (`verEmLista`).

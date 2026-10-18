@@ -1587,3 +1587,16 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
   /* O "Sala 04" nao encosta na bolinha verde. */
   .predio-u { padding: 0 11px 0 4px; }
 }
+
+/* v430 — a planta tecnica do andar, em PDF, na ficha do mapa do predio
+   (pedido do dono, 18/10/2026: "eu quero tambem as plantas tecnicas como tem
+   nesse link"). Mesmo tamanho do "Ver planta", logo embaixo dele. */
+.predio-ficha .planta-tecnica { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0 0 10px; padding: 8px; border: 1px solid var(--line-strong); border-radius: 10px; background: #fff; color: var(--ink); text-decoration: none; }
+.predio-ficha .planta-tecnica:hover { border-color: var(--brand); }
+.predio-ficha .planta-tecnica:focus-visible { outline: 3px solid var(--brand-dark); outline-offset: 2px; }
+.planta-tecnica-icone { flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 64px; height: 64px; border: 1px solid var(--line); border-radius: 6px; background: #fbeceb; color: #c0392b; }
+.planta-tecnica-icone svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+.planta-tecnica-icone b { font-size: 11px; font-weight: 800; letter-spacing: .04em; }
+.planta-tecnica-texto { display: flex; flex-direction: column; gap: 2px; }
+.planta-tecnica-texto strong { font-size: 15px; font-weight: 600; }
+.planta-tecnica-texto small { color: var(--muted); font-size: 13px; }

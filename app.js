@@ -1880,8 +1880,26 @@
         ${linhas.map(([rotulo, valor]) => `<div><dt>${escapeHtml(rotulo)}</dt><dd${rotulo === "Situação" ? ` class="situacao-${item.status}"` : ""}>${escapeHtml(valor)}</dd></div>`).join("")}
       </dl>
       ${miniaturaDaPlanta(item)}
+      ${botaoDaPlantaTecnica(item)}
       <div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>
     `;
+  }
+
+  // v430 — a planta tecnica do andar, em PDF, como no mapa antigo ("Abrir
+  // planta tecnica em PDF"). Pedido do dono (18/10/2026). Cada prancha vale
+  // para os andares do carimbo dela (`mapaPredio.plantasTecnicas`).
+  const ICONE_PDF = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+
+  function plantaTecnicaDoAndar(item) {
+    const andar = andarDe(item?.code);
+    if (!andar) return null;
+    return (item.emp?.mapaPredio?.plantasTecnicas || []).find((p) => andar >= p.de && andar <= p.ate) || null;
+  }
+
+  function botaoDaPlantaTecnica(item) {
+    const tecnica = plantaTecnicaDoAndar(item);
+    if (!tecnica) return "";
+    return `<a class="planta-tecnica" href="${escapeHtml(assetUrl(tecnica.pdf))}" target="_blank" rel="noopener"><span class="planta-tecnica-icone">${ICONE_PDF}<b>PDF</b></span><span class="planta-tecnica-texto"><strong>Planta técnica em PDF</strong><small>${escapeHtml(tecnica.legenda)}</small></span></a>`;
   }
 
   function escolherNoPredio(botao) {
