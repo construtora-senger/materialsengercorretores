@@ -1881,6 +1881,13 @@ const EMPREENDIMENTOS = [
     id: "nova-vila-rica",
     nome: "Loteamento Nova Vila Rica I & II",
     confirmado: true,
+    // Lotes vendidos que existem so no mapa do loteamento, sem quadra e numero
+    // no cadastro. Pedido do dono (19/10/2026), com o mapa dos lotes na mao:
+    // "nao precisa cadastrar os vendidos, apenas conte na imagem quantos tem
+    // escrito vendidos e acrescente a contagem, so isso". O mapa tem 76 lotes
+    // com "VENDIDO" escrito; um deles e o 77/51, que ja esta em `terrenos`
+    // abaixo — ficam 75. So o painel le este numero; o site nao mostra.
+    vendidosSemCadastro: 75,
     cidade: "Carazinho/RS",
     categoria: "terreno",
     status: "pronto",
