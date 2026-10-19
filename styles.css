@@ -1536,22 +1536,19 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 .predio-tit { margin: 0 0 12px; text-align: center; color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .predio-andar { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; }
 .predio-n { flex: none; width: 48px; text-align: right; color: var(--muted); font-size: 12.5px; font-weight: 700; }
-.predio-us { flex: 1; display: grid; grid-template-columns: repeat(var(--colunas, 4), minmax(0, 1fr)); gap: 6px; }
+.predio-us { flex: 1; display: grid; grid-template-columns: repeat(var(--colunas, 2), minmax(0, 1fr)); gap: 6px; }
 .predio-u { position: relative; display: flex; align-items: center; justify-content: center; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font: 600 13.5px var(--font-body); }
 .predio-u i { position: absolute; right: 6px; bottom: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--verde); }
 button.predio-u { cursor: pointer; }
 button.predio-u:hover { border-color: var(--brand); }
 button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-offset: 1px; }
-.predio-u.predio-fundos { border-color: #dde2e5; background: #f3f5f6; }
 .predio-u.predio-vendido { border-color: transparent; background: #e9ecee; color: #8a949b; font-size: 12px; }
-.predio-u.predio-vazio { border: 0; background: transparent; }
-.predio-u.predio-larga { grid-column: 2 / -2; }
+.predio-u.predio-larga { grid-column: 1 / -1; }
 .predio-u.predio-sel { border-color: var(--brand); background: var(--brand); color: #fff; box-shadow: 0 4px 12px rgba(23, 143, 160, .35); }
 .predio-u.predio-sel i { background: #fff; }
 .predio-legenda { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 12px 0 0; color: var(--muted); font-size: 13px; }
 .predio-legenda span::before { content: ""; display: inline-block; width: 11px; height: 11px; margin-right: 6px; border-radius: 3px; vertical-align: -1px; }
 .predio-legenda .lg-disp::before { border: 1px solid #b9c2c8; background: #fff; }
-.predio-legenda .lg-fundos::before { border: 1px solid #dde2e5; background: #f3f5f6; }
 .predio-legenda .lg-vend::before { background: #e9ecee; }
 .predio-legenda .lg-sel::before { background: var(--brand); }
 .predio-ficha { position: sticky; top: 96px; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: #fff; scroll-margin-top: 96px; }
@@ -1600,3 +1597,27 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
 .planta-tecnica-texto { display: flex; flex-direction: column; gap: 2px; }
 .planta-tecnica-texto strong { font-size: 15px; font-weight: 600; }
 .planta-tecnica-texto small { color: var(--muted); font-size: 13px; }
+
+/* v431 — O MAPA EM DUAS ABAS, COMO NO MAPA ANTIGO. O predio inteiro numa grade
+   so, com os fundos em cinza (v429), ficou confuso para o dono; ele quis as
+   abas do mapa antigo: "Apartamentos 3 suites" (a frente) e "Apartamentos
+   2 suites" (os fundos). O andar sem apartamento da aba fica com o
+   quadradinho vazio, e a torre fica no meio, em cima da faixa do terreo. */
+.vista-predio { --torre: 250px; --base: 380px; }
+.abas-predio { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 0 0 18px; }
+.aba-predio { padding: 9px 18px; border: 2px solid var(--brand); border-radius: 999px; background: #fff; color: var(--brand); font: 600 15px var(--font-body); cursor: pointer; }
+.aba-predio:hover { background: var(--brand-soft); color: var(--brand-dark); }
+.aba-predio[aria-selected="true"] { background: var(--brand); color: #fff; box-shadow: 0 6px 16px rgba(23, 143, 160, .3); }
+.aba-predio:focus-visible { outline: 3px solid var(--brand-dark); outline-offset: 2px; }
+.predio-andares { width: fit-content; margin: 0 auto; }
+.predio-andar .predio-us { flex: none; width: var(--torre); }
+.predio-andar .predio-n { margin-left: calc((var(--base) - var(--torre)) / 2); }
+.predio-andar.predio-terreo { margin-top: 10px; }
+.predio-andar.predio-terreo .predio-us { width: var(--base); }
+.predio-andar.predio-terreo .predio-n { margin-left: 0; }
+.predio-u.predio-fantasma { border: 1px dashed #d5dadd; background: #f8f9fa; }
+@media (max-width: 720px) {
+  .vista-predio { --torre: min(190px, calc(100vw - 196px)); --base: min(278px, calc(100vw - 108px)); }
+  .abas-predio { gap: 8px; margin-bottom: 14px; }
+  .aba-predio { padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
+}

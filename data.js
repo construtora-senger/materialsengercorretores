@@ -73,13 +73,16 @@ const EMPREENDIMENTOS = [
     // v429 — MAPA DO PREDIO ("Ver no prédio"), pedido do dono em 16/10/2026.
     // O desenho sai das unidades do cadastro (andar e final pelo numero do
     // apartamento); aqui fica so o que o numero nao diz, tirado do mapa antigo
-    // de disponibilidade do Renaissance: a ordem dos finais em cada andar, da
-    // esquerda para a direita (03 lateral esquerda, 02 frente esquerda,
-    // 01 frente direita, 04 lateral direita), quais finais sao os dos fundos
-    // (cinza mais claro, pedido do dono) e a ordem das salas do terreo.
+    // de disponibilidade do Renaissance.
+    // v431 — DUAS ABAS, como no mapa antigo (pedido do dono em 19/10/2026): a
+    // da frente (finais 02 e 01, nesta ordem da esquerda para a direita) e a
+    // dos fundos, que no Renaissance se chama "2 suites" (finais 03 e 04).
+    // `terreo` e a ordem das salas, que aparecem nas duas abas.
     mapaPredio: {
-      colunas: ["03", "02", "01", "04"],
-      fundos: ["03", "04"],
+      abas: [
+        { nome: "Apartamentos 3 suítes", finais: ["02", "01"] },
+        { nome: "Apartamentos 2 suítes", finais: ["03", "04"] },
+      ],
       terreo: ["Sala 04", "Sala 03", "Sala 02", "Sala 01"],
       // v430 — a planta tecnica (planta baixa do andar, em PDF) na ficha do
       // apartamento, pedido do dono em 18/10/2026: as mesmas pranchas do mapa
