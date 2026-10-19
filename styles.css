@@ -1621,3 +1621,19 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
   .abas-predio { gap: 8px; margin-bottom: 14px; }
   .aba-predio { padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
 }
+
+/* v434 — o mapa do predio no Evolutti, no Premium Office e no Boulevard, no
+   mesmo padrao do Renaissance. O lugar do 303 do Boulevard e o salao de festas
+   ("no lugar dele e o salao de festas", palavra do dono): nao e unidade, nao
+   se toca, e fica escrito em letra miuda. */
+.predio-u.predio-espaco { border: 1px dashed #c9d1d6; background: #f3f6f7; color: #6b7780; font-size: 11.5px; font-weight: 600; line-height: 1.1; text-align: center; }
+@media (max-width: 720px) {
+  .predio-u.predio-espaco { padding: 0 2px; font-size: 10.5px; }
+}
+/* Andar com 4 ou 5 unidades (Evolutti, Premium Office): a torre fica mais
+   larga, senao o "Vendido" nao cabe no quadradinho. No celular ela ocupa a
+   largura do desenho. */
+.vista-predio.predio-largo { --torre: 340px; --base: 400px; }
+@media (max-width: 720px) {
+  .vista-predio.predio-largo { --torre: min(400px, calc(100vw - 108px)); --base: min(400px, calc(100vw - 108px)); }
+}

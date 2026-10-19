@@ -414,6 +414,20 @@ const EMPREENDIMENTOS = [
       "2 dormitórios (1 suíte)": { simples: 1 },
       "2 dormitórios (2 suítes)": { simples: 1 },
     },
+    // v434 — MAPA DO PREDIO ("Ver no prédio"), no mesmo padrao do Renaissance,
+    // pedido do dono em 19/10/2026: "esse e os demais devem ser na mesma linha,
+    // mesmo padrao". Uma aba por tipologia, como as abas da lista (v407): os
+    // 2 dormitorios ficam do 4o ao 8o andar e os 3 dormitorios do 9o ao 13o (o
+    // 9o pavimento usa a mesma planta dos 3 dormitorios). Os finais saem na
+    // ordem da planta do andar vista da Rua 24 de Janeiro: frente 02 e 01,
+    // fundos 04 e 03. As lojas ficam no terreo, nas duas abas.
+    mapaPredio: {
+      abas: [
+        { nome: "Apartamentos 2 dormitórios", finais: ["02", "01", "04", "03"], andares: [4, 8] },
+        { nome: "Apartamentos 3 dormitórios", finais: ["02", "01"], andares: [9, 13] },
+      ],
+      terreo: ["Loja 101", "Loja 102", "Loja 103"],
+    },
     hero: "assets/evolutti/capa.jpg",
     folder: "assets/folder-evolutti.pdf",
     video: "",
@@ -598,6 +612,16 @@ const EMPREENDIMENTOS = [
       "Sala 54 m²": { simples: 1 },
       "Sala 72 m²": { simples: 1 },
       "Sala 76 m²": { simples: 1 },
+    },
+    // v434 — MAPA DO PREDIO ("Ver no prédio"), no mesmo padrao do Renaissance,
+    // pedido do dono em 19/10/2026. O predio e todo de salas, entao o desenho
+    // tem uma aba so, com as salas 01 a 05. O 2o pavimento tem tres salas, que
+    // ocupam o andar inteiro; a sala 101 e a do terreo.
+    mapaPredio: {
+      abas: [
+        { nome: "Salas comerciais", finais: ["01", "02", "03", "04", "05"] },
+      ],
+      terreo: ["101"],
     },
     hero: "assets/premium-office/capa.jpg",
     folder: "assets/premium-office/folder.pdf",
@@ -830,6 +854,19 @@ const EMPREENDIMENTOS = [
       "3 suítes + lavabo": { duplo: 1 },
       "2 suítes + lavabo": { duplo: 1 },
       "2 dormitórios (1 suíte)": { simples: 1 },
+    },
+    // v434 — MAPA DO PREDIO ("Ver no prédio"), no mesmo padrao do Renaissance,
+    // pedido do dono em 19/10/2026: as duas abas da lista (v407), "3 suites"
+    // (finais 01 e 02, a frente para a Rua Getulio Vargas) e "2 dormitorios"
+    // (finais 03 e 04, os fundos), na ordem da planta do pavimento tipo. O 303
+    // nao existe: "no lugar dele e o salao de festas" (palavra do dono; o folder
+    // diz que o 3o pavimento e a area de lazer).
+    mapaPredio: {
+      abas: [
+        { nome: "Apartamentos 3 suítes", finais: ["01", "02"] },
+        { nome: "Apartamentos 2 dormitórios", finais: ["03", "04"] },
+      ],
+      espacos: { "303": "Salão de festas" },
     },
     hero: "assets/boulevard/capa.jpg",
     folder: "assets/boulevard/folder.pdf",

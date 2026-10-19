@@ -1764,7 +1764,7 @@
 
     return `
       <section class="content-section" id="unidades">
-        <div class="section-title-row"><h2>${focusItems ? (focusItems.length > 1 ? "Suas unidades" : "Sua unidade") : "Unidades e valores"}</h2><p>${mapa ? DICA_DO_PREDIO : DICA_DA_LISTA}</p></div>
+        <div class="section-title-row"><h2>${focusItems ? (focusItems.length > 1 ? "Suas unidades" : "Sua unidade") : "Unidades e valores"}</h2><p>${mapa ? dicaDoPredio(emp) : DICA_DA_LISTA}</p></div>
         ${vistas}
       </section>
     `;
@@ -1785,6 +1785,8 @@
   // Selecionar, que sao ferramentas da equipe e nao existem na tela dele. So
   // para quem tem `mapaPredio` no data.js (hoje, o Renaissance).
   const DICA_DO_PREDIO = "Toque no apartamento para ver a ficha";
+  // v434 — no predio comercial (Premium Office) a unidade e sala.
+  const dicaDoPredio = (emp) => emp.categoria === "comercial" ? "Toque na sala para ver a ficha" : DICA_DO_PREDIO;
   const DICA_DA_LISTA = "Toque na tipologia para ver as unidades";
 
   // Os dois ultimos digitos do apartamento com andar; a "Sala 04" nao tem final.
@@ -1804,6 +1806,15 @@
     // fica com o quadradinho vazio, para o predio manter o desenho.
     const abas = (mapa.abas || []).filter((aba) => (aba.finais || []).length);
     const terreo = mapa.terreo || [];
+    // v434 — o Premium Office, o Evolutti e o Boulevard entraram no mesmo padrao
+    // do Renaissance ("esse e os demais devem ser na mesma linha"). Tres coisas
+    // que o numero da unidade nao diz e que o `mapaPredio` agora pode dizer:
+    // `terreo` tambem leva para o terreo a unidade com numero de andar (a sala
+    // 101 do Premium Office); a aba pode valer so para alguns andares
+    // (`andares: [de, ate]`, os 2 e os 3 dormitorios do Evolutti); e `espacos`
+    // poe o nome do que ocupa o lugar de uma unidade que nao existe (o salao de
+    // festas no lugar do 303 do Boulevard).
+    const naAba = (aba, andar) => !aba.andares || (andar >= aba.andares[0] && andar <= aba.andares[1]);
 
     // Todas as unidades do cadastro, inclusive as vendidas: elas ficam fora do
     // itemMap (v113), e por isso o desenho as mostra como "Vendido", sem ficha.
@@ -1811,16 +1822,21 @@
     const doTerreo = [];
     (emp.grupos || []).forEach((group, gi) => (group.unidades || []).forEach((unit, ui) => {
       const u = { code: String(unit.apto), item: itemMap.get(`${emp.id}:unit:${gi}:${ui}`) || null };
-      const andar = andarDe(u.code);
+      const andar = terreo.includes(u.code) ? null : andarDe(u.code);
       if (andar === null) { doTerreo.push(u); return; }
       if (!andares.has(andar)) andares.set(andar, []);
       andares.get(andar).push(u);
     }));
     if (!abas.length) return "";
+    Object.entries(mapa.espacos || {}).forEach(([code, nome]) => {
+      const andar = andarDe(code);
+      if (andar !== null && andares.has(andar)) andares.get(andar).push({ code, espaco: nome });
+    });
 
     const celula = (u, larga = false) => {
       const classes = larga ? "predio-u predio-larga" : "predio-u";
       if (!u) return `<span class="${classes} predio-fantasma" aria-hidden="true"></span>`;
+      if (u.espaco) return `<span class="${classes} predio-espaco">${escapeHtml(u.espaco)}</span>`;
       if (!u.item) return `<span class="${classes} predio-vendido" title="${escapeHtml(u.code)} — vendido">Vendido</span>`;
       return `<button type="button" class="${classes} predio-disp" data-predio-item="${u.item.key}" aria-pressed="false" aria-label="${escapeHtml(itemLabel(u.item))}">${escapeHtml(u.code)}<i aria-hidden="true"></i></button>`;
     };
@@ -1837,10 +1853,18 @@
       const linhas = pisos.map((andar) => {
         const us = andares.get(andar);
         const n = aba.finais.length;
+        const doAndar = naAba(aba, andar);
         // Andar de uma unidade so (o 18º) ocupa a largura do predio.
         if (us.length === 1) {
-          const daAba = aba.finais.includes(finalDoCodigo(us[0].code)) || (indice === 0 && !todosOsFinais.has(finalDoCodigo(us[0].code)));
+          const daAba = doAndar && (aba.finais.includes(finalDoCodigo(us[0].code)) || (indice === 0 && !todosOsFinais.has(finalDoCodigo(us[0].code))));
           return linha(`${andar}º`, celula(daAba ? us[0] : null, true), n);
+        }
+        if (!doAndar) return linha(`${andar}º`, aba.finais.map(() => celula(null)).join(""), n);
+        // Predio de uma aba so: o andar com menos unidades (o 2º do Premium
+        // Office, tres salas) ocupa a largura toda, como o 18º do Renaissance.
+        if (abas.length === 1 && us.length < n) {
+          const ordem = (u) => { const i = aba.finais.indexOf(finalDoCodigo(u.code)); return i < 0 ? n : i; };
+          return linha(`${andar}º`, [...us].sort((a, b) => ordem(a) - ordem(b)).map((u) => celula(u)).join(""), us.length);
         }
         const porFinal = new Map(us.map((u) => [finalDoCodigo(u.code), u]));
         // Final que nenhuma aba lista vai para a primeira, para nao sumir.
@@ -1852,9 +1876,9 @@
     };
 
     return `
-      <div class="vista-predio">
+      <div class="vista-predio${Math.max(...abas.map((aba) => aba.finais.length)) > 2 ? " predio-largo" : ""}" data-dica="${escapeHtml(dicaDoPredio(emp))}">
         <div class="predio-desenho">
-          <p class="predio-tit">Escolha a tipologia</p>
+          <p class="predio-tit">${abas.length > 1 ? "Escolha a tipologia" : emp.categoria === "comercial" ? "Escolha a sala" : "Escolha a unidade"}</p>
           ${abas.length > 1 ? `
           <div class="abas-predio" role="tablist" aria-label="Tipologias do prédio">
             ${abas.map((aba, i) => `<button type="button" role="tab" class="aba-predio" data-aba-predio="${i}" aria-selected="${i === 0}">${escapeHtml(aba.nome)}</button>`).join("")}
@@ -1866,7 +1890,7 @@
             <span class="lg-sel">Escolhido</span>
           </p>
         </div>
-        <div class="predio-ficha" aria-live="polite">${fichaDoPredio(null)}</div>
+        <div class="predio-ficha" aria-live="polite">${fichaDoPredio(null, emp.categoria === "comercial" ? "numa sala" : "num apartamento")}</div>
       </div>
     `;
   }
@@ -1877,11 +1901,11 @@
     vista.querySelectorAll("[data-painel-predio]").forEach((painel) => { painel.hidden = painel.dataset.painelPredio !== String(indice); });
   }
 
-  function fichaDoPredio(item) {
+  function fichaDoPredio(item, qual = "num apartamento") {
     if (!item) {
       return `
         <p class="predio-ficha-tag">Ficha da unidade</p>
-        <p class="predio-ficha-vazia">Toque num apartamento do desenho para ver o valor, as áreas, a garagem e a planta.</p>
+        <p class="predio-ficha-vazia">Toque ${qual} do desenho para ver o valor, as áreas, a garagem e a planta.</p>
       `;
     }
     const sufixoDoGrupo = item.group?.sufixo || "";
@@ -1954,7 +1978,7 @@
     if (predio) predio.hidden = vista !== "predio";
     if (lista) lista.hidden = vista !== "lista";
     const dica = secao.querySelector(".section-title-row p");
-    if (dica) dica.textContent = vista === "predio" ? DICA_DO_PREDIO : DICA_DA_LISTA;
+    if (dica) dica.textContent = vista === "predio" ? (predio?.dataset.dica || DICA_DO_PREDIO) : DICA_DA_LISTA;
   }
 
   // v407 — AS ABAS DA PAGINA DO EMPREENDIMENTO. Pedido do dono (9/10/2026),

@@ -386,6 +386,44 @@ async function teste(nome, fn) {
     await p.locator(".predio-painel:not([hidden]) button.predio-u", { hasText: new RegExp(`^${cod}$`) }).click();
   };
 
+  // v434 — o Boulevard, o Evolutti e o Premium Office no mesmo padrao do
+  // Renaissance ("esse e os demais devem ser na mesma linha"). Cada um abre no
+  // predio, com toda unidade do cadastro no desenho: a venda como botao, a
+  // vendida escrita "Vendido". E o que cada um tem de proprio: o salao de
+  // festas no lugar do 303 do Boulevard, as abas do Evolutti por andar e a
+  // sala 101 do Premium Office no terreo.
+  await teste("o Boulevard, o Evolutti e o Premium Office abrem no prédio, no padrão do Renaissance", async () => {
+    for (const id of ["boulevard", "evolutti", "premium-office"]) {
+      const p = await abrir(`/#emp-${id}`);
+      await p.waitForTimeout(400);
+      const r = await p.evaluate((id) => {
+        const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === id);
+        const unidades = emp.grupos.flatMap((g) => g.unidades);
+        const unicos = (lista) => [...new Set(lista)].sort().join(",");
+        const andar = (painel, n) => {
+          const linha = [...document.querySelectorAll(`[data-painel-predio="${painel}"] .predio-andar`)].find((el) => el.querySelector(".predio-n").textContent === n);
+          return linha ? [...linha.querySelectorAll(".predio-u")].map((u) => u.classList.contains("predio-fantasma") ? "_" : u.textContent.trim()).join(",") : null;
+        };
+        return {
+          predio: !!document.querySelector(".vista-predio") && !document.querySelector(".vista-predio").hidden,
+          botoes: unicos([...document.querySelectorAll("button.predio-u")].map((el) => el.textContent.trim())),
+          aVenda: unicos(unidades.filter((u) => u.status !== "vendido").map((u) => String(u.apto))),
+          naTela: unicos([...document.querySelectorAll(".predio-vendido")].map((el) => el.title.replace(" — vendido", ""))),
+          vendidas: unicos(unidades.filter((u) => u.status === "vendido").map((u) => String(u.apto))),
+          b3: andar(1, "3º"), e8: andar(1, "8º"), e10: andar(0, "10º"), p2: andar(0, "2º"), pt: andar(0, "Térreo"),
+        };
+      }, id);
+      await p.close();
+      if (!r.predio) return `${id} não abriu no prédio`;
+      if (r.botoes !== r.aVenda) return `${id} — no desenho: ${r.botoes} — à venda no cadastro: ${r.aVenda}`;
+      if (r.naTela !== r.vendidas) return `${id} — vendidos no desenho: ${r.naTela} — no cadastro: ${r.vendidas}`;
+      if (id === "boulevard" && r.b3 !== "Salão de festas,304") return `o 3º andar dos 2 dormitórios do Boulevard saiu "${r.b3}"`;
+      if (id === "evolutti" && (r.e8 !== "_,_" || r.e10 !== "_,_,_,_")) return `as abas do Evolutti misturaram os andares: 8º "${r.e8}", 10º "${r.e10}"`;
+      if (id === "premium-office" && (r.p2.split(",").length !== 3 || r.pt !== "Vendido")) return `o Premium Office saiu com 2º "${r.p2}" e térreo "${r.pt}"`;
+    }
+    return "";
+  });
+
   await teste("o Renaissance abre no prédio, e o toque no apartamento abre a ficha dele", async () => {
     const p = await abrir("/#emp-renaissance");
     await p.waitForTimeout(500);
