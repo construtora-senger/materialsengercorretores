@@ -1637,3 +1637,29 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
 @media (max-width: 720px) {
   .vista-predio.predio-largo { --torre: min(400px, calc(100vw - 108px)); --base: min(400px, calc(100vw - 108px)); }
 }
+/* Modelo A do Premium Office (escolha do dono): em cima de cada coluna, o
+   mapinha do andar visto de cima com a sala pintada, o nome e o tamanho; toda
+   sala mostra o numero, mesmo vendida. A torre fica mais larga para caber
+   "701 vendida". */
+.vista-predio.predio-com-cabecalho { --torre: clamp(340px, 34vw, 460px); --base: calc(var(--torre) + 40px); }
+.predio-andar.predio-cab { align-items: end; margin-bottom: 8px; }
+.predio-col { display: flex; flex-direction: column; align-items: center; text-align: center; line-height: 1.2; }
+.predio-col b { color: var(--ink); font-size: 12.5px; }
+.predio-col small { color: var(--muted); font-size: 11px; }
+.predio-mapinha { width: 34px; height: 60px; margin: 0 0 6px; }
+.predio-mapinha polygon { fill: #dfe4e7; stroke: #fff; stroke-width: 8; }
+.predio-mapinha polygon.on { fill: var(--brand); }
+.predio-com-cabecalho .predio-u.predio-vendido { font-size: 12.5px; font-weight: 600; }
+.predio-com-cabecalho .predio-u.predio-vendido small { margin-left: 4px; font-size: 10px; font-weight: 500; }
+@media (max-width: 960px) {
+  .vista-predio.predio-com-cabecalho { grid-template-columns: 1fr; }
+  .predio-com-cabecalho .predio-ficha { position: static; }
+}
+@media (max-width: 720px) {
+  .vista-predio.predio-com-cabecalho { --torre: min(400px, calc(100vw - 108px)); --base: min(400px, calc(100vw - 108px)); }
+  .predio-mapinha { width: 24px; height: 42px; margin-bottom: 4px; }
+  .predio-col b { font-size: 11px; }
+  .predio-col small { font-size: 9.5px; }
+  .predio-com-cabecalho .predio-u.predio-vendido { font-size: 11.5px; }
+  .predio-com-cabecalho .predio-u.predio-vendido small { display: none; }
+}

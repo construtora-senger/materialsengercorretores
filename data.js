@@ -614,15 +614,32 @@ const EMPREENDIMENTOS = [
       "Sala 72 m²": { simples: 1 },
       "Sala 76 m²": { simples: 1 },
     },
-    // v434 — MAPA DO PREDIO ("Ver no prédio"), no mesmo padrao do Renaissance,
-    // pedido do dono em 19/10/2026. O predio e todo de salas, entao o desenho
-    // tem uma aba so, com as salas 01 a 05. O 2o pavimento tem tres salas, que
-    // ocupam o andar inteiro; a sala 101 e a do terreo.
+    // v434 — MAPA DO PREDIO ("Ver no prédio"), pedido do dono em 19/10/2026.
+    // O predio e todo de salas, entao o desenho tem uma aba so, com as salas 01
+    // a 05. O 2o pavimento tem tres salas, que ocupam o andar inteiro; a sala
+    // 101 e a do terreo. O desenho igual ao do Renaissance ficou
+    // "incompreensivel"; entre quatro modelos o dono escolheu o A: o nome e o
+    // tamanho de cada sala em cima da coluna, e o numero em toda sala, mesmo
+    // vendida — "porem coloca em cima de cada descricao de sala 01, 02, 03 o
+    // mapinha de disposicao da sala vendo de cima". O `mapinha` e o desenho do
+    // andar que vem no canto da planta do pavimento tipo (po-planta), sala por
+    // sala, com a Rua Cipriano da Luz embaixo.
     mapaPredio: {
       abas: [
         { nome: "Salas comerciais", finais: ["01", "02", "03", "04", "05"] },
       ],
       terreo: ["101"],
+      cabecalhoDasColunas: true,
+      mapinha: {
+        viewBox: "0 0 430 752",
+        salas: {
+          "04": "7,0 132,0 132,75 165,75 165,230 7,230",
+          "05": "135,0 317,0 317,202 265,202 265,230 167,230 167,75 135,75",
+          "03": "7,232 125,232 125,448 7,448",
+          "02": "7,452 207,452 207,705 174,705 174,752 0,752 0,665 7,665",
+          "01": "212,452 430,452 430,705 212,705",
+        },
+      },
     },
     hero: "assets/premium-office/capa.jpg",
     folder: "assets/premium-office/folder.pdf",

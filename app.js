@@ -1821,7 +1821,7 @@
     const andares = new Map();
     const doTerreo = [];
     (emp.grupos || []).forEach((group, gi) => (group.unidades || []).forEach((unit, ui) => {
-      const u = { code: String(unit.apto), item: itemMap.get(`${emp.id}:unit:${gi}:${ui}`) || null };
+      const u = { code: String(unit.apto), item: itemMap.get(`${emp.id}:unit:${gi}:${ui}`) || null, area: unit.areaUnit || group.area || "" };
       const andar = terreo.includes(u.code) ? null : andarDe(u.code);
       if (andar === null) { doTerreo.push(u); return; }
       if (!andares.has(andar)) andares.set(andar, []);
@@ -1833,12 +1833,26 @@
       if (andar !== null && andares.has(andar)) andares.get(andar).push({ code, espaco: nome });
     });
 
-    const celula = (u, larga = false) => {
+    // v434 — modelo A do Premium Office (escolha do dono): com
+    // `cabecalhoDasColunas`, toda unidade mostra o numero, mesmo vendida, e a
+    // que nao fica embaixo de uma coluna (o 2º andar, o terreo) diz tambem o
+    // tamanho dela, porque o cabecalho nao fala por ela.
+    const comCabecalho = !!mapa.cabecalhoDasColunas;
+    const vendida = emp.categoria === "comercial" ? "vendida" : "vendido";
+    const rotulo = (u, comArea) => {
+      const area = comArea ? areasDe(u.area).global : "";
+      return escapeHtml(area ? `${u.code} · ${area}` : u.code);
+    };
+    const celula = (u, larga = false, comArea = false) => {
       const classes = larga ? "predio-u predio-larga" : "predio-u";
       if (!u) return `<span class="${classes} predio-fantasma" aria-hidden="true"></span>`;
       if (u.espaco) return `<span class="${classes} predio-espaco">${escapeHtml(u.espaco)}</span>`;
-      if (!u.item) return `<span class="${classes} predio-vendido" title="${escapeHtml(u.code)} — vendido">Vendido</span>`;
-      return `<button type="button" class="${classes} predio-disp" data-predio-item="${u.item.key}" aria-pressed="false" aria-label="${escapeHtml(itemLabel(u.item))}">${escapeHtml(u.code)}<i aria-hidden="true"></i></button>`;
+      if (!u.item) {
+        return comCabecalho
+          ? `<span class="${classes} predio-vendido" title="${escapeHtml(u.code)} — vendido">${rotulo(u, comArea)}<small>${vendida}</small></span>`
+          : `<span class="${classes} predio-vendido" title="${escapeHtml(u.code)} — vendido">Vendido</span>`;
+      }
+      return `<button type="button" class="${classes} predio-disp" data-predio-item="${u.item.key}" aria-pressed="false" aria-label="${escapeHtml(itemLabel(u.item))}">${comCabecalho ? rotulo(u, comArea) : escapeHtml(u.code)}<i aria-hidden="true"></i></button>`;
     };
     const linha = (rotulo, conteudo, colunas, classe = "") => `<div class="predio-andar${classe}"><span class="predio-n">${rotulo}</span><div class="predio-us" style="--colunas: ${colunas}">${conteudo}</div></div>`;
 
@@ -1848,6 +1862,26 @@
     }
     const todosOsFinais = new Set(abas.flatMap((aba) => aba.finais));
     const pisos = [...andares.keys()].sort((a, b) => b - a);
+    // Predio de uma aba so: o andar com menos unidades (o 2º do Premium
+    // Office, tres salas) ocupa a largura toda, como o 18º do Renaissance.
+    const espalhado = (aba, andar) => abas.length === 1 && andares.get(andar).length > 1 && andares.get(andar).length < aba.finais.length;
+
+    // O cabecalho das colunas (modelo A do Premium Office): o mapinha do andar
+    // visto de cima com a sala pintada, o nome e o tamanho. O tamanho sai do
+    // cadastro, das unidades daquela coluna ("122 a 129 m²" quando varia).
+    const areaDaColuna = (aba, f) => {
+      const ns = pisos.filter((andar) => naAba(aba, andar) && !espalhado(aba, andar) && andares.get(andar).length > 1)
+        .flatMap((andar) => andares.get(andar))
+        .filter((u) => !u.espaco && finalDoCodigo(u.code) === f)
+        .map((u) => parseFloat(String(areasDe(u.area).global).replace(",", ".")))
+        .filter((n) => Number.isFinite(n));
+      if (!ns.length) return "";
+      const [min, max] = [Math.min(...ns), Math.max(...ns)];
+      const m2 = (n) => String(n).replace(".", ",");
+      return min === max ? `${m2(min)} m²` : `${m2(min)} a ${m2(max)} m²`;
+    };
+    const mapinha = (f) => !mapa.mapinha ? "" : `<svg class="predio-mapinha" viewBox="${escapeHtml(mapa.mapinha.viewBox)}" aria-hidden="true">${Object.entries(mapa.mapinha.salas).map(([k, pontos]) => `<polygon points="${escapeHtml(pontos)}"${k === f ? ' class="on"' : ""}/>`).join("")}</svg>`;
+    const cabecalho = (aba) => !comCabecalho ? "" : `<div class="predio-andar predio-cab"><span class="predio-n"></span><div class="predio-us" style="--colunas: ${aba.finais.length}">${aba.finais.map((f) => `<div class="predio-col">${mapinha(f)}<b>${emp.categoria === "comercial" ? "Sala" : "Final"} ${f}</b><small>${areaDaColuna(aba, f)}</small></div>`).join("")}</div></div>`;
 
     const painel = (aba, indice) => {
       const linhas = pisos.map((andar) => {
@@ -1857,26 +1891,24 @@
         // Andar de uma unidade so (o 18º) ocupa a largura do predio.
         if (us.length === 1) {
           const daAba = doAndar && (aba.finais.includes(finalDoCodigo(us[0].code)) || (indice === 0 && !todosOsFinais.has(finalDoCodigo(us[0].code))));
-          return linha(`${andar}º`, celula(daAba ? us[0] : null, true), n);
+          return linha(`${andar}º`, celula(daAba ? us[0] : null, true, true), n);
         }
         if (!doAndar) return linha(`${andar}º`, aba.finais.map(() => celula(null)).join(""), n);
-        // Predio de uma aba so: o andar com menos unidades (o 2º do Premium
-        // Office, tres salas) ocupa a largura toda, como o 18º do Renaissance.
-        if (abas.length === 1 && us.length < n) {
+        if (espalhado(aba, andar)) {
           const ordem = (u) => { const i = aba.finais.indexOf(finalDoCodigo(u.code)); return i < 0 ? n : i; };
-          return linha(`${andar}º`, [...us].sort((a, b) => ordem(a) - ordem(b)).map((u) => celula(u)).join(""), us.length);
+          return linha(`${andar}º`, [...us].sort((a, b) => ordem(a) - ordem(b)).map((u) => celula(u, false, true)).join(""), us.length);
         }
         const porFinal = new Map(us.map((u) => [finalDoCodigo(u.code), u]));
         // Final que nenhuma aba lista vai para a primeira, para nao sumir.
         const fora = indice === 0 ? us.filter((u) => !todosOsFinais.has(finalDoCodigo(u.code))) : [];
         return linha(`${andar}º`, aba.finais.map((f) => celula(porFinal.get(f))).join("") + fora.map((u) => celula(u)).join(""), n + fora.length);
       });
-      if (doTerreo.length) linhas.push(linha("Térreo", doTerreo.map((u) => celula(u)).join(""), doTerreo.length, " predio-terreo"));
-      return `<div class="predio-painel" data-painel-predio="${indice}"${indice === 0 ? "" : " hidden"}><div class="predio-andares">${linhas.join("")}</div></div>`;
+      if (doTerreo.length) linhas.push(linha("Térreo", doTerreo.map((u) => celula(u, false, true)).join(""), doTerreo.length, " predio-terreo"));
+      return `<div class="predio-painel" data-painel-predio="${indice}"${indice === 0 ? "" : " hidden"}><div class="predio-andares">${cabecalho(aba)}${linhas.join("")}</div></div>`;
     };
 
     return `
-      <div class="vista-predio${Math.max(...abas.map((aba) => aba.finais.length)) > 2 ? " predio-largo" : ""}" data-dica="${escapeHtml(dicaDoPredio(emp))}">
+      <div class="vista-predio${Math.max(...abas.map((aba) => aba.finais.length)) > 2 ? " predio-largo" : ""}${comCabecalho ? " predio-com-cabecalho" : ""}" data-dica="${escapeHtml(dicaDoPredio(emp))}">
         <div class="predio-desenho">
           <p class="predio-tit">${abas.length > 1 ? "Escolha a tipologia" : emp.categoria === "comercial" ? "Escolha a sala" : "Escolha a unidade"}</p>
           ${abas.length > 1 ? `
