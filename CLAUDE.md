@@ -76,10 +76,17 @@ uma mudança: *"so deixa os de fundos num cinzinha mais claro"*.
 > **REGRA ANTIGA — substituída pela de cima:** a v429 mostrava os quatro finais
 > lado a lado (03 · 02 · 01 · 04) numa grade só, com os fundos num cinza mais
 > claro. Não volte a ela.
-- **Só no modo corretor.** O cliente não vê unidade vendida nem quanto sobrou
-  (v107/v113), e o desenho mostraria as duas coisas. O dono **ainda não
-  decidiu** o que o cliente vê nesse mapa — enquanto ele não disser, o link do
-  cliente segue com a lista, como antes.
+- **O cliente também vê o mapa (v432)**, igual ao do corretor, com as vendidas
+  escritas "Vendido". Ordem do dono (19/10/2026): *"claro que o cliente tem que
+  ver o mapa, na verdade ele tem que ver tudo que eu vejo (com exceção do
+  painel administrativo que é custo, estoque etc)"*. Na ficha do cliente só
+  não vão o **Compartilhar** e o **Selecionar** (ferramentas da equipe, que não
+  existem na tela dele). Aparece no link do empreendimento; o link de uma
+  unidade só (`?u=`) e o da seleção (`?sel=`) seguem como eram — o alcance do
+  "tudo que eu vejo" fora do mapa ficou para o dono decidir.
+
+> **REGRA ANTIGA — substituída pela de cima:** a v429 deixava o mapa só no
+> modo corretor, porque o cliente não via vendidas nem quanto sobrou.
 - Funções no `app.js`: `renderMapaDoPredio`, `fichaDoPredio`,
   `escolherNoPredio`, `mostrarVistaDeUnidades`, `mostrarAbaDoPredio`; `abrirGaveta` passa para a
   lista quando a linha procurada está nela. Bloco "v429" no fim do `styles.css`.
@@ -100,7 +107,7 @@ prancha (no mapa antigo também não). Só na ficha do mapa — a lista e a seç
 Testes: *"o Renaissance abre no prédio, e o toque no apartamento abre a ficha
 dele"*, *"o prédio tem a aba dos 3 suítes (frente) e a dos 2 suítes
 (fundos)"*, *"a ficha do prédio traz a planta técnica do andar, em PDF"*, *"no celular a ficha abre embaixo do prédio e a tela desce até ela"* e
-*"o cliente não vê o desenho do prédio"*. Os testes que mexem na lista do
+*"o cliente vê o mapa do prédio, sem os botões da equipe na ficha"*. Os testes que mexem na lista do
 Renaissance tocam antes em "Ver em lista" (`verEmLista`).
 
 ## As abas das tipologias em destaque: modelo A (v428)
@@ -1132,7 +1139,9 @@ ferramenta interna alcançável por teclado e por leitor de tela, e à vista se 
 folha de estilo falhasse. O CSS continua como segunda barreira.
 
 O lead não vê: compartilhar, selecionar, gerar PDF, enviar link, versão do site,
-"Meu contato", painel, dado financeiro, nem unidade vendida.
+"Meu contato", painel, dado financeiro, nem unidade vendida — **exceto no mapa
+do prédio (v432)**, onde o dono mandou o cliente ver tudo como ele, com as
+vendidas escritas "Vendido".
 
 ## Hierarquia das pendências do painel (v301)
 

@@ -1778,9 +1778,12 @@
   // Preco, situacao, area, garagem e planta saem do cadastro — o mapa antigo
   // esta com a tabela de agosto e nao vale.
   //
-  // So no modo corretor: o cliente nao ve unidade vendida nem quanto sobrou
-  // (v107/v113), e o desenho mostraria as duas coisas. So para quem tem
-  // `mapaPredio` no data.js (hoje, o Renaissance).
+  // v432 — O CLIENTE TAMBEM VE O MAPA, igual ao do corretor, com as vendidas
+  // escritas "Vendido". Ordem do dono (19/10/2026): "claro que o cliente tem
+  // que ver o mapa, na verdade ele tem que ver tudo que eu vejo (com excecao
+  // do painel administrativo)". Na ficha do cliente nao vao o Compartilhar e o
+  // Selecionar, que sao ferramentas da equipe e nao existem na tela dele. So
+  // para quem tem `mapaPredio` no data.js (hoje, o Renaissance).
   const DICA_DO_PREDIO = "Toque no apartamento para ver a ficha";
   const DICA_DA_LISTA = "Toque na tipologia para ver as unidades";
 
@@ -1792,7 +1795,7 @@
 
   function renderMapaDoPredio(emp) {
     const mapa = emp.mapaPredio;
-    if (CLIENT_MODE || !mapa || !(emp.grupos || []).length) return "";
+    if (!mapa || !(emp.grupos || []).length) return "";
     // v431 — DUAS ABAS, COMO NO MAPA ANTIGO. O predio inteiro numa grade so,
     // com os fundos em cinza (v429), ficou confuso para o dono: "prefiro
     // assim, veja a diferenca na aba para ver os de frente e os de fundos,
@@ -1907,7 +1910,7 @@
       </dl>
       ${miniaturaDaPlanta(item)}
       ${botaoDaPlantaTecnica(item)}
-      <div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>
+      ${CLIENT_MODE ? "" : `<div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>`}
     `;
   }
 
