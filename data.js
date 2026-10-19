@@ -416,15 +416,16 @@ const EMPREENDIMENTOS = [
     },
     // v434 — MAPA DO PREDIO ("Ver no prédio"), no mesmo padrao do Renaissance,
     // pedido do dono em 19/10/2026: "esse e os demais devem ser na mesma linha,
-    // mesmo padrao". Uma aba por tipologia, como as abas da lista (v407): os
-    // 2 dormitorios ficam do 4o ao 8o andar e os 3 dormitorios do 9o ao 13o (o
-    // 9o pavimento usa a mesma planta dos 3 dormitorios). Os finais saem na
-    // ordem da planta do andar vista da Rua 24 de Janeiro: frente 02 e 01,
-    // fundos 04 e 03. As lojas ficam no terreo, nas duas abas.
+    // mesmo padrao". Tres abas, na ordem que ele mandou: "3 suites" (do 9o ao
+    // 13o andar; o 9o pavimento usa a mesma planta), "2 suites" (finais 01 e
+    // 02 do 4o ao 8o) e "2 dormitorios (1 suite)" (finais 03 e 04 do 4o ao 8o).
+    // Os finais saem na ordem da planta do andar vista da Rua 24 de Janeiro:
+    // frente 02 e 01, fundos 04 e 03. As lojas ficam no terreo, nas tres abas.
     mapaPredio: {
       abas: [
-        { nome: "Apartamentos 2 dormitórios", finais: ["02", "01", "04", "03"], andares: [4, 8] },
-        { nome: "Apartamentos 3 dormitórios", finais: ["02", "01"], andares: [9, 13] },
+        { nome: "Apartamentos 3 suítes", finais: ["02", "01"], andares: [9, 13] },
+        { nome: "Apartamentos 2 suítes", finais: ["02", "01"], andares: [4, 8] },
+        { nome: "Apartamentos 2 dormitórios (1 suíte)", finais: ["04", "03"], andares: [4, 8] },
       ],
       terreo: ["Loja 101", "Loja 102", "Loja 103"],
     },

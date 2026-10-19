@@ -390,7 +390,7 @@ async function teste(nome, fn) {
   // Renaissance ("esse e os demais devem ser na mesma linha"). Cada um abre no
   // predio, com toda unidade do cadastro no desenho: a venda como botao, a
   // vendida escrita "Vendido". E o que cada um tem de proprio: o salao de
-  // festas no lugar do 303 do Boulevard, as abas do Evolutti por andar e a
+  // festas no lugar do 303 do Boulevard, as tres abas do Evolutti e a
   // sala 101 do Premium Office no terreo.
   await teste("o Boulevard, o Evolutti e o Premium Office abrem no prédio, no padrão do Renaissance", async () => {
     for (const id of ["boulevard", "evolutti", "premium-office"]) {
@@ -410,7 +410,7 @@ async function teste(nome, fn) {
           aVenda: unicos(unidades.filter((u) => u.status !== "vendido").map((u) => String(u.apto))),
           naTela: unicos([...document.querySelectorAll(".predio-vendido")].map((el) => el.title.replace(" — vendido", ""))),
           vendidas: unicos(unidades.filter((u) => u.status === "vendido").map((u) => String(u.apto))),
-          b3: andar(1, "3º"), e8: andar(1, "8º"), e10: andar(0, "10º"), p2: andar(0, "2º"), pt: andar(0, "Térreo"),
+          b3: andar(1, "3º"), e8: andar(0, "8º"), e10: andar(1, "10º"), e8b: andar(2, "8º"), p2: andar(0, "2º"), pt: andar(0, "Térreo"),
         };
       }, id);
       await p.close();
@@ -418,7 +418,9 @@ async function teste(nome, fn) {
       if (r.botoes !== r.aVenda) return `${id} — no desenho: ${r.botoes} — à venda no cadastro: ${r.aVenda}`;
       if (r.naTela !== r.vendidas) return `${id} — vendidos no desenho: ${r.naTela} — no cadastro: ${r.vendidas}`;
       if (id === "boulevard" && r.b3 !== "Salão de festas,304") return `o 3º andar dos 2 dormitórios do Boulevard saiu "${r.b3}"`;
-      if (id === "evolutti" && (r.e8 !== "_,_" || r.e10 !== "_,_,_,_")) return `as abas do Evolutti misturaram os andares: 8º "${r.e8}", 10º "${r.e10}"`;
+      // As tres abas do Evolutti (pedido do dono): 3 suites so do 9º para cima,
+      // 2 suites e 2 dormitorios (1 suite) so do 4º ao 8º, cada uma com os seus finais.
+      if (id === "evolutti" && (r.e8 !== "_,_" || r.e10 !== "_,_" || r.e8b !== "804,803")) return `as abas do Evolutti misturaram os andares: 8º "${r.e8}", 10º "${r.e10}", 8º dos 2 dormitórios "${r.e8b}"`;
       if (id === "premium-office" && (r.p2.split(",").length !== 3 || r.pt !== "Vendido")) return `o Premium Office saiu com 2º "${r.p2}" e térreo "${r.pt}"`;
     }
     return "";
