@@ -55,19 +55,32 @@ uma mudança: *"so deixa os de fundos num cinzinha mais claro"*.
   apartamento abre a ficha **ao lado** no computador e **embaixo** no celular
   (a tela desce até ela): tipologia e final, valor, andar, áreas, garagem,
   situação, a planta e os botões **Compartilhar** e **Selecionar** de sempre.
-- **Fundos** = finais 03 e 04, num **cinza mais claro** que o do vendido.
-  Vendido aparece **"Vendido"**, em cinza, sem ficha.
+- **Duas abas, como no mapa antigo (v431).** O prédio inteiro numa grade só,
+  com os fundos num cinza mais claro (v429), **ficou confuso** para o dono:
+  *"ficou confuso, prefiro assim, veja a diferença na aba para ver os de frente
+  e os de fundos, porém no Renaissance vamos falar em 2 suítes os de fundos"*,
+  com os prints das duas abas do mapa antigo. Ficaram **"Apartamentos 3
+  suítes"** (a frente, finais 02 · 01) e **"Apartamentos 2 suítes"** (os
+  fundos, finais 03 · 04). O andar sem apartamento da aba fica com o
+  **quadradinho vazio** (tracejado), para o prédio manter o desenho; o térreo
+  com as salas aparece nas duas. Ele **aprovou as duas imagens antes de
+  publicar** (pedido dele: *"mande aqui as 2 artes pra aprovação antes de
+  atualizar"*). Vendido aparece **"Vendido"**, em cinza, sem ficha.
 - O desenho sai das unidades do cadastro (andar e final pelo número). O que o
-  número não diz fica em **`mapaPredio`** no `data.js`: a ordem dos finais no
-  andar (03 · 02 · 01 · 04, como as posições do mapa antigo), quais são os
-  fundos e a ordem das salas do térreo. Andar com uma unidade só (o 18º) ocupa
-  o meio. Só tem mapa quem tem `mapaPredio` — hoje, só o Renaissance.
+  número não diz fica em **`mapaPredio`** no `data.js`: as **`abas`** (nome e
+  finais de cada uma, na ordem da esquerda para a direita) e a ordem das salas
+  do térreo. Andar com uma unidade só (o 18º) ocupa a largura da torre. Só tem
+  mapa quem tem `mapaPredio` — hoje, só o Renaissance.
+
+> **REGRA ANTIGA — substituída pela de cima:** a v429 mostrava os quatro finais
+> lado a lado (03 · 02 · 01 · 04) numa grade só, com os fundos num cinza mais
+> claro. Não volte a ela.
 - **Só no modo corretor.** O cliente não vê unidade vendida nem quanto sobrou
   (v107/v113), e o desenho mostraria as duas coisas. O dono **ainda não
   decidiu** o que o cliente vê nesse mapa — enquanto ele não disser, o link do
   cliente segue com a lista, como antes.
 - Funções no `app.js`: `renderMapaDoPredio`, `fichaDoPredio`,
-  `escolherNoPredio`, `mostrarVistaDeUnidades`; `abrirGaveta` passa para a
+  `escolherNoPredio`, `mostrarVistaDeUnidades`, `mostrarAbaDoPredio`; `abrirGaveta` passa para a
   lista quando a linha procurada está nela. Bloco "v429" no fim do `styles.css`.
 
 **A planta técnica do andar, em PDF (v430).** Pedido do dono (18/10/2026),
@@ -84,8 +97,8 @@ prancha (no mapa antigo também não). Só na ficha do mapa — a lista e a seç
 "Imagens e planta" não mudaram.
 
 Testes: *"o Renaissance abre no prédio, e o toque no apartamento abre a ficha
-dele"*, *"a ficha do prédio traz a planta técnica do andar, em PDF"*, *"no desenho do prédio os apartamentos dos fundos ficam num cinza mais
-claro"*, *"no celular a ficha abre embaixo do prédio e a tela desce até ela"* e
+dele"*, *"o prédio tem a aba dos 3 suítes (frente) e a dos 2 suítes
+(fundos)"*, *"a ficha do prédio traz a planta técnica do andar, em PDF"*, *"no celular a ficha abre embaixo do prédio e a tela desce até ela"* e
 *"o cliente não vê o desenho do prédio"*. Os testes que mexem na lista do
 Renaissance tocam antes em "Ver em lista" (`verEmLista`).
 

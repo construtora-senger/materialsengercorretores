@@ -1793,8 +1793,13 @@
   function renderMapaDoPredio(emp) {
     const mapa = emp.mapaPredio;
     if (CLIENT_MODE || !mapa || !(emp.grupos || []).length) return "";
-    const colunas = mapa.colunas || [];
-    const fundos = new Set(mapa.fundos || []);
+    // v431 — DUAS ABAS, COMO NO MAPA ANTIGO. O predio inteiro numa grade so,
+    // com os fundos em cinza (v429), ficou confuso para o dono: "prefiro
+    // assim, veja a diferenca na aba para ver os de frente e os de fundos,
+    // porem no Renaissance vamos falar em 2 suites os de fundos". Cada aba
+    // mostra so os finais dela; o andar que nao tem apartamento daquela aba
+    // fica com o quadradinho vazio, para o predio manter o desenho.
+    const abas = (mapa.abas || []).filter((aba) => (aba.finais || []).length);
     const terreo = mapa.terreo || [];
 
     // Todas as unidades do cadastro, inclusive as vendidas: elas ficam fora do
@@ -1808,37 +1813,52 @@
       if (!andares.has(andar)) andares.set(andar, []);
       andares.get(andar).push(u);
     }));
+    if (!abas.length) return "";
 
-    const celula = (u, { fundo = false, larga = false } = {}) => {
-      if (!u) return `<span class="predio-u predio-vazio" aria-hidden="true"></span>`;
-      const classes = ["predio-u", fundo ? "predio-fundos" : "", larga ? "predio-larga" : ""].filter(Boolean).join(" ");
+    const celula = (u, larga = false) => {
+      const classes = larga ? "predio-u predio-larga" : "predio-u";
+      if (!u) return `<span class="${classes} predio-fantasma" aria-hidden="true"></span>`;
       if (!u.item) return `<span class="${classes} predio-vendido" title="${escapeHtml(u.code)} — vendido">Vendido</span>`;
       return `<button type="button" class="${classes} predio-disp" data-predio-item="${u.item.key}" aria-pressed="false" aria-label="${escapeHtml(itemLabel(u.item))}">${escapeHtml(u.code)}<i aria-hidden="true"></i></button>`;
     };
-    const linha = (rotulo, conteudo) => `<div class="predio-andar"><span class="predio-n">${rotulo}</span><div class="predio-us">${conteudo}</div></div>`;
+    const linha = (rotulo, conteudo, colunas, classe = "") => `<div class="predio-andar${classe}"><span class="predio-n">${rotulo}</span><div class="predio-us" style="--colunas: ${colunas}">${conteudo}</div></div>`;
 
-    const linhas = [...andares.keys()].sort((a, b) => b - a).map((andar) => {
-      const us = andares.get(andar);
-      // Andar de uma unidade so (o 18º) ocupa o meio do predio inteiro.
-      if (us.length === 1) return linha(`${andar}º`, celula(us[0], { larga: true }));
-      const porFinal = new Map(us.map((u) => [finalDoCodigo(u.code), u]));
-      const fora = us.filter((u) => !colunas.includes(finalDoCodigo(u.code)));
-      return linha(`${andar}º`, colunas.map((f) => celula(porFinal.get(f), { fundo: fundos.has(f) })).join("") + fora.map((u) => celula(u)).join(""));
-    });
     if (doTerreo.length) {
       const ordem = (u) => { const i = terreo.indexOf(u.code); return i < 0 ? terreo.length : i; };
       doTerreo.sort((a, b) => ordem(a) - ordem(b));
-      linhas.push(linha("Térreo", doTerreo.map((u) => celula(u)).join("")));
     }
+    const todosOsFinais = new Set(abas.flatMap((aba) => aba.finais));
+    const pisos = [...andares.keys()].sort((a, b) => b - a);
+
+    const painel = (aba, indice) => {
+      const linhas = pisos.map((andar) => {
+        const us = andares.get(andar);
+        const n = aba.finais.length;
+        // Andar de uma unidade so (o 18º) ocupa a largura do predio.
+        if (us.length === 1) {
+          const daAba = aba.finais.includes(finalDoCodigo(us[0].code)) || (indice === 0 && !todosOsFinais.has(finalDoCodigo(us[0].code)));
+          return linha(`${andar}º`, celula(daAba ? us[0] : null, true), n);
+        }
+        const porFinal = new Map(us.map((u) => [finalDoCodigo(u.code), u]));
+        // Final que nenhuma aba lista vai para a primeira, para nao sumir.
+        const fora = indice === 0 ? us.filter((u) => !todosOsFinais.has(finalDoCodigo(u.code))) : [];
+        return linha(`${andar}º`, aba.finais.map((f) => celula(porFinal.get(f))).join("") + fora.map((u) => celula(u)).join(""), n + fora.length);
+      });
+      if (doTerreo.length) linhas.push(linha("Térreo", doTerreo.map((u) => celula(u)).join(""), doTerreo.length, " predio-terreo"));
+      return `<div class="predio-painel" data-painel-predio="${indice}"${indice === 0 ? "" : " hidden"}><div class="predio-andares">${linhas.join("")}</div></div>`;
+    };
 
     return `
       <div class="vista-predio">
         <div class="predio-desenho">
-          <p class="predio-tit">Toque no apartamento</p>
-          <div class="predio-andares" style="--colunas: ${Math.max(colunas.length, 1)}">${linhas.join("")}</div>
+          <p class="predio-tit">Escolha a tipologia</p>
+          ${abas.length > 1 ? `
+          <div class="abas-predio" role="tablist" aria-label="Tipologias do prédio">
+            ${abas.map((aba, i) => `<button type="button" role="tab" class="aba-predio" data-aba-predio="${i}" aria-selected="${i === 0}">${escapeHtml(aba.nome)}</button>`).join("")}
+          </div>` : ""}
+          ${abas.map(painel).join("")}
           <p class="predio-legenda">
             <span class="lg-disp">Disponível</span>
-            ${fundos.size ? `<span class="lg-fundos">Fundos</span>` : ""}
             <span class="lg-vend">Vendido</span>
             <span class="lg-sel">Escolhido</span>
           </p>
@@ -1846,6 +1866,12 @@
         <div class="predio-ficha" aria-live="polite">${fichaDoPredio(null)}</div>
       </div>
     `;
+  }
+
+  function mostrarAbaDoPredio(vista, indice) {
+    if (!vista) return;
+    vista.querySelectorAll("[data-aba-predio]").forEach((aba) => aba.setAttribute("aria-selected", String(aba.dataset.abaPredio === String(indice))));
+    vista.querySelectorAll("[data-painel-predio]").forEach((painel) => { painel.hidden = painel.dataset.painelPredio !== String(indice); });
   }
 
   function fichaDoPredio(item) {
@@ -2192,6 +2218,7 @@
     root.querySelectorAll("[data-planta-item]").forEach((button) => button.addEventListener("click", () => abrirPlantaDaUnidade(itemMap.get(button.dataset.plantaItem))));
     root.querySelectorAll("[data-vista-unidades]").forEach((button) => button.addEventListener("click", () => mostrarVistaDeUnidades(button.closest("#unidades"), button.dataset.vistaUnidades)));
     root.querySelectorAll("[data-predio-item]").forEach((button) => button.addEventListener("click", () => escolherNoPredio(button)));
+    root.querySelectorAll("[data-aba-predio]").forEach((button) => button.addEventListener("click", () => mostrarAbaDoPredio(button.closest(".vista-predio"), button.dataset.abaPredio)));
   }
 
   // "Ver no mapa" — o loteamento traz o mapa e a posicao de cada lote

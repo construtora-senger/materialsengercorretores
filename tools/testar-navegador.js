@@ -377,33 +377,36 @@ async function teste(nome, fn) {
 
   // v429 — o mapa do predio, pedido do dono (16/10/2026): o Renaissance abre
   // no desenho, o toque no apartamento abre a ficha ao lado, com o preco do
-  // cadastro; os dos fundos (finais 03 e 04) num cinza mais claro; vendido
-  // aparece como "Vendido", sem ficha. So no modo corretor.
+  // cadastro; vendido aparece como "Vendido", sem ficha. So no modo corretor.
+  // v431 — em duas abas, como no mapa antigo: "Apartamentos 3 suites" (frente,
+  // finais 01 e 02) e "Apartamentos 2 suites" (fundos, finais 03 e 04).
+  const tocarNoPredio = async (p, cod) => {
+    const aba = /0[34]$/.test(cod) ? "Apartamentos 2 suítes" : "Apartamentos 3 suítes";
+    await p.locator(".aba-predio", { hasText: aba }).click();
+    await p.locator(".predio-painel:not([hidden]) button.predio-u", { hasText: new RegExp(`^${cod}$`) }).click();
+  };
+
   await teste("o Renaissance abre no prédio, e o toque no apartamento abre a ficha dele", async () => {
     const p = await abrir("/#emp-renaissance");
     await p.waitForTimeout(500);
     const r = await p.evaluate(() => {
       const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "renaissance");
       const unidades = emp.grupos.flatMap((g) => g.unidades);
-      const vendidas = unidades.filter((u) => u.status === "vendido").map((u) => String(u.apto)).sort();
-      const fundosEsperado = unidades.filter((u) => /^\d+0[34]$/.test(u.apto) && u.status !== "vendido").map((u) => String(u.apto)).sort();
+      const unicos = (lista) => [...new Set(lista)].sort().join(",");
       return {
         predio: !document.querySelector(".vista-predio").hidden,
         lista: !document.querySelector(".vista-lista").hidden,
-        botoes: document.querySelectorAll("button.predio-u").length,
-        aVenda: unidades.filter((u) => u.status !== "vendido").length,
-        vendidas: vendidas.join(","),
-        naTela: [...document.querySelectorAll(".predio-vendido")].map((el) => el.title.replace(" — vendido", "")).sort().join(","),
-        fundos: [...document.querySelectorAll("button.predio-fundos")].map((el) => el.textContent.trim()).sort().join(","),
-        fundosEsperado: fundosEsperado.join(","),
+        botoes: unicos([...document.querySelectorAll("button.predio-u")].map((el) => el.textContent.trim())),
+        aVenda: unicos(unidades.filter((u) => u.status !== "vendido").map((u) => String(u.apto))),
+        vendidas: unicos(unidades.filter((u) => u.status === "vendido").map((u) => String(u.apto))),
+        naTela: unicos([...document.querySelectorAll(".predio-vendido")].map((el) => el.title.replace(" — vendido", ""))),
         preco: unidades.find((u) => u.apto === "1302").preco,
       };
     });
     if (!r.predio || r.lista) { await p.close(); return `abriu com prédio ${r.predio} e lista ${r.lista}`; }
-    if (r.botoes !== r.aVenda) { await p.close(); return `${r.botoes} apartamentos para tocar, ${r.aVenda} à venda no cadastro`; }
+    if (r.botoes !== r.aVenda) { await p.close(); return `no desenho: ${r.botoes} — à venda no cadastro: ${r.aVenda}`; }
     if (r.naTela !== r.vendidas) { await p.close(); return `vendidos no desenho: ${r.naTela} — no cadastro: ${r.vendidas}`; }
-    if (r.fundos !== r.fundosEsperado) { await p.close(); return `fundos no desenho: ${r.fundos}`; }
-    await p.locator("button.predio-u", { hasText: /^1302$/ }).click();
+    await tocarNoPredio(p, "1302");
     await p.waitForTimeout(300);
     const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
     const preco = r.preco.toLocaleString("pt-BR");
@@ -424,18 +427,30 @@ async function teste(nome, fn) {
     return depois[0] && !depois[1] && depois[2] ? "" : `o "Ver em lista" deixou prédio escondido ${depois[0]}, lista escondida ${depois[1]}, ${depois[2]} abas`;
   });
 
-  await teste("no desenho do prédio os apartamentos dos fundos ficam num cinza mais claro", async () => {
+  await teste("o prédio tem a aba dos 3 suítes (frente) e a dos 2 suítes (fundos)", async () => {
     const p = await abrir("/#emp-renaissance");
     await p.waitForTimeout(400);
-    const r = await p.evaluate(() => {
-      const cor = (sel) => { const el = document.querySelector(sel); return el ? getComputedStyle(el).backgroundColor : ""; };
-      return { frente: cor("button.predio-u:not(.predio-fundos)"), fundos: cor("button.predio-u.predio-fundos"), vendido: cor(".predio-vendido") };
+    const naTela = () => p.evaluate(() => {
+      const painel = document.querySelector(".predio-painel:not([hidden])");
+      return {
+        codigos: [...painel.querySelectorAll("button.predio-u")].map((el) => el.textContent.trim()).filter((c) => /^\d+$/.test(c)),
+        vazios: painel.querySelectorAll(".predio-fantasma").length,
+        paineis: document.querySelectorAll(".predio-painel:not([hidden])").length,
+      };
     });
+    const abas = await p.$$eval(".aba-predio", (els) => els.map((el) => `${el.textContent.trim()}${el.getAttribute("aria-selected") === "true" ? "*" : ""}`));
+    if (abas.join(" | ") !== "Apartamentos 3 suítes* | Apartamentos 2 suítes") { await p.close(); return `abas: ${abas.join(" | ")}`; }
+    const frente = await naTela();
+    if (frente.paineis !== 1) { await p.close(); return `${frente.paineis} abas do prédio na tela ao mesmo tempo`; }
+    const foraDaFrente = frente.codigos.filter((c) => !/0[12]$/.test(c));
+    if (foraDaFrente.length || !frente.codigos.includes("1302")) { await p.close(); return `a aba 3 suítes mostra: ${frente.codigos.join(",")}`; }
+    await p.locator(".aba-predio", { hasText: "Apartamentos 2 suítes" }).click();
+    const fundos = await naTela();
     await p.close();
-    if (r.frente !== "rgb(255, 255, 255)") return `a frente está ${r.frente}`;
-    if (!r.fundos || r.fundos === r.frente || r.fundos === r.vendido) return `fundos ${r.fundos}, frente ${r.frente}, vendido ${r.vendido}`;
-    const luz = (c) => c.match(/\d+/g).slice(0, 3).reduce((a, n) => a + Number(n), 0);
-    return luz(r.fundos) > luz(r.vendido) ? "" : `o cinza dos fundos (${r.fundos}) não é mais claro que o do vendido (${r.vendido})`;
+    const foraDosFundos = fundos.codigos.filter((c) => !/0[34]$/.test(c));
+    if (foraDosFundos.length || !fundos.codigos.includes("1203") || !fundos.codigos.includes("504")) return `a aba 2 suítes mostra: ${fundos.codigos.join(",")}`;
+    // 18º (largo), 17º ao 13º e 4º sem 2 suítes: os quadradinhos ficam vazios.
+    return fundos.vazios === 13 ? "" : `a aba 2 suítes tem ${fundos.vazios} quadradinhos vazios, esperado 13`;
   });
 
   // v430 — pedido do dono: a planta tecnica do andar, em PDF, na ficha,
@@ -445,7 +460,7 @@ async function teste(nome, fn) {
     await p.waitForTimeout(400);
     const esperado = { "402": "pavimento-04", "503": "pavimento-05", "1004": "pavimento-06-a-12", "1302": "pavimento-13", "1701": "pavimento-14-a-17", "Sala 04": "" };
     for (const [cod, arquivo] of Object.entries(esperado)) {
-      await p.locator("button.predio-u", { hasText: new RegExp(`^${cod}$`) }).click();
+      await tocarNoPredio(p, cod);
       await p.waitForTimeout(200);
       const r = await p.evaluate(async () => {
         const a = document.querySelector(".predio-ficha .planta-tecnica");
@@ -465,7 +480,7 @@ async function teste(nome, fn) {
     const p = await abrir("/#emp-renaissance", { mobile: true });
     await p.waitForTimeout(500);
     const largura = await p.evaluate(() => document.documentElement.scrollWidth);
-    await p.locator("button.predio-u", { hasText: /^1203$/ }).click();
+    await tocarNoPredio(p, "1203");
     await p.waitForTimeout(1200);
     const r = await p.evaluate(() => {
       const ficha = document.querySelector(".predio-ficha").getBoundingClientRect();
