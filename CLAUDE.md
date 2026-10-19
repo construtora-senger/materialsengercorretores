@@ -63,9 +63,9 @@ uma mudança: *"so deixa os de fundos num cinzinha mais claro"*.
   suítes"** (a frente, finais 02 · 01) e **"Apartamentos 2 suítes"** (os
   fundos, finais 03 · 04). O andar sem apartamento da aba fica com o
   **quadradinho vazio** (tracejado), para o prédio manter o desenho; o térreo
-  com as salas aparece nas duas. Ele **aprovou as duas imagens antes de
-  publicar** (pedido dele: *"mande aqui as 2 artes pra aprovação antes de
-  atualizar"*). Vendido aparece **"Vendido"**, em cinza, sem ficha.
+  com as salas aparece nas duas. Ele **pediu as duas imagens para aprovar
+  antes de publicar** (*"mande aqui as 2 artes pra aprovação antes de
+  atualizar"*) — não publique mudança desta tela sem mostrar antes. Vendido aparece **"Vendido"**, em cinza, sem ficha.
 - O desenho sai das unidades do cadastro (andar e final pelo número). O que o
   número não diz fica em **`mapaPredio`** no `data.js`: as **`abas`** (nome e
   finais de cada uma, na ordem da esquerda para a direita) e a ordem das salas
