@@ -949,6 +949,7 @@
     /* A aba dos box vem logo depois de "Todos", na mesma sequencia. */
     .abas button.ativa .quantos { color: #fff; }
     tr.vazio td { color: var(--texto-suave); font-size: .85rem; padding: 14px 10px; }
+    tr.sem-cadastro td { color: var(--texto-suave); font-size: .85rem; padding: 12px 10px; font-style: italic; }
 
     /* Os box seguem as abas junto com as unidades: nada de bloco a parte para
        abrir, a aba escolhida ja diz o que esta na tela. */
@@ -1580,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 378;
+  const VERSAO_PAINEL = 379;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3248,6 +3249,16 @@
   // cadastro, os atalhos e a gaveta "Garagem por unidade" — continua inteiro,
   // um toque adiante, em `renderDetalheDoEmp`. A conferencia de box saiu da
   // visao geral porque o lugar dela e o detalhe, nao o resumo.
+  // v433 — lotes vendidos que so existem no mapa do loteamento, sem quadra e
+  // numero no cadastro (`vendidosSemCadastro` no data.js; hoje, so o Nova
+  // Vila Rica I & II). Pedido do dono: "apenas conte na imagem quantos tem
+  // escrito vendidos e acrescente a contagem, so isso". Entram nos vendidos e
+  // no total; nao viram linha de lote nem cobram nome de comprador.
+  function vendidosSemCadastro(emp) {
+    const n = Number(emp && emp.vendidosSemCadastro);
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+  }
+
   function resumoDoEmp(emp) {
     const itens = itensDoEmp(emp);
     // v335 — `foraDaConta: true` no data.js deixa o item na vitrine e no
@@ -3259,17 +3270,19 @@
       const s = statusAtual(emp.id, i);
       contagem[s] = (contagem[s] || 0) + 1;
     });
-    const vendidos = contagem.vendido || 0;
+    const semCadastro = vendidosSemCadastro(emp);
+    const vendidos = (contagem.vendido || 0) + semCadastro;
     const disponiveis = contagem.disponivel || 0;
     const alugados = contagem.alugado || 0;
+    const total = contados.length + semCadastro;
     // "A venda" e o que ainda se vende: disponivel + alugado. O alugado
     // continua na oferta — e o produto pronto para o investidor.
     const faltas = pendenciasDoEmp(emp);
     return {
       itens, vendidos, disponiveis, alugados,
       aVenda: disponiveis + alugados,
-      total: contados.length,
-      pct: contados.length ? Math.round((vendidos / contados.length) * 100) : 0,
+      total,
+      pct: total ? Math.round((vendidos / total) * 100) : 0,
       faltas,
       criticas: faltas.filter((f) => f.nivel === NIVEL.critico),
       atencao: faltas.filter((f) => f.nivel === NIVEL.atencao),
@@ -4023,13 +4036,15 @@
         if (boxes.length) celulas.push(celulaGaragem(item, regra, boxDoApto[item.apto]));
         linhas += linhaDeStatus(emp.id, item, celulas);
       });
+      const semCadastro = vendidosSemCadastro(emp);
+      if (semCadastro) linhas += `<tr class="sem-cadastro"><td colspan="${colunas}">+ ${conta(semCadastro, "lote vendido", "lotes vendidos")} contados no mapa do loteamento, sem quadra e número no cadastro</td></tr>`;
       linhas += `<tr class="vazio"><td colspan="${colunas}">Nenhuma unidade nesta situação.</td></tr>`;
       // Os box do empreendimento vem logo abaixo das unidades, dentro do mesmo bloco.
       const tabelaBox = renderTabelaBoxes(emp);
       const boxLivres = boxesLivres(emp, boxes).length;
-      const resumo = `${disponiveis} de ${itens.length} disponíveis`
+      const resumo = `${disponiveis} de ${itens.length + semCadastro} disponíveis`
         + (boxes.length ? ` · ${boxLivres} de ${boxes.length} box` : "");
-      return `<details class="emp" data-emp="${escapeHtml(emp.id)}" data-filtro="disponivel">
+      return `<details class="emp" data-emp="${escapeHtml(emp.id)}" data-filtro="disponivel"${semCadastro ? ` data-sem-cadastro="${semCadastro}"` : ""}>
         <summary>${escapeHtml(emp.nome)} <span class="contagem">${resumo}</span></summary>
         <div class="conteudo">
           <div class="abas">${abasDeStatus()}${abaDeBoxes(emp)}</div>
@@ -4129,6 +4144,13 @@
         : ehBox ? true
         : !(filtro === "todos" || s === filtro || tr.classList.contains("mudou"));
     });
+    // v433 — os vendidos que so estao no mapa do loteamento somam na aba
+    // Vendidos e no Todos, e a linha que os explica aparece nessas duas abas.
+    const semCadastro = Number(det.dataset.semCadastro || 0);
+    if (semCadastro) contagem.vendido = (contagem.vendido || 0) + semCadastro;
+    det.querySelectorAll("tr.sem-cadastro").forEach((tr) => {
+      tr.hidden = !(filtro === "vendido" || filtro === "todos");
+    });
 
     // Cabecalho de grupo (tipologia ou situacao) some quando fica sem linha.
     det.querySelectorAll("tr.linha-grupo").forEach((tr) => {
@@ -4140,7 +4162,7 @@
     });
     det.querySelectorAll("table").forEach((tabela) => {
       const vazio = tabela.querySelector("tr.vazio");
-      if (vazio) vazio.hidden = Boolean(tabela.querySelector("tbody tr[data-status]:not([hidden])"));
+      if (vazio) vazio.hidden = Boolean(tabela.querySelector("tbody tr[data-status]:not([hidden]), tbody tr.sem-cadastro:not([hidden])"));
     });
 
     // A tabela de unidades sai de cena na aba dos box, e vice-versa.

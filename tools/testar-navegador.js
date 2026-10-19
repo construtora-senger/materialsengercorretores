@@ -1165,6 +1165,42 @@ async function teste(nome, fn) {
       ? "" : "a tela do INCC nao diz que o custo fica exato";
   });
 
+  // v433 — o dono pediu que os lotes vendidos do mapa do Nova Vila Rica I & II
+  // entrassem na conta sem serem cadastrados: o painel soma o
+  // `vendidosSemCadastro` aos vendidos e ao total, no Estoque e no placar.
+  await teste("os vendidos contados no mapa do loteamento entram na conta do painel", async () => {
+    const fonte = fs.readFileSync(path.join(RAIZ, "data.js"), "utf8");
+    const { EMPREENDIMENTOS } = new Function(fonte.replace(/window\.SENGER[\s\S]*$/, "") + "; return { EMPREENDIMENTOS };")();
+    const emp = EMPREENDIMENTOS.find((e) => e.vendidosSemCadastro > 0);
+    if (!emp) return "nenhum empreendimento tem vendidos sem cadastro — o teste nao prova nada";
+    const extra = emp.vendidosSemCadastro;
+    const lotes = emp.terrenos || [];
+    const disp = lotes.filter((t) => (t.status || "disponivel") === "disponivel").length;
+    const vend = lotes.filter((t) => t.status === "vendido").length + extra;
+    const total = lotes.length + extra;
+    await clicarNoMenu('[data-modulo-alvo="estoque"]');
+    await admin.waitForTimeout(400);
+    const det = admin.locator(`#lista-emps details.emp[data-emp="${emp.id}"]`);
+    await det.evaluate((d) => { d.hidden = false; d.open = true; });
+    const resumo = (await det.locator("summary .contagem").innerText()).trim();
+    if (resumo !== `${disp} de ${total} disponíveis`) return `o cabecalho diz "${resumo}", esperava "${disp} de ${total} disponíveis"`;
+    const quantos = async (f) => parseInt(await det.locator(`.abas button[data-filtro="${f}"] .quantos`).innerText(), 10);
+    if ((await quantos("vendido")) !== vend) return `a aba Vendidos diz ${await quantos("vendido")}, esperava ${vend}`;
+    if ((await quantos("todos")) !== total) return `a aba Todos diz ${await quantos("todos")}, esperava ${total}`;
+    if (await det.locator("tr.sem-cadastro").isVisible()) return "a linha dos vendidos do mapa aparece na aba Disponíveis";
+    await det.locator('.abas button[data-filtro="vendido"]').click();
+    await admin.waitForTimeout(150);
+    const linha = det.locator("tr.sem-cadastro");
+    if (!(await linha.isVisible())) return "a aba Vendidos nao explica os vendidos do mapa";
+    if (!(await linha.innerText()).includes(String(extra))) return "a linha dos vendidos do mapa nao diz quantos sao";
+    await det.locator('.abas button[data-filtro="disponivel"]').click();
+    // No placar da Visao geral, o quadro do loteamento fecha com o mesmo total.
+    await clicarNoMenu('[data-visao-filtro="estoque"]');
+    await admin.waitForTimeout(400);
+    const pe = (await admin.locator(`#dashboard .ve-quadro[data-ve-abrir="${emp.id}"] .ve-q-pe`).innerText()).replace(/\s+/g, " ");
+    return pe.includes(`${vend} de ${total}`) ? "" : `o quadro do placar diz "${pe}", esperava "${vend} de ${total}"`;
+  });
+
   await teste("publicar grava data.js, index.html e sw.js de uma vez", async () => {
     gravacoes.length = 0;
     await clicarNoMenu('[data-modulo-alvo="estoque"]');

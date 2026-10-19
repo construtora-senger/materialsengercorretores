@@ -110,6 +110,32 @@ dele"*, *"o prédio tem a aba dos 3 suítes (frente) e a dos 2 suítes
 *"o cliente vê o mapa do prédio, sem os botões da equipe na ficha"*. Os testes que mexem na lista do
 Renaissance tocam antes em "Ver em lista" (`verEmLista`).
 
+## Nova Vila Rica I & II: os vendidos do mapa entram na conta (v433)
+
+Pergunta do dono (19/10/2026), com o print do painel ("10 de 11 disponíveis ·
+Vendidos 1"): *"pq nao aparece todos vendidos aqui?"*. O cadastro só tinha os
+10 lotes à venda e o 77/51. Ele mandou o mapa do loteamento, com os vendidos
+escritos, e decidiu: *"nao precisa cadastar os vendidos, apenas conte na imagem
+quantos tem escrito vendidos e acrescente a contagem, so isso"*.
+
+- **Contagem no mapa: 76 lotes com "VENDIDO"** — quadra 77 de cima 19 (um com
+  o "VEND" coberto pelo número da quadra), 144: 3, 145 de cima 8, 145 de baixo
+  7, 146 de cima 9, 146 de baixo 9, 147: 10, quadra 77 de baixo 11 (os dois
+  últimos cortados na borda da imagem). Na quadra 145 há três quadradinhos
+  escuros **sem nada escrito**, que não entraram. Os 10 lotes com número no
+  mapa são os 10 à venda do cadastro.
+- Um dos 76 é o **77/51**, que já está em `terrenos`. Por isso o `data.js` tem
+  **`vendidosSemCadastro: 75`** no Nova Vila Rica I & II.
+- **Só o painel lê esse número** (`vendidosSemCadastro`, no
+  `admin/index.html`): ele soma nos vendidos e no total de `resumoDoEmp`
+  (placar, detalhe e faixa dos loteamentos) e no Estoque / unidades
+  ("10 de 86 disponíveis", Vendidos 76, Todos 86, com uma linha na aba
+  Vendidos dizendo que 75 vieram do mapa). **Não vira linha de lote**, não
+  entra em Preços e margem e **não cobra nome de comprador** em Clientes.
+  O site não mostra.
+
+Teste: *"os vendidos contados no mapa do loteamento entram na conta do painel"*.
+
 ## As abas das tipologias em destaque: modelo A (v428)
 
 Pedido do dono (14/10/2026), com o print do Quality e as abas circuladas:
