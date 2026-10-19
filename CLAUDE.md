@@ -121,9 +121,12 @@ quantos tem escrito vendidos e acrescente a contagem, so isso"*.
 - **Contagem no mapa: 76 lotes com "VENDIDO"** — quadra 77 de cima 19 (um com
   o "VEND" coberto pelo número da quadra), 144: 3, 145 de cima 8, 145 de baixo
   7, 146 de cima 9, 146 de baixo 9, 147: 10, quadra 77 de baixo 11 (os dois
-  últimos cortados na borda da imagem). Na quadra 145 há três quadradinhos
-  escuros **sem nada escrito**, que não entraram. Os 10 lotes com número no
-  mapa são os 10 à venda do cadastro.
+  últimos cortados na borda da imagem). Recontado a pedido do dono separando
+  cada lote escuro por computador: os mesmos 76 (o resto que aparece escuro é
+  o nome "Rua Acácia" e uma sombra). Os três pedaços escuros sem escrita da
+  quadra 145 são o fundo dos três lotes "VENDIDO" de cima, sem linha entre
+  eles — não são lotes à parte. Os 10 lotes com número no mapa são os 10 à
+  venda do cadastro.
 - Um dos 76 é o **77/51**, que já está em `terrenos`. Por isso o `data.js` tem
   **`vendidosSemCadastro: 75`** no Nova Vila Rica I & II.
 - **Só o painel lê esse número** (`vendidosSemCadastro`, no
