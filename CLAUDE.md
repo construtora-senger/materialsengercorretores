@@ -65,7 +65,8 @@ uma mudança: *"so deixa os de fundos num cinzinha mais claro"*.
   **quadradinho vazio** (tracejado), para o prédio manter o desenho; o térreo
   com as salas aparece nas duas. Ele **pediu as duas imagens para aprovar
   antes de publicar** (*"mande aqui as 2 artes pra aprovação antes de
-  atualizar"*) — não publique mudança desta tela sem mostrar antes. Vendido aparece **"Vendido"**, em cinza, sem ficha.
+  atualizar"*) e aprovou: *"blz, agora ta como quero, pode aplicar"*. Não
+  publique mudança desta tela sem mostrar antes. Vendido aparece **"Vendido"**, em cinza, sem ficha.
 - O desenho sai das unidades do cadastro (andar e final pelo número). O que o
   número não diz fica em **`mapaPredio`** no `data.js`: as **`abas`** (nome e
   finais de cada uma, na ordem da esquerda para a direita) e a ordem das salas
