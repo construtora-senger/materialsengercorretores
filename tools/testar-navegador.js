@@ -496,17 +496,29 @@ async function teste(nome, fn) {
     return r.ficha >= r.topo && r.ficha < r.tela / 2 ? "" : `a ficha ficou em ${r.ficha}px (cabeçalho até ${r.topo}px)`;
   });
 
-  await teste("o cliente não vê o desenho do prédio", async () => {
-    for (const rota of ["/?cliente#emp-renaissance", "/?cliente&u=1302#emp-renaissance"]) {
-      const p = await abrir(rota);
-      await p.waitForTimeout(400);
-      const r = await p.evaluate(() => ({ predio: !!document.querySelector(".vista-predio, [data-vista-unidades], .predio-u"), linhas: document.querySelectorAll("#unidades tr[data-unit-code]").length }));
-      await p.close();
-      if (r.predio) return `${rota}: o desenho do prédio apareceu para o cliente`;
-      // Com ?u= a pagina e a ficha daquela unidade, sem tabela (v301).
-      if (!r.linhas && !rota.includes("u=")) return `${rota}: sumiu a lista de unidades do cliente`;
-    }
-    return "";
+  // v432 — ordem do dono: o cliente tambem ve o mapa, igual ao do corretor
+  // (com "Vendido"), so sem o Compartilhar e o Selecionar na ficha.
+  await teste("o cliente vê o mapa do prédio, sem os botões da equipe na ficha", async () => {
+    const p = await abrir("/?cliente#emp-renaissance");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => ({
+      predio: !!document.querySelector(".vista-predio:not([hidden])"),
+      abas: document.querySelectorAll(".aba-predio").length,
+      vendidos: document.querySelectorAll(".predio-vendido").length,
+    }));
+    if (!r.predio) { await p.close(); return "o cliente não recebeu o desenho do prédio"; }
+    if (r.abas !== 2) { await p.close(); return `o cliente vê ${r.abas} abas no prédio`; }
+    if (!r.vendidos) { await p.close(); return "o cliente não vê os vendidos no desenho"; }
+    await tocarNoPredio(p, "1302");
+    await p.waitForTimeout(300);
+    const ficha = await p.evaluate(() => {
+      const f = document.querySelector(".predio-ficha");
+      return { texto: f.innerText.replace(/\s+/g, " "), equipe: f.querySelectorAll("[data-share-item], [data-select-item]").length, tecnica: !!f.querySelector(".planta-tecnica") };
+    });
+    await p.close();
+    if (!/Apto 1302/.test(ficha.texto) || !/R\$/.test(ficha.texto)) return `a ficha do cliente diz: ${ficha.texto}`;
+    if (ficha.equipe) return "a ficha do cliente mostra o Compartilhar ou o Selecionar";
+    return ficha.tecnica ? "" : "a ficha do cliente está sem a planta técnica";
   });
 
   await teste("Personalité e Prime, com uma tipologia só, ficam sem abas", async () => {
