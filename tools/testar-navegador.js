@@ -553,8 +553,10 @@ async function teste(nome, fn) {
   });
 
   await teste("compartilhar unidade abre a escolha de envio", async () => {
+    // O Prime abre no predio em 3D (v442): a lista vem pelo "Ver em lista".
+    await verEmLista(pg);
     await pg.locator("#unidades details.unit-group").first().evaluate((el) => { el.open = true; });
-    await pg.locator("[data-share-item]").first().click();
+    await pg.locator("#unidades [data-share-item]:visible").first().click();
     await pg.waitForTimeout(250);
     const aberto = await pg.locator("#send-choice").getAttribute("aria-hidden");
     await pg.evaluate(() => document.querySelector("#send-choice .icon-button[data-close-choice]")?.click());
@@ -563,7 +565,9 @@ async function teste(nome, fn) {
   });
 
   await teste("selecionar unidades acende o carrinho", async () => {
-    await pg.locator("[data-select-item]:not([disabled])").first().click();
+    await verEmLista(pg);
+    await pg.locator("#unidades details.unit-group").first().evaluate((el) => { el.open = true; });
+    await pg.locator("#unidades [data-select-item]:not([disabled]):visible").first().click();
     await pg.waitForTimeout(250);
     const escondido = await pg.locator("#selection-fab").getAttribute("hidden");
     return escondido === null ? "" : "o botao de selecionados continuou escondido";
@@ -1546,14 +1550,47 @@ async function teste(nome, fn) {
     return /1002/.test(ficha) && /10º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
+  // v442 — o Prime e o Quality, pelas plantas e cortes que o dono mandou.
+  await teste("o Prime abre o prédio em 3D, e o toque no apartamento abre a ficha dele", async () => {
+    const p = await abrir3d("/#emp-prime");
+    if (!(await p.locator(".predio-3d.pronto").count())) { await p.close(); return "o prédio em 3D do Prime não apareceu"; }
+    const lugares = await p.evaluate(() => ["Sala 101", "Sala 104", "201", "1003", "1101"].map((c) => !!document.querySelector(".predio-3d").predio3d.pontoDe(c)));
+    // Vale o lado de onde o apartamento aparece (o 802A fica atras do 801A).
+    let ficha = "";
+    for (const g of [undefined, 290, 110, 200, 340, 60]) {
+      await tocarNo3d(p, "303", g);
+      ficha = (await p.locator(".predio-ficha").innerText().catch(() => "")).replace(/\s+/g, " ");
+      if (new RegExp("Apto 303\\b").test(ficha)) break;
+    }
+    await p.close();
+    if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
+    return /303/.test(ficha) && /3º andar/.test(ficha) && /R\$|Sob consulta/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+  });
+
+  await teste("o Quality abre os dois blocos em 3D, e o toque no 802A abre a ficha dele", async () => {
+    const p = await abrir3d("/#emp-quality");
+    if (!(await p.locator(".predio-3d.pronto").count())) { await p.close(); return "o prédio em 3D do Quality não apareceu"; }
+    const lugares = await p.evaluate(() => ["103A", "804A", "103B", "804B", "201A"].map((c) => !!document.querySelector(".predio-3d").predio3d.pontoDe(c)));
+    // Vale o lado de onde o apartamento aparece (o 802A fica atras do 801A).
+    let ficha = "";
+    for (const g of [undefined, 290, 110, 200, 340, 60]) {
+      await tocarNo3d(p, "802A", g);
+      ficha = (await p.locator(".predio-ficha").innerText().catch(() => "")).replace(/\s+/g, " ");
+      if (new RegExp("Apto 802A\\b").test(ficha)) break;
+    }
+    await p.close();
+    if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
+    return /802A/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+  });
+
   await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
     const p = await ctx3d.newPage();
     const baixados = [];
     p.on("request", (req) => { if (/vendor\/three/.test(req.url())) baixados.push(req.url()); });
-    await p.goto(`${base}/#emp-quality`, { waitUntil: "networkidle" });
+    await p.goto(`${base}/#emp-personalite`, { waitUntil: "networkidle" });
     await p.waitForTimeout(300);
     await p.close();
-    return baixados.length ? `o Quality baixou ${baixados.length} arquivo(s) do 3D` : "";
+    return baixados.length ? `o Personalité baixou ${baixados.length} arquivo(s) do 3D` : "";
   });
   await nav3d.close();
 
