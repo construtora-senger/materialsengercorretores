@@ -138,6 +138,14 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   vertical?"*); o contorno de uma unidade de várias caixas
   (`arestasSemEmenda`) perde o pedaço que encosta numa caixa irmã e fica só o
   de fora. Ele aprovou pela imagem: *"evolutti sem linhas ok, pode arrumar lá"*.
+- **O tamanho embaixo do nome, na ficha do prédio (v441).** Pedido do dono,
+  com o print da ficha do Premium: *"aqui eu quero tamanho da sala, m² global
+  e privativo, como está nas listas — e em todos empreendimentos esse
+  padrão"*. Viu quatro opções e escolheu a **4**, *"que tá verdinho, só não
+  precisa ser negrito"*: logo embaixo de "Sala comercial · final 01" sai
+  **"115 m² global · 65 m² privativo"** na cor da marca, letra normal
+  (`.predio-ficha-areas`). As linhas "Área global" e "Área privativa" da ficha
+  continuam lá (não foi pedido tirar).
 - O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
   Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
   está nos commits 29fe260…519868a se ele quiser de volta.

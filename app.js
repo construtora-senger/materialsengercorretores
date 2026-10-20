@@ -1911,6 +1911,11 @@
     const sufixo = /\bfinal\b/i.test(sufixoDoGrupo) || !final ? sufixoDoGrupo : [sufixoDoGrupo, `final ${final}`].filter(Boolean).join(" · ");
     const tipo = [item.group?.tipo, sufixo].filter(Boolean).join(" · ");
     const areas = areasDe(item.area || "");
+    // v441 — o tamanho embaixo do nome, como nas listas ("115 m² global ·
+    // 65 m² privativo"), na cor da marca e sem negrito: opcao 4 que o dono
+    // escolheu, "so nao precisa ser negrito".
+    const tamanho = [areas.global && `${areas.global} global`, areas.privativa && `${areas.privativa} privativo`]
+      .filter(Boolean).join(" · ") || areas.solta || "";
     const andar = andarDe(item.code);
     // "Box opcional (consultar)" nao e garagem incluida (mesma regra da ficha).
     const garagem = item.garage && !/opcional|consultar/i.test(item.garage) ? item.garage : "";
@@ -1926,6 +1931,7 @@
       <p class="predio-ficha-tag">Ficha da unidade</p>
       <h3>${escapeHtml(itemLabel(item))}</h3>
       ${tipo ? `<p class="predio-ficha-tipo">${escapeHtml(tipo)}</p>` : ""}
+      ${tamanho ? `<p class="predio-ficha-areas">${escapeHtml(tamanho)}</p>` : ""}
       <div class="predio-ficha-valor"><span>Valor</span><strong class="price-value">${money(item.price)}</strong></div>
       <dl class="predio-ficha-dados">
         ${linhas.map(([rotulo, valor]) => `<div><dt>${escapeHtml(rotulo)}</dt><dd${rotulo === "Situação" ? ` class="situacao-${item.status}"` : ""}>${escapeHtml(valor)}</dd></div>`).join("")}
