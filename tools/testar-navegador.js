@@ -406,10 +406,14 @@ async function teste(nome, fn) {
         };
         return {
           predio: !!document.querySelector(".vista-predio") && !document.querySelector(".vista-predio").hidden,
-          botoes: unicos([...document.querySelectorAll("button.predio-u")].map((el) => el.textContent.trim())),
+          // No Premium Office (modelo A) a sala do 2º andar e a do terreo dizem
+          // tambem o tamanho ("201 · 160 m²"); conta so o numero.
+          botoes: unicos([...document.querySelectorAll("button.predio-u")].map((el) => el.textContent.trim().split(" · ")[0])),
           aVenda: unicos(unidades.filter((u) => u.status !== "vendido").map((u) => String(u.apto))),
           naTela: unicos([...document.querySelectorAll(".predio-vendido")].map((el) => el.title.replace(" — vendido", ""))),
           vendidas: unicos(unidades.filter((u) => u.status === "vendido").map((u) => String(u.apto))),
+          cab: [...document.querySelectorAll(".predio-col b")].map((el) => el.textContent).join(","),
+          mapinhas: document.querySelectorAll(".predio-col svg polygon.on").length,
           b3: andar(1, "3º"), e8: andar(0, "8º"), e10: andar(1, "10º"), e8b: andar(2, "8º"), p2: andar(0, "2º"), pt: andar(0, "Térreo"),
         };
       }, id);
@@ -421,7 +425,10 @@ async function teste(nome, fn) {
       // As tres abas do Evolutti (pedido do dono): 3 suites so do 9º para cima,
       // 2 suites e 2 dormitorios (1 suite) so do 4º ao 8º, cada uma com os seus finais.
       if (id === "evolutti" && (r.e8 !== "_,_" || r.e10 !== "_,_" || r.e8b !== "804,803")) return `as abas do Evolutti misturaram os andares: 8º "${r.e8}", 10º "${r.e10}", 8º dos 2 dormitórios "${r.e8b}"`;
-      if (id === "premium-office" && (r.p2.split(",").length !== 3 || r.pt !== "Vendido")) return `o Premium Office saiu com 2º "${r.p2}" e térreo "${r.pt}"`;
+      if (id === "premium-office" && (r.p2.split(",").length !== 3 || !/^101 · 387 m²/.test(r.pt))) return `o Premium Office saiu com 2º "${r.p2}" e térreo "${r.pt}"`;
+      // Modelo A com o mapinha C (escolha do dono): o nome de cada sala em cima
+      // da coluna, cada uma com o mapinha e a sala dela pintada.
+      if (id === "premium-office" && (r.cab !== "Sala 01,Sala 02,Sala 03,Sala 04,Sala 05" || r.mapinhas !== 5)) return `o cabeçalho do Premium saiu "${r.cab}" com ${r.mapinhas} mapinhas`;
     }
     return "";
   });

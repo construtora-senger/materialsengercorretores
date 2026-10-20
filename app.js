@@ -1844,7 +1844,7 @@
       return escapeHtml(area ? `${u.code} · ${area}` : u.code);
     };
     const celula = (u, larga = false, comArea = false) => {
-      const classes = larga ? "predio-u predio-larga" : "predio-u";
+      const classes = (larga ? "predio-u predio-larga" : "predio-u") + (comCabecalho && comArea && u && areasDe(u.area).global ? " predio-com-area" : "");
       if (!u) return `<span class="${classes} predio-fantasma" aria-hidden="true"></span>`;
       if (u.espaco) return `<span class="${classes} predio-espaco">${escapeHtml(u.espaco)}</span>`;
       if (!u.item) {
@@ -1880,7 +1880,16 @@
       const m2 = (n) => String(n).replace(".", ",");
       return min === max ? `${m2(min)} m²` : `${m2(min)} a ${m2(max)} m²`;
     };
-    const mapinha = (f) => !mapa.mapinha ? "" : `<svg class="predio-mapinha" viewBox="${escapeHtml(mapa.mapinha.viewBox)}" aria-hidden="true">${Object.entries(mapa.mapinha.salas).map(([k, pontos]) => `<polygon points="${escapeHtml(pontos)}"${k === f ? ' class="on"' : ""}/>`).join("")}</svg>`;
+    // Modelo C do mapinha (escolha do dono, 20/10/2026): o contorno do andar,
+    // a sala da coluna pintada e, com `rua`, a faixa "RUA" embaixo, do lado da
+    // frente do predio — "porem menor os desenhos", entao ele e pequeno.
+    const mapinha = (f) => {
+      if (!mapa.mapinha) return "";
+      const [x0, y0, w, h] = String(mapa.mapinha.viewBox).split(/\s+/).map(Number);
+      const altura = mapa.mapinha.rua ? h + 128 : h;
+      const rua = mapa.mapinha.rua ? `<rect class="rua" x="${x0}" y="${y0 + h + 38}" width="${w}" height="76" rx="10"/><text x="${x0 + w / 2}" y="${y0 + h + 96}" text-anchor="middle" font-size="64" font-weight="700" letter-spacing="6">RUA</text>` : "";
+      return `<svg class="predio-mapinha" viewBox="${x0} ${y0} ${w} ${altura}" aria-hidden="true">${Object.entries(mapa.mapinha.salas).map(([k, pontos]) => `<polygon points="${escapeHtml(pontos)}"${k === f ? ' class="on"' : ""}/>`).join("")}${rua}</svg>`;
+    };
     const cabecalho = (aba) => !comCabecalho ? "" : `<div class="predio-andar predio-cab"><span class="predio-n"></span><div class="predio-us" style="--colunas: ${aba.finais.length}">${aba.finais.map((f) => `<div class="predio-col">${mapinha(f)}<b>${emp.categoria === "comercial" ? "Sala" : "Final"} ${f}</b><small>${areaDaColuna(aba, f)}</small></div>`).join("")}</div></div>`;
 
     const painel = (aba, indice) => {

@@ -630,8 +630,11 @@ const EMPREENDIMENTOS = [
       ],
       terreo: ["101"],
       cabecalhoDasColunas: true,
+      // Modelo C do mapinha (escolha do dono, 20/10/2026): contorno do andar
+      // e a faixa "RUA" embaixo, que e o lado da Rua Cipriano da Luz.
       mapinha: {
         viewBox: "0 0 430 752",
+        rua: true,
         salas: {
           "04": "7,0 132,0 132,75 165,75 165,230 7,230",
           "05": "135,0 317,0 317,202 265,202 265,230 167,230 167,75 135,75",

@@ -1646,9 +1646,11 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
 .predio-col { display: flex; flex-direction: column; align-items: center; text-align: center; line-height: 1.2; }
 .predio-col b { color: var(--ink); font-size: 12.5px; }
 .predio-col small { color: var(--muted); font-size: 11px; }
-.predio-mapinha { width: 34px; height: 60px; margin: 0 0 6px; }
-.predio-mapinha polygon { fill: #dfe4e7; stroke: #fff; stroke-width: 8; }
+.predio-mapinha { width: 30px; height: 61px; margin: 0 0 6px; }
+.predio-mapinha polygon { fill: #fff; stroke: #5b666e; stroke-width: 14; stroke-linejoin: round; }
 .predio-mapinha polygon.on { fill: var(--brand); }
+.predio-mapinha .rua { fill: #9aa4aa; }
+.predio-mapinha text { fill: #fff; font-family: var(--font-body); }
 .predio-com-cabecalho .predio-u.predio-vendido { font-size: 12.5px; font-weight: 600; }
 .predio-com-cabecalho .predio-u.predio-vendido small { margin-left: 4px; font-size: 10px; font-weight: 500; }
 @media (max-width: 960px) {
@@ -1657,9 +1659,11 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
 }
 @media (max-width: 720px) {
   .vista-predio.predio-com-cabecalho { --torre: min(400px, calc(100vw - 108px)); --base: min(400px, calc(100vw - 108px)); }
-  .predio-mapinha { width: 24px; height: 42px; margin-bottom: 4px; }
+  .predio-mapinha { width: 24px; height: 49px; margin-bottom: 4px; }
   .predio-col b { font-size: 11px; }
   .predio-col small { font-size: 9.5px; }
   .predio-com-cabecalho .predio-u.predio-vendido { font-size: 11.5px; }
   .predio-com-cabecalho .predio-u.predio-vendido small { display: none; }
+  /* "202 · 139 m²" numa linha so */
+  .predio-u.predio-com-area { white-space: nowrap; font-size: 11.5px; letter-spacing: -.01em; }
 }
