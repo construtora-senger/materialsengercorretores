@@ -202,6 +202,11 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   lado do 3D e os 4 lados e mandou: *"atualiza lá, vamos ver no 3D como fica"*.
   A cobertura de vidro da piscina térmica (ao lado da torre, A07–A10) não foi
   desenhada — não foi pedida.
+  **Sem a escada nos fundos (v447).** O dono circulou a faixa cinza do núcleo
+  entre o 03 e o 04 (*"pq esse espaço aí no meio"*) e, com a imagem dos fundos
+  do prédio, mandou: *"não mostre a escada então"*. O núcleo saiu das massas e
+  o 03 e o 04 do 5º ao 12º se encontram no meio (x 37,85, como o 01 e o 02).
+  Ele viu o vídeo do 3D girando e aprovou: *"ok, publica essa versão"*.
 - **O tamanho embaixo do nome, na ficha do prédio (v441).** Pedido do dono,
   com o print da ficha do Premium: *"aqui eu quero tamanho da sala, m² global
   e privativo, como está nas listas — e em todos empreendimentos esse
