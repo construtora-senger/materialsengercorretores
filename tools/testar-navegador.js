@@ -1519,6 +1519,19 @@ async function teste(nome, fn) {
     return /Apto 1102/.test(ficha) && /11º andar/.test(ficha) && /final 02/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
+  // v436 — o Premium Office, pelas fachadas e pelas plantas do 2º e do 3º
+  // pavimento; a sala 05 vai ate o canto do predio (correcao do dono).
+  await teste("o Premium Office abre o prédio em 3D, e o toque na sala abre a ficha dela", async () => {
+    const p = await abrir3d("/#emp-premium-office");
+    if (!(await p.locator(".predio-3d.pronto").count())) { await p.close(); return "o prédio em 3D do Premium Office não apareceu"; }
+    const lugares = await p.evaluate(() => ["101", "201", "305", "801", "805"].map((c) => !!document.querySelector(".predio-3d").predio3d.pontoDe(c)));
+    await tocarNo3d(p, "801");
+    const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
+    await p.close();
+    if (lugares.includes(false)) return `faltou sala no prédio: ${lugares.join(",")}`;
+    return /801/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+  });
+
   await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
     const p = await ctx3d.newPage();
     const baixados = [];

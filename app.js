@@ -2156,7 +2156,8 @@
     scene.add(chao, rua);
 
     const altura = caixa.max.y - caixa.min.y;
-    const raio = 2.2 * altura;
+    // `distancia` afasta a camera no predio largo e baixo (o Premium Office).
+    const raio = 2.2 * altura * (maquete.distancia || 1);
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.target.set((torre.min.x + torre.max.x) / 2, caixa.min.y + altura * 0.47, (torre.min.z + torre.max.z) / 2);
     controls.enableDamping = true; controls.enablePan = false; controls.maxPolarAngle = Math.PI * 0.49;

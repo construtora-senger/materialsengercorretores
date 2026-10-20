@@ -36,7 +36,7 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434) e do Boulevard (v435)
+## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435) e do Premium Office (v436)
 
 Pedido do dono (20/10/2026), depois de ver o mapa em abas e o mapa 2D do
 Premium: *"queria q fosse imagem do predio, e eu pudesse ir girando ele para
@@ -82,7 +82,23 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   plantas). **No lugar do 303 fica o "Salão de festas"** — uma massa com
   `rotulo`, que escreve o nome nas paredes de fora. Sem WebGL, as abas
   "Apartamentos 3 suítes" (01, 02) e "Apartamentos 2 dormitórios" (03, 04).
-- **Faltam Premium Office e Evolutti**, com as plantas, cortes e fachadas que o
+- **Premium Office em 3D (v436).** O dono mandou a fachada principal e a
+  lateral (pranchas A11 e A12, 1:100), duas imagens e o folder; as plantas
+  são as do 2º e do 3º pavimento que já estavam no sistema (com cotas). Viu os
+  4 lados e corrigiu duas vezes antes de aprovar (*"blz, pode aplicar"*):
+  1. **do 3º ao 8º, fundos e meio têm 11,70 m** de largura e só a frente
+     (salas 01 e 02) chega aos 14,3 m — o canto que sobrava à direita não
+     existe (*"essa parte tá errado, veja os mapas"*);
+  2. **a sala 05 vai até o canto do prédio** (*"você está terminando a sala
+     antes, e ela continua no canto do prédio"*); a faixa ao lado dela na
+     planta humanizada **é só a pingadeira**, detalhe de fora, não parede.
+  Posições: 02 frente-esquerda, 01 frente-direita, 03 meio-esquerda, 04 e 05
+  nos fundos; 2º pavimento com 201 (frente), 202 (atrás dela) e 203 (fundos,
+  à direita), e o vão do pergolado aberto na frente à direita; térreo inteiro
+  é a 101. Térreo e 2º começam 1,79 m mais à esquerda que a torre. O bloco
+  baixo dos fundos entra cinza. `distancia: 1.35` afasta a câmera (prédio
+  largo e baixo). Sem WebGL, uma aba "Salas comerciais".
+- **Falta o Evolutti**, com as plantas, cortes e fachadas que o
   dono disse que vai mandar. O mapa 2D que fiz para os três (Boulevard
   aprovado, Evolutti em 3 abas, Premium modelo A com mapinha) **não foi
   publicado** — saiu da branch, e está nos commits 29fe260…519868a se ele
