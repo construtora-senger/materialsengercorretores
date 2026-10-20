@@ -98,6 +98,16 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   é a 101. Térreo e 2º começam 1,79 m mais à esquerda que a torre. O bloco
   baixo dos fundos entra cinza. `distancia: 1.35` afasta a câmera (prédio
   largo e baixo). Sem WebGL, uma aba "Salas comerciais".
+  **Ajustes da v437**, pedidos do dono vendo o 3D no ar, com 4 opções em
+  imagem para cada um: (a) a frente à direita do térreo é o **hall de entrada
+  com pé direito duplo** — saiu da 101 (que virou um L, duas caixas) e entrou
+  como massa **de vidro escrita "Hall de entrada"** (`vidro: true` +
+  `rotulo`; opção **4**); (b) a parede do núcleo que dá para a lateral leva o
+  **desenho de degraus pintados** (`escada: true`, `pintarEscada`; opção
+  **2**), para ninguém procurar sala ali; (c) a **04 e a 05 quase da mesma
+  largura**, pela planta do 3º pavimento (*"as salas finais 4 e 5 não são tão
+  diferentes assim em largura"*). Unidade com mais de uma caixa: `avulsas` e
+  `finais` aceitam uma lista (`caixasDaUnidade`).
 - **Falta o Evolutti**, com as plantas, cortes e fachadas que o
   dono disse que vai mandar. O mapa 2D que fiz para os três (Boulevard
   aprovado, Evolutti em 3 abas, Premium modelo A com mapinha) **não foi
@@ -509,8 +519,9 @@ títulos, B abas, C colunas, D blocos com atalhos) e escolheu o **B**, para
   Renaissance (2 suítes · 3 suítes frente · 3 suítes superiores · Salas
   comerciais — cada casa suspensa vai com o apartamento de mesma suíte e
   posição), Evolutti e Quality (2 dormitórios · 3 dormitórios), Boulevard
-  (2 dormitórios · 3 suítes), Premium Office (Demais pavimentos · 2º
-  pavimento). Ordem: da aba mais barata para a mais cara, **sala e loja sempre
+  (2 dormitórios · 3 suítes), Premium Office (3º ao 8º pavimento · 2º
+  pavimento — a aba se chamava "Demais pavimentos" e o dono mandou trocar na
+  v437: *"'demais pavimentos' NÃO, coloque 3º ao 8º pavimento"*). Ordem: da aba mais barata para a mais cara, **sala e loja sempre
   por último**; dentro da aba segue a v321 (do mais barato ao mais caro).
 - **Sem abas** quando nenhum grupo tem `aba` (Personalité, Prime — uma
   tipologia só à venda), quando sobra uma aba só (link do cliente com unidades
