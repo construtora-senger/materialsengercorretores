@@ -634,6 +634,47 @@ const EMPREENDIMENTOS = [
       "Sala 72 m²": { simples: 1 },
       "Sala 76 m²": { simples: 1 },
     },
+    // v436 — o predio em 3D, como o do Renaissance e o do Boulevard. Medidas
+    // em metros: alturas da fachada principal e da lateral que o dono mandou
+    // (20/10/2026, pranchas A11 e A12, 1:100); plantas pelas pranchas do 2º e
+    // do 3º pavimento (1:100, com as cotas). A rua Cipriano da Luz e o lado +z
+    // e x = 0 e a parede esquerda do 3º ao 8º. Do 3º ao 8º: 02 na frente a
+    // esquerda, 01 na frente a direita, 03 no meio a esquerda, 04 e 05 nos
+    // fundos — a 05 vai ate o canto do predio, com a laje tecnica (o dono:
+    // "voce esta terminando a sala antes, e ela continua no canto do predio").
+    // Fundos e meio tem 11,70 m; a frente, 14,3 m. O terreo e o 2º pavimento
+    // comecam 1,79 m mais a esquerda (cotas de 0,80 e 2,59 ate a divisa).
+    mapaPredio: {
+      abas: [{ nome: "Salas comerciais", finais: ["02", "01", "03", "04", "05"] }],
+      terreo: ["101"],
+      maquete: {
+        // O que nao e sala: o nucleo (hall, elevadores e escada), a cobertura
+        // com a torre da escada e o bloco baixo dos fundos.
+        massas: [
+          { x: [5.66, 12.5], z: [5.5, 16.8], andares: [2, 2], cor: "#e6eaec" },
+          { x: [4.26, 11.7], z: [7.8, 15.05], andares: [3, 8], cor: "#e6eaec" },
+          { x: [0.18, 7.2], z: [15.5, 22.6], y: [26.29, 31], cor: "#e6eaec" },
+          { x: [6.45, 11.7], z: [7, 14.3], y: [26.29, 35.1], cor: "#e6eaec" },
+          { x: [-1.79, 12.5], z: [-36.8, -15.9], y: [0, 6.5] },
+        ],
+        pavimentos: [
+          { de: 2, ate: 2, y: 3.56, altura: 3.17 },
+          { de: 3, ate: 8, y: 6.73, altura: 3.26 },
+        ],
+        finais: [
+          { de: 2, ate: 2, caixas: {
+            "01": { x: [-1.79, 6.5], z: [12.57, 25.7] }, "02": { x: [-1.79, 5.66], z: [0, 12.57] },
+            "03": { x: [5.66, 12.27], z: [0, 5.5] } } },
+          { de: 3, ate: 8, caixas: {
+            "01": { x: [6.94, 14.3], z: [15.05, 23.75] }, "02": { x: [0, 6.94], z: [15.05, 25.4] },
+            "03": { x: [0, 4.26], z: [7.8, 15.05] }, "04": { x: [0, 4.35], z: [0, 7.8] },
+            "05": { x: [4.35, 11.7], z: [0, 7.8] } } },
+        ],
+        // A sala do terreo.
+        avulsas: { "101": { x: [-1.79, 12.5], z: [0, 23.9], y: [0, 3.31] } },
+        distancia: 1.35,
+      },
+    },
     hero: "assets/premium-office/capa.jpg",
     folder: "assets/premium-office/folder.pdf",
     video: "assets/premium-office/video.mp4",
