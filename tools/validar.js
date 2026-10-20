@@ -112,6 +112,28 @@ for (const emp of EMPREENDIMENTOS) {
   });
   // A regra abandonada: nenhum empreendimento vende box a parte desde a v246.
   if (emp.boxSeparado) erro(`${emp.id}: boxSeparado nao existe mais — o box ja esta no preco do apartamento`);
+
+  // v434 — o predio em 3D desenha cada unidade pelo andar e pelo final (ou
+  // pela caixa em `avulsas`). Unidade sem caixa some do predio sem aviso.
+  const maquete = emp.mapaPredio && emp.mapaPredio.maquete;
+  if (maquete) {
+    const andarDe = (c) => { const m = String(c).match(/^(\d+)\d{2}[A-Za-z]?$/); return m ? Number(m[1]) : null; };
+    (emp.grupos || []).forEach((g) => (g.unidades || []).forEach((u) => {
+      const code = String(u.apto);
+      if (maquete.avulsas && maquete.avulsas[code]) return;
+      const andar = andarDe(code);
+      const piso = andar !== null && (maquete.pavimentos || []).some((p) => andar >= p.de && andar <= p.ate);
+      const regra = piso && (maquete.finais || []).find((f) => andar >= f.de && andar <= f.ate);
+      if (!regra || !regra.caixas || !regra.caixas[code.replace(/[A-Za-z]$/, "").slice(-2)]) {
+        erro(`${emp.id}: a unidade ${code} nao tem lugar no predio em 3D (mapaPredio.maquete)`);
+      }
+    }));
+  }
+}
+if (EMPREENDIMENTOS.some((e) => e.mapaPredio && e.mapaPredio.maquete)) {
+  ["three.module.min.js", "three.core.min.js", "OrbitControls.js"].forEach((f) => {
+    if (!existe(`assets/vendor/three/${f}`)) erro(`o predio em 3D precisa de assets/vendor/three/${f}`);
+  });
 }
 
 // ------------------------------------------------- 3. arquivos referenciados

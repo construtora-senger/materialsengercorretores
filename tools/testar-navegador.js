@@ -65,6 +65,13 @@ async function teste(nome, fn) {
   const { server, base } = await servir();
   const navegador = await chromium.launch({ headless: !VER });
   const contexto = await navegador.newContext({ viewport: { width: 1280, height: 900 } });
+  // v434 — este navegador fica SEM WebGL de proposito: aqui se testam as abas
+  // do mapa do predio (v431), que e o que aparece no aparelho que nao consegue
+  // desenhar o predio em 3D. O 3D tem o grupo dele, num navegador com WebGL.
+  await contexto.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (tipo, ...resto) { return /^webgl/.test(tipo) ? null : original.call(this, tipo, ...resto); };
+  });
   const erroDeConsole = [];
   contexto.on("weberror", (e) => erroDeConsole.push(String(e.error())));
 
@@ -519,6 +526,20 @@ async function teste(nome, fn) {
     if (!/Apto 1302/.test(ficha.texto) || !/R\$/.test(ficha.texto)) return `a ficha do cliente diz: ${ficha.texto}`;
     if (ficha.equipe) return "a ficha do cliente mostra o Compartilhar ou o Selecionar";
     return ficha.tecnica ? "" : "a ficha do cliente está sem a planta técnica";
+  });
+
+  await teste("sem WebGL, o Renaissance mostra as abas do mapa no lugar do prédio em 3D", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(400);
+    const r = await p.evaluate(() => ({
+      tresD: document.querySelectorAll("[data-predio-3d]").length,
+      abas: !document.querySelector(".predio-desenho").hidden && document.querySelectorAll(".aba-predio").length,
+      dica: document.querySelector("#unidades .section-title-row p").textContent,
+    }));
+    await p.close();
+    if (r.tresD) return "o palco do 3D ficou na tela sem WebGL";
+    if (r.abas !== 2) return `as abas do mapa não voltaram (${r.abas})`;
+    return r.dica === "Toque no apartamento para ver a ficha" ? "" : `a dica diz "${r.dica}"`;
   });
 
   await teste("Personalité e Prime, com uma tipologia só, ficam sem abas", async () => {
@@ -1386,6 +1407,115 @@ async function teste(nome, fn) {
     return n >= 8 ? "" : `depois do reload sobraram ${n} cartoes`;
   });
   await pwa.close();
+
+  // ============================================================ predio em 3D
+  // v434 — escolha do dono (20/10/2026): o predio em 3D, que gira, com o
+  // vendido em cinza escuro escrito "Vendido" e o numero do apartamento na
+  // frente, nos fundos e nas laterais. Precisa de um navegador com WebGL.
+  grupo("PRÉDIO EM 3D");
+  const nav3d = await chromium.launch({ headless: !VER, args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+  const ctx3d = await nav3d.newContext({ viewport: { width: 1280, height: 900 } });
+  const abrir3d = async (rota, opcoes = {}) => {
+    const p = await ctx3d.newPage();
+    p.on("pageerror", (e) => erroDeConsole.push(`3D ${rota}: ${e.message}`));
+    if (opcoes.mobile) await p.setViewportSize({ width: 390, height: 844 });
+    await p.goto(base + rota, { waitUntil: "networkidle" });
+    await p.waitForFunction(() => document.querySelector(".predio-3d.pronto") || !document.querySelector("[data-predio-3d]"), null, { timeout: 60000 });
+    return p;
+  };
+  // Toca no apartamento: o predio vem para a tela e o clique vai no lugar dele.
+  const tocarNo3d = async (p, cod, graus) => {
+    await p.evaluate(() => { const el = document.querySelector(".predio-3d"); window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 90, behavior: "instant" }); });
+    if (graus !== undefined) await p.evaluate((g) => document.querySelector(".predio-3d").predio3d.girar(g), graus);
+    const pt = await p.evaluate((c) => document.querySelector(".predio-3d").predio3d.pontoDe(c), cod);
+    if (!pt) return false;
+    await p.mouse.click(pt.x, pt.y);
+    await p.waitForTimeout(400);
+    return true;
+  };
+
+  await teste("o Renaissance abre o prédio em 3D, e o toque no apartamento abre a ficha dele", async () => {
+    const p = await abrir3d("/#emp-renaissance");
+    const r = await p.evaluate(() => ({
+      pronto: !!document.querySelector(".predio-3d.pronto canvas"),
+      abasEscondidas: document.querySelector(".predio-desenho").hidden,
+      lados: [...document.querySelectorAll(".predio-3d-lados button")].map((b) => b.textContent.trim()).join(","),
+      dica: document.querySelector("#unidades .section-title-row p").textContent,
+      preco: window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "renaissance").grupos.flatMap((g) => g.unidades).find((u) => u.apto === "1102").preco,
+    }));
+    if (!r.pronto) { await p.close(); return "o prédio em 3D não apareceu"; }
+    if (!r.abasEscondidas) { await p.close(); return "as abas do mapa ficaram na tela junto do 3D"; }
+    if (r.lados !== "Frente,Lateral,Fundos,De cima") { await p.close(); return `os botões do prédio são: ${r.lados}`; }
+    if (!/Gire o prédio/.test(r.dica)) { await p.close(); return `a dica diz "${r.dica}"`; }
+    await tocarNo3d(p, "1102");
+    const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
+    if (!/Apto 1102/.test(ficha) || !ficha.includes(`R$ ${r.preco.toLocaleString("pt-BR")}`) || !/11º andar/.test(ficha)) { await p.close(); return `a ficha diz: ${ficha}`; }
+    const sel = p.locator(".predio-ficha [data-select-item]");
+    await sel.click(); await p.waitForTimeout(200);
+    const marcado = (await sel.innerText()).trim();
+    await sel.click(); await p.waitForTimeout(200);
+    await p.close();
+    return marcado === "Selecionado" ? "" : `o Selecionar da ficha deixou "${marcado}"`;
+  });
+
+  await teste("no 3D, o vendido não abre ficha e os botões giram o prédio", async () => {
+    const p = await abrir3d("/#emp-renaissance");
+    // O 803 e vendido e fica nos fundos.
+    await tocarNo3d(p, "803", 204);
+    const vazia = await p.locator(".predio-ficha .predio-ficha-vazia").count();
+    const antes = await p.evaluate(() => document.querySelector(".predio-3d").predio3d.pontoDe("1102"));
+    await p.locator(".predio-3d-lados button", { hasText: "Lateral" }).click();
+    await p.waitForTimeout(300);
+    const r = await p.evaluate(() => ({
+      depois: document.querySelector(".predio-3d").predio3d.pontoDe("1102"),
+      marcado: document.querySelector(".predio-3d-lados [aria-pressed=true]")?.textContent,
+    }));
+    await p.close();
+    if (!vazia) return "o toque no vendido abriu uma ficha";
+    if (r.marcado !== "Lateral") return `depois do Lateral o botão marcado é "${r.marcado}"`;
+    return Math.abs(r.depois.x - antes.x) > 20 ? "" : "o botão Lateral não girou o prédio";
+  });
+
+  await teste("no celular o 3D cabe na tela e a ficha abre embaixo dele", async () => {
+    const p = await abrir3d("/#emp-renaissance", { mobile: true });
+    const largura = await p.evaluate(() => document.documentElement.scrollWidth);
+    await tocarNo3d(p, "1203", 204);
+    await p.waitForTimeout(900);
+    const r = await p.evaluate(() => {
+      const ficha = document.querySelector(".predio-ficha").getBoundingClientRect();
+      const palco = document.querySelector(".predio-3d").getBoundingClientRect();
+      return { embaixo: ficha.top + scrollY >= palco.bottom + scrollY, topo: Math.round(ficha.top), tela: innerHeight, texto: document.querySelector(".predio-ficha h3")?.textContent || "" };
+    });
+    await p.close();
+    if (largura > 390) return `a página passou da largura do celular (${largura}px)`;
+    if (r.texto !== "Apto 1203") return `a ficha mostra "${r.texto}"`;
+    if (!r.embaixo) return "a ficha não ficou embaixo do prédio";
+    return r.topo < r.tela / 2 ? "" : `a tela não desceu até a ficha (ficou em ${r.topo}px)`;
+  });
+
+  await teste("o cliente vê o prédio em 3D, sem os botões da equipe na ficha", async () => {
+    const p = await abrir3d("/?cliente#emp-renaissance");
+    if (!(await p.locator(".predio-3d.pronto").count())) { await p.close(); return "o cliente não recebeu o prédio em 3D"; }
+    await tocarNo3d(p, "1302");
+    const ficha = await p.evaluate(() => {
+      const f = document.querySelector(".predio-ficha");
+      return { texto: f.innerText.replace(/\s+/g, " "), equipe: f.querySelectorAll("[data-share-item], [data-select-item]").length };
+    });
+    await p.close();
+    if (!/Apto 1302/.test(ficha.texto) || !/R\$/.test(ficha.texto)) return `a ficha do cliente diz: ${ficha.texto}`;
+    return ficha.equipe ? "a ficha do cliente mostra o Compartilhar ou o Selecionar" : "";
+  });
+
+  await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
+    const p = await ctx3d.newPage();
+    const baixados = [];
+    p.on("request", (req) => { if (/vendor\/three/.test(req.url())) baixados.push(req.url()); });
+    await p.goto(`${base}/#emp-evolutti`, { waitUntil: "networkidle" });
+    await p.waitForTimeout(300);
+    await p.close();
+    return baixados.length ? `o Evolutti baixou ${baixados.length} arquivo(s) do 3D` : "";
+  });
+  await nav3d.close();
 
   await teste("nenhum erro de JavaScript em tela nenhuma", async () => {
     // O painel avisa sozinho quando o GitHub recusa; erro de codigo, nao.
