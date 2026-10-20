@@ -98,10 +98,9 @@ const EMPREENDIMENTOS = [
           { x: [23.4, 52.3], z: [48.9, 59], andares: [4, 4], cor: "#cfe0e6" },
           { x: [36.3, 39.4], z: [48.9, 59], andares: [5, 12] },
           { x: [31, 45], z: [52, 64], y: [66.02, 70.02] },
-          // v446 — o terraco do 504: embaixo, o 4o pavimento (na cor do lazer);
-          // em cima do piso, o guarda-corpo de vidro.
-          { x: [45.3, 52.3], z: [41.4, 48.9], y: [16.2, 19.6], cor: "#cfe0e6" },
-          { x: [45.4, 52.2], z: [41.5, 48.85], y: [19.95, 21.05], vidro: true, rotulo: "Terraço 504" },
+          // v446 — o que fica embaixo do terraco do 504 (o 4o pavimento). O
+          // terraco em si e parte do 504, na cor do apartamento (pedido do dono).
+          { x: [45.3, 52.3], z: [41.4, 48.9], y: [16.2, 19.6] },
         ],
         pavimentos: [
           { de: 4, ate: 4, y: 16.4, altura: 3.2 },
@@ -121,7 +120,7 @@ const EMPREENDIMENTOS = [
           // 61,56 m2 nos fundos, pela prancha A06 (pavimento 05): 6,70 m de
           // largura, encostada no canto direito da torre. O dono: "apto 504 do
           // Renaissance nao esta aparecendo a area do terraco".
-          "504": [{ x: [39.4, 52.3], z: [48.9, 59], y: [19.6, 22.59] }, { x: [45.3, 52.3], z: [41.4, 48.9], y: [19.6, 19.95] }],
+          "504": [{ x: [39.4, 52.3], z: [48.9, 59], y: [19.6, 22.59] }, { x: [45.3, 52.3], z: [41.4, 48.9], y: [19.6, 20.75] }],
           "Sala 04": { x: [18.7, 28.4], z: [66, 75], y: [2, 8.4] },
           "Sala 03": { x: [28.7, 38.4], z: [66, 75], y: [2, 8.4] },
           "Sala 02": { x: [38.7, 48.4], z: [66, 75], y: [2, 8.4] },
