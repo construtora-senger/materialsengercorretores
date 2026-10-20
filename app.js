@@ -1195,6 +1195,8 @@
     document.getElementById("catalogo").hidden = false;
     document.getElementById("detail-view").hidden = true;
     document.getElementById("detail-view").innerHTML = "";
+    const voltarDoTopo = document.getElementById("voltar-empreendimentos");
+    if (voltarDoTopo) voltarDoTopo.hidden = true;
     document.title = "Construtora Senger — Portfólio Comercial";
     // De volta a lista: o proximo empreendimento aberto comeca do topo.
     state.foco = null;
@@ -1216,6 +1218,8 @@
 
     const detail = document.getElementById("detail-view");
     detail.hidden = false;
+    const voltarDoTopo = document.getElementById("voltar-empreendimentos");
+    if (voltarDoTopo) voltarDoTopo.hidden = false;
     document.title = `${emp.nome} — Construtora Senger`;
 
     const media = mediaFor(emp);
@@ -1865,12 +1869,14 @@
 
     // v434 — com `maquete` no data.js o predio abre em 3D, e as abas ficam
     // guardadas para o aparelho que nao consegue desenhar o 3D.
+    const temAlugado = unidadesDoPredio(emp).some((u) => u.item?.status === "alugado");
     const tresD = mapa.maquete ? `
         <div class="predio-3d" data-predio-3d>
           <p class="predio-3d-carregando">Carregando o prédio…</p>
           <p class="predio-legenda predio-3d-legenda">
             <span class="lg-disp">Disponível</span>
             <span class="lg-vend">Vendido</span>
+            ${temAlugado ? `<span class="lg-alug">Alugado · venda para investidor</span>` : ""}
             <span class="lg-sel">Escolhido</span>
           </p>
           <div class="predio-3d-lados" role="group" aria-label="Ver o prédio">
@@ -1981,7 +1987,13 @@
     ficha.innerHTML = fichaDoPredio(item);
     bindInventoryEvents(ficha);
     // No celular a ficha fica embaixo do desenho: a tela desce ate ela.
-    if (window.matchMedia("(max-width: 720px)").matches) ficha.scrollIntoView({ block: "start", behavior: "smooth" });
+    if (window.matchMedia("(max-width: 720px)").matches) {
+      // v444 — com o "Voltar empreendimentos" o topo do celular ganhou uma
+      // linha; a ficha para logo abaixo dele, seja qual for a altura.
+      const topo = document.getElementById("site-header")?.getBoundingClientRect().height || 0;
+      ficha.style.scrollMarginTop = `${Math.round(topo) + 12}px`;
+      ficha.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
   }
 
   function mostrarVistaDeUnidades(secao, vista) {
@@ -2012,6 +2024,8 @@
   const TRES = "assets/vendor/three/";
   const COR_3D = {
     livre: 0xffffff, livreBorda: 0x1f9e7a, vendido: 0x5d6870, vendidoBorda: 0x3a434a,
+    // v444 — alugado (segue a venda, para investidor): azul claro, modelo 2 do dono.
+    alugado: 0xcfe3f6, alugadoBorda: 0x2f6fb0,
     escolhido: 0x178fa0, massa: 0xdfe4e7, massaBorda: 0x5b666e, chao: 0xe5eaec, rua: 0x9aa4aa, fundo: 0xeef5f7,
   };
   let predio3dNaTela = null;
@@ -2157,7 +2171,22 @@
       const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
       return new THREE.MeshBasicMaterial({ map: t, transparent: true });
     };
-    const placaDaUnidade = (u) => (u.item
+    // v444 — o alugado leva o numero e "ALUGADO" embaixo, em azul (modelo 2).
+    const placaAlugada = (u) => {
+      const c = document.createElement("canvas"); c.width = 512; c.height = 160;
+      const g = c.getContext("2d");
+      g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = "#123a63";
+      let tamanho = 92;
+      g.font = `800 ${tamanho}px ${fonte}`;
+      while (tamanho > 30 && g.measureText(u.code).width > 480) { tamanho -= 4; g.font = `800 ${tamanho}px ${fonte}`; }
+      g.fillText(u.code, 256, 62);
+      g.font = `700 34px ${fonte}`;
+      g.fillText("ALUGADO".split("").join("\u200a"), 256, 140);
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+      return new THREE.MeshBasicMaterial({ map: t, transparent: true });
+    };
+    const alugada = (u) => u.item?.status === "alugado";
+    const placaDaUnidade = (u) => (alugada(u) ? placaAlugada(u) : u.item
       ? placa(u.code, { cor: "#202a32", peso: 800, tamanho: andarDe(u.code) === null ? 80 : 110 })
       : placa("VENDIDO".split("").join("\u200a"), { cor: "#c7ced3", peso: 700, tamanho: 72 }));
 
@@ -2243,8 +2272,11 @@
     });
     const clicaveis = comCaixa.map(({ u, b }) => {
       const irmas = comCaixa.filter((x) => x.u.code === u.code && x.b !== b).map((x) => x.b);
-      const m = bloco(b, u.item ? COR_3D.livre : COR_3D.vendido, u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda, u.item ? 0.9 : 0.8, false, irmas);
+      const cor = alugada(u) ? COR_3D.alugado : u.item ? COR_3D.livre : COR_3D.vendido;
+      const borda = alugada(u) ? COR_3D.alugadoBorda : u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda;
+      const m = bloco(b, cor, borda, u.item ? 0.9 : 0.8, false, irmas);
       m.userData = u;
+      m.corDaUnidade = cor;
       placas(b, placaDaUnidade(u), (dx, dz) => {
         const p = maisLargo.get(`${u.code}|${dx},${dz}`);
         return p && p.b === b ? [p.de, p.ate] : null;
@@ -2295,7 +2327,7 @@
     // Toque: so vale o toque parado (arrastar e girar). Vendido nao tem ficha.
     let escolhida = [];
     const escolher = (m) => {
-      escolhida.forEach((x) => x.material.color.setHex(COR_3D.livre));
+      escolhida.forEach((x) => x.material.color.setHex(x.corDaUnidade));
       escolhida = clicaveis.filter((x) => x.userData.code === m.userData.code);
       escolhida.forEach((x) => x.material.color.setHex(COR_3D.escolhido));
       desenhar();
@@ -3791,6 +3823,9 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     document.getElementById("print-list").addEventListener("click", printPortfolio);
     document.getElementById("share-portfolio").addEventListener("click", sharePortfolio);
     document.getElementById("compartilhar-sistema")?.addEventListener("click", compartilharSistema);
+    // v444 — "Voltar empreendimentos", no topo, dentro de todo empreendimento
+    // (pedido do dono com o print e o lugar marcado ao lado do Compartilhar).
+    document.getElementById("voltar-empreendimentos")?.addEventListener("click", navigateHome);
     document.getElementById("clear-picks").addEventListener("click", clearPicks);
     document.getElementById("selection-fab").addEventListener("click", openDrawer);
     document.querySelectorAll("[data-close-drawer]").forEach((button) => button.addEventListener("click", closeDrawer));
@@ -3877,6 +3912,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
   // v418 — o cliente nao recebe o botao de mandar o sistema (v301: botao da
   // equipe nao fica no HTML do cliente; o CSS e a segunda barreira).
   if (CLIENT_MODE) document.getElementById("compartilhar-sistema")?.remove();
+  if (CLIENT_MODE) document.getElementById("voltar-empreendimentos")?.remove();
   if (CLIENT_LIST_IDS) document.body.classList.add("client-list");
   buildInventory();
   bindVisor();

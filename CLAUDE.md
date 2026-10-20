@@ -171,6 +171,14 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   festas. As áreas do desenho fecham com as do cadastro. Ele viu os 4 lados e
   mandou publicar: *"ok, publica assim q vou ver como fica"*. Sem WebGL, as
   abas "Apartamentos de frente" (03, 01) e "de fundos" (04, 02).
+- **Alugado em azul claro, modelo 2 (v444).** Pedido do dono, com o print do
+  Quality: os alugados (que seguem à venda para investidor) apareciam brancos,
+  iguais aos disponíveis — *"coloque em vez de vendido uma outra cor e na
+  legenda alugado, venda para investidor"*. Viu quatro modelos e escolheu o
+  **2**: parede **azul claro com contorno azul**, o número e **"ALUGADO"**
+  embaixo (`placaAlugada`, `COR_3D.alugado`), e a linha **"Alugado · venda para
+  investidor"** na legenda — **só no prédio que tem alugado** (hoje, só o
+  Quality). O toque abre a ficha como no disponível.
 - **O tamanho embaixo do nome, na ficha do prédio (v441).** Pedido do dono,
   com o print da ficha do Premium: *"aqui eu quero tamanho da sala, m² global
   e privativo, como está nas listas — e em todos empreendimentos esse
@@ -189,6 +197,18 @@ bloco "v434" do fim do `styles.css`.
 > **REGRA ANTIGA em parte — substituída pela de cima:** no Renaissance o "Ver
 > no prédio" abria nas duas abas do mapa 2D (v431). Elas ficaram só como
 > reserva para o aparelho que não desenha o 3D.
+
+## "Voltar empreendimentos" no topo (v444)
+
+Pedido do dono, com o print e o lugar marcado em vermelho ao lado do
+Compartilhar: *"aqui quero botão 'voltar empreendimentos' … em todos
+empreendimentos é claro"*. Dentro de **qualquer** empreendimento, o topo ganha
+**"← Voltar empreendimentos"** (`#voltar-empreendimentos`, mesmo feitio do
+Compartilhar), que leva de volta à vitrine; na vitrine ele some. **Só no modo
+corretor** — no `?cliente` o botão sai do HTML. No celular ele cai numa
+segunda linha do topo; por isso a ficha do prédio, ao descer até ela, mede a
+altura do topo antes de parar (`mostrarFichaDoPredio`). O "← Voltar ao
+portfólio" de cima da foto continua lá (não foi pedido tirar).
 
 ## O mapa do prédio no Renaissance: "Ver no prédio" (v429)
 
