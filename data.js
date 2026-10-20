@@ -866,6 +866,36 @@ const EMPREENDIMENTOS = [
       "2 suítes + lavabo": { duplo: 1 },
       "2 dormitórios (1 suíte)": { simples: 1 },
     },
+    // v435 — o predio em 3D, como o do Renaissance. Medidas em metros tiradas
+    // das quatro fachadas que o dono mandou (20/10/2026, prancha A10, 1:100);
+    // a rua Getulio Vargas e o lado +z. Final 01 na frente a esquerda, 02 na
+    // frente a direita, 03 nos fundos a esquerda e 04 nos fundos a direita
+    // (o mapinha das plantas). No lugar do 303 fica o salao de festas.
+    mapaPredio: {
+      abas: [
+        { nome: "Apartamentos 3 suítes", finais: ["01", "02"] },
+        { nome: "Apartamentos 2 dormitórios", finais: ["03", "04"] },
+      ],
+      maquete: {
+        // O que nao e unidade: terreo e garagem, o lazer sobre a garagem, o
+        // nucleo da escada, o salao de festas, a casa de maquinas e o
+        // pe-direito elevado da cobertura.
+        massas: [
+          { x: [0, 31.2], z: [0, 56.2], y: [0, 7.34] },
+          { x: [6.5, 26.4], z: [4, 25.9], y: [7.34, 10.2] },
+          { x: [14.88, 18.05], z: [35, 51.25], andares: [3, 13], cor: "#e6eaec" },
+          { x: [5.5, 16.45], z: [25.9, 35], andares: [3, 3], cor: "#e6eaec", rotulo: "Salão de festas" },
+          { x: [12.6, 20.3], z: [35.3, 43.7], y: [42.06, 48.3], cor: "#e6eaec" },
+          { x: [11.2, 21.75], z: [43.6, 51.25], y: [42.06, 44.7], cor: "#e6eaec" },
+        ],
+        pavimentos: [{ de: 3, ate: 13, y: 7.34, altura: 3.156 }],
+        finais: [
+          { de: 3, ate: 13, caixas: {
+            "01": { x: [5.5, 14.88], z: [35, 54.3] }, "02": { x: [18.05, 27.4], z: [35, 54.3] },
+            "03": { x: [5.5, 16.45], z: [25.9, 35] }, "04": { x: [16.45, 27.4], z: [25.9, 35] } } },
+        ],
+      },
+    },
     hero: "assets/boulevard/capa.jpg",
     folder: "assets/boulevard/folder.pdf",
     video: "",

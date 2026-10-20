@@ -36,7 +36,7 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434)
+## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434) e do Boulevard (v435)
 
 Pedido do dono (20/10/2026), depois de ver o mapa em abas e o mapa 2D do
 Premium: *"queria q fosse imagem do predio, e eu pudesse ir girando ele para
@@ -72,8 +72,17 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   abas da v431**, que continuam no HTML, escondidas. Os testes de navegador
   rodam as abas num navegador sem WebGL de propósito, e o 3D no grupo
   **"PRÉDIO EM 3D"**, num navegador com WebGL.
-- **Só o Renaissance tem 3D por enquanto.** Premium Office, Evolutti e
-  Boulevard vão receber o mesmo desenho com as plantas, cortes e fachadas que o
+- **Boulevard em 3D (v435).** O dono mandou as quatro fachadas (prancha A10,
+  1:100 — a lateral diz "1/75", mas as medidas só fecham em 1:100), viu os
+  quatro lados e aprovou: *"blz, pode aplicar"*. 11 andares (3º ao 13º, 3,156 m
+  cada, o 3º a 7,34 m do chão); torre de 21,9 m de largura e 25,3 m de fundo,
+  mais as sacadas da frente; garagem de 31,2 × 56,2 m embaixo e o bloco baixo
+  sobre ela, atrás da torre. Final **01 na frente à esquerda, 02 na frente à
+  direita, 03 nos fundos à esquerda e 04 nos fundos à direita** (o mapinha das
+  plantas). **No lugar do 303 fica o "Salão de festas"** — uma massa com
+  `rotulo`, que escreve o nome nas paredes de fora. Sem WebGL, as abas
+  "Apartamentos 3 suítes" (01, 02) e "Apartamentos 2 dormitórios" (03, 04).
+- **Faltam Premium Office e Evolutti**, com as plantas, cortes e fachadas que o
   dono disse que vai mandar. O mapa 2D que fiz para os três (Boulevard
   aprovado, Evolutti em 3 abas, Premium modelo A com mapinha) **não foi
   publicado** — saiu da branch, e está nos commits 29fe260…519868a se ele

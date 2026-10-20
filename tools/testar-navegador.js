@@ -1506,6 +1506,19 @@ async function teste(nome, fn) {
     return ficha.equipe ? "a ficha do cliente mostra o Compartilhar ou o Selecionar" : "";
   });
 
+  // v435 — o Boulevard no mesmo padrao, pelas fachadas que o dono mandou; no
+  // lugar do 303 fica o salao de festas (nao e unidade).
+  await teste("o Boulevard abre o prédio em 3D, com o salão de festas no lugar do 303", async () => {
+    const p = await abrir3d("/#emp-boulevard");
+    if (!(await p.locator(".predio-3d.pronto").count())) { await p.close(); return "o prédio em 3D do Boulevard não apareceu"; }
+    const sem303 = await p.evaluate(() => document.querySelector(".predio-3d").predio3d.pontoDe("303"));
+    await tocarNo3d(p, "1102");
+    const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
+    await p.close();
+    if (sem303) return "o 303 apareceu como apartamento";
+    return /Apto 1102/.test(ficha) && /11º andar/.test(ficha) && /final 02/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+  });
+
   await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
     const p = await ctx3d.newPage();
     const baixados = [];

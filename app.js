@@ -2095,27 +2095,29 @@
       return m;
     };
 
-    // A placa: o numero no disponivel, "VENDIDO" (espacado) no vendido.
-    const placa = (u) => {
+    // A placa: o numero no disponivel, "VENDIDO" (espacado) no vendido e o
+    // nome do espaco (o salao de festas no lugar do 303 do Boulevard).
+    const placa = (texto, estilo) => {
       const c = document.createElement("canvas"); c.width = 512; c.height = 160;
       const g = c.getContext("2d");
-      const sala = andarDe(u.code) === null;
-      g.textAlign = "center"; g.textBaseline = "middle";
-      if (u.item) { g.fillStyle = "#202a32"; g.font = `800 ${sala ? 80 : 110}px ${fonte}`; g.fillText(u.code, 256, 86); }
-      else { g.fillStyle = "#c7ced3"; g.font = `700 72px ${fonte}`; g.fillText("VENDIDO".split("").join(" "), 256, 86); }
+      g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = estilo.cor;
+      let tamanho = estilo.tamanho;
+      g.font = `${estilo.peso} ${tamanho}px ${fonte}`;
+      while (tamanho > 30 && g.measureText(texto).width > 480) { tamanho -= 4; g.font = `${estilo.peso} ${tamanho}px ${fonte}`; }
+      g.fillText(texto, 256, 86);
       const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
       return new THREE.MeshBasicMaterial({ map: t, transparent: true });
     };
+    const placaDaUnidade = (u) => (u.item
+      ? placa(u.code, { cor: "#202a32", peso: 800, tamanho: andarDe(u.code) === null ? 80 : 110 })
+      : placa("VENDIDO".split("").join("\u200a"), { cor: "#c7ced3", peso: 700, tamanho: 72 }));
 
-    const massas = caixasDasMassas(maquete).map((b) => bloco(b, b.cor ? new THREE.Color(b.cor) : COR_3D.massa, COR_3D.massaBorda, 0.5));
+    const caixasDeMassa = caixasDasMassas(maquete);
     const comCaixa = unidades.map((u) => ({ u, b: caixaDaUnidade(maquete, u.code) })).filter((x) => x.b);
-    const todas = [...caixasDasMassas(maquete), ...comCaixa.map((x) => x.b)];
+    const todas = [...caixasDeMassa, ...comCaixa.map((x) => x.b)];
     const dentro = (p) => todas.some((b) => p.x > b.x[0] && p.x < b.x[1] && p.y > b.y[0] && p.y < b.y[1] && p.z > b.z[0] && p.z < b.z[1]);
-    const clicaveis = comCaixa.map(({ u, b }) => {
-      const m = bloco(b, u.item ? COR_3D.livre : COR_3D.vendido, u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda, u.item ? 0.9 : 0.8);
-      m.userData = u;
-      // A placa vai em toda parede de fora: frente, fundos e laterais.
-      const material = placa(u);
+    // A placa vai em toda parede de fora: frente, fundos e laterais.
+    const placas = (b, material) => {
       const c = meio(b);
       const alto = b.y[1] - b.y[0];
       [[0, 1, 0, b.z[1], b.x], [0, -1, Math.PI, b.z[0], b.x], [1, 0, Math.PI / 2, b.x[1], b.z], [-1, 0, -Math.PI / 2, b.x[0], b.z]].forEach(([dx, dz, giro, plano, largo]) => {
@@ -2128,6 +2130,16 @@
         pl.rotation.y = giro;
         scene.add(pl);
       });
+    };
+    const massas = caixasDeMassa.map((b) => {
+      const m = bloco(b, b.cor ? new THREE.Color(b.cor) : COR_3D.massa, COR_3D.massaBorda, 0.5);
+      if (b.rotulo) placas(b, placa(b.rotulo.toUpperCase(), { cor: "#7d878e", peso: 700, tamanho: 64 }));
+      return m;
+    });
+    const clicaveis = comCaixa.map(({ u, b }) => {
+      const m = bloco(b, u.item ? COR_3D.livre : COR_3D.vendido, u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda, u.item ? 0.9 : 0.8);
+      m.userData = u;
+      placas(b, placaDaUnidade(u));
       return m;
     });
 
