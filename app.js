@@ -2087,14 +2087,47 @@
 
     const fonte = getComputedStyle(document.body).fontFamily || "system-ui, sans-serif";
     const meio = (b) => new THREE.Vector3((b.x[0] + b.x[1]) / 2, (b.y[0] + b.y[1]) / 2, (b.z[0] + b.z[1]) / 2);
-    const bloco = (b, cor, borda, opacidadeBorda, vidro = false) => {
+    // v440 — o contorno de uma unidade feita de varias caixas nao risca a
+    // emenda entre elas: o dono viu as linhas verdes no meio do 1302 do
+    // Evolutti ("pq essas linhas verdes na vertical?"). Cada aresta perde o
+    // pedaco que encosta numa caixa irma; sobra so o contorno de fora.
+    const arestasSemEmenda = (b, irmas) => {
+      const eixos = ["x", "y", "z"], pts = [], eps = 0.01;
+      const dentroDe = (v, f) => v >= f[0] - eps && v <= f[1] + eps;
+      eixos.forEach((ax) => {
+        const [o1, o2] = eixos.filter((e) => e !== ax);
+        [0, 1].forEach((i) => [0, 1].forEach((j) => {
+          const fixo = { [o1]: b[o1][i], [o2]: b[o2][j] };
+          const cobertos = irmas
+            .filter((s) => dentroDe(fixo[o1], s[o1]) && dentroDe(fixo[o2], s[o2]))
+            .map((s) => [Math.max(b[ax][0], s[ax][0]), Math.min(b[ax][1], s[ax][1])])
+            .filter(([a, z]) => z - a > eps)
+            .sort((p, q) => p[0] - q[0]);
+          let ini = b[ax][0];
+          const pedacos = [];
+          cobertos.forEach(([a, z]) => { if (a > ini + eps) pedacos.push([ini, a]); ini = Math.max(ini, z); });
+          if (b[ax][1] > ini + eps) pedacos.push([ini, b[ax][1]]);
+          pedacos.forEach(([a, z]) => [a, z].forEach((v) => {
+            const ponto = { ...fixo, [ax]: v };
+            pts.push(ponto.x, ponto.y, ponto.z);
+          }));
+        }));
+      });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+      return geo;
+    };
+    const bloco = (b, cor, borda, opacidadeBorda, vidro = false, irmas = []) => {
       const geo = new THREE.BoxGeometry(b.x[1] - b.x[0], b.y[1] - b.y[0], b.z[1] - b.z[0]);
       const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial(vidro
         ? { color: 0xa9d8e4, roughness: 0.2, metalness: 0, transparent: true, opacity: 0.38, depthWrite: false }
         : { color: cor, roughness: 0.8, metalness: 0 }));
       m.position.copy(meio(b));
-      const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: borda, transparent: true, opacity: opacidadeBorda }));
-      e.position.copy(m.position);
+      const linhas = new THREE.LineBasicMaterial({ color: borda, transparent: true, opacity: opacidadeBorda });
+      const e = irmas.length
+        ? new THREE.LineSegments(arestasSemEmenda(b, irmas), linhas)
+        : new THREE.LineSegments(new THREE.EdgesGeometry(geo), linhas);
+      if (!irmas.length) e.position.copy(m.position);
       scene.add(m, e);
       return m;
     };
@@ -2197,7 +2230,8 @@
       if (!atual || atual.ate - atual.de < p.ate - p.de) maisLargo.set(p.lado, p);
     });
     const clicaveis = comCaixa.map(({ u, b }) => {
-      const m = bloco(b, u.item ? COR_3D.livre : COR_3D.vendido, u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda, u.item ? 0.9 : 0.8);
+      const irmas = comCaixa.filter((x) => x.u.code === u.code && x.b !== b).map((x) => x.b);
+      const m = bloco(b, u.item ? COR_3D.livre : COR_3D.vendido, u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda, u.item ? 0.9 : 0.8, false, irmas);
       m.userData = u;
       placas(b, placaDaUnidade(u), (dx, dz) => {
         const p = maisLargo.get(`${u.code}|${dx},${dz}`);
