@@ -36,7 +36,7 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435), do Premium Office (v436), do Evolutti (v438), do Prime e do Quality (v442)
+## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435), do Premium Office (v436), do Evolutti (v438), do Prime e do Quality (v442) e do Personalité (v443)
 
 Pedido do dono (20/10/2026), depois de ver o mapa em abas e o mapa 2D do
 Premium: *"queria q fosse imagem do predio, e eu pudesse ir girando ele para
@@ -160,10 +160,17 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   aplicar como está agora; se tiver que fazer algum ajuste, depois a gente
   faz"*. Sem WebGL, as abas **"Bloco A"** e **"Bloco B"** (`bloco` na aba
   filtra pela letra do fim do código, em `renderMapaDoPredio`).
-- **Personalité ainda sem 3D.** O rascunho saiu *"bem errado"* (palavra do
-  dono) e não há planta do andar no material: os cortes e as fachadas não
-  dizem onde fica cada final. Precisa da planta do andar tipo, ou do dono
-  dizendo em que canto fica cada final.
+- **Personalité em 3D (v443).** O primeiro rascunho saiu *"bem errado"*
+  (palavra do dono): sem planta do andar, os finais tinham sido chutados. O
+  dono mandou a planta do final 02 com o **mapinha do andar** no canto, e é ele
+  que decide: **02 nos fundos, 04 à esquerda (recuado da frente), 03 na frente
+  e 01 na esquina** da Ernesto Alves (frente, +z) com a Alexandre da Motta
+  (direita, +x); o núcleo fica no meio. Torre de 31,8 × 28,4 m, andar de
+  3,12 m, o 3º a +9,25 (fachadas e cortes 10 a 17). O 03 vai só até o 11º; no
+  12º e no 13º o lugar dele é terraço. No 3º, o lugar do 304 é o salão de
+  festas. As áreas do desenho fecham com as do cadastro. Ele viu os 4 lados e
+  mandou publicar: *"ok, publica assim q vou ver como fica"*. Sem WebGL, as
+  abas "Apartamentos de frente" (03, 01) e "de fundos" (04, 02).
 - **O tamanho embaixo do nome, na ficha do prédio (v441).** Pedido do dono,
   com o print da ficha do Premium: *"aqui eu quero tamanho da sala, m² global
   e privativo, como está nas listas — e em todos empreendimentos esse

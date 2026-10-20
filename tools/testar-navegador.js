@@ -1583,14 +1583,30 @@ async function teste(nome, fn) {
     return /802A/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
+  // v443 — o Personalité, pelo mapinha do andar da planta do final 02.
+  await teste("o Personalité abre o prédio em 3D, e o toque no 902 abre a ficha dele", async () => {
+    const p = await abrir3d("/#emp-personalite");
+    if (!(await p.locator(".predio-3d.pronto").count())) { await p.close(); return "o prédio em 3D do Personalité não apareceu"; }
+    const lugares = await p.evaluate(() => ["Sala 101", "Sala 209", "301", "1103", "404", "1302"].map((c) => !!document.querySelector(".predio-3d").predio3d.pontoDe(c)));
+    let ficha = "";
+    for (const g of [200, undefined, 110, 290]) {
+      await tocarNo3d(p, "902", g);
+      ficha = (await p.locator(".predio-ficha").innerText().catch(() => "")).replace(/\s+/g, " ");
+      if (/Apto 902\b/.test(ficha)) break;
+    }
+    await p.close();
+    if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
+    return /902/.test(ficha) && /9º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+  });
+
   await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
     const p = await ctx3d.newPage();
     const baixados = [];
     p.on("request", (req) => { if (/vendor\/three/.test(req.url())) baixados.push(req.url()); });
-    await p.goto(`${base}/#emp-personalite`, { waitUntil: "networkidle" });
+    await p.goto(`${base}/#emp-nova-vila-rica-iii`, { waitUntil: "networkidle" });
     await p.waitForTimeout(300);
     await p.close();
-    return baixados.length ? `o Personalité baixou ${baixados.length} arquivo(s) do 3D` : "";
+    return baixados.length ? `o Nova Vila Rica III baixou ${baixados.length} arquivo(s) do 3D` : "";
   });
   await nav3d.close();
 
