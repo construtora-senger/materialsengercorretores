@@ -2121,16 +2121,24 @@
     const todas = [...caixasDeMassa, ...comCaixa.map((x) => x.b)];
     const dentro = (p) => todas.some((b) => p.x > b.x[0] && p.x < b.x[1] && p.y > b.y[0] && p.y < b.y[1] && p.z > b.z[0] && p.z < b.z[1]);
     // A placa vai em toda parede de fora: frente, fundos e laterais.
-    const placas = (b, material) => {
+    const lados = (b) => [[0, 1, 0, b.z[1], b.x], [0, -1, Math.PI, b.z[0], b.x], [1, 0, Math.PI / 2, b.x[1], b.z], [-1, 0, -Math.PI / 2, b.x[0], b.z]];
+    const deFora = (b, [dx, dz, , plano]) => {
+      const c = meio(b);
+      return !dentro(new THREE.Vector3(dx ? plano + dx * 0.4 : c.x, c.y, dz ? plano + dz * 0.4 : c.z));
+    };
+    const placas = (b, material, faixa = (dx, dz, largo) => largo) => {
       const c = meio(b);
       const alto = b.y[1] - b.y[0];
-      [[0, 1, 0, b.z[1], b.x], [0, -1, Math.PI, b.z[0], b.x], [1, 0, Math.PI / 2, b.x[1], b.z], [-1, 0, -Math.PI / 2, b.x[0], b.z]].forEach(([dx, dz, giro, plano, largo]) => {
-        const fora = new THREE.Vector3(dx ? plano + dx * 0.4 : c.x, c.y, dz ? plano + dz * 0.4 : c.z);
-        if (dentro(fora)) return;
+      lados(b).forEach((lado) => {
+        const [dx, dz, giro, plano] = lado;
+        if (!deFora(b, lado)) return;
+        const largo = faixa(dx, dz, lado[4]);
+        if (!largo) return;
+        const centro = (largo[0] + largo[1]) / 2;
         let h = Math.min(2.1, alto * 0.66), w = h * 512 / 160;
         if (w > (largo[1] - largo[0]) * 0.9) { w = (largo[1] - largo[0]) * 0.9; h = w * 160 / 512; }
         const pl = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
-        pl.position.set(dx ? plano + dx * 0.06 : c.x, c.y, dz ? plano + dz * 0.06 : c.z);
+        pl.position.set(dx ? plano + dx * 0.06 : centro, c.y, dz ? plano + dz * 0.06 : centro);
         pl.rotation.y = giro;
         scene.add(pl);
       });
@@ -2169,10 +2177,32 @@
       if (b.escada) escadas(b);
       return m;
     });
+    // v438 — unidade feita de varias caixas (o Evolutti contorna a escada)
+    // escrevia o numero em cada pedaco da mesma parede, e os pedacos sem
+    // numero pareciam andar vazio (o dono: "pq nao estao preenchidos andares
+    // inteiros conforme planta?"). Cada lado da unidade leva um numero so, no
+    // meio da parede inteira dela — os pedacos no mesmo plano somados.
+    const paredes = new Map();
+    comCaixa.forEach(({ u, b }) => lados(b).forEach((lado) => {
+      if (!deFora(b, lado)) return;
+      const [dx, dz, , plano, largo] = lado;
+      const chave = `${u.code}|${dx},${dz}|${plano.toFixed(2)}`;
+      const p = paredes.get(chave);
+      if (!p) paredes.set(chave, { lado: `${u.code}|${dx},${dz}`, b, de: largo[0], ate: largo[1] });
+      else { p.de = Math.min(p.de, largo[0]); p.ate = Math.max(p.ate, largo[1]); }
+    }));
+    const maisLargo = new Map();
+    paredes.forEach((p) => {
+      const atual = maisLargo.get(p.lado);
+      if (!atual || atual.ate - atual.de < p.ate - p.de) maisLargo.set(p.lado, p);
+    });
     const clicaveis = comCaixa.map(({ u, b }) => {
       const m = bloco(b, u.item ? COR_3D.livre : COR_3D.vendido, u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda, u.item ? 0.9 : 0.8);
       m.userData = u;
-      placas(b, placaDaUnidade(u));
+      placas(b, placaDaUnidade(u), (dx, dz) => {
+        const p = maisLargo.get(`${u.code}|${dx},${dz}`);
+        return p && p.b === b ? [p.de, p.ate] : null;
+      });
       return m;
     });
 
@@ -2258,9 +2288,17 @@
     // Para os testes: onde o apartamento aparece na tela, e girar sem animacao.
     palco.predio3d = {
       pontoDe: (code) => {
-        const m = clicaveis.find((x) => x.userData.code === code);
-        if (!m) return null;
-        const p = m.position.clone().project(camera), r = renderer.domElement.getBoundingClientRect();
+        // Unidade de varias caixas: vale o pedaco que se ve dali (o primeiro
+        // pode estar escondido atras do resto do predio).
+        const pedacos = clicaveis.filter((x) => x.userData.code === code);
+        if (!pedacos.length) return null;
+        const r = renderer.domElement.getBoundingClientRect();
+        const visto = pedacos.find((m) => {
+          const p = m.position.clone().project(camera);
+          ray.setFromCamera(new THREE.Vector2(p.x, p.y), camera);
+          return ray.intersectObjects([...clicaveis, ...massas])[0]?.object.userData.code === code;
+        }) || pedacos[0];
+        const p = visto.position.clone().project(camera);
         return { x: r.left + (p.x + 1) / 2 * r.width, y: r.top + (1 - p.y) / 2 * r.height };
       },
       girar: (graus, el = 0.2) => { girar(graus * Math.PI / 180, el, null); renderer.render(scene, camera); },

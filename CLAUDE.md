@@ -36,7 +36,7 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435) e do Premium Office (v436)
+## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435), do Premium Office (v436) e do Evolutti (v438)
 
 Pedido do dono (20/10/2026), depois de ver o mapa em abas e o mapa 2D do
 Premium: *"queria q fosse imagem do predio, e eu pudesse ir girando ele para
@@ -108,11 +108,29 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   largura**, pela planta do 3º pavimento (*"as salas finais 4 e 5 não são tão
   diferentes assim em largura"*). Unidade com mais de uma caixa: `avulsas` e
   `finais` aceitam uma lista (`caixasDaUnidade`).
-- **Falta o Evolutti**, com as plantas, cortes e fachadas que o
-  dono disse que vai mandar. O mapa 2D que fiz para os três (Boulevard
-  aprovado, Evolutti em 3 abas, Premium modelo A com mapinha) **não foi
-  publicado** — saiu da branch, e está nos commits 29fe260…519868a se ele
-  quiser de volta.
+- **Evolutti em 3D (v438).** O dono mandou as plantas técnicas (1:75) do
+  pavimento 02 (+3,80), 03 (+6,90), 04 (+10,00) e tipo 05 a 08; o 9º ao 13º
+  saiu da planta do folder (só 01 e 02, torre mais estreita — o que sobra do
+  8º é o terraço do 901/902). **Não veio corte nem fachada do Evolutti**: do
+  4º para cima o andar foi contado com 3,10 m, como os de baixo — se chegar o
+  corte, acerte as alturas. (Os A14, A15 e A16 que vieram junto são de outro
+  prédio, o "Edifício Mult. Residencial / Comercial" da Rua Venâncio Aires.)
+  Do 4º ao 8º, 20,90 × 18,05 m: 02 frente-esquerda, 01 frente-direita, 04
+  fundos-esquerda, 03 fundos-direita, escada no meio dos fundos (com os
+  degraus pintados); a 24 de Janeiro é a frente e a Antônio Vargas a direita.
+  Embaixo, as lojas 103, 102 e 101 e as duas garagens. O dono viu os 4 lados,
+  pediu uma correção e aprovou (*"agora ta certo, pode meter ficha"*). Sem
+  WebGL, as abas "Apartamentos de frente" (02, 01) e "Apartamentos de fundos"
+  (04, 03).
+  **A correção dele, que vale para os quatro prédios:** unidade feita de
+  várias caixas (o apartamento que contorna a escada) escrevia o número só
+  num pedaço da parede, e os outros pedaços pareciam andar vazio (*"pq não
+  estão preenchidos andares inteiros conforme planta?"*). Agora cada lado da
+  unidade leva **um número só, no meio da parede inteira dela** (os pedaços
+  no mesmo plano somados).
+- O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
+  Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
+  está nos commits 29fe260…519868a se ele quiser de volta.
 
 Código: `montarPredio3d` e `criarPredio3d`, no `app.js` (bloco "v434"); CSS no
 bloco "v434" do fim do `styles.css`.
