@@ -2246,6 +2246,15 @@
       });
     };
     const massas = caixasDeMassa.map((b) => {
+      // v445 — `vendido: true`: parte vendida que nao tem numero no cadastro
+      // (o lugar do 03 no 12o e no 13o do Personalite) sai cinza escuro com
+      // "VENDIDO", como as unidades vendidas. Pedido do dono: "tem um ai branco
+      // em cima, e se ta vendido tem que ficar cinza como os demais".
+      if (b.vendido) {
+        const v = bloco(b, COR_3D.vendido, COR_3D.vendidoBorda, 0.8, false);
+        placas(b, placa("VENDIDO".split("").join("\u200a"), { cor: "#c7ced3", peso: 700, tamanho: 72 }));
+        return v;
+      }
       const m = bloco(b, b.cor ? new THREE.Color(b.cor) : COR_3D.massa, b.vidro ? 0x5f9fb0 : COR_3D.massaBorda, b.vidro ? 0.9 : 0.5, b.vidro);
       if (b.rotulo) placas(b, placa(b.rotulo.toUpperCase(), { cor: b.vidro ? "#2f6f80" : "#7d878e", peso: 700, tamanho: 64 }));
       if (b.escada) escadas(b);
@@ -2295,6 +2304,15 @@
     const rua = new THREE.Mesh(new THREE.PlaneGeometry(400, 14), new THREE.MeshStandardMaterial({ color: COR_3D.rua, roughness: 1 }));
     rua.rotation.x = -Math.PI / 2; rua.position.set(chao.position.x, caixa.min.y - 0.05, caixa.max.z + 9);
     scene.add(chao, rua);
+    // v445 — predio de esquina: a segunda rua, do lado que `ruaLateral` diz
+    // ("esquerda" ou "direita"). Pedido do dono no Prime, no Evolutti e no
+    // Personalite: "falta a rua cinza... pois ambos sao de esquina".
+    if (maquete.ruaLateral === "esquerda" || maquete.ruaLateral === "direita") {
+      const lateral = new THREE.Mesh(new THREE.PlaneGeometry(14, 400), new THREE.MeshStandardMaterial({ color: COR_3D.rua, roughness: 1 }));
+      lateral.rotation.x = -Math.PI / 2;
+      lateral.position.set(maquete.ruaLateral === "direita" ? caixa.max.x + 9 : caixa.min.x - 9, caixa.min.y - 0.04, chao.position.z);
+      scene.add(lateral);
+    }
 
     const altura = caixa.max.y - caixa.min.y;
     // `distancia` afasta a camera no predio largo e baixo (o Premium Office).

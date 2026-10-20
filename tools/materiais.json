@@ -6,7 +6,7 @@
     "video2": "",
     "video3": "",
     "mapa": "",
-    "galeria": 19,
+    "galeria": 51,
     "diferenciais": 9,
     "plantas": 28
   },
@@ -23,7 +23,7 @@
   },
   "premium-office": {
     "hero": "assets/premium-office/capa.jpg",
-    "folder": "",
+    "folder": "assets/premium-office/folder.pdf",
     "video": "assets/premium-office/video.mp4",
     "video2": "",
     "video3": "",
@@ -34,7 +34,7 @@
   },
   "boulevard": {
     "hero": "assets/boulevard/capa.jpg",
-    "folder": "",
+    "folder": "assets/boulevard/folder.pdf",
     "video": "",
     "video2": "",
     "video3": "",
@@ -45,7 +45,7 @@
   },
   "personalite": {
     "hero": "assets/personalite/capa.jpg",
-    "folder": "assets/personalite/folder.pdf",
+    "folder": "",
     "video": "assets/personalite/video.mp4",
     "video2": "assets/personalite/video2.mp4",
     "video3": "",
@@ -67,7 +67,7 @@
   },
   "quality": {
     "hero": "assets/quality/capa.jpg",
-    "folder": "",
+    "folder": "assets/quality/folder.pdf",
     "video": "",
     "video2": "",
     "video3": "",
