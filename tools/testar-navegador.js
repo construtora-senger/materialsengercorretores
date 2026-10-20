@@ -1527,8 +1527,11 @@ async function teste(nome, fn) {
     const lugares = await p.evaluate(() => ["101", "201", "305", "801", "805"].map((c) => !!document.querySelector(".predio-3d").predio3d.pontoDe(c)));
     await tocarNo3d(p, "801");
     const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
+    // v441 — o tamanho da sala embaixo do nome, como nas listas.
+    const tamanho = await p.locator(".predio-ficha-areas").innerText().catch(() => "");
     await p.close();
     if (lugares.includes(false)) return `faltou sala no prédio: ${lugares.join(",")}`;
+    if (!/115 m² global · 65 m² privativo/.test(tamanho)) return `o tamanho embaixo do nome diz: "${tamanho}"`;
     return /801/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
