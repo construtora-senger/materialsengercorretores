@@ -1554,6 +1554,7 @@
       });
     });
     bindInventoryEvents(detail);
+    montarPredio3d(detail, emp);
 
     // Link de unidade (?u=501): so destaca a linha. A pagina abre no topo,
     // para o cliente ver o empreendimento e os diferenciais antes do preco.
@@ -1764,7 +1765,7 @@
 
     return `
       <section class="content-section" id="unidades">
-        <div class="section-title-row"><h2>${focusItems ? (focusItems.length > 1 ? "Suas unidades" : "Sua unidade") : "Unidades e valores"}</h2><p>${mapa ? DICA_DO_PREDIO : DICA_DA_LISTA}</p></div>
+        <div class="section-title-row"><h2>${focusItems ? (focusItems.length > 1 ? "Suas unidades" : "Sua unidade") : "Unidades e valores"}</h2><p>${mapa ? (emp.mapaPredio.maquete ? DICA_DO_PREDIO_3D : DICA_DO_PREDIO) : DICA_DA_LISTA}</p></div>
         ${vistas}
       </section>
     `;
@@ -1785,12 +1786,20 @@
   // Selecionar, que sao ferramentas da equipe e nao existem na tela dele. So
   // para quem tem `mapaPredio` no data.js (hoje, o Renaissance).
   const DICA_DO_PREDIO = "Toque no apartamento para ver a ficha";
+  const DICA_DO_PREDIO_3D = "Gire o prédio e toque no apartamento para ver a ficha";
   const DICA_DA_LISTA = "Toque na tipologia para ver as unidades";
 
   // Os dois ultimos digitos do apartamento com andar; a "Sala 04" nao tem final.
   function finalDoCodigo(codigo) {
     const digitos = String(codigo || "").match(/\d+/)?.[0] || "";
     return digitos.length >= 3 ? digitos.slice(-2) : "";
+  }
+
+  // Todas as unidades do cadastro, inclusive as vendidas: elas ficam fora do
+  // itemMap (v113), e por isso o desenho as mostra como "Vendido", sem ficha.
+  function unidadesDoPredio(emp) {
+    return (emp.grupos || []).flatMap((group, gi) => (group.unidades || []).map((unit, ui) => (
+      { code: String(unit.apto), item: itemMap.get(`${emp.id}:unit:${gi}:${ui}`) || null })));
   }
 
   function renderMapaDoPredio(emp) {
@@ -1805,17 +1814,14 @@
     const abas = (mapa.abas || []).filter((aba) => (aba.finais || []).length);
     const terreo = mapa.terreo || [];
 
-    // Todas as unidades do cadastro, inclusive as vendidas: elas ficam fora do
-    // itemMap (v113), e por isso o desenho as mostra como "Vendido", sem ficha.
     const andares = new Map();
     const doTerreo = [];
-    (emp.grupos || []).forEach((group, gi) => (group.unidades || []).forEach((unit, ui) => {
-      const u = { code: String(unit.apto), item: itemMap.get(`${emp.id}:unit:${gi}:${ui}`) || null };
+    unidadesDoPredio(emp).forEach((u) => {
       const andar = andarDe(u.code);
       if (andar === null) { doTerreo.push(u); return; }
       if (!andares.has(andar)) andares.set(andar, []);
       andares.get(andar).push(u);
-    }));
+    });
     if (!abas.length) return "";
 
     const celula = (u, larga = false) => {
@@ -1851,9 +1857,25 @@
       return `<div class="predio-painel" data-painel-predio="${indice}"${indice === 0 ? "" : " hidden"}><div class="predio-andares">${linhas.join("")}</div></div>`;
     };
 
+    // v434 — com `maquete` no data.js o predio abre em 3D, e as abas ficam
+    // guardadas para o aparelho que nao consegue desenhar o 3D.
+    const tresD = mapa.maquete ? `
+        <div class="predio-3d" data-predio-3d>
+          <p class="predio-3d-carregando">Carregando o prédio…</p>
+          <p class="predio-legenda predio-3d-legenda">
+            <span class="lg-disp">Disponível</span>
+            <span class="lg-vend">Vendido</span>
+            <span class="lg-sel">Escolhido</span>
+          </p>
+          <div class="predio-3d-lados" role="group" aria-label="Ver o prédio">
+            ${LADOS_DO_PREDIO.map(([lado, nome], i) => `<button type="button" data-lado="${lado}" aria-pressed="${i === 0}">${nome}</button>`).join("")}
+          </div>
+        </div>` : "";
+
     return `
       <div class="vista-predio">
-        <div class="predio-desenho">
+        ${tresD}
+        <div class="predio-desenho"${tresD ? " hidden" : ""}>
           <p class="predio-tit">Escolha a tipologia</p>
           ${abas.length > 1 ? `
           <div class="abas-predio" role="tablist" aria-label="Tipologias do prédio">
@@ -1939,6 +1961,10 @@
       b.classList.toggle("predio-sel", b === botao);
       b.setAttribute("aria-pressed", String(b === botao));
     });
+    mostrarFichaDoPredio(vista, item);
+  }
+
+  function mostrarFichaDoPredio(vista, item) {
     const ficha = vista.querySelector(".predio-ficha");
     ficha.innerHTML = fichaDoPredio(item);
     bindInventoryEvents(ficha);
@@ -1954,7 +1980,254 @@
     if (predio) predio.hidden = vista !== "predio";
     if (lista) lista.hidden = vista !== "lista";
     const dica = secao.querySelector(".section-title-row p");
-    if (dica) dica.textContent = vista === "predio" ? DICA_DO_PREDIO : DICA_DA_LISTA;
+    const tresD = secao.querySelector("[data-predio-3d]");
+    if (dica) dica.textContent = vista === "predio" ? (tresD ? DICA_DO_PREDIO_3D : DICA_DO_PREDIO) : DICA_DA_LISTA;
+  }
+
+  // v434 — O PREDIO EM 3D, QUE GIRA. Pedido do dono (20/10/2026), depois do
+  // mapa em abas: "queria que fosse imagem do predio, e eu pudesse ir girando
+  // ele para ver os lados e ver os aptos e salas vendidas e a disposicao".
+  // Entre os desenhos mostrados ele escolheu a maquete branca, o vendido em
+  // cinza escuro com "Vendido" escrito e o numero de cada apartamento na
+  // frente, nos fundos e nas laterais do predio (opcao 3). O desenho sai de
+  // `mapaPredio.maquete` (medidas em metros, a rua no lado +z); preco,
+  // situacao e planta continuam saindo do cadastro, na mesma ficha do mapa.
+  //
+  // O three.js (r180, licenca MIT) mora em assets/vendor/three/ e so e baixado
+  // quando a pagina tem predio em 3D. Aparelho sem WebGL 2 — ou que perca o
+  // desenho no meio — volta para as abas do mapa (v431), que ficam guardadas.
+  const LADOS_DO_PREDIO = [["frente", "Frente"], ["lateral", "Lateral"], ["fundos", "Fundos"], ["cima", "De cima"]];
+  const TRES = "assets/vendor/three/";
+  const COR_3D = {
+    livre: 0xffffff, livreBorda: 0x1f9e7a, vendido: 0x5d6870, vendidoBorda: 0x3a434a,
+    escolhido: 0x178fa0, massa: 0xdfe4e7, massaBorda: 0x5b666e, chao: 0xe5eaec, rua: 0x9aa4aa, fundo: 0xeef5f7,
+  };
+  let predio3dNaTela = null;
+
+  function webgl2Disponivel() {
+    try {
+      const gl = document.createElement("canvas").getContext("webgl2");
+      if (!gl) return false;
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return true;
+    } catch (e) { return false; }
+  }
+
+  // [y de baixo, y de cima] do andar; 25 cm de folga entre um andar e outro.
+  function alturaDoAndar(maquete, andar) {
+    const p = (maquete.pavimentos || []).find((pv) => andar >= pv.de && andar <= pv.ate);
+    if (!p) return null;
+    const y = p.y + (andar - p.de) * p.altura;
+    return [y, y + p.altura - 0.25];
+  }
+
+  function caixaDaUnidade(maquete, code) {
+    const avulsa = maquete.avulsas?.[code];
+    if (avulsa) return avulsa;
+    const andar = andarDe(code);
+    const y = andar === null ? null : alturaDoAndar(maquete, andar);
+    const regra = y && (maquete.finais || []).find((f) => andar >= f.de && andar <= f.ate);
+    const c = regra?.caixas?.[finalDoCodigo(code)];
+    return c ? { x: c.x, z: c.z, y } : null;
+  }
+
+  function caixasDasMassas(maquete) {
+    return (maquete.massas || []).flatMap((m) => {
+      if (!m.andares) return [m];
+      const lista = [];
+      for (let andar = m.andares[0]; andar <= m.andares[1]; andar++) {
+        const y = alturaDoAndar(maquete, andar);
+        if (y) lista.push({ ...m, y });
+      }
+      return lista;
+    });
+  }
+
+  function montarPredio3d(root, emp) {
+    if (predio3dNaTela && !predio3dNaTela.palco.isConnected) { predio3dNaTela.desmontar(); predio3dNaTela = null; }
+    const palco = root.querySelector("[data-predio-3d]");
+    const maquete = emp?.mapaPredio?.maquete;
+    if (!palco || !maquete) return;
+    const vista = palco.closest(".vista-predio");
+    const voltarParaAsAbas = () => {
+      if (predio3dNaTela?.palco === palco) { predio3dNaTela.desmontar(); predio3dNaTela = null; }
+      palco.remove();
+      const desenho = vista.querySelector(".predio-desenho");
+      if (desenho) desenho.hidden = false;
+      const dica = vista.closest("#unidades")?.querySelector(".section-title-row p");
+      if (dica && !vista.hidden) dica.textContent = DICA_DO_PREDIO;
+    };
+    if (!webgl2Disponivel()) { voltarParaAsAbas(); return; }
+    const unidades = unidadesDoPredio(emp);
+    const caminho = (arquivo) => new URL(TRES + arquivo, document.baseURI).href;
+    Promise.all([import(caminho("three.module.min.js")), import(caminho("OrbitControls.js")), document.fonts?.ready])
+      .then(([THREE, { OrbitControls }]) => {
+        if (!palco.isConnected) return;
+        predio3dNaTela = criarPredio3d(THREE, OrbitControls, palco, maquete, unidades, {
+          escolher: (item) => mostrarFichaDoPredio(vista, item),
+          falhou: voltarParaAsAbas,
+        });
+      })
+      .catch(voltarParaAsAbas);
+  }
+
+  function criarPredio3d(THREE, OrbitControls, palco, maquete, unidades, avisos) {
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(COR_3D.fundo, 1);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    palco.prepend(renderer.domElement);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 1, 1, 2000);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xc9d2d6, 2.4));
+    const sol = new THREE.DirectionalLight(0xffffff, 1.5); sol.position.set(60, 120, 140); scene.add(sol);
+    const contra = new THREE.DirectionalLight(0xffffff, 0.8); contra.position.set(-80, 90, -60); scene.add(contra);
+
+    const fonte = getComputedStyle(document.body).fontFamily || "system-ui, sans-serif";
+    const meio = (b) => new THREE.Vector3((b.x[0] + b.x[1]) / 2, (b.y[0] + b.y[1]) / 2, (b.z[0] + b.z[1]) / 2);
+    const bloco = (b, cor, borda, opacidadeBorda) => {
+      const geo = new THREE.BoxGeometry(b.x[1] - b.x[0], b.y[1] - b.y[0], b.z[1] - b.z[0]);
+      const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: cor, roughness: 0.8, metalness: 0 }));
+      m.position.copy(meio(b));
+      const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: borda, transparent: true, opacity: opacidadeBorda }));
+      e.position.copy(m.position);
+      scene.add(m, e);
+      return m;
+    };
+
+    // A placa: o numero no disponivel, "VENDIDO" (espacado) no vendido.
+    const placa = (u) => {
+      const c = document.createElement("canvas"); c.width = 512; c.height = 160;
+      const g = c.getContext("2d");
+      const sala = andarDe(u.code) === null;
+      g.textAlign = "center"; g.textBaseline = "middle";
+      if (u.item) { g.fillStyle = "#202a32"; g.font = `800 ${sala ? 80 : 110}px ${fonte}`; g.fillText(u.code, 256, 86); }
+      else { g.fillStyle = "#c7ced3"; g.font = `700 72px ${fonte}`; g.fillText("VENDIDO".split("").join(" "), 256, 86); }
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+      return new THREE.MeshBasicMaterial({ map: t, transparent: true });
+    };
+
+    const massas = caixasDasMassas(maquete).map((b) => bloco(b, b.cor ? new THREE.Color(b.cor) : COR_3D.massa, COR_3D.massaBorda, 0.5));
+    const comCaixa = unidades.map((u) => ({ u, b: caixaDaUnidade(maquete, u.code) })).filter((x) => x.b);
+    const todas = [...caixasDasMassas(maquete), ...comCaixa.map((x) => x.b)];
+    const dentro = (p) => todas.some((b) => p.x > b.x[0] && p.x < b.x[1] && p.y > b.y[0] && p.y < b.y[1] && p.z > b.z[0] && p.z < b.z[1]);
+    const clicaveis = comCaixa.map(({ u, b }) => {
+      const m = bloco(b, u.item ? COR_3D.livre : COR_3D.vendido, u.item ? COR_3D.livreBorda : COR_3D.vendidoBorda, u.item ? 0.9 : 0.8);
+      m.userData = u;
+      // A placa vai em toda parede de fora: frente, fundos e laterais.
+      const material = placa(u);
+      const c = meio(b);
+      const alto = b.y[1] - b.y[0];
+      [[0, 1, 0, b.z[1], b.x], [0, -1, Math.PI, b.z[0], b.x], [1, 0, Math.PI / 2, b.x[1], b.z], [-1, 0, -Math.PI / 2, b.x[0], b.z]].forEach(([dx, dz, giro, plano, largo]) => {
+        const fora = new THREE.Vector3(dx ? plano + dx * 0.4 : c.x, c.y, dz ? plano + dz * 0.4 : c.z);
+        if (dentro(fora)) return;
+        let h = Math.min(2.1, alto * 0.66), w = h * 512 / 160;
+        if (w > (largo[1] - largo[0]) * 0.9) { w = (largo[1] - largo[0]) * 0.9; h = w * 160 / 512; }
+        const pl = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
+        pl.position.set(dx ? plano + dx * 0.06 : c.x, c.y, dz ? plano + dz * 0.06 : c.z);
+        pl.rotation.y = giro;
+        scene.add(pl);
+      });
+      return m;
+    });
+
+    // Chao e rua, e a camera olhando para o meio da torre.
+    const caixa = new THREE.Box3();
+    todas.forEach((b) => caixa.expandByPoint(new THREE.Vector3(b.x[0], b.y[0], b.z[0])).expandByPoint(new THREE.Vector3(b.x[1], b.y[1], b.z[1])));
+    const torre = new THREE.Box3();
+    comCaixa.filter((x) => andarDe(x.u.code) !== null).forEach(({ b }) => torre.expandByPoint(new THREE.Vector3(b.x[0], 0, b.z[0])).expandByPoint(new THREE.Vector3(b.x[1], 0, b.z[1])));
+    if (torre.isEmpty()) torre.copy(caixa);
+    const chao = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: COR_3D.chao, roughness: 1 }));
+    chao.rotation.x = -Math.PI / 2; chao.position.set((caixa.min.x + caixa.max.x) / 2, caixa.min.y - 0.1, (caixa.min.z + caixa.max.z) / 2);
+    const rua = new THREE.Mesh(new THREE.PlaneGeometry(400, 14), new THREE.MeshStandardMaterial({ color: COR_3D.rua, roughness: 1 }));
+    rua.rotation.x = -Math.PI / 2; rua.position.set(chao.position.x, caixa.min.y - 0.05, caixa.max.z + 9);
+    scene.add(chao, rua);
+
+    const altura = caixa.max.y - caixa.min.y;
+    const raio = 2.2 * altura;
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set((torre.min.x + torre.max.x) / 2, caixa.min.y + altura * 0.47, (torre.min.z + torre.max.z) / 2);
+    controls.enableDamping = true; controls.enablePan = false; controls.maxPolarAngle = Math.PI * 0.49;
+    controls.minDistance = raio * 0.27; controls.maxDistance = raio * 1.75;
+    // No celular o dedo de cima para baixo continua rolando a pagina; de lado, gira.
+    renderer.domElement.style.touchAction = "pan-y";
+
+    let pedido = 0;
+    const desenhar = () => { if (pedido) return; pedido = requestAnimationFrame(() => { pedido = 0; if (controls.update()) desenhar(); renderer.render(scene, camera); }); };
+    controls.addEventListener("change", desenhar);
+
+    const LADOS = { frente: [0.42, 0.18], lateral: [Math.PI / 2 + 0.2, 0.2], fundos: [Math.PI + 0.42, 0.2], cima: [0.6, 0.75] };
+    const raioAgora = () => raio * Math.max(1, 0.95 / camera.aspect);
+    const girar = (az, el, lado) => {
+      const r = raioAgora(), t = controls.target;
+      camera.position.set(t.x + Math.sin(az) * Math.cos(el) * r, t.y + Math.sin(el) * r, t.z + Math.cos(az) * Math.cos(el) * r);
+      controls.update();
+      palco.querySelectorAll("[data-lado]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lado === lado)));
+      desenhar();
+    };
+    const irPara = (lado) => girar(...LADOS[lado], lado);
+    palco.querySelectorAll("[data-lado]").forEach((b) => b.addEventListener("click", () => irPara(b.dataset.lado)));
+    // A rodinha do mouse continua rolando a pagina; aproxima com Ctrl (ou o pinça do touchpad).
+    palco.addEventListener("wheel", (e) => { if (!e.ctrlKey && !e.metaKey) e.stopPropagation(); }, { capture: true });
+
+    // Toque: so vale o toque parado (arrastar e girar). Vendido nao tem ficha.
+    let escolhida = null;
+    const escolher = (m) => {
+      if (escolhida) escolhida.material.color.setHex(COR_3D.livre);
+      escolhida = m;
+      m.material.color.setHex(COR_3D.escolhido);
+      desenhar();
+      avisos.escolher(m.userData.item);
+    };
+    const ray = new THREE.Raycaster(), ponto = new THREE.Vector2();
+    const alvoEm = (e) => {
+      const r = renderer.domElement.getBoundingClientRect();
+      ponto.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ponto, camera);
+      const hit = ray.intersectObjects([...clicaveis, ...massas])[0];
+      return hit && hit.object.userData.item ? hit.object : null;
+    };
+    let inicio = null;
+    renderer.domElement.addEventListener("pointerdown", (e) => { inicio = [e.clientX, e.clientY]; });
+    renderer.domElement.addEventListener("pointerup", (e) => {
+      if (!inicio || Math.hypot(e.clientX - inicio[0], e.clientY - inicio[1]) > 6) return;
+      inicio = null;
+      const m = alvoEm(e);
+      if (m) escolher(m);
+    });
+    renderer.domElement.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && !e.buttons) renderer.domElement.style.cursor = alvoEm(e) ? "pointer" : ""; });
+    renderer.domElement.addEventListener("webglcontextlost", (e) => { e.preventDefault(); avisos.falhou(); });
+
+    const medir = () => {
+      const w = palco.clientWidth, h = palco.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); desenhar();
+    };
+    const observador = new ResizeObserver(medir);
+    observador.observe(palco);
+    medir(); irPara("frente");
+    palco.querySelector(".predio-3d-carregando")?.remove();
+    palco.classList.add("pronto");
+
+    // Para os testes: onde o apartamento aparece na tela, e girar sem animacao.
+    palco.predio3d = {
+      pontoDe: (code) => {
+        const m = clicaveis.find((x) => x.userData.code === code);
+        if (!m) return null;
+        const p = m.position.clone().project(camera), r = renderer.domElement.getBoundingClientRect();
+        return { x: r.left + (p.x + 1) / 2 * r.width, y: r.top + (1 - p.y) / 2 * r.height };
+      },
+      girar: (graus, el = 0.2) => { girar(graus * Math.PI / 180, el, null); renderer.render(scene, camera); },
+    };
+
+    return {
+      palco,
+      desmontar: () => {
+        observador.disconnect(); controls.dispose(); cancelAnimationFrame(pedido);
+        scene.traverse((o) => { o.geometry?.dispose(); if (o.material) { o.material.map?.dispose(); o.material.dispose(); } });
+        renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove();
+      },
+    };
   }
 
   // v407 — AS ABAS DA PAGINA DO EMPREENDIMENTO. Pedido do dono (9/10/2026),

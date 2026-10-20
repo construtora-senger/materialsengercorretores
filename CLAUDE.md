@@ -36,6 +36,56 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434)
+
+Pedido do dono (20/10/2026), depois de ver o mapa em abas e o mapa 2D do
+Premium: *"queria q fosse imagem do predio, e eu pudesse ir girando ele para
+ver os lados e ver os aptos e salas vendidas e a disposição"*. Viu seis
+modelos (escolheu a **A**, maquete branca), mais seis estilos dela (escolheu o
+**6**, vendido em cinza escuro) e quatro opções de número (escolheu a **3**,
+depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
+
+- **Como é:** a maquete branca do prédio, que gira com o dedo ou o mouse.
+  Disponível = branco com contorno verde e **o número do apartamento escrito
+  em toda parede de fora** (frente, fundos e laterais). Vendido = **cinza
+  escuro com "VENDIDO" escrito**, e o toque nele não abre nada (como no mapa
+  2D). Escolhido = na cor da marca. Embaixo, os botões **Frente · Lateral ·
+  Fundos · De cima**; no canto, a legenda.
+- **A ficha é a de sempre** (`fichaDoPredio`, `mostrarFichaDoPredio`): ao lado
+  no computador, embaixo no celular com a tela descendo até ela, com planta,
+  planta técnica, Compartilhar e Selecionar (o cliente vê sem os dois botões
+  da equipe, regra da v432).
+- **De onde sai o desenho:** `mapaPredio.maquete` no `data.js`, em metros
+  (medidas tiradas do modelo 3D do Renaissance; a rua é o lado **+z**):
+  `massas` (o que não é unidade — térreo, lazer do 4º, núcleo da escada, casa
+  de máquinas; com `andares` repete por andar), `pavimentos` (altura de cada
+  faixa de andares), `finais` (a caixa de cada final por faixa de andares) e
+  `avulsas` (as salas do térreo). Preço e situação continuam vindo do
+  cadastro. `tools/validar.js` falha se uma unidade ficar sem lugar no prédio.
+- **No celular**, arrastar de lado gira e arrastar para cima/baixo continua
+  rolando a página. **No computador**, a rodinha do mouse rola a página; o
+  zoom é com Ctrl + rodinha.
+- **O three.js** (r180, licença MIT) mora em `assets/vendor/three/` e só é
+  baixado em página que tem prédio em 3D. O `OrbitControls.js` é o original
+  com uma linha mudada (importa `./three.module.min.js` em vez de `three`).
+- **Aparelho sem WebGL 2** (ou que perca o desenho no meio) **volta para as
+  abas da v431**, que continuam no HTML, escondidas. Os testes de navegador
+  rodam as abas num navegador sem WebGL de propósito, e o 3D no grupo
+  **"PRÉDIO EM 3D"**, num navegador com WebGL.
+- **Só o Renaissance tem 3D por enquanto.** Premium Office, Evolutti e
+  Boulevard vão receber o mesmo desenho com as plantas, cortes e fachadas que o
+  dono disse que vai mandar. O mapa 2D que fiz para os três (Boulevard
+  aprovado, Evolutti em 3 abas, Premium modelo A com mapinha) **não foi
+  publicado** — saiu da branch, e está nos commits 29fe260…519868a se ele
+  quiser de volta.
+
+Código: `montarPredio3d` e `criarPredio3d`, no `app.js` (bloco "v434"); CSS no
+bloco "v434" do fim do `styles.css`.
+
+> **REGRA ANTIGA em parte — substituída pela de cima:** no Renaissance o "Ver
+> no prédio" abria nas duas abas do mapa 2D (v431). Elas ficaram só como
+> reserva para o aparelho que não desenha o 3D.
+
 ## O mapa do prédio no Renaissance: "Ver no prédio" (v429)
 
 Pedido do dono (16/10/2026), depois de mostrar o mapa antigo de

@@ -84,6 +84,41 @@ const EMPREENDIMENTOS = [
         { nome: "Apartamentos 2 suítes", finais: ["03", "04"] },
       ],
       terreo: ["Sala 04", "Sala 03", "Sala 02", "Sala 01"],
+      // v434 — o predio em 3D, que gira (escolha do dono em 20/10/2026: a
+      // maquete branca, vendido em cinza escuro com "Vendido" escrito e o
+      // numero do apartamento na frente, nos fundos e nas laterais). Medidas
+      // em metros, tiradas do modelo 3D do Renaissance; a frente (a rua) e o
+      // lado +z. Cada apartamento sai do andar (pelo numero) e do final.
+      maquete: {
+        // O que nao e unidade: terreo e garagem, o lazer do 4º (fundos), o
+        // nucleo da escada entre o 03 e o 04 e a casa de maquinas.
+        massas: [
+          { x: [18.7, 58.8], z: [30, 65.8], y: [2, 16.2] },
+          { x: [18.7, 58.8], z: [65.8, 75], y: [8.4, 16.2] },
+          { x: [23.4, 52.3], z: [48.9, 59], andares: [4, 4], cor: "#cfe0e6" },
+          { x: [36.3, 39.4], z: [48.9, 59], andares: [5, 12] },
+          { x: [31, 45], z: [52, 64], y: [66.02, 70.02] },
+        ],
+        pavimentos: [
+          { de: 4, ate: 4, y: 16.4, altura: 3.2 },
+          { de: 5, ate: 12, y: 19.6, altura: 3.24 },
+          { de: 13, ate: 18, y: 45.5, altura: 3.42 },
+        ],
+        finais: [
+          { de: 4, ate: 12, caixas: {
+            "01": { x: [37.85, 52.3], z: [59, 69.2] }, "02": { x: [23.4, 37.85], z: [59, 69.2] },
+            "03": { x: [23.4, 36.3], z: [48.9, 59] }, "04": { x: [39.4, 52.3], z: [48.9, 59] } } },
+          { de: 13, ate: 17, caixas: { "01": { x: [37.85, 49.1], z: [48.9, 68.3] }, "02": { x: [26.6, 37.85], z: [48.9, 68.3] } } },
+          { de: 18, ate: 18, caixas: { "01": { x: [26.6, 49.1], z: [48.9, 68.3] } } },
+        ],
+        // As salas do terreo, na frente, na ordem de `terreo`.
+        avulsas: {
+          "Sala 04": { x: [18.7, 28.4], z: [66, 75], y: [2, 8.4] },
+          "Sala 03": { x: [28.7, 38.4], z: [66, 75], y: [2, 8.4] },
+          "Sala 02": { x: [38.7, 48.4], z: [66, 75], y: [2, 8.4] },
+          "Sala 01": { x: [48.7, 58.4], z: [66, 75], y: [2, 8.4] },
+        },
+      },
       // v430 — a planta tecnica (planta baixa do andar, em PDF) na ficha do
       // apartamento, pedido do dono em 18/10/2026: as mesmas pranchas do mapa
       // antigo (A05 a A09), cada uma valendo para os andares do carimbo dela.
