@@ -799,7 +799,7 @@ async function teste(nome, fn) {
   grupo("MODO CLIENTE");
 
   const INTERNOS = ["#share-emp-prices", "#share-emp-no-prices", "#share-emp-link", "#print-detail",
-    "#print-list", "#share-portfolio", "#corretor-button", "#compartilhar-sistema", ".version-tag", "[data-select-item]", "[data-share-item]"];
+    "#print-list", "#share-portfolio", "#corretor-button", "#compartilhar-sistema", "#voltar-empreendimentos", ".version-tag", "[data-select-item]", "[data-share-item]"];
 
   const semControlesInternos = async (pagina) => {
     const vazando = [];
@@ -1581,6 +1581,33 @@ async function teste(nome, fn) {
     await p.close();
     if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
     return /802A/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+  });
+
+  // v444 — o alugado (venda para investidor) em azul claro, com legenda
+  // própria; e o "Voltar empreendimentos" do topo, dentro do empreendimento.
+  await teste("no Quality o alugado tem legenda própria, e o topo traz o Voltar empreendimentos", async () => {
+    const p = await abrir3d("/#emp-quality");
+    const r = await p.evaluate(() => ({
+      alug: document.querySelector(".predio-3d-legenda .lg-alug")?.textContent || "",
+      voltar: !document.getElementById("voltar-empreendimentos")?.hidden,
+    }));
+    let ficha = "";
+    for (const g of [undefined, 290, 110]) {
+      await tocarNo3d(p, "801A", g);
+      ficha = (await p.locator(".predio-ficha").innerText().catch(() => "")).replace(/\s+/g, " ");
+      if (/Apto 801A\b/.test(ficha)) break;
+    }
+    await p.click("#voltar-empreendimentos");
+    await p.waitForTimeout(300);
+    const naHome = await p.evaluate(() => !document.getElementById("catalogo").hidden && document.getElementById("voltar-empreendimentos").hidden);
+    await p.goto(`${base}/#emp-renaissance`, { waitUntil: "networkidle" });
+    const semAlugado = await p.locator(".predio-3d-legenda .lg-alug").count();
+    await p.close();
+    if (!/Alugado · venda para investidor/.test(r.alug)) return `a legenda diz: "${r.alug}"`;
+    if (!r.voltar) return "o Voltar empreendimentos não apareceu no topo";
+    if (!/801A/.test(ficha) || !/Alugado/.test(ficha)) return `a ficha do alugado diz: ${ficha}`;
+    if (!naHome) return "o Voltar empreendimentos não voltou para a vitrine";
+    return semAlugado ? "o Renaissance, sem alugado, mostrou a legenda do alugado" : "";
   });
 
   // v443 — o Personalité, pelo mapinha do andar da planta do final 02.
