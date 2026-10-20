@@ -1210,6 +1210,61 @@ const EMPREENDIMENTOS = [
       "2 dormitórios — final 03": { simples: 1 },
       "2 dormitórios — final 04": { simples: 1 },
     },
+    // v443 — o predio em 3D. Onde fica cada final saiu do mapinha do andar
+    // que o dono mandou na planta do final 02 (20/10/2026): 02 nos fundos,
+    // 04 a esquerda, 03 na frente (do 3o ao 11o; no 12o e no 13o o lugar
+    // dele e terraco) e 01 na esquina da Ernesto Alves com a Alexandre da
+    // Motta. Medidas das fachadas e cortes (pranchas 10 a 17, 1:100): torre
+    // de 31,8 x 28,4 m, andar de 3,12 m, o 3o a +9,25. A Ernesto Alves e a
+    // frente (+z); a Alexandre da Motta, a direita (+x). No 3o, o lugar do
+    // 304 e o salao de festas.
+    mapaPredio: {
+      abas: [
+        { nome: "Apartamentos de frente", finais: ["03", "01"] },
+        { nome: "Apartamentos de fundos", finais: ["04", "02"] },
+      ],
+      terreo: ["Sala 101", "Sala 102", "Sala 103", "Sala 104", "Sala 205", "Sala 206", "Sala 207", "Sala 208", "Sala 209"],
+      maquete: {
+        // O que nao e unidade: garagem e terreo, o hall de entrada, o nucleo
+        // (hall, elevadores e escada), o salao de festas, o terraco do 12o e
+        // a casa de maquinas.
+        massas: [
+          { x: [0, 39.6], z: [-15.6, 20], y: [0, 5.5] },
+          { x: [0, 31.6], z: [-15.6, 20], y: [5.5, 9.25] },
+          { x: [31.6, 39.6], z: [-15.6, -9], y: [5.5, 9.25] },
+          { x: [29.5, 39.6], z: [20, 23.3], y: [0, 5.5] },
+          { x: [14.3, 22.3], z: [20, 33.2], y: [0, 9.25], vidro: true, rotulo: "Hall de entrada" },
+          { x: [16.6, 24.8], z: [11.25, 16.25], andares: [3, 13], cor: "#e6eaec", escada: true },
+          { x: [23.8, 28.85], z: [14, 18.25], andares: [3, 13], cor: "#e6eaec" },
+          { x: [6.2, 16.4], z: [11.25, 19.75], andares: [3, 3], cor: "#e6eaec", rotulo: "Salão de festas" },
+          { x: [16.6, 23.8], z: [16.25, 28.4], y: [37.33, 38.45], cor: "#e6eaec" },
+          { x: [17.6, 23.8], z: [11.25, 16.25], y: [43.6, 47.2], cor: "#e6eaec" },
+        ],
+        pavimentos: [{ de: 3, ate: 13, y: 9.25, altura: 3.12 }],
+        finais: [
+          { de: 3, ate: 13, caixas: {
+            "02": [{ x: [18.4, 30.6], z: [0, 11.25] }, { x: [24.8, 28.3], z: [11.25, 14] }],
+            "01": [{ x: [23.8, 38], z: [18.25, 28.4] }, { x: [28.85, 38], z: [11.25, 18.25] }],
+            "03": { x: [16.6, 23.8], z: [16.25, 28.4] },
+            "04": { x: [6.2, 16.4], z: [11.25, 19.75] },
+          } },
+        ],
+        // As salas: 101, 102 e 103 na Ernesto Alves (o hall entre a 102 e a
+        // 103), a 104 na esquina e a 205 a 209 na Alexandre da Motta, no nivel
+        // de cima do terreo.
+        avulsas: {
+          "Sala 101": { x: [0, 6.95], z: [20, 33.2], y: [0, 9.25] },
+          "Sala 102": { x: [6.95, 14.3], z: [20, 33.2], y: [0, 9.25] },
+          "Sala 103": { x: [22.3, 29.5], z: [20, 33.2], y: [0, 9.25] },
+          "Sala 104": { x: [29.5, 39.6], z: [23.3, 33.2], y: [0, 9.25] },
+          "Sala 205": { x: [31.6, 39.6], z: [14.2, 23.3], y: [5.5, 9.25] },
+          "Sala 206": { x: [31.6, 39.6], z: [7.3, 14.1], y: [5.5, 9.25] },
+          "Sala 207": { x: [31.6, 39.6], z: [0.6, 7.2], y: [5.5, 9.25] },
+          "Sala 208": { x: [31.6, 39.6], z: [-4.8, 0.5], y: [5.5, 9.25] },
+          "Sala 209": { x: [31.6, 39.6], z: [-9, -4.9], y: [5.5, 9.25] },
+        },
+      },
+    },
     hero: "assets/personalite/capa.jpg",
     folder: "assets/personalite/folder.pdf",
     video: "assets/personalite/video.mp4",
