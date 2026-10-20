@@ -36,7 +36,7 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
-## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435), do Premium Office (v436) e do Evolutti (v438)
+## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435), do Premium Office (v436), do Evolutti (v438), do Prime e do Quality (v442)
 
 Pedido do dono (20/10/2026), depois de ver o mapa em abas e o mapa 2D do
 Premium: *"queria q fosse imagem do predio, e eu pudesse ir girando ele para
@@ -138,6 +138,32 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   vertical?"*); o contorno de uma unidade de várias caixas
   (`arestasSemEmenda`) perde o pedaço que encosta numa caixa irmã e fica só o
   de fora. Ele aprovou pela imagem: *"evolutti sem linhas ok, pode arrumar lá"*.
+- **Evolutti sem o recorte da frente (v442).** Do 9º ao 13º a sacada da
+  planta do folder é mais estreita que a sala, e o desenho fazia um degrau no
+  canto da frente. O dono circulou: *"esse recorte no Evolutti não existe"*.
+  Viu a imagem sem ele e aprovou (*"deu"*): a parede do 02 e do 01 vai reta
+  até a frente (uma caixa de z 8,2 a 18,2 em cada um).
+- **Prime em 3D (v442).** Plantas técnicas 1:100 do pavimento 01 (salas e
+  salão de festas), 02 e tipo 03 a 10, 3,10 m por andar. Frente na Rua
+  Venâncio Aires (+z): as salas 101 a 104 embaixo; na torre, 01 na frente à
+  esquerda, 02 na frente à direita e 03 nos fundos. A cobertura 1101 não tem
+  planta e entrou com a projeção do andar tipo. Aprovado: *"Sobre o Prime, tá
+  certo, pode aplicar"*. Sem WebGL, abas "Apartamentos de frente" (01, 02) e
+  "de fundos" (03).
+- **Quality em 3D (v442).** Dois blocos de 8,40 × 25,90 m, 6,37 m entre eles
+  (planta tipo 1:75, térreo e cortes AA/BB); a Carlos Barbosa é a frente,
+  bloco B à esquerda e A à direita. Em cada bloco: 03 fundos-esquerda, 04
+  fundos-direita, 02 frente-esquerda, 01 frente-direita; o 01 do bloco A
+  dobra na frente, embaixo do 02. Os códigos "802A" não dizem o final pelo
+  número, então cada unidade mora em `avulsas`. **O 802A fica atrás do 801A**
+  e só aparece pelo vão entre os blocos — o dono não o achou e disse *"pode
+  aplicar como está agora; se tiver que fazer algum ajuste, depois a gente
+  faz"*. Sem WebGL, as abas **"Bloco A"** e **"Bloco B"** (`bloco` na aba
+  filtra pela letra do fim do código, em `renderMapaDoPredio`).
+- **Personalité ainda sem 3D.** O rascunho saiu *"bem errado"* (palavra do
+  dono) e não há planta do andar no material: os cortes e as fachadas não
+  dizem onde fica cada final. Precisa da planta do andar tipo, ou do dono
+  dizendo em que canto fica cada final.
 - **O tamanho embaixo do nome, na ficha do prédio (v441).** Pedido do dono,
   com o print da ficha do Premium: *"aqui eu quero tamanho da sala, m² global
   e privativo, como está nas listas — e em todos empreendimentos esse

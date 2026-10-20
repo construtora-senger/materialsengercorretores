@@ -1839,9 +1839,14 @@
     const todosOsFinais = new Set(abas.flatMap((aba) => aba.finais));
     const pisos = [...andares.keys()].sort((a, b) => b - a);
 
+    // v442 — predio de dois blocos (o Quality, "802A" e "802B"): a aba que diz
+    // `bloco` mostra so as unidades daquele bloco, senao as duas caem na mesma
+    // casinha e uma some.
+    const doBloco = (aba) => (u) => !aba.bloco || String(u.code).toUpperCase().endsWith(aba.bloco.toUpperCase());
     const painel = (aba, indice) => {
       const linhas = pisos.map((andar) => {
-        const us = andares.get(andar);
+        const us = andares.get(andar).filter(doBloco(aba));
+        if (!us.length) return linha(`${andar}º`, aba.finais.map(() => celula(null)).join(""), aba.finais.length);
         const n = aba.finais.length;
         // Andar de uma unidade so (o 18º) ocupa a largura do predio.
         if (us.length === 1) {
@@ -1853,7 +1858,8 @@
         const fora = indice === 0 ? us.filter((u) => !todosOsFinais.has(finalDoCodigo(u.code))) : [];
         return linha(`${andar}º`, aba.finais.map((f) => celula(porFinal.get(f))).join("") + fora.map((u) => celula(u)).join(""), n + fora.length);
       });
-      if (doTerreo.length) linhas.push(linha("Térreo", doTerreo.map((u) => celula(u)).join(""), doTerreo.length, " predio-terreo"));
+      const terreoDaAba = doTerreo.filter(doBloco(aba));
+      if (terreoDaAba.length) linhas.push(linha("Térreo", terreoDaAba.map((u) => celula(u)).join(""), terreoDaAba.length, " predio-terreo"));
       return `<div class="predio-painel" data-painel-predio="${indice}"${indice === 0 ? "" : " hidden"}><div class="predio-andares">${linhas.join("")}</div></div>`;
     };
 
