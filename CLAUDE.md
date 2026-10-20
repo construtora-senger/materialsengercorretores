@@ -82,6 +82,12 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   plantas). **No lugar do 303 fica o "Salão de festas"** — uma massa com
   `rotulo`, que escreve o nome nas paredes de fora. Sem WebGL, as abas
   "Apartamentos 3 suítes" (01, 02) e "Apartamentos 2 dormitórios" (03, 04).
+  **Correção da v439:** a faixa estreita do meio da frente não é vão livre —
+  o dono, com a planta do folder: *"no meio não é vão livre, os aptos ocupam
+  esse espaço"*. A sala de estar do 01 e a do 02 se encontram ali; o núcleo
+  (escada, antecâmara e elevadores) fica só entre os fundos e a frente
+  (z 35–41). O 01 e o 02 viraram duas caixas cada, e a frente fica inteira de
+  apartamentos.
 - **Premium Office em 3D (v436).** O dono mandou a fachada principal e a
   lateral (pranchas A11 e A12, 1:100), duas imagens e o folder; as plantas
   são as do 2º e do 3º pavimento que já estavam no sistema (com cotas). Viu os

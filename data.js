@@ -984,7 +984,11 @@ const EMPREENDIMENTOS = [
         massas: [
           { x: [0, 31.2], z: [0, 56.2], y: [0, 7.34] },
           { x: [6.5, 26.4], z: [4, 25.9], y: [7.34, 10.2] },
-          { x: [14.88, 18.05], z: [35, 51.25], andares: [3, 13], cor: "#e6eaec" },
+          // v439 — o nucleo fica so entre os fundos e a frente: do meio para a
+          // frente quem ocupa sao os apartamentos 01 e 02 (o dono, com a
+          // planta do folder: "no meio nao e vao livre, os aptos ocupam esse
+          // espaco").
+          { x: [14.88, 18.05], z: [35, 41], andares: [3, 13], cor: "#e6eaec" },
           { x: [5.5, 16.45], z: [25.9, 35], andares: [3, 3], cor: "#e6eaec", rotulo: "Salão de festas" },
           { x: [12.6, 20.3], z: [35.3, 43.7], y: [42.06, 48.3], cor: "#e6eaec" },
           { x: [11.2, 21.75], z: [43.6, 51.25], y: [42.06, 44.7], cor: "#e6eaec" },
@@ -992,7 +996,8 @@ const EMPREENDIMENTOS = [
         pavimentos: [{ de: 3, ate: 13, y: 7.34, altura: 3.156 }],
         finais: [
           { de: 3, ate: 13, caixas: {
-            "01": { x: [5.5, 14.88], z: [35, 54.3] }, "02": { x: [18.05, 27.4], z: [35, 54.3] },
+            "01": [{ x: [5.5, 14.88], z: [35, 54.3] }, { x: [14.88, 16.465], z: [41, 54.3] }],
+            "02": [{ x: [18.05, 27.4], z: [35, 54.3] }, { x: [16.465, 18.05], z: [41, 54.3] }],
             "03": { x: [5.5, 16.45], z: [25.9, 35] }, "04": { x: [16.45, 27.4], z: [25.9, 35] } } },
         ],
       },
