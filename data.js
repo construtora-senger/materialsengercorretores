@@ -467,6 +467,7 @@ const EMPREENDIMENTOS = [
       ],
       terreo: ["Loja 103", "Loja 102", "Loja 101"],
       maquete: {
+        ruaLateral: "direita", // v445 — predio de esquina
         // O que nao e unidade: o resto do terreo (hall, salao de festas,
         // academia), as duas garagens, o nucleo da escada e a casa de maquinas.
         massas: [
@@ -1225,9 +1226,10 @@ const EMPREENDIMENTOS = [
       ],
       terreo: ["Sala 101", "Sala 102", "Sala 103", "Sala 104", "Sala 205", "Sala 206", "Sala 207", "Sala 208", "Sala 209"],
       maquete: {
+        ruaLateral: "direita", // v445 — predio de esquina
         // O que nao e unidade: garagem e terreo, o hall de entrada, o nucleo
-        // (hall, elevadores e escada), o salao de festas, o terraco do 12o e
-        // a casa de maquinas.
+        // (hall, elevadores e escada), o salao de festas, o lugar do 03 no 12o
+        // e no 13o (vendido, em cinza, v445) e a casa de maquinas.
         massas: [
           { x: [0, 39.6], z: [-15.6, 20], y: [0, 5.5] },
           { x: [0, 31.6], z: [-15.6, 20], y: [5.5, 9.25] },
@@ -1237,7 +1239,7 @@ const EMPREENDIMENTOS = [
           { x: [16.6, 24.8], z: [11.25, 16.25], andares: [3, 13], cor: "#e6eaec", escada: true },
           { x: [23.8, 28.85], z: [14, 18.25], andares: [3, 13], cor: "#e6eaec" },
           { x: [6.2, 16.4], z: [11.25, 19.75], andares: [3, 3], cor: "#e6eaec", rotulo: "Salão de festas" },
-          { x: [16.6, 23.8], z: [16.25, 28.4], y: [37.33, 38.45], cor: "#e6eaec" },
+          { x: [16.6, 23.8], z: [16.25, 28.4], andares: [12, 13], vendido: true },
           { x: [17.6, 23.8], z: [11.25, 16.25], y: [43.6, 47.2], cor: "#e6eaec" },
         ],
         pavimentos: [{ de: 3, ate: 13, y: 9.25, altura: 3.12 }],
@@ -1266,7 +1268,10 @@ const EMPREENDIMENTOS = [
       },
     },
     hero: "assets/personalite/capa.jpg",
-    folder: "assets/personalite/folder.pdf",
+    // v445 — o "folder" que estava aqui era so a planta do final 02, em PDF de
+    // uma pagina (enviado pelo painel em 08/10). O dono: nao tem folder, entao
+    // nao tem botao. O arquivo ficou em assets/personalite/folder.pdf, sem uso.
+    folder: "",
     video: "assets/personalite/video.mp4",
     video2: "assets/personalite/video2.mp4",
     destaque: true,
@@ -1500,6 +1505,7 @@ const EMPREENDIMENTOS = [
       ],
       terreo: ["Sala 101", "Sala 102", "Sala 103", "Sala 104"],
       maquete: {
+        ruaLateral: "esquerda", // v445 — predio de esquina
         // O que nao e unidade: o salao de festas, o hall de entrada, o nucleo
         // (elevadores, escada e hall), a casa de maquinas.
         massas: [

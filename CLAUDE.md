@@ -179,6 +179,16 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   embaixo (`placaAlugada`, `COR_3D.alugado`), e a linha **"Alugado · venda para
   investidor"** na legenda — **só no prédio que tem alugado** (hoje, só o
   Quality). O toque abre a ficha como no disponível.
+- **Personalité: o lugar do 03 no 12º e no 13º em cinza (v445).** O dono, com
+  o mapinha e o print da vista de cima: *"tem um aí branco em cima, e se tá
+  vendido tem que ficar cinza como os demais"*. O terraço claro virou massa
+  **`vendido: true`** (cinza escuro com "VENDIDO", sem ficha), que vale para
+  qualquer prédio: parte vendida sem número no cadastro.
+- **A segunda rua nos prédios de esquina (v445).** O dono circulou o lado
+  sem rua no Prime, no Evolutti e no Personalité: *"falta a rua cinza… pois
+  ambos são de esquina"*. `maquete.ruaLateral` (`"esquerda"` ou `"direita"`)
+  desenha a rua do lado: Prime à esquerda (Pedro Vargas), Evolutti à direita
+  (Antônio Vargas), Personalité à direita (Alexandre da Motta).
 - **O tamanho embaixo do nome, na ficha do prédio (v441).** Pedido do dono,
   com o print da ficha do Premium: *"aqui eu quero tamanho da sala, m² global
   e privativo, como está nas listas — e em todos empreendimentos esse
@@ -574,6 +584,19 @@ personalizáveis."**. Na mesma rodada, a pedido dele, "Lazer aquático"
 virou **"2 piscinas: Ambas aquecidas, uma na área externa e outra interna."**
 Só essas duas mudaram; a frase do prédio (`tagline`) não estava no
 print e não foi mexida.
+
+## Sem folder, sem botão — e o que falta aparece no painel (v445)
+
+O dono clicou em "Baixar folder" no Personalité e *"nada acontece"*: o arquivo
+cadastrado como folder (`assets/personalite/folder.pdf`, enviado pelo painel
+em 08/10) era **só a planta do final 02**, num PDF de uma página. Regra dele,
+para todos: *"se não tem folder cadastrado não pode ter o botão… e os que
+faltam devem constar no painel de controle para ser colocado"*. O `folder` do
+Personalité ficou vazio (o arquivo continua em `assets/`, sem uso) e o
+retrato de materiais foi regravado. O site já só mostra o botão com `folder`
+preenchido; o painel lista **"sem folder em PDF"** em O que falta (hoje
+Personalité, Prime e os dois loteamentos). Teste: *"sem folder cadastrado não
+há botão de folder"*.
 
 ## Até 50 fotos na galeria do empreendimento (v408)
 

@@ -1626,6 +1626,20 @@ async function teste(nome, fn) {
     return /902/.test(ficha) && /9º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
+  // v445 — sem folder cadastrado, sem botão de folder (regra do dono para
+  // todos). O Personalité tinha só a planta do 02 no lugar do folder.
+  await teste("sem folder cadastrado não há botão de folder", async () => {
+    const conta = {};
+    for (const id of ["personalite", "prime", "quality"]) {
+      const p = await ctx3d.newPage();
+      await p.goto(`${base}/#emp-${id}`, { waitUntil: "networkidle" });
+      conta[id] = await p.locator("a", { hasText: /folder|apresentação completa/i }).count();
+      await p.close();
+    }
+    if (conta.personalite || conta.prime) return `botão de folder sem folder: ${JSON.stringify(conta)}`;
+    return conta.quality ? "" : "o Quality, que tem folder, ficou sem o botão";
+  });
+
   await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
     const p = await ctx3d.newPage();
     const baixados = [];
