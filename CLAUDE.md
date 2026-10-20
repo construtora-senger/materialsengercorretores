@@ -133,7 +133,11 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   num pedaço da parede, e os outros pedaços pareciam andar vazio (*"pq não
   estão preenchidos andares inteiros conforme planta?"*). Agora cada lado da
   unidade leva **um número só, no meio da parede inteira dela** (os pedaços
-  no mesmo plano somados).
+  no mesmo plano somados). **E sem as linhas verdes da emenda (v440):** o dono
+  viu as linhas verticais no meio do 1302 (*"pq essas linhas verdes na
+  vertical?"*); o contorno de uma unidade de várias caixas
+  (`arestasSemEmenda`) perde o pedaço que encosta numa caixa irmã e fica só o
+  de fora. Ele aprovou pela imagem: *"evolutti sem linhas ok, pode arrumar lá"*.
 - O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
   Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
   está nos commits 29fe260…519868a se ele quiser de volta.
