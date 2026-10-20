@@ -95,9 +95,15 @@ const EMPREENDIMENTOS = [
         massas: [
           { x: [18.7, 58.8], z: [30, 65.8], y: [2, 16.2] },
           { x: [18.7, 58.8], z: [65.8, 75], y: [8.4, 16.2] },
-          { x: [23.4, 52.3], z: [48.9, 59], andares: [4, 4], cor: "#cfe0e6" },
+          // v446 — o lazer do 4º tem a largura dos fundos da torre (prancha A05:
+          // salao de festas, studio pilates e piscina termica entre x 26,3 e 49,4).
+          { x: [26.3, 49.4], z: [48.9, 59], andares: [4, 4], cor: "#cfe0e6" },
           { x: [36.3, 39.4], z: [48.9, 59], andares: [5, 12] },
           { x: [31, 45], z: [52, 64], y: [66.02, 70.02] },
+          // v446 — a sala de academia do 4º (prancha A05), que fica embaixo do
+          // terraco do 504 e e um pouco mais estreita que ele. O terraco em si
+          // e parte do 504, na cor do apartamento (pedido do dono).
+          { x: [43, 48.4], z: [41.8, 48.9], y: [16.2, 19.6] },
         ],
         pavimentos: [
           { de: 4, ate: 4, y: 16.4, altura: 3.2 },
@@ -107,12 +113,27 @@ const EMPREENDIMENTOS = [
         finais: [
           { de: 4, ate: 12, caixas: {
             "01": { x: [37.85, 52.3], z: [59, 69.2] }, "02": { x: [23.4, 37.85], z: [59, 69.2] },
-            "03": { x: [23.4, 36.3], z: [48.9, 59] }, "04": { x: [39.4, 52.3], z: [48.9, 59] } } },
+            // v446 — os fundos (03 e 04) sao mais estreitos que a frente: pelas
+            // pranchas A06 e A07, a parede de fora deles fica uns 3 m para
+            // dentro (x 26,3 e 49,4), e o que sobra e laje tecnica.
+            "03": { x: [26.3, 36.3], z: [48.9, 59] }, "04": { x: [39.4, 49.4], z: [48.9, 59] } } },
           { de: 13, ate: 17, caixas: { "01": { x: [37.85, 49.1], z: [48.9, 68.3] }, "02": { x: [26.6, 37.85], z: [48.9, 68.3] } } },
           { de: 18, ate: 18, caixas: { "01": { x: [26.6, 49.1], z: [48.9, 68.3] } } },
         ],
         // As salas do terreo, na frente, na ordem de `terreo`.
         avulsas: {
+          // v446 — o 504 (casa suspensa) com a "varanda social / terraco" de
+          // 61,56 m2 nos fundos, pela prancha A06 (pavimento 05): 6,70 m de
+          // largura, encostada no canto direito da torre. O dono: "apto 504 do
+          // Renaissance nao esta aparecendo a area do terraco".
+          "504": [
+            { x: [39.4, 49.4], z: [48.9, 59], y: [19.6, 22.59] },
+            // o terraco: o piso e o guarda-corpo de 1,10 m em volta (aberto em cima)
+            { x: [42, 49.4], z: [41.8, 48.9], y: [19.6, 19.9] },
+            { x: [42, 49.4], z: [41.8, 42], y: [19.9, 20.7] },
+            { x: [42, 42.2], z: [42, 48.9], y: [19.9, 20.7] },
+            { x: [49.2, 49.4], z: [42, 48.9], y: [19.9, 20.7] },
+          ],
           "Sala 04": { x: [18.7, 28.4], z: [66, 75], y: [2, 8.4] },
           "Sala 03": { x: [28.7, 38.4], z: [66, 75], y: [2, 8.4] },
           "Sala 02": { x: [38.7, 48.4], z: [66, 75], y: [2, 8.4] },

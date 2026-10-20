@@ -189,6 +189,19 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   ambos são de esquina"*. `maquete.ruaLateral` (`"esquerda"` ou `"direita"`)
   desenha a rua do lado: Prime à esquerda (Pedro Vargas), Evolutti à direita
   (Antônio Vargas), Personalité à direita (Alexandre da Motta).
+- **Renaissance pelas pranchas A05 a A10, e o terraço do 504 (v446).** O dono:
+  *"apto 504 do Renaissance não está aparecendo a área do terraço"*, recusou
+  três tentativas (*"continua fazendo errado, veja com atenção novamente nas
+  plantas"*) e mandou as pranchas. O erro de fundo era o prédio: **do 5º ao
+  12º os fundos (03 e 04) são ~3 m mais estreitos que a frente** (x 26,3–36,3
+  e 39,4–49,4), e o **lazer do 4º** tem essa mesma largura. O **terraço do
+  504** ("varanda social / terraço", 61,56 m², prancha A06) sai reto para trás
+  da parede lateral do 504 (x 42–49,4, z 41,8–48,9), na cor do apartamento,
+  feito de **piso + guarda-corpo de 1,10 m** (aberto em cima); embaixo dele, a
+  **sala de academia** do 4º (A05), um pouco mais estreita. Ele viu a planta ao
+  lado do 3D e os 4 lados e mandou: *"atualiza lá, vamos ver no 3D como fica"*.
+  A cobertura de vidro da piscina térmica (ao lado da torre, A07–A10) não foi
+  desenhada — não foi pedida.
 - **O tamanho embaixo do nome, na ficha do prédio (v441).** Pedido do dono,
   com o print da ficha do Premium: *"aqui eu quero tamanho da sala, m² global
   e privativo, como está nas listas — e em todos empreendimentos esse
