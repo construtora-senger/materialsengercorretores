@@ -2021,14 +2021,16 @@
     return [y, y + p.altura - 0.25];
   }
 
-  function caixaDaUnidade(maquete, code) {
+  // Uma unidade pode ter mais de uma caixa (a 101 do Premium, em L em volta
+  // do hall de entrada): o valor vira uma lista.
+  function caixasDaUnidade(maquete, code) {
     const avulsa = maquete.avulsas?.[code];
-    if (avulsa) return avulsa;
+    if (avulsa) return [].concat(avulsa);
     const andar = andarDe(code);
     const y = andar === null ? null : alturaDoAndar(maquete, andar);
     const regra = y && (maquete.finais || []).find((f) => andar >= f.de && andar <= f.ate);
     const c = regra?.caixas?.[finalDoCodigo(code)];
-    return c ? { x: c.x, z: c.z, y } : null;
+    return c ? [].concat(c).map((cx) => ({ x: cx.x, z: cx.z, y })) : [];
   }
 
   function caixasDasMassas(maquete) {
@@ -2085,9 +2087,11 @@
 
     const fonte = getComputedStyle(document.body).fontFamily || "system-ui, sans-serif";
     const meio = (b) => new THREE.Vector3((b.x[0] + b.x[1]) / 2, (b.y[0] + b.y[1]) / 2, (b.z[0] + b.z[1]) / 2);
-    const bloco = (b, cor, borda, opacidadeBorda) => {
+    const bloco = (b, cor, borda, opacidadeBorda, vidro = false) => {
       const geo = new THREE.BoxGeometry(b.x[1] - b.x[0], b.y[1] - b.y[0], b.z[1] - b.z[0]);
-      const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: cor, roughness: 0.8, metalness: 0 }));
+      const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial(vidro
+        ? { color: 0xa9d8e4, roughness: 0.2, metalness: 0, transparent: true, opacity: 0.38, depthWrite: false }
+        : { color: cor, roughness: 0.8, metalness: 0 }));
       m.position.copy(meio(b));
       const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color: borda, transparent: true, opacity: opacidadeBorda }));
       e.position.copy(m.position);
@@ -2113,7 +2117,7 @@
       : placa("VENDIDO".split("").join("\u200a"), { cor: "#c7ced3", peso: 700, tamanho: 72 }));
 
     const caixasDeMassa = caixasDasMassas(maquete);
-    const comCaixa = unidades.map((u) => ({ u, b: caixaDaUnidade(maquete, u.code) })).filter((x) => x.b);
+    const comCaixa = unidades.flatMap((u) => caixasDaUnidade(maquete, u.code).map((b) => ({ u, b })));
     const todas = [...caixasDeMassa, ...comCaixa.map((x) => x.b)];
     const dentro = (p) => todas.some((b) => p.x > b.x[0] && p.x < b.x[1] && p.y > b.y[0] && p.y < b.y[1] && p.z > b.z[0] && p.z < b.z[1]);
     // A placa vai em toda parede de fora: frente, fundos e laterais.
@@ -2131,9 +2135,38 @@
         scene.add(pl);
       });
     };
+    // O desenho de escada (degraus pintados) na parede de fora do nucleo, para
+    // ninguem procurar sala ali: pedido do dono no Premium Office, que escolheu
+    // a opcao 2 entre quatro (20/10/2026).
+    const pintarEscada = (g, W, H) => {
+      const m = Math.round(H * 0.08), n = 7;
+      const passoX = (W - 2 * m) / n, passoY = (H - 2 * m) / n;
+      g.lineJoin = "round"; g.lineCap = "round";
+      g.beginPath(); g.moveTo(m, H - m);
+      for (let i = 0; i < n; i++) { g.lineTo(m + i * passoX, H - m - (i + 1) * passoY); g.lineTo(m + (i + 1) * passoX, H - m - (i + 1) * passoY); }
+      g.lineTo(W - m, H - m); g.closePath();
+      g.fillStyle = "#b4bdc2"; g.fill(); g.strokeStyle = "#7d878e"; g.lineWidth = Math.max(3, H * 0.02); g.stroke();
+    };
+    const escadas = (b) => {
+      const c = meio(b);
+      const alto = b.y[1] - b.y[0];
+      [[0, 1, 0, b.z[1], b.x], [0, -1, Math.PI, b.z[0], b.x], [1, 0, Math.PI / 2, b.x[1], b.z], [-1, 0, -Math.PI / 2, b.x[0], b.z]].forEach(([dx, dz, giro, plano, largo]) => {
+        const fora = new THREE.Vector3(dx ? plano + dx * 0.4 : c.x, c.y, dz ? plano + dz * 0.4 : c.z);
+        if (dentro(fora)) return;
+        const w = (largo[1] - largo[0]) * 0.86, h = alto * 0.8;
+        const cv = document.createElement("canvas"); cv.width = 512; cv.height = Math.max(64, Math.round(512 * h / w));
+        pintarEscada(cv.getContext("2d"), cv.width, cv.height);
+        const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+        const pl = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true }));
+        pl.position.set(dx ? plano + dx * 0.06 : c.x, c.y, dz ? plano + dz * 0.06 : c.z);
+        pl.rotation.y = giro;
+        scene.add(pl);
+      });
+    };
     const massas = caixasDeMassa.map((b) => {
-      const m = bloco(b, b.cor ? new THREE.Color(b.cor) : COR_3D.massa, COR_3D.massaBorda, 0.5);
-      if (b.rotulo) placas(b, placa(b.rotulo.toUpperCase(), { cor: "#7d878e", peso: 700, tamanho: 64 }));
+      const m = bloco(b, b.cor ? new THREE.Color(b.cor) : COR_3D.massa, b.vidro ? 0x5f9fb0 : COR_3D.massaBorda, b.vidro ? 0.9 : 0.5, b.vidro);
+      if (b.rotulo) placas(b, placa(b.rotulo.toUpperCase(), { cor: b.vidro ? "#2f6f80" : "#7d878e", peso: 700, tamanho: 64 }));
+      if (b.escada) escadas(b);
       return m;
     });
     const clicaveis = comCaixa.map(({ u, b }) => {
@@ -2184,11 +2217,11 @@
     palco.addEventListener("wheel", (e) => { if (!e.ctrlKey && !e.metaKey) e.stopPropagation(); }, { capture: true });
 
     // Toque: so vale o toque parado (arrastar e girar). Vendido nao tem ficha.
-    let escolhida = null;
+    let escolhida = [];
     const escolher = (m) => {
-      if (escolhida) escolhida.material.color.setHex(COR_3D.livre);
-      escolhida = m;
-      m.material.color.setHex(COR_3D.escolhido);
+      escolhida.forEach((x) => x.material.color.setHex(COR_3D.livre));
+      escolhida = clicaveis.filter((x) => x.userData.code === m.userData.code);
+      escolhida.forEach((x) => x.material.color.setHex(COR_3D.escolhido));
       desenhar();
       avisos.escolher(m.userData.item);
     };
