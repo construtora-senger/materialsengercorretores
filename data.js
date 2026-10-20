@@ -449,6 +449,57 @@ const EMPREENDIMENTOS = [
       "2 dormitórios (1 suíte)": { simples: 1 },
       "2 dormitórios (2 suítes)": { simples: 1 },
     },
+    // v438 — o predio em 3D, como o do Renaissance, do Boulevard e do Premium
+    // Office. Medidas em metros, das plantas tecnicas que o dono mandou
+    // (20/10/2026, 1:75): pavimento 02 (+3,80), 03 (+6,90), 04 (+10,00) e
+    // tipo 05 a 08. A rua 24 de Janeiro e o lado +z e a Antonio Vargas o lado
+    // +x (direita); x = 0 e a parede esquerda da torre. Do 4º ao 8º a torre tem
+    // 20,90 x 18,05 m: 04 nos fundos a esquerda, 03 nos fundos a direita, 02 na
+    // frente a esquerda, 01 na frente a direita, a escada no meio dos fundos.
+    // Do 9º ao 13º (planta do folder, so 01 e 02) ela fica mais estreita, e o
+    // que sobra do 8º e o terraco do 901 e do 902. Do 4º para cima o andar foi
+    // contado com os mesmos 3,10 m dos pavimentos de baixo: nao veio corte nem
+    // fachada do Evolutti. O terreo vem da planta das lojas.
+    mapaPredio: {
+      abas: [
+        { nome: "Apartamentos de frente", finais: ["02", "01"] },
+        { nome: "Apartamentos de fundos", finais: ["04", "03"] },
+      ],
+      terreo: ["Loja 103", "Loja 102", "Loja 101"],
+      maquete: {
+        // O que nao e unidade: o resto do terreo (hall, salao de festas,
+        // academia), as duas garagens, o nucleo da escada e a casa de maquinas.
+        massas: [
+          { x: [-3.5, 24.6], z: [-4.3, 3.75], y: [0, 3.8] },
+          { x: [5.3, 24.6], z: [3.75, 8.9], y: [0, 3.8] },
+          { x: [-3.5, 24.6], z: [-4.3, 18.9], y: [3.8, 10] },
+          { x: [9.05, 11.85], z: [0, 4.05], andares: [4, 8], cor: "#e6eaec", escada: true },
+          { x: [7.25, 13.65], z: [4.05, 9.2], andares: [4, 8], cor: "#e6eaec" },
+          { x: [9.25, 11.75], z: [0, 4], andares: [9, 13], cor: "#e6eaec", escada: true },
+          { x: [7.05, 13.75], z: [4, 8.2], andares: [9, 13], cor: "#e6eaec" },
+          { x: [7.05, 13.75], z: [0, 8.2], y: [41, 44.2], cor: "#e6eaec" },
+        ],
+        pavimentos: [{ de: 4, ate: 13, y: 10, altura: 3.1 }],
+        finais: [
+          { de: 4, ate: 8, caixas: {
+            "04": [{ x: [0, 9.05], z: [0, 4.05] }, { x: [0, 7.25], z: [4.05, 9.2] }],
+            "03": [{ x: [11.85, 20.9], z: [0, 4.05] }, { x: [13.65, 20.9], z: [4.05, 9.2] }],
+            "02": { x: [0, 10.45], z: [9.2, 18.05] },
+            "01": { x: [10.45, 20.9], z: [9.2, 18.05] } } },
+          { de: 9, ate: 13, caixas: {
+            "02": [{ x: [1.45, 9.25], z: [0, 4] }, { x: [1.45, 7.05], z: [4, 8.2] },
+              { x: [1.45, 10.45], z: [8.2, 15.8] }, { x: [3.25, 10.45], z: [15.8, 18.2] }],
+            "01": [{ x: [11.75, 19.55], z: [0, 4] }, { x: [13.75, 19.55], z: [4, 8.2] },
+              { x: [10.45, 19.55], z: [8.2, 15.8] }, { x: [10.45, 17.65], z: [15.8, 18.2] }] } },
+        ],
+        // As tres lojas do terreo, de frente para a 24 de Janeiro.
+        avulsas: {
+          "Loja 103": { x: [-3.5, 5.3], z: [3.75, 18.9], y: [0, 3.8] },
+          "Loja 102": { x: [5.3, 13.8], z: [8.9, 18.9], y: [0, 3.8] },
+          "Loja 101": { x: [13.8, 24.6], z: [8.9, 18.9], y: [0, 3.8] },
+        },
+      },
+    },
     hero: "assets/evolutti/capa.jpg",
     folder: "assets/folder-evolutti.pdf",
     video: "",

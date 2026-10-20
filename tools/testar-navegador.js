@@ -1532,14 +1532,25 @@ async function teste(nome, fn) {
     return /801/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
+  await teste("o Evolutti abre o prédio em 3D, e o toque no apartamento abre a ficha dele", async () => {
+    const p = await abrir3d("/#emp-evolutti");
+    if (!(await p.locator(".predio-3d.pronto").count())) { await p.close(); return "o prédio em 3D do Evolutti não apareceu"; }
+    const lugares = await p.evaluate(() => ["Loja 101", "Loja 103", "404", "803", "901", "1302"].map((c) => !!document.querySelector(".predio-3d").predio3d.pontoDe(c)));
+    await tocarNo3d(p, "1002");
+    const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
+    await p.close();
+    if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
+    return /1002/.test(ficha) && /10º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+  });
+
   await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
     const p = await ctx3d.newPage();
     const baixados = [];
     p.on("request", (req) => { if (/vendor\/three/.test(req.url())) baixados.push(req.url()); });
-    await p.goto(`${base}/#emp-evolutti`, { waitUntil: "networkidle" });
+    await p.goto(`${base}/#emp-quality`, { waitUntil: "networkidle" });
     await p.waitForTimeout(300);
     await p.close();
-    return baixados.length ? `o Evolutti baixou ${baixados.length} arquivo(s) do 3D` : "";
+    return baixados.length ? `o Quality baixou ${baixados.length} arquivo(s) do 3D` : "";
   });
   await nav3d.close();
 
