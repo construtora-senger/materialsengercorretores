@@ -2912,9 +2912,6 @@
 
   async function compartilharSistema() {
     const text = [
-      "*Construtora Senger — Portfólio de empreendimentos*",
-      "Fotos, plantas, valores e disponibilidade, sempre atualizados.",
-      "",
       "👇 Clique no link abaixo para abrir:",
       linkDoSistema(),
     ].join("\n");
