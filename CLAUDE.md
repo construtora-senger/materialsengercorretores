@@ -574,6 +574,12 @@ link com uma imagem bonita, os empreendimentos"*.
   **`l/portfolio/`**, pelo `sendShare` de sempre — no celular
   `navigator.share({ text })`, **sem arquivo** (regra da v333); no computador,
   a janela de copiar com o texto e a imagem.
+- **Só a frase do link + o link (v448).** A mensagem é apenas
+  "👇 Clique no link abaixo para abrir:" e o link. O título ("Construtora
+  Senger — Portfólio de empreendimentos") e a frase "Fotos, plantas, valores e
+  disponibilidade…" saíram: já vêm no quadro da prévia e apareciam duplicados.
+  Pedido do dono, com print (21/10/2026): viu três simulações e escolheu o
+  "modelo 2: sem a repetição". Os outros envios não mudaram.
 - **A foto vem pela prévia do link.** A ponte `l/portfolio/` (gerada por
   `tools/gerar-pontes.js`) tem como `og:image` a
   **`assets/preview/portfolio.jpg`**: as fachadas dos **7 prédios**
