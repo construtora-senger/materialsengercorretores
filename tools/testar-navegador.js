@@ -1496,13 +1496,16 @@ async function teste(nome, fn) {
     const r = await p.evaluate(() => ({
       pronto: !!document.querySelector(".predio-3d.pronto canvas"),
       abasEscondidas: document.querySelector(".predio-desenho").hidden,
-      lados: [...document.querySelectorAll(".predio-3d-lados button")].map((b) => b.textContent.trim()).join(","),
+      // v453 — sem os botoes Frente/Lateral/Fundos/De cima; so o aviso de girar.
+      lados: document.querySelectorAll(".predio-3d-lados, [data-lado]").length,
+      giro: document.querySelector(".predio-3d-giro")?.textContent.trim() || "",
       dica: document.querySelector("#unidades .section-title-row p").textContent,
       preco: window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "renaissance").grupos.flatMap((g) => g.unidades).find((u) => u.apto === "1102").preco,
     }));
     if (!r.pronto) { await p.close(); return "o prédio em 3D não apareceu"; }
     if (!r.abasEscondidas) { await p.close(); return "as abas do mapa ficaram na tela junto do 3D"; }
-    if (r.lados !== "Frente,Lateral,Fundos,De cima") { await p.close(); return `os botões do prédio são: ${r.lados}`; }
+    if (r.lados) { await p.close(); return "os botões Frente/Lateral/Fundos/De cima continuam no prédio"; }
+    if (r.giro !== "Arraste para girar") { await p.close(); return `o aviso de girar diz "${r.giro}"`; }
     if (!/Gire o prédio/.test(r.dica)) { await p.close(); return `a dica diz "${r.dica}"`; }
     await tocarNo3d(p, "1102");
     const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
@@ -1515,22 +1518,24 @@ async function teste(nome, fn) {
     return marcado === "Selecionado" ? "" : `o Selecionar da ficha deixou "${marcado}"`;
   });
 
-  await teste("no 3D, o vendido não abre ficha e os botões giram o prédio", async () => {
+  await teste("no 3D, o vendido não abre ficha e arrastar gira o prédio", async () => {
     const p = await abrir3d("/#emp-renaissance");
     // O 803 e vendido e fica nos fundos.
     await tocarNo3d(p, "803", 204);
     const vazia = await p.locator(".predio-ficha .predio-ficha-vazia").count();
     const antes = await p.evaluate(() => document.querySelector(".predio-3d").predio3d.pontoDe("1102"));
-    await p.locator(".predio-3d-lados button", { hasText: "Lateral" }).click();
-    await p.waitForTimeout(300);
-    const r = await p.evaluate(() => ({
-      depois: document.querySelector(".predio-3d").predio3d.pontoDe("1102"),
-      marcado: document.querySelector(".predio-3d-lados [aria-pressed=true]")?.textContent,
-    }));
+    // v453 — o giro e no arrastar (os botoes de lado sairam).
+    const caixa = await p.locator(".predio-3d canvas").boundingBox();
+    const meio = { x: caixa.x + caixa.width / 2, y: caixa.y + caixa.height / 2 };
+    await p.mouse.move(meio.x, meio.y);
+    await p.mouse.down();
+    await p.mouse.move(meio.x - 160, meio.y, { steps: 12 });
+    await p.mouse.up();
+    await p.waitForTimeout(800);
+    const depois = await p.evaluate(() => document.querySelector(".predio-3d").predio3d.pontoDe("1102"));
     await p.close();
     if (!vazia) return "o toque no vendido abriu uma ficha";
-    if (r.marcado !== "Lateral") return `depois do Lateral o botão marcado é "${r.marcado}"`;
-    return Math.abs(r.depois.x - antes.x) > 20 ? "" : "o botão Lateral não girou o prédio";
+    return Math.abs(depois.x - antes.x) > 20 ? "" : "arrastar não girou o prédio";
   });
 
   await teste("no celular o 3D cabe na tela e a ficha abre embaixo dele", async () => {

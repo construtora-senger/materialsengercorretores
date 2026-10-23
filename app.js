@@ -1886,9 +1886,7 @@
             ${temAlugado ? `<span class="lg-alug">Alugado · venda para investidor</span>` : ""}
             <span class="lg-sel">Escolhido</span>
           </p>
-          <div class="predio-3d-lados" role="group" aria-label="Ver o prédio">
-            ${LADOS_DO_PREDIO.map(([lado, nome], i) => `<button type="button" data-lado="${lado}" aria-pressed="${i === 0}">${nome}</button>`).join("")}
-          </div>
+          <p class="predio-3d-giro">${ICONE_GIRO}<span>Arraste para girar</span></p>
         </div>` : "";
 
     return `
@@ -2042,7 +2040,10 @@
   // O three.js (r180, licenca MIT) mora em assets/vendor/three/ e so e baixado
   // quando a pagina tem predio em 3D. Aparelho sem WebGL 2 — ou que perca o
   // desenho no meio — volta para as abas do mapa (v431), que ficam guardadas.
-  const LADOS_DO_PREDIO = [["frente", "Frente"], ["lateral", "Lateral"], ["fundos", "Fundos"], ["cima", "De cima"]];
+  // v453 — no lugar dos botoes Frente/Lateral/Fundos/De cima, so o aviso de
+  // que o predio gira: a seta em circulo e "Arraste para girar", no canto de
+  // baixo a esquerda (modelo B, escolhido pelo dono).
+  const ICONE_GIRO = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>';
   const TRES = "assets/vendor/three/";
   const COR_3D = {
     livre: 0xffffff, livreBorda: 0x1f9e7a, vendido: 0x5d6870, vendidoBorda: 0x3a434a,
@@ -2350,17 +2351,15 @@
     const desenhar = () => { if (pedido) return; pedido = requestAnimationFrame(() => { pedido = 0; if (controls.update()) desenhar(); renderer.render(scene, camera); }); };
     controls.addEventListener("change", desenhar);
 
-    const LADOS = { frente: [0.42, 0.18], lateral: [Math.PI / 2 + 0.2, 0.2], fundos: [Math.PI + 0.42, 0.2], cima: [0.6, 0.75] };
+    // O predio abre de frente; daqui para a frente quem gira e o arrastar.
+    const FRENTE = [0.42, 0.18];
     const raioAgora = () => raio * Math.max(1, 0.95 / camera.aspect);
-    const girar = (az, el, lado) => {
+    const girar = (az, el) => {
       const r = raioAgora(), t = controls.target;
       camera.position.set(t.x + Math.sin(az) * Math.cos(el) * r, t.y + Math.sin(el) * r, t.z + Math.cos(az) * Math.cos(el) * r);
       controls.update();
-      palco.querySelectorAll("[data-lado]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lado === lado)));
       desenhar();
     };
-    const irPara = (lado) => girar(...LADOS[lado], lado);
-    palco.querySelectorAll("[data-lado]").forEach((b) => b.addEventListener("click", () => irPara(b.dataset.lado)));
     // A rodinha do mouse continua rolando a pagina; aproxima com Ctrl (ou o pinça do touchpad).
     palco.addEventListener("wheel", (e) => { if (!e.ctrlKey && !e.metaKey) e.stopPropagation(); }, { capture: true });
 
@@ -2399,7 +2398,7 @@
     };
     const observador = new ResizeObserver(medir);
     observador.observe(palco);
-    medir(); irPara("frente");
+    medir(); girar(...FRENTE);
     palco.querySelector(".predio-3d-carregando")?.remove();
     palco.classList.add("pronto");
 
@@ -2419,7 +2418,7 @@
         const p = visto.position.clone().project(camera);
         return { x: r.left + (p.x + 1) / 2 * r.width, y: r.top + (1 - p.y) / 2 * r.height };
       },
-      girar: (graus, el = 0.2) => { girar(graus * Math.PI / 180, el, null); renderer.render(scene, camera); },
+      girar: (graus, el = 0.2) => { girar(graus * Math.PI / 180, el); renderer.render(scene, camera); },
     };
 
     return {
