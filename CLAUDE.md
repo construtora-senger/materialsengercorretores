@@ -214,7 +214,7 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   precisa ser negrito"*: logo embaixo de "Sala comercial · final 01" sai
   **"115 m² global · 65 m² privativo"** na cor da marca, letra normal
   (`.predio-ficha-areas`). As linhas "Área global" e "Área privativa" da ficha
-  continuam lá (não foi pedido tirar).
+  ficaram até a v451, quando o dono mandou tirar a lista inteira.
 - **A garagem embaixo do tamanho, com os carrinhos (v449).** Pedido do dono,
   com o print da ficha do 504: *"preciso q conste os box de garagem na
   descrição do mapa tb, ate gostaria q colocasse o icone dos carrinhos igual
@@ -242,6 +242,15 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   "Garagem" saiu da **ficha do mapa do prédio** (`fichaDoPredio`); a ficha do
   link de uma unidade (`?u=`) continua com a dela. Teste: *"o box simples
   sozinho diz \"1 box de garagem\" na lista, sem o \"simples\""*.
+- **A ficha do mapa sem a lista de baixo (v451).** O dono riscou no print do
+  703 as quatro linhas que sobravam — **Andar, Área global, Área privativa e
+  Situação** — e mandou: *"nao precisa ter nada disso q risquei, pois as infos
+  ja constam ali em cima"*. A lista (`dl.predio-ficha-dados`) saiu inteira da
+  `fichaDoPredio`, e o CSS dela junto. A ficha fica: nome, tipologia e final,
+  m², a etiqueta da garagem, o valor, a planta, a planta técnica e os botões.
+  O andar está no número do apartamento; a situação, na cor do prédio (só abre
+  ficha quem não está vendido). A ficha do link de uma unidade (`?u=`) não
+  mudou. O teste da etiqueta confere que a ficha do mapa não tem mais lista.
 - O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
   Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
   está nos commits 29fe260…519868a se ele quiser de volta.
@@ -284,6 +293,8 @@ uma mudança: *"so deixa os de fundos num cinzinha mais claro"*.
   apartamento abre a ficha **ao lado** no computador e **embaixo** no celular
   (a tela desce até ela): tipologia e final, valor, andar, áreas, garagem,
   situação, a planta e os botões **Compartilhar** e **Selecionar** de sempre.
+  **REGRA ANTIGA em parte — substituída pela v451:** andar, áreas em linha e
+  situação saíram da ficha; o tamanho e a garagem ficam embaixo do nome.
 - **Duas abas, como no mapa antigo (v431).** O prédio inteiro numa grade só,
   com os fundos num cinza mais claro (v429), **ficou confuso** para o dono:
   *"ficou confuso, prefiro assim, veja a diferença na aba para ver os de frente

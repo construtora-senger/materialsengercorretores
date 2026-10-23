@@ -417,7 +417,7 @@ async function teste(nome, fn) {
     await p.waitForTimeout(300);
     const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
     const preco = r.preco.toLocaleString("pt-BR");
-    if (!/Apto 1302/.test(ficha) || !ficha.includes(`R$ ${preco}`) || !/1 box duplo \+ 1 box simples/.test(ficha) || !/13º andar/.test(ficha)) { await p.close(); return `a ficha diz: ${ficha}`; }
+    if (!/Apto 1302/.test(ficha) || !ficha.includes(`R$ ${preco}`) || !/1 box duplo \+ 1 box simples/.test(ficha)) { await p.close(); return `a ficha diz: ${ficha}`; }
     const sel = p.locator(".predio-ficha [data-select-item]");
     await sel.click(); await p.waitForTimeout(200);
     const marcado = (await sel.innerText()).trim();
@@ -485,7 +485,7 @@ async function teste(nome, fn) {
 
   // v449 — pedido do dono: a garagem embaixo do tamanho, na etiqueta do
   // painel, com um carrinho por vaga (modelo B). v450: um box simples so diz
-  // "1 box de garagem", e a linha "Garagem" da ficha saiu.
+  // "1 box de garagem". v451: a lista de baixo da ficha saiu inteira.
   await teste("a ficha do prédio traz a garagem na etiqueta, com um carrinho por vaga", async () => {
     const p = await abrir("/#emp-renaissance");
     await p.waitForTimeout(400);
@@ -495,12 +495,12 @@ async function teste(nome, fn) {
       await p.waitForTimeout(200);
       const r = await p.evaluate(() => {
         const g = document.querySelector(".predio-ficha .predio-ficha-garagem");
-        const linhaGaragem = [...document.querySelectorAll(".predio-ficha-dados dt")].some((dt) => dt.textContent === "Garagem");
+        const linhaGaragem = !!document.querySelector(".predio-ficha dl");
         return g ? { texto: g.textContent.trim(), carros: g.querySelectorAll("svg").length, linha: !!g.previousElementSibling?.matches(".predio-ficha-areas"), linhaGaragem } : { texto: "", carros: 0, linha: true, linhaGaragem };
       });
       if (r.texto !== texto || r.carros !== carros) { await p.close(); return `${cod}: a etiqueta diz "${r.texto}" com ${r.carros} carrinhos, esperado "${texto}" com ${carros}`; }
       if (!r.linha) { await p.close(); return `${cod}: a etiqueta não ficou embaixo dos m²`; }
-      if (r.linhaGaragem) { await p.close(); return `${cod}: a ficha ainda tem a linha "Garagem"`; }
+      if (r.linhaGaragem) { await p.close(); return `${cod}: a ficha ainda tem a lista de baixo (Andar, Garagem, Situação…)`; }
     }
     await p.close();
     return "";
@@ -1495,7 +1495,7 @@ async function teste(nome, fn) {
     if (!/Gire o prédio/.test(r.dica)) { await p.close(); return `a dica diz "${r.dica}"`; }
     await tocarNo3d(p, "1102");
     const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
-    if (!/Apto 1102/.test(ficha) || !ficha.includes(`R$ ${r.preco.toLocaleString("pt-BR")}`) || !/11º andar/.test(ficha)) { await p.close(); return `a ficha diz: ${ficha}`; }
+    if (!/Apto 1102/.test(ficha) || !ficha.includes(`R$ ${r.preco.toLocaleString("pt-BR")}`)) { await p.close(); return `a ficha diz: ${ficha}`; }
     const sel = p.locator(".predio-ficha [data-select-item]");
     await sel.click(); await p.waitForTimeout(200);
     const marcado = (await sel.innerText()).trim();
@@ -1562,7 +1562,7 @@ async function teste(nome, fn) {
     const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
     await p.close();
     if (sem303) return "o 303 apareceu como apartamento";
-    return /Apto 1102/.test(ficha) && /11º andar/.test(ficha) && /final 02/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+    return /Apto 1102/.test(ficha) && /final 02/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
   // v436 — o Premium Office, pelas fachadas e pelas plantas do 2º e do 3º
@@ -1578,7 +1578,7 @@ async function teste(nome, fn) {
     await p.close();
     if (lugares.includes(false)) return `faltou sala no prédio: ${lugares.join(",")}`;
     if (!/115 m² global · 65 m² privativo/.test(tamanho)) return `o tamanho embaixo do nome diz: "${tamanho}"`;
-    return /801/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+    return /801/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
   await teste("o Evolutti abre o prédio em 3D, e o toque no apartamento abre a ficha dele", async () => {
@@ -1589,7 +1589,7 @@ async function teste(nome, fn) {
     const ficha = (await p.locator(".predio-ficha").innerText()).replace(/\s+/g, " ");
     await p.close();
     if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
-    return /1002/.test(ficha) && /10º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+    return /1002/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
   // v442 — o Prime e o Quality, pelas plantas e cortes que o dono mandou.
@@ -1606,7 +1606,7 @@ async function teste(nome, fn) {
     }
     await p.close();
     if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
-    return /303/.test(ficha) && /3º andar/.test(ficha) && /R\$|Sob consulta/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+    return /303/.test(ficha) && /R\$|Sob consulta/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
   await teste("o Quality abre os dois blocos em 3D, e o toque no 802A abre a ficha dele", async () => {
@@ -1622,7 +1622,7 @@ async function teste(nome, fn) {
     }
     await p.close();
     if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
-    return /802A/.test(ficha) && /8º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+    return /802A/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
   // v444 — o alugado (venda para investidor) em azul claro, com legenda
@@ -1647,7 +1647,8 @@ async function teste(nome, fn) {
     await p.close();
     if (!/Alugado · venda para investidor/.test(r.alug)) return `a legenda diz: "${r.alug}"`;
     if (!r.voltar) return "o Voltar empreendimentos não apareceu no topo";
-    if (!/801A/.test(ficha) || !/Alugado/.test(ficha)) return `a ficha do alugado diz: ${ficha}`;
+    // v451: a linha "Situação" saiu da ficha; o alugado abre a ficha como o disponível.
+    if (!/801A/.test(ficha) || !/R\$/.test(ficha)) return `a ficha do alugado diz: ${ficha}`;
     if (!naHome) return "o Voltar empreendimentos não voltou para a vitrine";
     return semAlugado ? "o Renaissance, sem alugado, mostrou a legenda do alugado" : "";
   });
@@ -1665,7 +1666,7 @@ async function teste(nome, fn) {
     }
     await p.close();
     if (lugares.includes(false)) return `faltou unidade no prédio: ${lugares.join(",")}`;
-    return /902/.test(ficha) && /9º andar/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
+    return /902/.test(ficha) && /R\$/.test(ficha) ? "" : `a ficha diz: ${ficha}`;
   });
 
   // v445 — sem folder cadastrado, sem botão de folder (regra do dono para

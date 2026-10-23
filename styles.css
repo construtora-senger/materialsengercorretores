@@ -1560,14 +1560,9 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
 .predio-ficha-tipo { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
 /* v441 — o tamanho da unidade embaixo do nome (opcao 4, sem negrito). */
 .predio-ficha-areas { margin: 4px 0 0; color: var(--brand-dark); font-size: 16px; font-weight: 400; }
-.predio-ficha-valor { margin: 14px 0 6px; }
+.predio-ficha-valor { margin: 14px 0 16px; } /* v451: sem a lista embaixo, o respiro antes da planta fica aqui */
 .predio-ficha-valor span { display: block; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
 .predio-ficha-valor strong { display: block; color: var(--ink); font-size: 28px; font-weight: 700; }
-.predio-ficha-dados { margin: 8px 0 14px; }
-.predio-ficha-dados div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; }
-.predio-ficha-dados dt { color: var(--muted); }
-.predio-ficha-dados dd { margin: 0; color: var(--ink); font-weight: 600; text-align: right; }
-.predio-ficha-dados dd.situacao-disponivel { color: #1f8a6f; }
 .predio-ficha .planta-mini { display: flex; flex-direction: row; justify-content: flex-start; gap: 12px; width: 100%; margin: 0 0 10px; padding: 8px; }
 .predio-ficha .planta-mini img { width: 64px; height: 64px; border: 1px solid var(--line); }
 .predio-ficha .planta-mini span { color: var(--ink); font-size: 15px; font-weight: 600; }
