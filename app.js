@@ -1946,7 +1946,6 @@
     // escolheu, "so nao precisa ser negrito".
     const tamanho = [areas.global && `${areas.global} global`, areas.privativa && `${areas.privativa} privativo`]
       .filter(Boolean).join(" · ") || areas.solta || "";
-    const andar = andarDe(item.code);
     // "Box opcional (consultar)" nao e garagem incluida (mesma regra da ficha).
     const garagem = item.garage && !/opcional|consultar/i.test(item.garage) ? item.garage : "";
     // v449 — a garagem embaixo do tamanho, na etiqueta do painel, com um
@@ -1954,13 +1953,8 @@
     // escolheu. A linha "Garagem" da lista saiu na v450, a pedido dele ("ja
     // tem ali em cima essa info").
     const carros = garagem ? `<span class="carros" aria-hidden="true">${ICONE_CARRO.repeat(vagasDaGaragem(garagem))}</span>` : "";
-    const linhas = [
-      ["Andar", andar ? `${andar}º andar` : ""],
-      ["Área global", areas.global],
-      ["Área privativa", areas.privativa],
-      ["Área", areas.solta],
-      ["Situação", STATUS_LABELS[item.status] || item.status],
-    ].filter(([, valor]) => valor);
+    // v451 — sem a lista de baixo (Andar, Area global, Area privativa e
+    // Situacao): o dono riscou as quatro, "as infos ja constam ali em cima".
     return `
       <p class="predio-ficha-tag">Ficha da unidade</p>
       <h3>${escapeHtml(itemLabel(item))}</h3>
@@ -1968,9 +1962,6 @@
       ${tamanho ? `<p class="predio-ficha-areas">${escapeHtml(tamanho)}</p>` : ""}
       ${garagem ? `<p class="predio-ficha-garagem">${carros}${escapeHtml(garagem)}</p>` : ""}
       <div class="predio-ficha-valor"><span>Valor</span><strong class="price-value">${money(item.price)}</strong></div>
-      <dl class="predio-ficha-dados">
-        ${linhas.map(([rotulo, valor]) => `<div><dt>${escapeHtml(rotulo)}</dt><dd${rotulo === "Situação" ? ` class="situacao-${item.status}"` : ""}>${escapeHtml(valor)}</dd></div>`).join("")}
-      </dl>
       ${miniaturaDaPlanta(item)}
       ${botaoDaPlantaTecnica(item)}
       ${CLIENT_MODE ? "" : `<div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>`}
