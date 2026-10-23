@@ -1911,6 +1911,17 @@
     vista.querySelectorAll("[data-painel-predio]").forEach((painel) => { painel.hidden = painel.dataset.painelPredio !== String(indice); });
   }
 
+  // v449 — o mesmo carrinho da etiqueta de garagem do painel (v357).
+  const ICONE_CARRO = '<svg viewBox="0 0 24 16" focusable="false"><path d="M5 6l2-4.2C7.3 1.3 7.8 1 8.4 1h7.2c.6 0 1.1.3 1.4.8L19 6h1.5c1.4 0 2.5 1.1 2.5 2.5V12c0 .6-.4 1-1 1h-1.2a2.5 2.5 0 01-4.9 0H8.1a2.5 2.5 0 01-4.9 0H2c-.6 0-1-.4-1-1V8.5C1 7.1 2.1 6 3.5 6H5zm2.2 0h9.6l-1.5-3.2H8.7L7.2 6z"/></svg>';
+
+  // Vagas de carro do texto de garagem ("1 box duplo + 1 box simples" = 3).
+  // Texto fora do padrao fica com um carrinho so.
+  function vagasDaGaragem(texto) {
+    let vagas = 0;
+    String(texto).replace(/(\d+)\s*box\s*(duplos?|simples)/gi, (_, n, tipo) => { vagas += Number(n) * (/duplo/i.test(tipo) ? 2 : 1); });
+    return vagas || 1;
+  }
+
   function fichaDoPredio(item) {
     if (!item) {
       return `
@@ -1931,6 +1942,10 @@
     const andar = andarDe(item.code);
     // "Box opcional (consultar)" nao e garagem incluida (mesma regra da ficha).
     const garagem = item.garage && !/opcional|consultar/i.test(item.garage) ? item.garage : "";
+    // v449 — a garagem tambem embaixo do tamanho, na etiqueta do painel, com
+    // um carrinho por vaga (box simples = 1, box duplo = 2): modelo B que o
+    // dono escolheu. A linha "Garagem" da lista continua (nao foi pedido tirar).
+    const carros = garagem ? `<span class="carros" aria-hidden="true">${ICONE_CARRO.repeat(vagasDaGaragem(garagem))}</span>` : "";
     const linhas = [
       ["Andar", andar ? `${andar}º andar` : ""],
       ["Área global", areas.global],
@@ -1944,6 +1959,7 @@
       <h3>${escapeHtml(itemLabel(item))}</h3>
       ${tipo ? `<p class="predio-ficha-tipo">${escapeHtml(tipo)}</p>` : ""}
       ${tamanho ? `<p class="predio-ficha-areas">${escapeHtml(tamanho)}</p>` : ""}
+      ${garagem ? `<p class="predio-ficha-garagem">${carros}${escapeHtml(garagem)}</p>` : ""}
       <div class="predio-ficha-valor"><span>Valor</span><strong class="price-value">${money(item.price)}</strong></div>
       <dl class="predio-ficha-dados">
         ${linhas.map(([rotulo, valor]) => `<div><dt>${escapeHtml(rotulo)}</dt><dd${rotulo === "Situação" ? ` class="situacao-${item.status}"` : ""}>${escapeHtml(valor)}</dd></div>`).join("")}

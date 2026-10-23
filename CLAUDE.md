@@ -215,6 +215,20 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   **"115 m² global · 65 m² privativo"** na cor da marca, letra normal
   (`.predio-ficha-areas`). As linhas "Área global" e "Área privativa" da ficha
   continuam lá (não foi pedido tirar).
+- **A garagem embaixo do tamanho, com os carrinhos (v449).** Pedido do dono,
+  com o print da ficha do 504: *"preciso q conste os box de garagem na
+  descrição do mapa tb, ate gostaria q colocasse o icone dos carrinhos igual
+  colocamos no painel adm"*. Viu quatro modelos (A na linha verde, B etiqueta
+  do painel, C quadro ao lado do valor, D só na linha "Garagem") e escolheu o
+  **B**: logo embaixo dos m² sai a **etiqueta azul-clara do painel** com **um
+  carrinho por vaga** (box simples = 1, box duplo = 2, a regra da v357) e o
+  texto da garagem — "🚗 1 box simples", "🚗🚗🚗 1 box duplo + 1 box simples"
+  (`.predio-ficha-garagem`, `vagasDaGaragem`, `ICONE_CARRO` no `app.js`).
+  Unidade sem garagem (as salas do térreo) fica sem etiqueta. A linha
+  "Garagem" da lista da ficha continua (não foi pedido tirar). O cliente
+  também vê. É o **tipo** de box, não o número: a unidade à venda ainda não
+  tem box com número ligado a ela. Teste: *"a ficha do prédio traz a garagem
+  na etiqueta, com um carrinho por vaga"*.
 - O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
   Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
   está nos commits 29fe260…519868a se ele quiser de volta.
