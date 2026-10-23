@@ -49,8 +49,9 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   Disponível = branco com contorno verde e **o número do apartamento escrito
   em toda parede de fora** (frente, fundos e laterais). Vendido = **cinza
   escuro com "VENDIDO" escrito**, e o toque nele não abre nada (como no mapa
-  2D). Escolhido = na cor da marca. Embaixo, os botões **Frente · Lateral ·
-  Fundos · De cima**; no canto, a legenda.
+  2D). Escolhido = na cor da marca. No canto de baixo à esquerda, o aviso
+  **"⟳ Arraste para girar"** (v453 — os botões Frente · Lateral · Fundos · De
+  cima saíram); no canto de cima, a legenda.
 - **A ficha é a de sempre** (`fichaDoPredio`, `mostrarFichaDoPredio`): ao lado
   no computador, embaixo no celular com a tela descendo até ela, com planta,
   planta técnica, Compartilhar e Selecionar (o cliente vê sem os dois botões
@@ -268,6 +269,17 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   planta técnica), o quadro ocupa a largura toda. `tools/validar.js` confere o
   PDF e a miniatura de cada prancha. **Ao trocar uma prancha, refaça a
   miniatura dela** (pdftoppm a 100 dpi, recorte da torre, cinza, 192 px).
+- **Sem os botões Frente · Lateral · Fundos · De cima, modelo B (v453).** O
+  dono circulou os botões no print do 1101: *"nao quero esses botoes ai em cima
+  do mapa... quero alguma outra informação mostrando para girar o predio, tipo
+  uma seta em circulo no canto da tela"*. Viu quatro modelos (A selo 360°, B
+  seta + frase, C seta curva no meio, D duas setas que giram) e escolheu o
+  **B**: no canto de baixo à esquerda do prédio, um selo branco com **a seta em
+  círculo e "Arraste para girar"** (`.predio-3d-giro`, `ICONE_GIRO`). **Só
+  avisa, não é botão** — o giro é no arrastar, como já era. O prédio continua
+  abrindo de frente (`FRENTE`, em `criarPredio3d`). Testes: *"o Renaissance
+  abre o prédio em 3D…"* confere o aviso e que os botões não voltaram; *"no 3D,
+  o vendido não abre ficha e arrastar gira o prédio"* gira arrastando.
 - O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
   Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
   está nos commits 29fe260…519868a se ele quiser de volta.
