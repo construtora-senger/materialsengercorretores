@@ -251,6 +251,23 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   O andar está no número do apartamento; a situação, na cor do prédio (só abre
   ficha quem não está vendido). A ficha do link de uma unidade (`?u=`) não
   mudou. O teste da etiqueta confere que a ficha do mapa não tem mais lista.
+- **A planta e a planta técnica lado a lado, opção 4 (v452).** O dono, com o
+  print do "Ver planta" e do "Planta técnica em PDF": *"nessas imagens de
+  planta, em vez da imagem de pdf, quero imagem da planta preto e branco, tipo
+  a de cima q é a planta humanizada"*. Viu quatro modelos (A igual ao "Ver
+  planta", B com selo PDF, C lado a lado, D faixa larga), escolheu o **C com
+  os quadrados menores**, viu quatro tamanhos e escolheu a **opção 4**: os dois
+  quadros **lado a lado** (`.predio-ficha-plantas`), cada um com a
+  **miniatura de 64 px à esquerda e o nome à direita** — "Ver planta" com o
+  tipo embaixo ("Planta humanizada", tirado da legenda da planta; legenda que
+  diz só "Planta" fica sem a segunda linha) e "Planta técnica em PDF" com o
+  andar. A miniatura da técnica é **a própria prancha em preto e branco**,
+  recortada do PDF: `assets/renaissance/plantas-tecnicas/<prancha>-miniatura.webp`,
+  ligada pelo campo **`miniatura`** de `mapaPredio.plantasTecnicas`; sem ele,
+  volta o ícone de PDF. Com uma planta só (salas do térreo, prédios sem
+  planta técnica), o quadro ocupa a largura toda. `tools/validar.js` confere o
+  PDF e a miniatura de cada prancha. **Ao trocar uma prancha, refaça a
+  miniatura dela** (pdftoppm a 100 dpi, recorte da torre, cinza, 192 px).
 - O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
   Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
   está nos commits 29fe260…519868a se ele quiser de volta.
@@ -342,7 +359,9 @@ conferidas pelo carimbo de cada uma: 4º pavimento (401, 402), 5º (501–504),
 `mapaPredio.plantasTecnicas` no `data.js` (`de`/`ate`, `pdf`, `legenda`);
 `botaoDaPlantaTecnica`, no `app.js`. As salas do térreo e o 18º não têm
 prancha (no mapa antigo também não). Só na ficha do mapa — a lista e a seção
-"Imagens e planta" não mudaram.
+"Imagens e planta" não mudaram. **Desde a v452** o ícone de PDF deu lugar à miniatura
+da prancha em preto e branco, lado a lado com o "Ver planta" (ver a v452, no
+alto).
 
 Testes: *"o Renaissance abre no prédio, e o toque no apartamento abre a ficha
 dele"*, *"o prédio tem a aba dos 3 suítes (frente) e a dos 2 suítes

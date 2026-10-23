@@ -144,11 +144,11 @@ const EMPREENDIMENTOS = [
       // apartamento, pedido do dono em 18/10/2026: as mesmas pranchas do mapa
       // antigo (A05 a A09), cada uma valendo para os andares do carimbo dela.
       plantasTecnicas: [
-        { de: 4, ate: 4, pdf: "assets/renaissance/plantas-tecnicas/pavimento-04.pdf", legenda: "4º pavimento" },
-        { de: 5, ate: 5, pdf: "assets/renaissance/plantas-tecnicas/pavimento-05.pdf", legenda: "5º pavimento" },
-        { de: 6, ate: 12, pdf: "assets/renaissance/plantas-tecnicas/pavimento-06-a-12.pdf", legenda: "6º ao 12º pavimento" },
-        { de: 13, ate: 13, pdf: "assets/renaissance/plantas-tecnicas/pavimento-13.pdf", legenda: "13º pavimento" },
-        { de: 14, ate: 17, pdf: "assets/renaissance/plantas-tecnicas/pavimento-14-a-17.pdf", legenda: "14º ao 17º pavimento" },
+        { de: 4, ate: 4, pdf: "assets/renaissance/plantas-tecnicas/pavimento-04.pdf", miniatura: "assets/renaissance/plantas-tecnicas/pavimento-04-miniatura.webp", legenda: "4º pavimento" },
+        { de: 5, ate: 5, pdf: "assets/renaissance/plantas-tecnicas/pavimento-05.pdf", miniatura: "assets/renaissance/plantas-tecnicas/pavimento-05-miniatura.webp", legenda: "5º pavimento" },
+        { de: 6, ate: 12, pdf: "assets/renaissance/plantas-tecnicas/pavimento-06-a-12.pdf", miniatura: "assets/renaissance/plantas-tecnicas/pavimento-06-a-12-miniatura.webp", legenda: "6º ao 12º pavimento" },
+        { de: 13, ate: 13, pdf: "assets/renaissance/plantas-tecnicas/pavimento-13.pdf", miniatura: "assets/renaissance/plantas-tecnicas/pavimento-13-miniatura.webp", legenda: "13º pavimento" },
+        { de: 14, ate: 17, pdf: "assets/renaissance/plantas-tecnicas/pavimento-14-a-17.pdf", miniatura: "assets/renaissance/plantas-tecnicas/pavimento-14-a-17-miniatura.webp", legenda: "14º ao 17º pavimento" },
       ],
     },
     hero: "assets/renaissance/capa.jpg",

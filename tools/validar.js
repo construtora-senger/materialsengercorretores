@@ -157,6 +157,11 @@ for (const emp of EMPREENDIMENTOS) {
   if (emp.folder && !/^https?:\/\//i.test(emp.folder) && !/\.pdf(\?|$)/i.test(emp.folder)) {
     erro(`${emp.id}.folder: o padrao comercial pede PDF ("${emp.folder}")`);
   }
+  // v430/v452 — a planta tecnica do andar (PDF) e a miniatura dela, na ficha do mapa.
+  (emp.mapaPredio?.plantasTecnicas || []).forEach((p, i) => {
+    conferirArquivo(`${emp.id}.plantasTecnicas[${i}].pdf`, p.pdf);
+    conferirArquivo(`${emp.id}.plantasTecnicas[${i}].miniatura`, p.miniatura);
+  });
   for (const campoVideo of ["video", "video2", "video3"]) {
     if (emp[campoVideo] && !/^https?:\/\//i.test(emp[campoVideo])) conferirArquivo(`${emp.id}.${campoVideo}`, emp[campoVideo]);
   }

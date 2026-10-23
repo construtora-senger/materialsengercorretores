@@ -1955,6 +1955,9 @@
     const carros = garagem ? `<span class="carros" aria-hidden="true">${ICONE_CARRO.repeat(vagasDaGaragem(garagem))}</span>` : "";
     // v451 — sem a lista de baixo (Andar, Area global, Area privativa e
     // Situacao): o dono riscou as quatro, "as infos ja constam ali em cima".
+    // v452 — a planta e a planta tecnica lado a lado, em dois quadros
+    // pequenos (opcao 4 do modelo C, escolhida pelo dono).
+    const plantas = [miniaturaDaPlanta(item, true), botaoDaPlantaTecnica(item)].filter(Boolean);
     return `
       <p class="predio-ficha-tag">Ficha da unidade</p>
       <h3>${escapeHtml(itemLabel(item))}</h3>
@@ -1962,8 +1965,7 @@
       ${tamanho ? `<p class="predio-ficha-areas">${escapeHtml(tamanho)}</p>` : ""}
       ${garagem ? `<p class="predio-ficha-garagem">${carros}${escapeHtml(garagem)}</p>` : ""}
       <div class="predio-ficha-valor"><span>Valor</span><strong class="price-value">${money(item.price)}</strong></div>
-      ${miniaturaDaPlanta(item)}
-      ${botaoDaPlantaTecnica(item)}
+      ${plantas.length ? `<div class="predio-ficha-plantas">${plantas.join("")}</div>` : ""}
       ${CLIENT_MODE ? "" : `<div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>`}
     `;
   }
@@ -1982,7 +1984,13 @@
   function botaoDaPlantaTecnica(item) {
     const tecnica = plantaTecnicaDoAndar(item);
     if (!tecnica) return "";
-    return `<a class="planta-tecnica" href="${escapeHtml(assetUrl(tecnica.pdf))}" target="_blank" rel="noopener"><span class="planta-tecnica-icone">${ICONE_PDF}<b>PDF</b></span><span class="planta-tecnica-texto"><strong>Planta técnica em PDF</strong><small>${escapeHtml(tecnica.legenda)}</small></span></a>`;
+    // v452 — a miniatura da propria prancha, em preto e branco, no lugar do
+    // icone de PDF (opcao 4 do modelo C, escolhida pelo dono). Sem miniatura
+    // cadastrada, volta o icone.
+    const imagem = tecnica.miniatura
+      ? `<img class="planta-tecnica-mini" src="${escapeHtml(assetUrl(tecnica.miniatura))}" alt="" loading="lazy">`
+      : `<span class="planta-tecnica-icone">${ICONE_PDF}<b>PDF</b></span>`;
+    return `<a class="planta-tecnica" href="${escapeHtml(assetUrl(tecnica.pdf))}" target="_blank" rel="noopener">${imagem}<span class="planta-tecnica-texto"><strong>Planta técnica em PDF</strong><small>${escapeHtml(tecnica.legenda)}</small></span></a>`;
   }
 
   function escolherNoPredio(botao) {
@@ -2523,10 +2531,17 @@
     return mediaFor(item.emp).find((m) => nome(m.src) === item.planta && !/\.pdf(?:$|\?)/i.test(m.src)) || null;
   }
 
-  function miniaturaDaPlanta(item) {
+  function miniaturaDaPlanta(item, comTipo = false) {
     const planta = plantaDaUnidade(item);
     if (!planta) return "";
-    return `<button class="planta-mini" type="button" data-planta-item="${escapeHtml(item.key)}" aria-label="Ver a planta do ${escapeHtml(itemLabel(item))}"><img src="${escapeHtml(assetUrl(planta.src))}" alt="" loading="lazy"><span>Ver planta</span></button>`;
+    // v452 — na ficha do mapa, o tipo da planta embaixo do "Ver planta"
+    // ("Planta humanizada"), tirado da legenda dela. Legenda que diz so
+    // "Planta" fica sem a segunda linha.
+    const tipo = comTipo ? String(planta.legenda || "").split(" — ")[0].trim() : "";
+    const texto = tipo && !/^planta$/i.test(tipo)
+      ? `<span class="planta-mini-texto"><strong>Ver planta</strong><small>${escapeHtml(tipo)}</small></span>`
+      : "<span>Ver planta</span>";
+    return `<button class="planta-mini" type="button" data-planta-item="${escapeHtml(item.key)}" aria-label="Ver a planta do ${escapeHtml(itemLabel(item))}"><img src="${escapeHtml(assetUrl(planta.src))}" alt="" loading="lazy">${texto}</button>`;
   }
 
   function abrirPlantaDaUnidade(item) {

@@ -472,12 +472,23 @@ async function teste(nome, fn) {
       const r = await p.evaluate(async () => {
         const a = document.querySelector(".predio-ficha .planta-tecnica");
         if (!a) return { href: "" };
-        return { href: a.getAttribute("href"), alvo: a.target, status: (await fetch(a.href, { method: "HEAD" })).status };
+        // v452 — a miniatura da prancha, ao lado do "Ver planta".
+        const img = a.querySelector("img.planta-tecnica-mini");
+        if (img && !img.complete) await new Promise((fim) => { img.onload = img.onerror = fim; setTimeout(fim, 3000); });
+        const mini = document.querySelector(".predio-ficha .predio-ficha-plantas .planta-mini");
+        const ladoALado = !!mini && Math.abs(mini.getBoundingClientRect().top - a.getBoundingClientRect().top) < 2 && mini.getBoundingClientRect().right <= a.getBoundingClientRect().left;
+        return { href: a.getAttribute("href"), alvo: a.target, status: (await fetch(a.href, { method: "HEAD" })).status,
+          miniatura: img?.getAttribute("src") || "", carregou: !!img && img.complete && img.naturalWidth > 0, ladoALado,
+          tipo: mini?.querySelector("small")?.textContent || "" };
       });
       if (!arquivo) { if (r.href) { await p.close(); return `${cod} não devia ter planta técnica e mostra ${r.href}`; } continue; }
       if (!r.href.includes(`/${arquivo}.pdf`)) { await p.close(); return `${cod} abre "${r.href}", esperado ${arquivo}.pdf`; }
       if (r.status !== 200) { await p.close(); return `${cod}: o PDF respondeu ${r.status}`; }
       if (r.alvo !== "_blank") { await p.close(); return `${cod}: o PDF não abre em outra aba`; }
+      if (!r.miniatura.includes(`/${arquivo}-miniatura.webp`)) { await p.close(); return `${cod}: a miniatura da planta técnica é "${r.miniatura}", esperado ${arquivo}-miniatura.webp`; }
+      if (!r.carregou) { await p.close(); return `${cod}: a miniatura da planta técnica não carregou`; }
+      if (!r.ladoALado) { await p.close(); return `${cod}: a planta e a planta técnica não ficaram lado a lado`; }
+      if (r.tipo !== "Planta humanizada") { await p.close(); return `${cod}: embaixo do "Ver planta" está "${r.tipo}"`; }
     }
     await p.close();
     return "";
