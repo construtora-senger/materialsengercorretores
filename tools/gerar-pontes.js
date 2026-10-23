@@ -154,14 +154,16 @@ function unidadesDe(emp) {
   // (emp.vagasPorTipologia), pelo rotulo de estoque da unidade. O texto do
   // grupo so vale quando nao ha regra: na Casa Suspensa de 3 suites ele
   // estaria errado para metade dos apartamentos.
+  // v450 — um box simples so diz "1 box de garagem", como no site.
+  const textoDaGaragem = (texto) => (/^1 box simples$/i.test(texto.trim()) ? "1 box de garagem" : texto);
   const garagemDe = (grupo, unidade) => {
-    if (unidade.garagem !== undefined) return String(unidade.garagem);
+    if (unidade.garagem !== undefined) return textoDaGaragem(String(unidade.garagem));
     const r = (emp.vagasPorTipologia || {})[unidade.estoque || grupo.estoque || grupo.tipo];
     const pelaRegra = r
       ? [r.duplo ? `${r.duplo} box duplo${r.duplo > 1 ? "s" : ""}` : "", r.simples ? `${r.simples} box simples` : ""]
           .filter(Boolean).join(" + ")
       : "";
-    return pelaRegra || grupo.garagem || "";
+    return textoDaGaragem(pelaRegra || grupo.garagem || "");
   };
 
   (emp.grupos || []).forEach((grupo) => {

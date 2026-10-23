@@ -492,9 +492,16 @@
 
   function garagemDaUnidade(emp, group, unit) {
     // Uma unidade pode dizer a sua garagem por escrito; fora isso, manda a regra.
-    if (unit && unit.garagem !== undefined) return String(unit.garagem);
+    if (unit && unit.garagem !== undefined) return textoDaGaragem(String(unit.garagem));
     const regra = (emp.vagasPorTipologia || {})[(unit && unit.estoque) || group.estoque || group.tipo];
-    return (regra ? textoDeBox(regra.duplo || 0, regra.simples || 0) : "") || group.garagem || "";
+    return textoDaGaragem((regra ? textoDeBox(regra.duplo || 0, regra.simples || 0) : "") || group.garagem || "");
+  }
+
+  // v450 — pedido do dono: o apartamento com um box simples so diz "1 box de
+  // garagem", sem o "simples", em todo o site. "1 box duplo" e a garagem
+  // composta ("1 box duplo + 1 box simples") ficam como estao.
+  function textoDaGaragem(texto) {
+    return /^1 box simples$/i.test(texto.trim()) ? "1 box de garagem" : texto;
   }
 
   // A garagem do quadro: so existe quando todas as unidades dele levam a mesma.
@@ -1915,7 +1922,7 @@
   const ICONE_CARRO = '<svg viewBox="0 0 24 16" focusable="false"><path d="M5 6l2-4.2C7.3 1.3 7.8 1 8.4 1h7.2c.6 0 1.1.3 1.4.8L19 6h1.5c1.4 0 2.5 1.1 2.5 2.5V12c0 .6-.4 1-1 1h-1.2a2.5 2.5 0 01-4.9 0H8.1a2.5 2.5 0 01-4.9 0H2c-.6 0-1-.4-1-1V8.5C1 7.1 2.1 6 3.5 6H5zm2.2 0h9.6l-1.5-3.2H8.7L7.2 6z"/></svg>';
 
   // Vagas de carro do texto de garagem ("1 box duplo + 1 box simples" = 3).
-  // Texto fora do padrao fica com um carrinho so.
+  // Texto fora do padrao ("1 box de garagem", da v450) fica com um carrinho so.
   function vagasDaGaragem(texto) {
     let vagas = 0;
     String(texto).replace(/(\d+)\s*box\s*(duplos?|simples)/gi, (_, n, tipo) => { vagas += Number(n) * (/duplo/i.test(tipo) ? 2 : 1); });
@@ -1942,16 +1949,16 @@
     const andar = andarDe(item.code);
     // "Box opcional (consultar)" nao e garagem incluida (mesma regra da ficha).
     const garagem = item.garage && !/opcional|consultar/i.test(item.garage) ? item.garage : "";
-    // v449 — a garagem tambem embaixo do tamanho, na etiqueta do painel, com
-    // um carrinho por vaga (box simples = 1, box duplo = 2): modelo B que o
-    // dono escolheu. A linha "Garagem" da lista continua (nao foi pedido tirar).
+    // v449 — a garagem embaixo do tamanho, na etiqueta do painel, com um
+    // carrinho por vaga (box simples = 1, box duplo = 2): modelo B que o dono
+    // escolheu. A linha "Garagem" da lista saiu na v450, a pedido dele ("ja
+    // tem ali em cima essa info").
     const carros = garagem ? `<span class="carros" aria-hidden="true">${ICONE_CARRO.repeat(vagasDaGaragem(garagem))}</span>` : "";
     const linhas = [
       ["Andar", andar ? `${andar}º andar` : ""],
       ["Área global", areas.global],
       ["Área privativa", areas.privativa],
       ["Área", areas.solta],
-      ["Garagem", garagem],
       ["Situação", STATUS_LABELS[item.status] || item.status],
     ].filter(([, valor]) => valor);
     return `

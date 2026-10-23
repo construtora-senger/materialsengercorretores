@@ -484,23 +484,45 @@ async function teste(nome, fn) {
   });
 
   // v449 — pedido do dono: a garagem embaixo do tamanho, na etiqueta do
-  // painel, com um carrinho por vaga (modelo B).
+  // painel, com um carrinho por vaga (modelo B). v450: um box simples so diz
+  // "1 box de garagem", e a linha "Garagem" da ficha saiu.
   await teste("a ficha do prédio traz a garagem na etiqueta, com um carrinho por vaga", async () => {
     const p = await abrir("/#emp-renaissance");
     await p.waitForTimeout(400);
-    const esperado = { "504": ["1 box simples", 1], "402": ["1 box duplo", 2], "1302": ["1 box duplo + 1 box simples", 3], "Sala 04": ["", 0] };
+    const esperado = { "504": ["1 box de garagem", 1], "402": ["1 box duplo", 2], "1302": ["1 box duplo + 1 box simples", 3], "Sala 04": ["", 0] };
     for (const [cod, [texto, carros]] of Object.entries(esperado)) {
       await tocarNoPredio(p, cod);
       await p.waitForTimeout(200);
       const r = await p.evaluate(() => {
         const g = document.querySelector(".predio-ficha .predio-ficha-garagem");
-        return g ? { texto: g.textContent.trim(), carros: g.querySelectorAll("svg").length, linha: !!g.previousElementSibling?.matches(".predio-ficha-areas") } : { texto: "", carros: 0, linha: true };
+        const linhaGaragem = [...document.querySelectorAll(".predio-ficha-dados dt")].some((dt) => dt.textContent === "Garagem");
+        return g ? { texto: g.textContent.trim(), carros: g.querySelectorAll("svg").length, linha: !!g.previousElementSibling?.matches(".predio-ficha-areas"), linhaGaragem } : { texto: "", carros: 0, linha: true, linhaGaragem };
       });
       if (r.texto !== texto || r.carros !== carros) { await p.close(); return `${cod}: a etiqueta diz "${r.texto}" com ${r.carros} carrinhos, esperado "${texto}" com ${carros}`; }
       if (!r.linha) { await p.close(); return `${cod}: a etiqueta não ficou embaixo dos m²`; }
+      if (r.linhaGaragem) { await p.close(); return `${cod}: a ficha ainda tem a linha "Garagem"`; }
     }
     await p.close();
     return "";
+  });
+
+  // v450 — pedido do dono: "1 box de garagem" em todo o site quando o
+  // apartamento leva um box simples so; a garagem composta fica como esta.
+  await teste("o box simples sozinho diz \"1 box de garagem\" na lista, sem o \"simples\"", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(400);
+    await verEmLista(p);
+    const r = await p.evaluate(() => {
+      const abas = [...document.querySelectorAll(".aba-tipologia")];
+      const textos = [];
+      for (const aba of abas) { aba.click(); textos.push(document.getElementById("unidades").innerText); }
+      const tudo = textos.join("\n");
+      return { deGaragem: /1 box de garagem/.test(tudo), sozinho: /(?<!\+ )1 box simples/.test(tudo), composto: /1 box duplo \+ 1 box simples/.test(tudo) };
+    });
+    await p.close();
+    if (!r.deGaragem) return "a lista não diz \"1 box de garagem\" em lugar nenhum";
+    if (r.sozinho) return "a lista ainda diz \"1 box simples\" sozinho";
+    return r.composto ? "" : "a garagem composta sumiu da lista";
   });
 
   await teste("no celular a ficha abre embaixo do prédio e a tela desce até ela", async () => {

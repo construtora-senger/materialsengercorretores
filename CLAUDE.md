@@ -224,11 +224,24 @@ depois de ver as duas vistas de lado): *"opcao 3 / pode aplicar"*.
   carrinho por vaga** (box simples = 1, box duplo = 2, a regra da v357) e o
   texto da garagem — "🚗 1 box simples", "🚗🚗🚗 1 box duplo + 1 box simples"
   (`.predio-ficha-garagem`, `vagasDaGaragem`, `ICONE_CARRO` no `app.js`).
-  Unidade sem garagem (as salas do térreo) fica sem etiqueta. A linha
-  "Garagem" da lista da ficha continua (não foi pedido tirar). O cliente
+  Unidade sem garagem (as salas do térreo) fica sem etiqueta. O cliente
   também vê. É o **tipo** de box, não o número: a unidade à venda ainda não
   tem box com número ligado a ela. Teste: *"a ficha do prédio traz a garagem
   na etiqueta, com um carrinho por vaga"*.
+- **"1 box de garagem" e sem a linha "Garagem" na ficha (v450).** O dono, com
+  o print da ficha do 904: *"nesse caso onde o apto tem somente 1 box de
+  garagem, quero q fique escrito apenas '1 box de garagem' (sem a palavra
+  simples) porem quando ele é composto, como: '1 box duplo + 1 box simples'
+  (dai pode deixar assim)"*. Perguntado, respondeu **em todo o site**
+  (etiqueta, ficha da unidade, lista, PDF, mensagem e a prévia do link nas
+  pontes) e que **"1 box duplo" sozinho continua "1 box duplo"**. Quem troca
+  é `textoDaGaragem` (`app.js`, dentro de `garagemDaUnidade`) e a função de
+  mesmo nome em `tools/gerar-pontes.js`; só o texto exato "1 box simples"
+  muda. O painel não mudou (não é o site). Na mesma rodada: *"pode tirar a
+  linha garagem da ficha pois ja tem ali em cima essa info"* — a linha
+  "Garagem" saiu da **ficha do mapa do prédio** (`fichaDoPredio`); a ficha do
+  link de uma unidade (`?u=`) continua com a dela. Teste: *"o box simples
+  sozinho diz \"1 box de garagem\" na lista, sem o \"simples\""*.
 - O mapa 2D que fiz para os três (Boulevard aprovado, Evolutti em 3 abas,
   Premium modelo A com mapinha) **não foi publicado** — saiu da branch, e
   está nos commits 29fe260…519868a se ele quiser de volta.
