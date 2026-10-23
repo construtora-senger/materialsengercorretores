@@ -483,6 +483,26 @@ async function teste(nome, fn) {
     return "";
   });
 
+  // v449 — pedido do dono: a garagem embaixo do tamanho, na etiqueta do
+  // painel, com um carrinho por vaga (modelo B).
+  await teste("a ficha do prédio traz a garagem na etiqueta, com um carrinho por vaga", async () => {
+    const p = await abrir("/#emp-renaissance");
+    await p.waitForTimeout(400);
+    const esperado = { "504": ["1 box simples", 1], "402": ["1 box duplo", 2], "1302": ["1 box duplo + 1 box simples", 3], "Sala 04": ["", 0] };
+    for (const [cod, [texto, carros]] of Object.entries(esperado)) {
+      await tocarNoPredio(p, cod);
+      await p.waitForTimeout(200);
+      const r = await p.evaluate(() => {
+        const g = document.querySelector(".predio-ficha .predio-ficha-garagem");
+        return g ? { texto: g.textContent.trim(), carros: g.querySelectorAll("svg").length, linha: !!g.previousElementSibling?.matches(".predio-ficha-areas") } : { texto: "", carros: 0, linha: true };
+      });
+      if (r.texto !== texto || r.carros !== carros) { await p.close(); return `${cod}: a etiqueta diz "${r.texto}" com ${r.carros} carrinhos, esperado "${texto}" com ${carros}`; }
+      if (!r.linha) { await p.close(); return `${cod}: a etiqueta não ficou embaixo dos m²`; }
+    }
+    await p.close();
+    return "";
+  });
+
   await teste("no celular a ficha abre embaixo do prédio e a tela desce até ela", async () => {
     const p = await abrir("/#emp-renaissance", { mobile: true });
     await p.waitForTimeout(500);

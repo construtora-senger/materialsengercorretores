@@ -1651,3 +1651,9 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
   .predio-3d-lados { bottom: 10px; gap: 2px; padding: 4px; }
   .predio-3d-lados button { padding: 7px 11px; font-size: 12.5px; }
 }
+
+/* v449 — a garagem embaixo do tamanho, na ficha do predio: a etiqueta do
+   painel, azul-clara, com um carrinho por vaga (modelo B do dono). */
+.predio-ficha-garagem { display: flex; width: fit-content; align-items: center; gap: 6px; margin: 8px 0 0; padding: 4px 12px; border-radius: 999px; background: #e3f1f3; color: var(--brand-dark); font-size: 14.5px; font-weight: 600; }
+.predio-ficha-garagem .carros { display: inline-flex; gap: 2px; }
+.predio-ficha-garagem svg { width: 22px; height: 15px; fill: currentColor; flex: none; }
