@@ -29,7 +29,7 @@ const existe = (rel) => fs.existsSync(path.join(RAIZ, rel));
 // ---------------------------------------------------------------- 1. sintaxe
 // Todo JS do projeto tem de compilar. Um erro de virgula no data.js deixa o
 // site inteiro em branco, e no navegador isso so aparece no console.
-const JS = ["data.js", "app.js", "sw.js", "tools/gerar-pontes.js", "tools/gerar-montagens.js", "tools/validar.js"];
+const JS = ["data.js", "app.js", "sw.js", "tools/gerar-pontes.js", "tools/gerar-montagens.js", "tools/gerar-previas.js", "tools/validar.js"];
 for (const arquivo of JS) {
   if (!existe(arquivo)) { erro(`arquivo ausente: ${arquivo}`); continue; }
   try { new vm.Script(ler(arquivo), { filename: arquivo }); }
@@ -182,6 +182,32 @@ for (const emp of EMPREENDIMENTOS) {
   }
 }
 
+// v456 — a previa do link e SEMPRE a capa (regra do dono: "quero sempre que
+// va junto nos envios dos empreendimentos a imagem da capa daquele
+// empreendimento"). assets/preview/capas.json diz de qual capa, e com qual
+// SHA-256, cada previa foi feita (gravado por tools/gerar-previas.js e pelo
+// painel, quando a capa e trocada). Capa que mudou sem a previa ir junto e
+// ERRO: o WhatsApp mostraria a foto velha ao lado do link.
+{
+  const crypto = require("crypto");
+  let manifesto = {};
+  if (existe("assets/preview/capas.json")) {
+    try { manifesto = JSON.parse(ler("assets/preview/capas.json")); }
+    catch (e) { erro(`assets/preview/capas.json nao e JSON valido: ${e.message}`); }
+  } else {
+    erro("falta assets/preview/capas.json — rode node tools/gerar-previas.js");
+  }
+  for (const emp of ativos) {
+    if (!emp.hero || !existe(emp.hero) || !existe(`assets/preview/${emp.id}.jpg`)) continue;
+    const feita = manifesto[emp.id];
+    const sha = crypto.createHash("sha256").update(fs.readFileSync(path.join(RAIZ, emp.hero))).digest("hex");
+    if (!feita) erro(`${emp.id}: a previa do link nao consta em assets/preview/capas.json — rode node tools/gerar-previas.js`);
+    else if (feita.capa !== emp.hero || feita.sha256 !== sha) {
+      erro(`${emp.id}: a previa do link (assets/preview/${emp.id}.jpg) nao e da capa atual (${emp.hero}) — rode node tools/gerar-previas.js`);
+    }
+  }
+}
+
 // ------------------------------------------- 4. material comercial obrigatorio
 // Capa, galeria, folder e video sao o padrao comercial de todo empreendimento
 // real. Faltar e AVISO: depende de material que so o dono tem.
@@ -330,7 +356,7 @@ if (/unidades? dispon[ií]ve|restam? \d|unidades? restantes/i.test(app)) {
 // ------------------------------------------------------------- 8. segredos
 // Nada de token, senha ou chave dentro de arquivo publico. O painel guarda a
 // chave no localStorage do aparelho; ela nunca pode ser commitada.
-const PUBLICOS = ["data.js", "app.js", "index.html", "sw.js", "manifest.json", "admin/index.html", "tools/gerar-pontes.js", "tools/gerar-montagens.js", "tools/validar.js"];
+const PUBLICOS = ["data.js", "app.js", "index.html", "sw.js", "manifest.json", "admin/index.html", "tools/gerar-pontes.js", "tools/gerar-montagens.js", "tools/gerar-previas.js", "tools/validar.js"];
 const SEGREDOS = [
   [/gh[pousr]_[A-Za-z0-9]{16,}/, "token classico do GitHub"],
   [/github_pat_[A-Za-z0-9_]{20,}/, "token fine-grained do GitHub"],

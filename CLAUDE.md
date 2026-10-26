@@ -36,6 +36,38 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A imagem do envio é sempre a capa do empreendimento (v456)
+
+Ordem do dono (26/10/2026), com o print do WhatsApp: a prévia do link do Nova
+Vila Rica III ainda mostrava a foto antiga do loteamento, não a capa nova da
+v454 — *"mas eu quero q vá essa da capa"* e, em seguida, *"quero sempre q vá
+junto nos envios dos empreendimentos a imagem da capa daquele empreendimento,
+regra para todos eles"*.
+
+- **O que é a prévia:** nenhum envio leva arquivo (v333); a foto que aparece
+  no WhatsApp é a `og:image` da ponte `l/<emp>/` (e de `l/<emp>/u/<n>/`), o
+  JPEG `assets/preview/<id>.jpg`, de 1200 × 630. Até a v455 esse JPEG era
+  feito à mão, e **em 8 dos 10 empreendimentos era outra foto, não a capa**.
+- **Regra:** a prévia é **a própria capa** (`hero`), cobrindo a imagem
+  inteira, centrada. Sem texto, sem moldura.
+- **`tools/gerar-previas.js`** refaz as prévias a partir das capas (só o que
+  está diferente; `--tudo` refaz todas) e grava
+  **`assets/preview/capas.json`**: de qual arquivo de capa, e com qual SHA-256,
+  cada prévia foi feita. **`tools/validar.js` falha** quando a capa muda sem a
+  prévia ir junto, ou quando o manifesto falta.
+- **O painel faz sozinho:** ao trocar a capa em Materiais, `gerarPreviaDaCapa`
+  desenha a prévia no navegador (o mesmo desenho da ferramenta), e ela sobe
+  **no mesmo commit** que a capa, com o `capas.json` atualizado
+  (`manifestoDasPrevias`). Tirar a capa da fila tira a prévia junto
+  (`removerUploadCampo`).
+- **As montagens da seleção** (`assets/preview/sel/`) e a prévia do portfólio
+  também desenham a capa, mas **não** saem do painel: depois de uma capa nova,
+  continua valendo `node tools/gerar-montagens.js` e `node tools/gerar-pontes.js`
+  (as 511 montagens com o Nova Vila Rica III foram refeitas na v456).
+
+Teste: *"trocar a capa pelo painel manda a prévia do link junto, feita da
+capa"*.
+
 ## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435), do Premium Office (v436), do Evolutti (v438), do Prime e do Quality (v442) e do Personalité (v443)
 
 Pedido do dono (20/10/2026), depois de ver o mapa em abas e o mapa 2D do
@@ -661,7 +693,8 @@ link com uma imagem bonita, os empreendimentos"*.
 - **Ao trocar a capa de um prédio, ou acrescentar um:**
   `node tools/gerar-montagens.js --tudo` regrava também a prévia do portfólio;
   depois `node tools/gerar-pontes.js`. O `tools/validar.js` exige a imagem e a
-  ponte.
+  ponte. (A prévia do próprio empreendimento, `assets/preview/<id>.jpg`, o
+  painel refaz sozinho desde a v456 — ver no alto.)
 
 Testes (`tools/testar-navegador.js`): *"o Compartilhar do topo manda o link do
 sistema, só texto"* e *"a ponte do portfólio mostra a montagem dos prédios e
@@ -1195,7 +1228,9 @@ Um empreendimento só segue com `l/<emp>/?sel=…`, como antes.
 **Quando trocar a capa de um empreendimento, ou acrescentar/remover um:**
 `node tools/gerar-montagens.js --tudo` (ou sem `--tudo`, para só o que falta)
 e depois `node tools/gerar-pontes.js`. Sem isso a prévia da seleção mostra a
-montagem velha, ou a marca.
+montagem velha, ou a marca. A prévia do empreendimento sozinho
+(`assets/preview/<id>.jpg`) é a capa, pela regra da v456 — o painel a refaz ao
+trocar a capa; fora do painel, `node tools/gerar-previas.js`.
 
 **Testes que guardam isto** (`tools/testar-navegador.js`):
 - *"no celular, a seleção vai como texto com o link da montagem — sem arquivo"*;
@@ -1685,6 +1720,10 @@ atual** — quando divergir da seção "REGRAS ATUAIS", a de cima vale.
 - `tools/materiais.json` — o retrato dos materiais de cada empreendimento. É a
   referência da guarda de regressão; atualize com
   `node tools/validar.js --gravar-retrato` depois de acrescentar material.
+- `tools/gerar-previas.js` — refaz `assets/preview/<id>.jpg` (a foto que o
+  WhatsApp mostra ao lado do link) a partir da capa de cada empreendimento e
+  grava `assets/preview/capas.json` (v456). O painel faz o mesmo sozinho ao
+  trocar a capa.
 - `l/` — as **páginas-ponte**, geradas por `tools/gerar-pontes.js`. Uma por
   empreendimento (`l/renaissance/`) e uma por unidade (`l/renaissance/u/501/`).
   Existem porque o robô do WhatsApp não roda JavaScript: sem elas a prévia de

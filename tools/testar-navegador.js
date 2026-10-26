@@ -1005,7 +1005,7 @@ async function teste(nome, fn) {
   grupo("PAINEL ADMINISTRATIVO");
 
   const arquivosLocais = {};
-  for (const rel of ["data.js", "index.html", "sw.js", "admin/index.html"]) {
+  for (const rel of ["data.js", "index.html", "sw.js", "admin/index.html", "assets/preview/capas.json"]) {
     arquivosLocais[rel] = fs.readFileSync(path.join(RAIZ, rel), "utf8");
   }
   const b64 = (t) => Buffer.from(t, "utf8").toString("base64");
@@ -1437,6 +1437,57 @@ async function teste(nome, fn) {
     ];
     const faltam = esperados.filter((n) => !nomes.includes(n));
     return faltam.length ? `faltam: ${faltam.join(" | ")}` : "";
+  });
+
+  // v456 — regra do dono: a imagem que vai junto no envio do empreendimento
+  // e SEMPRE a capa dele. Ao trocar a capa pelo painel, a previa do link
+  // (assets/preview/<id>.jpg, 1200 x 630, feita da propria capa) e o
+  // manifesto assets/preview/capas.json sobem no MESMO commit.
+  await teste("trocar a capa pelo painel manda a prévia do link junto, feita da capa", async () => {
+    gravacoes.length = 0;
+    await clicarNoMenu('[data-modulo-alvo="materiais"]');
+    await admin.waitForTimeout(400);
+    await admin.evaluate(() => document.querySelectorAll("#materiais details.material-emp").forEach((d) => { d.hidden = false; d.open = true; }));
+    const input = admin.locator('input[data-arquivo-imagem="hero"][data-emp="boulevard"]');
+    if (!(await input.count())) return "sem o campo da capa do Boulevard";
+    // Uma capa de verdade no padrao do painel (1600 x 900), desenhada na hora.
+    const png = await admin.evaluate(() => {
+      const c = document.createElement("canvas"); c.width = 1600; c.height = 900;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#1d4ed8"; ctx.fillRect(0, 0, 1600, 900);
+      ctx.fillStyle = "#f59e0b"; ctx.fillRect(600, 300, 400, 300);
+      return c.toDataURL("image/png").split(",")[1];
+    });
+    await input.setInputFiles({ name: "capa-nova.png", mimeType: "image/png", buffer: Buffer.from(png, "base64") });
+    await admin.waitForTimeout(1200);
+    await admin.locator("#botao-publicar").evaluate((b) => b.click());
+    await admin.waitForTimeout(3500);
+    const arvore = gravacoes.filter((g) => /git\/trees/.test(g.path)).map((g) => { try { return JSON.parse(g.corpo).tree.map((f) => f.path); } catch (e) { return []; } }).flat();
+    if (!arvore.length) return "a publicacao nao montou a arvore do commit";
+    if (!arvore.includes("assets/boulevard/capa.png")) return `a capa nova nao foi no commit: ${arvore.join(", ")}`;
+    if (!arvore.includes("assets/preview/boulevard.jpg")) return `a previa do link nao foi no mesmo commit: ${arvore.join(", ")}`;
+    if (!arvore.includes("assets/preview/capas.json")) return "o manifesto assets/preview/capas.json nao foi no commit";
+    const blobs = gravacoes.filter((g) => /git\/blobs/.test(g.path)).map((g) => { try { return JSON.parse(g.corpo); } catch (e) { return {}; } });
+    // A previa: um JPEG de 1200 x 630 (le o marcador SOF do arquivo).
+    const jpeg = blobs.map((b) => b.encoding === "base64" ? Buffer.from(b.content || "", "base64") : null).find((buf) => buf && buf[0] === 0xff && buf[1] === 0xd8);
+    if (!jpeg) return "nenhum JPEG foi enviado — a previa nao foi gerada";
+    let i = 2, medida = null;
+    while (i < jpeg.length - 9) {
+      if (jpeg[i] !== 0xff) { i++; continue; }
+      const marcador = jpeg[i + 1];
+      if (marcador >= 0xc0 && marcador <= 0xc3) { medida = { altura: jpeg.readUInt16BE(i + 5), largura: jpeg.readUInt16BE(i + 7) }; break; }
+      i += 2 + jpeg.readUInt16BE(i + 2);
+    }
+    if (!medida || medida.largura !== 1200 || medida.altura !== 630) return `a previa saiu em ${medida ? `${medida.largura} x ${medida.altura}` : "tamanho desconhecido"}, e nao em 1200 x 630`;
+    // O manifesto diz de qual capa a previa foi feita, com o SHA-256 dela.
+    const manifesto = blobs.map((b) => b.encoding === "utf-8" ? String(b.content) : "").find((t) => /"boulevard"/.test(t) && /"sha256"/.test(t));
+    if (!manifesto) return "o manifesto nao traz o Boulevard";
+    const sha = require("crypto").createHash("sha256").update(Buffer.from(png, "base64")).digest("hex");
+    let json; try { json = JSON.parse(manifesto); } catch (e) { return "o manifesto nao e JSON valido"; }
+    if (json.boulevard?.capa !== "assets/boulevard/capa.png") return `o manifesto aponta para ${json.boulevard?.capa}`;
+    if (json.boulevard?.sha256 !== sha) return "o SHA-256 do manifesto nao e o da capa enviada";
+    if (!json.renaissance) return "o manifesto perdeu os outros empreendimentos ao ser regravado";
+    return "";
   });
 
   await ctxAdmin.close();
