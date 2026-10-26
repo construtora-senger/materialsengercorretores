@@ -1123,7 +1123,8 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 .imagens-e-planta .plant-viewer-preview { position: relative; top: auto; order: -1; height: 360px; }
 
 /* Sobre o empreendimento: texto e as caracteristicas em lista com o ✓. */
-.sobre-texto { max-width: 820px; margin: 0 0 12px; color: #3a4650; font-size: 17px; line-height: 1.6; }
+/* v462 — white-space: pre-line respeita as quebras de linha do texto colado no painel. */
+.sobre-texto { max-width: 820px; margin: 0 0 12px; color: #3a4650; font-size: 17px; line-height: 1.6; white-space: pre-line; }
 .sobre-lista { display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; margin: 0; padding: 0; list-style: none; }
 .sobre-lista li { display: flex; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
 .sobre-lista svg { flex: none; margin-top: 2px; color: var(--verde); }

@@ -36,6 +36,31 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## A grade de fotos é só a galeria, sem a capa; o Sobre respeita as quebras de linha (v462)
+
+Pedido do dono (26/10/2026), com o Nova Vila Rica III: *"o painel tem 6 fotos
+e o site mostra 7, com uma repetida, mesmo depois de publicar e recarregar"*.
+Não era cache: a grade "Imagens" começava **pela capa** (`hero`) e só depois
+vinham as fotos da galeria — e no Nova Vila Rica III a capa é a mesma foto da
+primeira da galeria (a da galeria leva a marca d'água). A capa já está no alto
+da página, então saía duas vezes.
+
+- **A grade de fotos mostra exatamente as fotos da galeria do painel, cada uma
+  uma vez.** A capa fica **só no alto da página** (`.detail-hero`) e não entra
+  mais na grade nem no visor em tela cheia (`photoMedia`, em `app.js`, pula
+  `emp.hero`). Vale para todos os empreendimentos; só se nota no que tem a
+  capa repetida na galeria. Quem quiser a capa também na grade, cadastra a foto
+  na galeria pelo painel.
+- **O PDF do empreendimento não mudou** (não foi pedido): continua com até 8
+  fotos, a capa entre elas.
+- **O "Sobre o empreendimento" respeita as quebras de linha** do texto colado
+  no painel: `.sobre-texto` ganhou `white-space: pre-line`. O texto do
+  `localizacao` já guardava os `\n`; a página é que os ignorava. Só a página
+  do empreendimento — o endereço no PDF e a busca não mudaram.
+
+Testes: *"a grade de fotos mostra só a galeria, sem repetir a capa"* e *"o
+Sobre respeita as quebras de linha do texto do painel"*.
+
 ## O texto do "Sobre o empreendimento" se edita no painel (v459)
 
 Pergunta do dono (26/10/2026), com o print do Nova Vila Rica III: *"esse
@@ -781,8 +806,9 @@ há botão de folder"*.
 
 Pedido do dono (10/10/2026), depois de perguntar se havia limite de fotos:
 *"vamos deixar liberado pra mais fotos então, até 50 fotos na galeria"*. A
-página do empreendimento mostrava **só as 12 primeiras** (a capa conta como a
-primeira) — o Premium Office tinha 19 e perdia 7. Agora são **até 50**
+página do empreendimento mostrava **só as 12 primeiras** (a capa contava como
+a primeira — **REGRA ANTIGA, substituída pela v462:** a capa fica só no alto
+da página e a grade é só a galeria) — o Premium Office tinha 19 e perdia 7. Agora são **até 50**
 (`photoMedia`, no `app.js`). Passando de 50, ficam as primeiras na ordem do
 painel.
 
