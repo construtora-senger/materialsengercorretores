@@ -289,6 +289,37 @@ for (const emp of ativos) {
     else erro(`ponte ausente: l/${emp.id}/u/${nome}/ (${item.codigo}) — rode node tools/gerar-pontes.js`);
   }
 }
+// v457 — a ponte tem de apontar para a previa que esta no disco: o endereco
+// da imagem leva ?v=<resumo do arquivo>, e e isso que faz o WhatsApp buscar a
+// imagem nova em vez de mostrar a copia guardada. Ponte com resumo velho (ou
+// sem resumo) = o cliente ve a foto antiga.
+{
+  const crypto = require("crypto");
+  const resumo = (rel) => crypto.createHash("sha256").update(fs.readFileSync(path.join(RAIZ, rel))).digest("hex").slice(0, 8);
+  const conferirPonte = (ponte, imagem) => {
+    if (!existe(ponte) || !existe(imagem)) return true;
+    const html = ler(ponte);
+    const escapada = imagem.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const m = html.match(new RegExp(`og:image" content="[^"]*${escapada}(?:\\?v=([0-9a-f]+))?"`));
+    return !!(m && m[1] === resumo(imagem));
+  };
+  let desatualizadas = 0, exemplo = "";
+  for (const emp of ativos) {
+    const imagem = `assets/preview/${emp.id}.jpg`;
+    const pontes = [`l/${emp.id}/index.html`];
+    for (const item of itensDe(emp)) { const nome = slug(item.codigo); if (nome) pontes.push(`l/${emp.id}/u/${nome}/index.html`); }
+    for (const ponte of pontes) if (!conferirPonte(ponte, imagem)) { desatualizadas++; exemplo = exemplo || ponte; }
+  }
+  if (!conferirPonte("l/portfolio/index.html", "assets/preview/portfolio.jpg")) { desatualizadas++; exemplo = exemplo || "l/portfolio/index.html"; }
+  if (existe("assets/preview/sel")) {
+    for (const nome of fs.readdirSync(path.join(RAIZ, "assets", "preview", "sel"))) {
+      const chave = nome.replace(/\.jpg$/, "");
+      if (!conferirPonte(`l/sel/${chave}/index.html`, `assets/preview/sel/${nome}`)) { desatualizadas++; exemplo = exemplo || `l/sel/${chave}/index.html`; }
+    }
+  }
+  if (desatualizadas) erro(`${desatualizadas} ponte(s) apontam para uma previa antiga (ex.: ${exemplo}) — rode node tools/gerar-pontes.js`);
+}
+
 // v333/v334 — a ponte da montagem: uma para cada combinacao de 2 ou mais empreendimentos
 // (assets/preview/sel/<ids>.jpg + l/sel/<ids>/). Sem a imagem, a previa do
 // WhatsApp cai na marca; sem a ponte, o link enviado cai em pagina inexistente.
