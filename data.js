@@ -2097,7 +2097,7 @@ const EMPREENDIMENTOS = [
     video: "assets/nova-vila-rica-iii/video.mp4",
     destaque: true,
     tagline: "Lotes prontos para construir, no novo loteamento Nova Vila Rica III.",
-    localizacao: "Carazinho/RS — Ruas Laranjeira, Figueira, Jatobá, J. Kennedy e H. T. Schutz.",
+    localizacao: "🌿 Sua nova casa pode começar aqui!\n\nNo Loteamento Nova Vila Rica III, em Carazinho/RS, você encontra o espaço para tirar seus planos do papel. 🏡\n\n💰 SUPER DESCONTO PARA PAGAMENTOS À VISTA!\n📐 Lotes de 205 m² a 468 m²\n✅ Asfalto 100% concluído\n📅 Entrega prevista para julho/2027\n💵 Valores a partir de R$ 65.200\n🤝 Entrada + saldo direto com a construtora\n\n🏗️ Terreno quitado? Consulte a possibilidade de financiar até 100% da construção pelo Minha Casa Minha Vida, após a entrega do loteamento.*\n\n📍 Vila Rica · Carazinho/RS\n\n*Financiamento sujeito à análise de crédito, avaliação do imóvel e regras vigentes do programa.",
     galeria: [
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-02-ruas-loteamento.jpg", legenda: "02 ruas loteamento" },
       { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-03-bairro-entorno-2.jpg", legenda: "03 bairro entorno" },
