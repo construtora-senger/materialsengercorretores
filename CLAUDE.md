@@ -79,6 +79,18 @@ regra para todos eles"*.
   do arquivo no disco. **Depois de refazer prévia ou montagem, rode
   `node tools/gerar-pontes.js`** — sem isso o validador acusa.
 
+- **O link do envio também muda a cada versão (v458).** Com a v457 no ar o
+  dono mandou o print de novo, de outra conversa: *"Continua enviando o link
+  sem a foto da capa"*. O que faltava era o **endereço da página**: o WhatsApp
+  do aparelho guarda a prévia inteira de um link que já enviou e não busca de
+  novo, mesmo com a imagem nova. Agora o link do empreendimento e o da unidade
+  levam a versão do site (`l/<emp>/?v=458`, `l/<emp>/u/<n>/?v=458`;
+  `comVersaoDoSite`, no `app.js`, dentro de `pontePara` e `ponteDaUnidade`).
+  Cada publicação é um link novo para o WhatsApp, e a prévia é buscada de novo.
+  A ponte repassa a query ao portfólio, que ignora o `v=`. Os links da seleção
+  (`l/sel/`) e do portfólio não mudaram. Teste: *"o link do empreendimento e o
+  da unidade levam a versão do site, para o WhatsApp buscar a prévia nova"*.
+
 Teste: *"trocar a capa pelo painel manda a prévia do link junto, feita da
 capa"* (confere também as pontes com o `?v=` novo).
 

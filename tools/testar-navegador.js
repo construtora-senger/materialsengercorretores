@@ -804,6 +804,49 @@ async function teste(nome, fn) {
     return "";
   });
 
+  // v458 — o link do empreendimento e o da unidade levam a versao do site
+  // (?v=457). O WhatsApp do aparelho guarda a previa de um endereco ja enviado
+  // e nao busca de novo; com a versao no link, cada publicacao e um link novo
+  // e a previa (a capa) e buscada de novo.
+  await teste("o link do empreendimento e o da unidade levam a versão do site, para o WhatsApp buscar a prévia nova", async () => {
+    const ctx = await navegador.newContext({ userAgent: ANDROID, viewport: { width: 390, height: 844 } });
+    const pagina = await ctx.newPage();
+    await pagina.addInitScript(() => {
+      window.__share = [];
+      navigator.share = async (d) => { window.__share.push({ texto: d.text || "", arquivos: (d.files || []).length }); };
+      navigator.canShare = () => true;
+    });
+    await pagina.goto(base + "/#emp-nova-vila-rica-iii", { waitUntil: "networkidle" });
+    await pagina.waitForTimeout(600);
+    const versao = await pagina.evaluate(() => (document.querySelector('script[src*="app.js"]')?.src.match(/[?&]v=(\d+)/) || [])[1] || "");
+    if (!versao) { await ctx.close(); return "nao achei a versao do site no index.html"; }
+    await pagina.locator("#share-emp-link").click();
+    await pagina.waitForTimeout(800);
+    const emp = await pagina.evaluate(() => window.__share[0]?.texto || "");
+    await pagina.evaluate(() => { window.__share = []; document.getElementById("share-modal")?.classList.remove("open"); });
+    const unidade = await pagina.evaluate(() => {
+      const botao = [...document.querySelectorAll("[data-share-item]")].find((el) => !el.disabled);
+      botao?.click();
+      return !!botao;
+    });
+    await pagina.waitForTimeout(400);
+    const textoUnidade = unidade ? await pagina.evaluate(async () => {
+      document.getElementById("choice-link")?.click();
+      await new Promise((ok) => setTimeout(ok, 800));
+      return window.__share[0]?.texto || "";
+    }) : "";
+    await ctx.close();
+    const linkEmp = (emp.match(/https?:\/\/\S+/) || [])[0] || "";
+    if (!linkEmp) return "o envio do empreendimento saiu sem link";
+    if (!new RegExp(`/l/nova-vila-rica-iii/\\?(?:.*&)?v=${versao}(?:&|$)`).test(linkEmp)) return `o link do empreendimento nao leva ?v=${versao}: ${linkEmp}`;
+    if (unidade) {
+      const linkUni = (textoUnidade.match(/https?:\/\/\S+/) || [])[0] || "";
+      if (!linkUni) return "o envio da unidade saiu sem link";
+      if (!new RegExp(`/l/nova-vila-rica-iii/u/[^/?]+/\\?(?:.*&)?v=${versao}(?:&|$)`).test(linkUni)) return `o link da unidade nao leva ?v=${versao}: ${linkUni}`;
+    }
+    return "";
+  });
+
   // v418 — o Compartilhar do topo manda o link do SISTEMA para outro corretor:
   // so texto (regra da v333), com a ponte l/portfolio/, que da a previa com a
   // montagem dos predios e abre o portfolio no modo corretor (sem ?cliente).
