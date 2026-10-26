@@ -2099,13 +2099,14 @@ const EMPREENDIMENTOS = [
     tagline: "Lotes prontos para construir, no novo loteamento Nova Vila Rica III.",
     localizacao: "🌿 Sua nova casa pode começar aqui!\n\nNo Loteamento Nova Vila Rica III, em Carazinho/RS, você encontra o espaço para tirar seus planos do papel. 🏡\n\n💰 SUPER DESCONTO PARA PAGAMENTOS À VISTA!\n📐 Lotes de 205 m² a 468 m²\n✅ Asfalto 100% concluído\n📅 Entrega prevista para julho/2027\n💵 Valores a partir de R$ 65.200\n🤝 Entrada + saldo direto com a construtora\n\n🏗️ Terreno quitado? Consulte a possibilidade de financiar até 100% da construção pelo Minha Casa Minha Vida, após a entrega do loteamento.*\n\n📍 Vila Rica · Carazinho/RS\n\n*Financiamento sujeito à análise de crédito, avaliação do imóvel e regras vigentes do programa.",
     galeria: [
-      { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-02-ruas-loteamento.jpg", legenda: "02 ruas loteamento" },
-      { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-03-bairro-entorno-2.jpg", legenda: "03 bairro entorno" },
-      { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-05-vista-geral-obras-3.jpg", legenda: "05 vista geral obras" },
-      { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-07-compactacao-vias-4.jpg", legenda: "07 compactacao vias" },
-      { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-08-obras-infraestrutura-5.jpg", legenda: "08 obras infraestrutura" },
+      { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-01-nvriii-logo-colorida.jpg", legenda: "01 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/plantas/muohvgmk-design-sem-nome.pdf", legenda: "Mapa de disponibilidades e preços" },
       { src: "assets/nova-vila-rica-iii/plantas/muohvgml-urbanismo-23-06-12-final3-02-planta-lotes-a3-2-2.pdf", legenda: "Planta Urbanismo Satélite" },
+      { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-02-ruas-loteamento.jpg", legenda: "02 ruas loteamento" },
+      { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-02-nvriii-logo-colorida-2.jpg", legenda: "02 NVRIII Logo Colorida" },
+      { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-04-nvriii-logo-colorida-4.jpg", legenda: "04 NVRIII Logo Colorida" },
+      { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-05-nvriii-logo-colorida-5.jpg", legenda: "05 NVRIII Logo Colorida" },
+      { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-03-nvriii-logo-colorida-3.jpg", legenda: "03 NVRIII Logo Colorida" },
     ],
     // Mapa do loteamento (foto aerea com a planta por cima). Cada lote tem a
     // posicao do numero dele no mapa, em fracao da imagem (x da esquerda, y do
