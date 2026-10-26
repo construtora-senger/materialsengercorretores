@@ -36,6 +36,33 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## O texto do "Sobre o empreendimento" se edita no painel (v459)
+
+Pergunta do dono (26/10/2026), com o print do Nova Vila Rica III: *"esse
+'sobre o empreendimento' onde coloco o descritivo no painel administrativo q
+nao to achando?"*. Não existia: o parágrafo vinha só do `data.js`. Ordem dele:
+*"eu quero um canal no painel onde eu edite essas obs"*.
+
+- **Onde:** Materiais → **Sobre o empreendimento** (quinto item do submenu,
+  filtro `sobre`; o cartão de padrões no alto da tela também leva lá). Cada
+  empreendimento tem um campo de texto com o parágrafo atual; escreveu, acende
+  o **Publicar no site**, e sobe no mesmo commit de tudo o mais.
+- **O campo é o `localizacao`** do `data.js` — é ele que o site mostra como o
+  parágrafo do "Sobre" (`emp.localizacao || emp.tagline`, em `app.js`), e que
+  sai também como endereço no PDF do empreendimento e entra na busca. A
+  tagline (a frase da faixa escura) **não** é editada aqui.
+- **Gravação:** é a mesma `anotarMaterial`/`aplicarMaterial` do folder e do
+  vídeo (`tipoOp: "material"`, `campo: "localizacao"`): troca só a linha
+  `localizacao:` do bloco; sem a linha, entra logo depois da `tagline:` (ou da
+  `cidade:`, no Nova Vila Rica I & II, que não tem tagline). Campo esvaziado
+  tira a linha, e a guarda de regressão (`CAMPOS_DE_MATERIAL`) pede
+  confirmação antes de publicar o texto em branco.
+- **Os diferenciais** (a lista com ✓ embaixo do parágrafo) **continuam só no
+  `data.js`** — não foram pedidos.
+
+Teste: *"o painel edita o texto do Sobre e grava a linha localizacao no
+data.js"*.
+
 ## A imagem do envio é sempre a capa do empreendimento (v456)
 
 Ordem do dono (26/10/2026), com o print do WhatsApp: a prévia do link do Nova

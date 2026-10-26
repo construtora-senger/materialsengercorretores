@@ -1391,6 +1391,40 @@ async function teste(nome, fn) {
     return /video:\s*"assets\/nova-vila-rica-iii\/video.mp4"/.test(dentro(dados)) ? "" : "o video principal sumiu";
   });
 
+  // v459 — o texto do "Sobre o empreendimento" (campo `localizacao`) tem campo
+  // no painel, em Materiais > Sobre o empreendimento, e a publicacao grava so
+  // essa linha, sem tocar na tagline nem no resto do bloco.
+  await teste("o painel edita o texto do Sobre e grava a linha localizacao no data.js", async () => {
+    gravacoes.length = 0;
+    await clicarNoMenu('[data-modulo-alvo="materiais"][data-material-filtro="sobre"]');
+    await admin.waitForTimeout(400);
+    await admin.evaluate(() => document.querySelectorAll("#materiais details.material-emp").forEach((d) => { d.hidden = false; d.open = true; }));
+    const secaoVisivel = await admin.locator('#materiais details[data-material-emp="nova-vila-rica-iii"] .material-secao[data-material-secao="sobre"]').isVisible();
+    if (!secaoVisivel) return "a seção Sobre não apareceu em Materiais";
+    const campo = admin.locator('#materiais textarea[data-material-texto="localizacao"][data-emp="nova-vila-rica-iii"]');
+    const antes = await campo.inputValue();
+    if (!/Laranjeira/.test(antes)) return `o campo não trouxe o texto atual: "${antes}"`;
+    await campo.evaluate((el) => {
+      el.value = "Texto novo do Sobre — escrito pelo painel, com acento e \"aspas\".";
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await admin.waitForTimeout(400);
+    if (!(await admin.locator("#botao-publicar").isEnabled())) return "o Publicar continuou apagado";
+    admin.on("dialog", (d) => d.accept());
+    await admin.locator("#botao-publicar").evaluate((b) => b.click());
+    await admin.waitForTimeout(2500);
+    const blobs = gravacoes.filter((g) => /git\/blobs/.test(g.path)).map((g) => {
+      try { const b = JSON.parse(g.corpo); return b.encoding === "base64" ? Buffer.from(b.content, "base64").toString("utf8") : String(b.content); } catch (e) { return ""; }
+    });
+    const dados = blobs.find((t) => /EMPREENDIMENTOS/.test(t));
+    if (!dados) return "o data.js nao foi enviado";
+    const dentro = dados.slice(dados.indexOf('id: "nova-vila-rica-iii"'), dados.indexOf('id: "nova-vila-rica"'));
+    if (!/\n    localizacao: "Texto novo do Sobre — escrito pelo painel, com acento e \\"aspas\\"\.",\n/.test(dentro)) return "a linha localizacao nao foi gravada";
+    if ((dentro.match(/^\s*localizacao:/mg) || []).length !== 1) return "a linha localizacao ficou repetida";
+    if (!/tagline:\s*"Lotes prontos para construir/.test(dentro)) return "a tagline sumiu";
+    return /localizacao:\s*"Carazinho\/RS — Ruas Laranjeira/.test(dados) ? "o texto antigo continuou no data.js" : "";
+  });
+
   await teste("o painel no celular abre o menu", async () => {
     await admin.setViewportSize({ width: 390, height: 844 });
     await admin.waitForTimeout(400);
