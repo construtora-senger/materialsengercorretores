@@ -3287,9 +3287,21 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
   // arquivo por empreendimento, com o nome e a foto daquele predio escritos
   // dentro, e redireciona na hora pro endereco de sempre, com os mesmos
   // parametros. Gerada por tools/gerar-pontes.js; rodar apos mexer em data.js.
+  // v458 — o link leva a versao do site (?v=457). O WhatsApp do aparelho guarda
+  // a previa de um endereco que ja mandou e nao busca de novo: a previa do
+  // Nova Vila Rica III virou a capa na v455, o endereco da imagem ganhou o
+  // ?v= na v457, e o dono continuou vendo a foto antiga, porque o ENDERECO DA
+  // PAGINA era o mesmo de sempre. Com a versao no link, cada publicacao e um
+  // link novo para o WhatsApp, e a previa e buscada de novo. A ponte repassa a
+  // query ao portfolio, que ignora o v=.
+  const comVersaoDoSite = (query = "") => {
+    const v = APP_VERSION.replace(/^v/, "");
+    return /^\d+$/.test(v) ? [query, `v=${v}`].filter(Boolean).join("&") : query;
+  };
+
   function pontePara(empId, query = "") {
     const raiz = location.pathname.replace(/\/[^/]*$/, "/");
-    const q = comCorretor(query);
+    const q = comVersaoDoSite(comCorretor(query));
     return `${location.origin}${raiz}l/${empId}/${q ? `?${q}` : ""}`;
   }
 
@@ -3301,7 +3313,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     const raiz = location.pathname.replace(/\/[^/]*$/, "/");
     const nome = codigoSlug(item.code);
     if (!nome) return pontePara(item.emp.id, `u=${encodeURIComponent(item.code)}`);
-    const q = comCorretor();
+    const q = comVersaoDoSite(comCorretor());
     return `${location.origin}${raiz}l/${item.emp.id}/u/${nome}/${q ? `?${q}` : ""}`;
   }
 
