@@ -2092,7 +2092,7 @@ const EMPREENDIMENTOS = [
     statusLabel: "Entrega em 2027",
     entrega: "Entrega em 2027",
     ri: [],
-    hero: "assets/nova-vila-rica-iii/capa.jpg",
+    hero: "assets/nova-vila-rica-iii/capa.png",
     folder: "",
     video: "assets/nova-vila-rica-iii/video.mp4",
     destaque: true,
