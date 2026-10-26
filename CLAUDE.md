@@ -65,8 +65,22 @@ regra para todos eles"*.
   continua valendo `node tools/gerar-montagens.js` e `node tools/gerar-pontes.js`
   (as 511 montagens com o Nova Vila Rica III foram refeitas na v456).
 
+- **O endereço da imagem muda junto com ela (v457).** Com a v456 no ar o dono
+  mandou: *"já tá na 456 e não foi a imagem da capa no link"*. O arquivo na
+  `main` era a capa — mas o endereço `assets/preview/<id>.jpg` era o mesmo de
+  antes, e **o WhatsApp (e o servidor) guardam a imagem pelo endereço**: foto
+  nova no mesmo endereço continua aparecendo como a velha. Agora toda ponte
+  escreve a imagem com **`?v=<8 letras do resumo do arquivo>`**
+  (`comVersao`, em `tools/gerar-pontes.js`; vale para a prévia do
+  empreendimento, as montagens da seleção e o portfólio). **O painel reescreve
+  as pontes do empreendimento** (`l/<id>/` e `l/<id>/u/*/`) com o `?v=` da
+  prévia nova no mesmo commit da capa (`pontesDaPrevia`), e
+  `tools/validar.js` falha se alguma ponte apontar para um resumo que não é o
+  do arquivo no disco. **Depois de refazer prévia ou montagem, rode
+  `node tools/gerar-pontes.js`** — sem isso o validador acusa.
+
 Teste: *"trocar a capa pelo painel manda a prévia do link junto, feita da
-capa"*.
+capa"* (confere também as pontes com o `?v=` novo).
 
 ## O prédio em 3D, que gira: "Ver no prédio" do Renaissance (v434), do Boulevard (v435), do Premium Office (v436), do Evolutti (v438), do Prime e do Quality (v442) e do Personalité (v443)
 

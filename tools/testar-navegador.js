@@ -835,7 +835,7 @@ async function teste(nome, fn) {
 
   await teste("a ponte do portfólio mostra a montagem dos prédios e abre o sistema no modo corretor", async () => {
     const html = fs.readFileSync(path.join(RAIZ, "l", "portfolio", "index.html"), "utf8");
-    if (!html.includes('og:image" content="https://construtora-senger.github.io/materialsengercorretores/assets/preview/portfolio.jpg"')) return "og:image nao aponta para a previa do portfolio";
+    if (!/og:image" content="https:\/\/construtora-senger\.github\.io\/materialsengercorretores\/assets\/preview\/portfolio\.jpg(\?v=[0-9a-f]+)?"/.test(html)) return "og:image nao aponta para a previa do portfolio";
     if (!fs.existsSync(path.join(RAIZ, "assets", "preview", "portfolio.jpg"))) return "assets/preview/portfolio.jpg nao existe";
     const pagina = await contexto.newPage();
     await pagina.goto(`${base}/l/portfolio/`, { waitUntil: "networkidle" });
@@ -1038,7 +1038,15 @@ async function teste(nome, fn) {
     const m = url.pathname.match(/contents\/(.+)$/);
     const rel = m ? decodeURIComponent(m[1]) : "";
     if (metodo === "GET") {
-      const texto = arquivosLocais[rel];
+      let texto = arquivosLocais[rel];
+      // v457 — o painel le as pontes l/<emp>/ para trocar o ?v= da previa:
+      // pasta vira a lista de entradas, arquivo do disco vira o conteudo.
+      const noDisco = rel && !rel.includes("..") ? path.join(RAIZ, rel) : "";
+      if (texto === undefined && noDisco && fs.existsSync(noDisco) && fs.statSync(noDisco).isDirectory()) {
+        const entradas = fs.readdirSync(noDisco).map((name) => ({ name, path: `${rel}/${name}`, type: fs.statSync(path.join(noDisco, name)).isDirectory() ? "dir" : "file" }));
+        return rota.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(entradas) });
+      }
+      if (texto === undefined && noDisco && /^l\//.test(rel) && fs.existsSync(noDisco)) texto = fs.readFileSync(noDisco, "utf8");
       if (texto === undefined) return rota.fulfill({ status: 404, body: "{}" });
       return rota.fulfill({ status: 200, contentType: "application/json",
         body: JSON.stringify({ content: b64(texto), sha: `sha-${rel}` }) });
@@ -1487,6 +1495,18 @@ async function teste(nome, fn) {
     if (json.boulevard?.capa !== "assets/boulevard/capa.png") return `o manifesto aponta para ${json.boulevard?.capa}`;
     if (json.boulevard?.sha256 !== sha) return "o SHA-256 do manifesto nao e o da capa enviada";
     if (!json.renaissance) return "o manifesto perdeu os outros empreendimentos ao ser regravado";
+    // v457 — as pontes do empreendimento passam a apontar para a previa nova
+    // (?v=<resumo do JPEG>), senao o WhatsApp segue mostrando a copia velha.
+    const resumoJpeg = require("crypto").createHash("sha256").update(jpeg).digest("hex").slice(0, 8);
+    if (!arvore.includes("l/boulevard/index.html")) return "a ponte l/boulevard/ nao foi no commit";
+    const pontesDeUnidade = arvore.filter((p) => /^l\/boulevard\/u\/[^/]+\/index\.html$/.test(p));
+    if (pontesDeUnidade.length < 10) return `so ${pontesDeUnidade.length} ponte(s) de unidade do Boulevard foram no commit`;
+    const ponte = blobs.map((b) => b.encoding === "utf-8" ? String(b.content) : "").find((t) => /og:image/.test(t) && /preview\/boulevard\.jpg/.test(t));
+    if (!ponte) return "nenhuma ponte do Boulevard foi enviada";
+    const vs = [...ponte.matchAll(/preview\/boulevard\.jpg\?v=([0-9a-f]+)/g)].map((m) => m[1]);
+    if (vs.length < 4) return `a ponte so trocou ${vs.length} endereco(s) da previa`;
+    if (vs.some((v) => v !== resumoJpeg)) return `a ponte aponta para ?v=${vs.find((v) => v !== resumoJpeg)}, e nao para o resumo da previa nova (${resumoJpeg})`;
+    if (/preview\/boulevard\.jpg(?!\?v=)/.test(ponte)) return "a ponte ainda tem um endereco da previa sem ?v=";
     return "";
   });
 

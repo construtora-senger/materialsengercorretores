@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 380;
+  const VERSAO_PAINEL = 381;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -3085,6 +3085,52 @@
     previas.forEach(({ op }) => { atual[op.empId] = { capa: op.capa, sha256: op.sha256 }; });
     const ordenado = Object.fromEntries(Object.keys(atual).sort().map((id) => [id, atual[id]]));
     return { path: "assets/preview/capas.json", texto: JSON.stringify(ordenado, null, 2) + "\n", sha };
+  }
+
+  // v457 — as pontes l/<emp>/ e l/<emp>/u/<n>/ passam a apontar para a previa
+  // nova. O endereco da imagem leva ?v=<8 letras do resumo do JPEG>: o
+  // WhatsApp e o servidor guardam a imagem pelo endereco, entao previa nova
+  // com endereco igual continuava aparecendo como a foto antiga (foi o que o
+  // dono viu na v455/v456). Mesma regra de tools/gerar-pontes.js (comVersao).
+  async function ghListar(pasta) {
+    const resp = await fetch(API + pasta + "?ref=" + BRANCH, {
+      headers: { Authorization: "Bearer " + estado.token, Accept: "application/vnd.github+json" },
+      cache: "no-store",
+    });
+    if (resp.status === 404) return [];
+    if (!resp.ok) throw erroHttp(resp);
+    const lista = await resp.json();
+    return Array.isArray(lista) ? lista : [];
+  }
+
+  async function pontesDaPrevia(anexosProntos, avisar) {
+    const previas = anexosProntos.filter(({ op }) => op.campo === "previa" && op.arquivo);
+    const saida = [];
+    for (const { op } of previas) {
+      const resumo = (await sha256DoArquivo(op.arquivo)).slice(0, 8);
+      const alvo = `assets/preview/${op.empId}.jpg`;
+      const escapado = alvo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const padrao = new RegExp(`${escapado}(\\?v=[0-9a-f]+)?`, "g");
+      const caminhos = [`l/${op.empId}/index.html`];
+      (await ghListar(`l/${op.empId}/u`)).forEach((e) => { if (e.type === "dir") caminhos.push(`l/${op.empId}/u/${e.name}/index.html`); });
+      let feitas = 0;
+      // Em lotes, para o celular nao ficar um minuto numa fila de pedidos.
+      for (let i = 0; i < caminhos.length; i += 8) {
+        const lote = caminhos.slice(i, i + 8);
+        const lidas = await Promise.all(lote.map(async (caminho) => {
+          try { return { caminho, ...(await ghBuscar(caminho)) }; }
+          catch (e) { if (e.status === 404) return null; throw e; }
+        }));
+        for (const ponte of lidas) {
+          if (!ponte) continue;
+          const texto = ponte.text.replace(padrao, `${alvo}?v=${resumo}`);
+          if (texto !== ponte.text) saida.push({ path: ponte.caminho, texto, sha: ponte.sha });
+        }
+        feitas += lote.length;
+        if (avisar) avisar(`Atualizando os links da prévia… ${feitas}/${caminhos.length}`);
+      }
+    }
+    return saida;
   }
 
   async function dimensoesDaImagem(arquivo) {
@@ -6919,6 +6965,7 @@
         anexosProntos.push({ path: op.path, base64: await arquivoParaBase64(op.arquivo), op });
       }
       const manifesto = await manifestoDasPrevias(anexosProntos);
+      const pontes = await pontesDaPrevia(anexosProntos, (msg) => { botao.textContent = msg; });
       botao.textContent = "Publicando…";
 
       let texto = dataJs.text;
@@ -6977,6 +7024,7 @@
         { path: "sw.js", texto: novoSw },
         ...anexosProntos.map(({ path, base64 }) => ({ path, base64 })),
         ...(manifesto ? [{ path: manifesto.path, texto: manifesto.texto }] : []),
+        ...pontes.map(({ path, texto }) => ({ path, texto })),
       ];
       try {
         await publicarEmUmCommit(pacote, mensagem);
@@ -6993,6 +7041,7 @@
         }
         botao.textContent = "Publicando…";
         if (manifesto) await ghGravar(manifesto.path, manifesto.texto, manifesto.sha || undefined, mensagem);
+        for (const ponte of pontes) await ghGravar(ponte.path, ponte.texto, ponte.sha, mensagem);
         await ghGravar("data.js", texto, dataJs.sha, mensagem);
         await ghGravar("index.html", novoIndex, indexHtml.sha, mensagem);
         await ghGravar("sw.js", novoSw, swJs.sha, mensagem);

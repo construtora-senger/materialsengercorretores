@@ -38,9 +38,23 @@
 
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const RAIZ = path.join(__dirname, "..");
 const SITE = "https://construtora-senger.github.io/materialsengercorretores";
+
+// v457 — o endereco da imagem leva um resumo do arquivo (?v=<8 letras>). O
+// WhatsApp (e o servidor do GitHub Pages) guardam a imagem pelo endereco: a
+// previa do Nova Vila Rica III mudou na v455 e o dono continuou vendo a foto
+// antiga, porque o endereco era o mesmo. Com o resumo no endereco, imagem nova
+// e endereco novo, e ninguem mostra copia velha. O painel escreve o mesmo
+// ?v= quando troca a capa (pontesDaPrevia, em admin/index.html), e o
+// tools/validar.js confere que a ponte aponta para a previa que esta no disco.
+const versaoDe = (rel) => {
+  try { return crypto.createHash("sha256").update(fs.readFileSync(path.join(RAIZ, rel))).digest("hex").slice(0, 8); }
+  catch (e) { return null; }
+};
+const comVersao = (rel) => { const v = versaoDe(rel); return v ? `${rel}?v=${v}` : rel; };
 
 const { EMPREENDIMENTOS } = new Function(
   fs.readFileSync(path.join(RAIZ, "data.js"), "utf8").replace(/window\.SENGER[\s\S]*$/, "") +
@@ -67,7 +81,8 @@ const resumo = (emp) => {
 // separam o arquivo da raiz do site (2 para l/<emp>/, 4 para l/<emp>/u/<cod>/):
 // e o que faz os caminhos relativos e o redirecionamento acertarem a raiz.
 const pagina = ({ emp, titulo, desc, caminho, profundidade, destaque, extra }) => {
-  const foto = `${SITE}/assets/preview/${emp.id}.jpg`;
+  const previa = comVersao(`assets/preview/${emp.id}.jpg`);
+  const foto = `${SITE}/${previa}`;
   const acima = "../".repeat(profundidade);
   // Do arquivo ate a raiz do site: l/<emp>/ sobe uma pasta depois do "l",
   // l/<emp>/u/<codigo>/ sobe tres. O padrao vai escrito dentro da ponte.
@@ -127,7 +142,7 @@ const pagina = ({ emp, titulo, desc, caminho, profundidade, destaque, extra }) =
 <body>
   <!-- So aparece se o JavaScript estiver desligado ou o redirecionamento falhar. -->
   <div class="cartao">
-    <img src="${acima}assets/preview/${emp.id}.jpg" alt="${esc(emp.nome)}">
+    <img src="${acima}${previa}" alt="${esc(emp.nome)}">
     <h1>${esc(destaque)}</h1>
     <p>${esc(emp.cidade || "")}</p>
     <a id="ir" href="${acima}?cliente#emp-${emp.id}">Ver fotos, plantas e valores</a>
@@ -280,7 +295,8 @@ for (const emp of EMPREENDIMENTOS) {
 // os nomes e o destino e o portfolio com o que veio no endereco (?sel= ou
 // ?lista=), sem #emp- — o cliente ve a vitrine so com os escolhidos.
 const paginaDaSelecao = ({ chave, emps }) => {
-  const foto = `${SITE}/assets/preview/sel/${chave}.jpg`;
+  const previa = comVersao(`assets/preview/sel/${chave}.jpg`);
+  const foto = `${SITE}/${previa}`;
   const nomes = emps.map((e) => e.nome);
   const lista = nomes.length > 1 ? `${nomes.slice(0, -1).join(", ")} e ${nomes[nomes.length - 1]}` : nomes[0];
   const titulo = `Seleção Construtora Senger — ${lista}`;
@@ -346,7 +362,7 @@ const paginaDaSelecao = ({ chave, emps }) => {
 </head>
 <body>
   <div class="cartao">
-    <img src="../../../assets/preview/sel/${chave}.jpg" alt="${esc(lista)}">
+    <img src="../../../${previa}" alt="${esc(lista)}">
     <h1>${esc(lista)}</h1>
     <p>Construtora Senger</p>
     <a id="ir" href="../../../?cliente">Ver fotos, plantas e valores</a>
@@ -389,7 +405,8 @@ if (fs.existsSync(dirMontagens)) {
 // tools/gerar-montagens.js. O destino e o portfolio no modo CORRETOR — sem
 // ?cliente: quem recebe e corretor e usa o sistema inteiro.
 const paginaDoPortfolio = () => {
-  const foto = `${SITE}/assets/preview/portfolio.jpg`;
+  const previa = comVersao("assets/preview/portfolio.jpg");
+  const foto = `${SITE}/${previa}`;
   const titulo = "Construtora Senger — Portfólio de empreendimentos";
   const desc = "Fotos, plantas, valores e disponibilidade dos empreendimentos da Construtora Senger, sempre atualizados.";
   const caminho = "l/portfolio/";
@@ -437,7 +454,7 @@ const paginaDoPortfolio = () => {
 <body>
   <!-- So aparece se o JavaScript estiver desligado ou o redirecionamento falhar. -->
   <div class="cartao">
-    <img src="../../assets/preview/portfolio.jpg" alt="${esc(titulo)}">
+    <img src="../../${previa}" alt="${esc(titulo)}">
     <h1>Portfólio de empreendimentos</h1>
     <p>Construtora Senger</p>
     <a href="../../">Abrir o portfólio</a>
