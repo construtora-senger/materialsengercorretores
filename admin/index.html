@@ -649,6 +649,8 @@
     .material-link { margin-top:8px; }
     .material-link summary { cursor:pointer; font-size:.75rem; color:var(--texto-suave); }
     .material-link input { margin-top:7px; }
+    /* v459 — o texto do "Sobre o empreendimento", editado no painel. */
+    .material-campo textarea[data-material-texto] { width:100%; min-height:96px; padding:9px 10px; border-radius:8px; border:1px solid var(--borda); background:var(--cartao); color:var(--texto); font:inherit; font-size:.88rem; line-height:1.45; resize:vertical; }
     .material-status { font-size:.71rem; font-weight:800; white-space:nowrap; }
     .material-status.ok { color:var(--verde); }
     .material-status.falta { color:var(--vermelho); }
@@ -1268,6 +1270,7 @@
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="galeria">Galeria de fotos</button>
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="plantas">Plantas</button>
               <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="comerciais">Folder e vídeo</button>
+              <button type="button" class="nav-subitem" data-modulo-alvo="materiais" data-material-filtro="sobre">Sobre o empreendimento</button>
             </div>
           </div>
 
@@ -1358,6 +1361,7 @@
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="plantas"><strong>Plantas</strong>WEBP, JPG ou PNG · <b>2000 × 2000 px</b> · fundo claro · até 6 MB. <b>Ou PDF</b> · até 25 MB.</button>
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="comerciais"><strong>Folder</strong>PDF · até 25 MB.</button>
             <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="comerciais"><strong>Vídeo oficial</strong>MP4, WebM ou Ogg · recomendado <b>1920 × 1080 px</b> · até 80 MB; acima disso, YouTube/Vimeo.</button>
+            <button type="button" class="padrao-midia" data-modulo-alvo="materiais" data-material-filtro="sobre"><strong>Sobre o empreendimento</strong>O texto que abre a seção "Sobre o empreendimento" no site.</button>
           </div>
           <div class="materiais-lista" id="materiais"></div>
         </section>
@@ -1581,7 +1585,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 381;
+  const VERSAO_PAINEL = 459;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2031,7 +2035,7 @@
 
   const MODULOS = {
     visao: ["Visão geral", "Resumo do estoque, movimento e pendências do cadastro."],
-    materiais: ["Materiais dos empreendimentos", "Capa, galeria, plantas, folder e vídeo em uma área separada por tipo de material."],
+    materiais: ["Materiais dos empreendimentos", "Capa, galeria, plantas, folder, vídeo e o texto do Sobre em uma área separada por tipo de material."],
     estoque: ["Estoque / unidades", "Disponibilidade, preços, garagem e status das unidades do empreendimento escolhido."],
     clientes: ["Clientes", "Quem comprou ou alugou cada unidade. Guardado só na sua conta, nunca no site."],
     precos: ["Preços e margem", "Custo, margem e preço item a item."],
@@ -3684,6 +3688,9 @@
       const video = SLOTS_DE_VIDEO.filter((slot) => materialAtual(emp, slot)).length ? "x" : "";
       const nVideos = SLOTS_DE_VIDEO.filter((slot) => materialAtual(emp, slot)).length;
       const hero = materialAtual(emp, "hero");
+      // v459 — o texto do "Sobre o empreendimento" e o campo `localizacao`
+      // do data.js (o site le emp.localizacao, e cai para a tagline sem ele).
+      const sobre = materialAtual(emp, "localizacao");
       const galeria = galeriaAtual(emp);
       const fotos = galeria.map((item, index) => ({ item, index })).filter(({ item }) => !ehPlantaMidia(item));
       const plantasMidia = galeria.filter(ehPlantaMidia);
@@ -3792,6 +3799,17 @@
                 <p class="material-ajuda"><strong>PDF · até 25 MB.</strong> Um folder completo por empreendimento.</p>
               </div>
               ${SLOTS_DE_VIDEO.map((slot, i) => renderCampoVideo(emp, slot, i)).join("")}
+            </div>
+          </div>
+
+          <div class="material-secao" data-material-secao="sobre">
+            <h4>Sobre o empreendimento</h4>
+            <div class="material-grid">
+              <div class="material-campo">
+                <div class="material-topo"><b>Texto do "Sobre o empreendimento"</b><span class="material-status ${sobre ? "ok" : "falta"}">${sobre ? "OK" : "faltando"}</span></div>
+                <textarea data-material-texto="localizacao" data-emp="${escapeHtml(emp.id)}" placeholder="Ex.: Carazinho/RS — Ruas Laranjeira, Figueira, Jatobá, J. Kennedy e H. T. Schutz." aria-label="Texto do Sobre o empreendimento de ${escapeHtml(emp.nome)}">${escapeHtml(sobre)}</textarea>
+                <p class="material-ajuda">É o parágrafo que abre a seção <strong>"Sobre o empreendimento"</strong> na página do empreendimento (também sai como endereço no PDF e na busca). Depois de escrever, clique em <strong>Publicar no site</strong>.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -4019,6 +4037,24 @@
         renderDashboard();
         renderCadastro();
         renderCustosMargens();
+        renderPendentes();
+      });
+    });
+
+    // v459 — o texto do "Sobre o empreendimento". Nao redesenha a lista a cada
+    // tecla (o campo perderia o foco); so anota a alteracao e acende o Publicar.
+    alvo.querySelectorAll("textarea[data-material-texto]").forEach((campo) => {
+      campo.addEventListener("input", () => {
+        const emp = estado.dados.EMPREENDIMENTOS.find((e) => e.id === campo.dataset.emp);
+        if (!emp) return;
+        anotarMaterial(emp, campo.dataset.materialTexto, campo.value);
+        const status = campo.closest(".material-campo")?.querySelector(".material-status");
+        if (status) {
+          const tem = Boolean(campo.value.trim());
+          status.textContent = tem ? "OK" : "faltando";
+          status.classList.toggle("ok", tem);
+          status.classList.toggle("falta", !tem);
+        }
         renderPendentes();
       });
     });
@@ -6566,14 +6602,18 @@
   }
 
   function aplicarMaterial(texto, op) {
-    if (!["folder", "video", "video2", "video3", "hero"].includes(op.campo)) throw new Error(`Campo de material inválido: ${op.campo}.`);
+    if (!["folder", "video", "video2", "video3", "hero", "localizacao"].includes(op.campo)) throw new Error(`Campo de material inválido: ${op.campo}.`);
     return trocarNoBloco(texto, op.empId, (bloco) => {
       const re = new RegExp(`^\\s*${op.campo}:\\s*[^\\n]*\\n`, "m");
       if (!op.valor) return bloco.replace(re, "");
       const linha = `    ${op.campo}: ${JSON.stringify(op.valor)},\n`;
       if (re.test(bloco)) return bloco.replace(re, linha);
-      const ancoraCampo = op.campo === "hero" ? "entrega" : op.campo === "video3" ? "video2" : op.campo === "video2" ? "video" : "hero";
+      // v459 — o texto do Sobre (`localizacao`) entra logo depois da tagline;
+      // empreendimento sem tagline (o Nova Vila Rica I & II) recebe depois da
+      // cidade.
+      const ancoraCampo = op.campo === "hero" ? "entrega" : op.campo === "video3" ? "video2" : op.campo === "video2" ? "video" : op.campo === "localizacao" ? "tagline" : "hero";
       let ancora = bloco.match(new RegExp(`^\\s*${ancoraCampo}:\\s*[^\\n]*\\n`, "m"));
+      if (!ancora && op.campo === "localizacao") ancora = bloco.match(/^\s*cidade:\s*[^\n]*\n/m);
       if (!ancora && op.campo === "video3") ancora = bloco.match(/^\s*video:\s*[^\n]*\n/m);
       if (!ancora && op.campo.startsWith("video") && op.campo !== "video") ancora = bloco.match(/^\s*hero:\s*[^\n]*\n/m);
       if (!ancora) throw new Error(`Não achei onde inserir ${op.campo} em ${op.empId}.`);
@@ -6777,7 +6817,10 @@
       const emps = [...new Set(apagados.map((op) => op.empNome))];
       partes.push(`${apagados.length} ${apagados.length === 1 ? "preço apagado" : "preços apagados"} (${emps.join(", ")})`);
     }
-    const materiais = estado.ops.filter((op) => ["material", "galeria", "planta"].includes(op.tipoOp));
+    const sobre = estado.ops.filter((op) => op.tipoOp === "material" && op.campo === "localizacao");
+    if (sobre.length === 1) partes.push(`texto do Sobre do ${estado.dados.EMPREENDIMENTOS.find((e) => e.id === sobre[0].empId)?.nome || sobre[0].empId}`);
+    else if (sobre.length > 1) partes.push(`${sobre.length} textos do Sobre atualizados`);
+    const materiais = estado.ops.filter((op) => ["material", "galeria", "planta"].includes(op.tipoOp) && !sobre.includes(op));
     const uploads = estado.ops.filter((op) => op.tipoOp === "upload");
     if (materiais.length === 1) partes.push("materiais de empreendimento atualizados");
     else if (materiais.length > 1) partes.push(`${materiais.length} ajustes de materiais`);
@@ -6879,6 +6922,7 @@
     ["video2", "o segundo vídeo"],
     ["video3", "o terceiro vídeo"],
     ["mapa", "o mapa"],
+    ["localizacao", "o texto do Sobre o empreendimento"],
   ];
 
   function plantasLigadas(emp) {
