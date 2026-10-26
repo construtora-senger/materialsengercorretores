@@ -1,0 +1,42 @@
+{
+  "boulevard": {
+    "capa": "assets/boulevard/capa.jpg",
+    "sha256": "5138e363604b1d4fe149448c115ce0470ca75293eb3e8575da243fe17d6e2ec6"
+  },
+  "evolutti": {
+    "capa": "assets/evolutti/capa.jpg",
+    "sha256": "4318637870102a40c2851476ab880cc9d1d170bc6566dab87cbf2a983e53cbd0"
+  },
+  "nova-vila-rica": {
+    "capa": "assets/nova-vila-rica/capa.jpg",
+    "sha256": "4585728b7c2e6c8be2f0e1c4515113b0d1ada8b117e8fcdf2530f9051c9fe385"
+  },
+  "nova-vila-rica-iii": {
+    "capa": "assets/nova-vila-rica-iii/capa.png",
+    "sha256": "906125c024debb3d908fc28ce90243ddb2c89407d7b08917b3928d4f8d2f0543"
+  },
+  "outros": {
+    "capa": "assets/gabro-predio.webp",
+    "sha256": "184bc4d24b6a78779c5afd532add7c6772f018d5bb1761d2cc3380564e143472"
+  },
+  "personalite": {
+    "capa": "assets/personalite/capa.jpg",
+    "sha256": "513760c7d1fb8ff9e8acfd7d514418ade14edc32f3e42a5e5dc808dea76646d2"
+  },
+  "premium-office": {
+    "capa": "assets/premium-office/capa.jpg",
+    "sha256": "2adee891b874b33a994833b9ae58f51609e726ca8367edc1d8c3de3a0d5c1c6d"
+  },
+  "prime": {
+    "capa": "assets/prime/capa.jpg",
+    "sha256": "726ecd13a1c95d0d5c234386c5d9f7a8fee7ebe17d6cdfaa2664533a212b2131"
+  },
+  "quality": {
+    "capa": "assets/quality/capa.jpg",
+    "sha256": "72408fff4f9b16f1a979685f24d0d4ef2ad3dc26a072b640218a03808137b164"
+  },
+  "renaissance": {
+    "capa": "assets/renaissance/capa.jpg",
+    "sha256": "b20a48d5a7c9fb402167d77b0e796635db3173f6e2c5be50483590e2efe1c900"
+  }
+}

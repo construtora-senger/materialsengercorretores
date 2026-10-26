@@ -1581,7 +1581,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 379;
+  const VERSAO_PAINEL = 380;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2971,6 +2971,8 @@
 
   function removerUploadCampo(empId, campo) {
     estado.ops = estado.ops.filter((op) => !(op.tipoOp === "upload" && op.empId === empId && op.campo === campo));
+    // v456 — a previa do link so existe por causa da capa: sai com ela.
+    if (campo === "hero") removerUploadCampo(empId, "previa");
   }
 
   function removerUploadPath(path) {
@@ -3026,6 +3028,64 @@
     galeria: { largura: 1600, altura: 900, limite: 5 * 1024 * 1024, formatos: ["webp", "jpg", "jpeg", "png"], nome: "A foto da galeria" },
     planta: { largura: 2000, altura: 2000, limite: 6 * 1024 * 1024, formatos: ["webp", "jpg", "jpeg", "png", "pdf"], limitePdf: 25 * 1024 * 1024, nome: "A planta" },
   };
+
+  // v456 — a previa do link de um empreendimento: 1200 x 630 (o formato do
+  // WhatsApp), com a capa cobrindo a imagem inteira, centrada. E o MESMO
+  // desenho de tools/gerar-previas.js — se mudar um, mude o outro.
+  const PREVIA = { largura: 1200, altura: 630, qualidade: 0.85 };
+
+  function caminhoDaPrevia(emp) {
+    return `assets/preview/${emp.id}.jpg`;
+  }
+
+  async function gerarPreviaDaCapa(arquivo, nome) {
+    const url = URL.createObjectURL(arquivo);
+    try {
+      const img = await new Promise((resolve, reject) => {
+        const i = new Image();
+        i.onload = () => resolve(i);
+        i.onerror = () => reject(new Error("a imagem não abriu"));
+        i.src = url;
+      });
+      const c = document.createElement("canvas");
+      c.width = PREVIA.largura; c.height = PREVIA.altura;
+      const ctx = c.getContext("2d");
+      ctx.imageSmoothingQuality = "high";
+      const s = Math.max(PREVIA.largura / img.naturalWidth, PREVIA.altura / img.naturalHeight);
+      const w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.drawImage(img, (PREVIA.largura - w) / 2, (PREVIA.altura - h) / 2, w, h);
+      const blob = await new Promise((resolve) => c.toBlob(resolve, "image/jpeg", PREVIA.qualidade));
+      if (!blob) throw new Error("o navegador não gerou o JPEG");
+      return new File([blob], nome, { type: "image/jpeg" });
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  async function sha256DoArquivo(arquivo) {
+    const buf = await crypto.subtle.digest("SHA-256", await arquivo.arrayBuffer());
+    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  // v456 — assets/preview/capas.json: de qual capa (e com qual SHA-256) cada
+  // previa foi feita. O tools/validar.js le este arquivo para acusar previa
+  // que ficou para tras. Devolve o texto novo e o sha do arquivo no GitHub
+  // (nulo quando ainda nao existe), ou nulo quando nenhuma previa vai subir.
+  async function manifestoDasPrevias(anexosProntos) {
+    const previas = anexosProntos.filter(({ op }) => op.campo === "previa" && op.capa && op.sha256);
+    if (!previas.length) return null;
+    let atual = {}, sha = null;
+    try {
+      const lido = await ghBuscar("assets/preview/capas.json");
+      sha = lido.sha;
+      atual = JSON.parse(lido.text || "{}") || {};
+    } catch (e) {
+      if (e.status !== 404) throw e;
+    }
+    previas.forEach(({ op }) => { atual[op.empId] = { capa: op.capa, sha256: op.sha256 }; });
+    const ordenado = Object.fromEntries(Object.keys(atual).sort().map((id) => [id, atual[id]]));
+    return { path: "assets/preview/capas.json", texto: JSON.stringify(ordenado, null, 2) + "\n", sha };
+  }
 
   async function dimensoesDaImagem(arquivo) {
     if (typeof createImageBitmap === "function") {
@@ -3712,9 +3772,29 @@
         input.disabled = false;
         if (falha) { input.value = ""; aviso(falha, "falha"); return; }
         const path = caminhoDoMaterial(emp, campo, arquivo);
+        // v456 — regra do dono: a imagem que vai junto no envio do
+        // empreendimento e SEMPRE a capa dele. A previa do link
+        // (assets/preview/<id>.jpg, a og:image das pontes) e feita aqui, da
+        // propria capa, e sobe no mesmo commit. Sem isso a capa mudava e o
+        // WhatsApp seguia mostrando a foto antiga.
+        let previa;
+        try {
+          input.disabled = true;
+          previa = { arquivo: await gerarPreviaDaCapa(arquivo, `${emp.id}.jpg`), sha256: await sha256DoArquivo(arquivo) };
+        } catch (e) {
+          aviso(`Não consegui montar a prévia do link a partir desta capa: ${e.message || e}`, "falha");
+          input.value = "";
+          return;
+        } finally {
+          input.disabled = false;
+        }
         anotarUpload(emp.id, campo, path, arquivo, "capa");
+        anotarUpload(emp.id, "previa", caminhoDaPrevia(emp), previa.arquivo, "prévia do link");
+        const opPrevia = estado.ops.find((op) => op.tipoOp === "upload" && op.empId === emp.id && op.campo === "previa");
+        opPrevia.capa = path;
+        opPrevia.sha256 = previa.sha256;
         anotarMaterial(emp, campo, path);
-        aviso("Capa pronta para publicar.", "ok");
+        aviso("Capa e prévia do link prontas para publicar.", "ok");
         atualizarDepois(true);
       });
     });
@@ -6838,6 +6918,7 @@
         botao.textContent = `Preparando ${op.rotulo || "arquivo"}…`;
         anexosProntos.push({ path: op.path, base64: await arquivoParaBase64(op.arquivo), op });
       }
+      const manifesto = await manifestoDasPrevias(anexosProntos);
       botao.textContent = "Publicando…";
 
       let texto = dataJs.text;
@@ -6895,6 +6976,7 @@
         { path: "index.html", texto: novoIndex },
         { path: "sw.js", texto: novoSw },
         ...anexosProntos.map(({ path, base64 }) => ({ path, base64 })),
+        ...(manifesto ? [{ path: manifesto.path, texto: manifesto.texto }] : []),
       ];
       try {
         await publicarEmUmCommit(pacote, mensagem);
@@ -6910,6 +6992,7 @@
           await ghGravarBase64(path, base64, mensagem);
         }
         botao.textContent = "Publicando…";
+        if (manifesto) await ghGravar(manifesto.path, manifesto.texto, manifesto.sha || undefined, mensagem);
         await ghGravar("data.js", texto, dataJs.sha, mensagem);
         await ghGravar("index.html", novoIndex, indexHtml.sha, mensagem);
         await ghGravar("sw.js", novoSw, swJs.sha, mensagem);
