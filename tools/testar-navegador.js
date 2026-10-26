@@ -1847,6 +1847,50 @@ async function teste(nome, fn) {
     return conta.quality ? "" : "o Quality, que tem folder, ficou sem o botão";
   });
 
+  // v462 — a capa fica so no alto da pagina; a grade "Imagens" mostra as
+  // fotos da galeria do painel, cada uma uma vez. No Nova Vila Rica III a capa
+  // e a mesma foto da primeira da galeria, e saia duas vezes.
+  await teste("a grade de fotos mostra só a galeria, sem repetir a capa", async () => {
+    const p = await ctx3d.newPage();
+    await p.goto(`${base}/#emp-nova-vila-rica-iii`, { waitUntil: "networkidle" });
+    const r = await p.evaluate(() => {
+      const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "nova-vila-rica-iii");
+      const fotos = [...document.querySelectorAll(".galeria-grade .galeria-foto img")].map((img) => img.getAttribute("src").replace(/\?.*$/, ""));
+      const galeria = emp.galeria.map((i) => i.src).filter((src) => !/planta/i.test(src) && !/\.pdf$/i.test(src));
+      return { fotos, galeria, hero: emp.hero, capaNoTopo: !!document.querySelector(".detail-hero-image") };
+    });
+    await p.close();
+    if (!r.capaNoTopo) return "a capa sumiu do alto da pagina";
+    if (r.fotos.includes(r.hero)) return "a capa continua na grade de fotos";
+    if (new Set(r.fotos).size !== r.fotos.length) return `foto repetida na grade: ${r.fotos.join(", ")}`;
+    return r.fotos.join("|") === r.galeria.join("|") ? "" : `a grade (${r.fotos.length}) nao e a galeria do painel (${r.galeria.length})`;
+  });
+
+  // v462 — o "Sobre o empreendimento" respeita as quebras de linha do texto
+  // colado no painel (white-space: pre-line).
+  await teste("o Sobre respeita as quebras de linha do texto do painel", async () => {
+    const p = await ctx3d.newPage();
+    await p.goto(`${base}/#emp-nova-vila-rica-iii`, { waitUntil: "networkidle" });
+    const r = await p.evaluate(() => {
+      const el = document.querySelector(".sobre-texto");
+      if (!el) return { erro: "sem .sobre-texto" };
+      const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "nova-vila-rica-iii");
+      const linhas = emp.localizacao.split("\n").filter(Boolean);
+      const faixa = document.createRange();
+      const tops = linhas.slice(0, 3).map((linha) => {
+        const idx = el.textContent.indexOf(linha);
+        faixa.setStart(el.firstChild, idx); faixa.setEnd(el.firstChild, idx + 1);
+        return Math.round(faixa.getBoundingClientRect().top);
+      });
+      return { whiteSpace: getComputedStyle(el).whiteSpace, tops, texto: el.textContent === emp.localizacao };
+    });
+    await p.close();
+    if (r.erro) return r.erro;
+    if (!r.texto) return "o texto do Sobre nao e o localizacao do data.js";
+    if (!/pre/.test(r.whiteSpace)) return `white-space e ${r.whiteSpace}`;
+    return new Set(r.tops).size === r.tops.length ? "" : `as linhas nao quebraram: ${r.tops.join(", ")}`;
+  });
+
   await teste("quem não tem prédio em 3D não baixa o 3D", async () => {
     const p = await ctx3d.newPage();
     const baixados = [];

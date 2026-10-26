@@ -1273,7 +1273,11 @@
     // a pasta e sem a extensao: "assets/po-planta.webp" -> "po-planta".
     const nomeDaPlanta = (item) => (item?.src || "").split("/").pop().replace(/\.[a-z0-9]+$/i, "");
     // v408 — ate 50 fotos na galeria (pedido do dono); eram 12.
-    const photoMedia = media.filter((item) => !isPlantMedia(item)).slice(0, 50);
+    // v462 — a capa fica so no alto da pagina: ela entrava tambem como a
+    // primeira foto da grade, e no Nova Vila Rica III (capa igual a uma foto
+    // da galeria) a mesma foto saia duas vezes. A grade mostra exatamente as
+    // fotos da galeria do painel, cada uma uma vez.
+    const photoMedia = media.filter((item) => !isPlantMedia(item) && item.src !== emp.hero).slice(0, 50);
     // Planta que abre no visor (imagem) e planta que so se baixa (PDF). A
     // planta marcada como tecnica no data.js abre no visor do mesmo jeito, mas
     // fica sob o titulo certo: planta baixa de obra nao e planta humanizada.
