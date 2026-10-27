@@ -2107,6 +2107,7 @@ const EMPREENDIMENTOS = [
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-05-nvriii-logo-colorida-5.jpg", legenda: "05 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-03-nvriii-logo-colorida-3.jpg", legenda: "03 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/galeria/mvqr8uhq-design-sem-nome-13.png", legenda: "Design sem nome (13)" },
+      { src: "assets/nova-vila-rica-iii/galeria/mvqrlezq-muohvgmk-design-sem-nome-1.jpg", legenda: "Muohvgmk design sem nome (1)" },
     ],
     // Mapa do loteamento (foto aerea com a planta por cima). Cada lote tem a
     // posicao do numero dele no mapa, em fracao da imagem (x da esquerda, y do
