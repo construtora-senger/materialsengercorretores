@@ -2097,7 +2097,7 @@ const EMPREENDIMENTOS = [
     video: "assets/nova-vila-rica-iii/video.mp4",
     destaque: true,
     tagline: "Lotes prontos para construir, no novo loteamento Nova Vila Rica III.",
-    localizacao: "🌿 Sua nova casa pode começar aqui!\n\nNo Loteamento Nova Vila Rica III, em Carazinho/RS, você encontra o espaço para tirar seus planos do papel. 🏡\n\n💰 SUPER DESCONTO PARA PAGAMENTOS À VISTA!\n📐 Lotes de 205 m² a 468 m²\n✅ Asfalto 100% concluído\n📅 Entrega prevista para julho/2027\n💵 Valores a partir de R$ 65.200\n🤝 Entrada + saldo direto com a construtora\n\n🏗️ Terreno quitado? Consulte a possibilidade de financiar até 100% da construção pelo Minha Casa Minha Vida, após a entrega do loteamento.*\n\n📍 Vila Rica · Carazinho/RS\n\n*Financiamento sujeito à análise de crédito, avaliação do imóvel e regras vigentes do programa.",
+    localizacao: "🌿 Sua nova casa pode começar aqui!\n\n💰 SUPER DESCONTO À VISTA!\n📐 Lotes de 205 m² a 468 m²\n✅ Asfalto 100% concluído\n📅 Entrega prevista para julho/2027\n💵 Valores a partir de R$ 65.200\n\n🏗️ Terreno quitado? Financie até 100% da construção pelo Minha Casa Minha Vida.*\n\n📍 Vila Rica · Carazinho/RS\n\n*Após a entrega do loteamento, sujeito à análise de crédito.",
     galeria: [
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-01-nvriii-logo-colorida.jpg", legenda: "01 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/plantas/muohvgmk-design-sem-nome.pdf", legenda: "Mapa de disponibilidades e preços" },
