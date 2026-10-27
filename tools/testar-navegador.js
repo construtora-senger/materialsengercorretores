@@ -847,6 +847,34 @@ async function teste(nome, fn) {
     return "";
   });
 
+  // v464 — a mensagem do empreendimento ("WhatsApp com precos") leva o texto
+  // do "Sobre o empreendimento" (emp.localizacao), nao mais a tagline.
+  await teste("a mensagem do empreendimento leva o texto do Sobre, não a frase da faixa", async () => {
+    const ctx = await navegador.newContext({ userAgent: ANDROID, viewport: { width: 390, height: 844 } });
+    const pagina = await ctx.newPage();
+    await pagina.addInitScript(() => {
+      window.__share = [];
+      navigator.share = async (d) => { window.__share.push({ texto: d.text || "", arquivos: (d.files || []).length }); };
+      navigator.canShare = () => true;
+    });
+    await pagina.goto(base + "/#emp-quality", { waitUntil: "networkidle" });
+    await pagina.waitForTimeout(600);
+    const esperado = await pagina.evaluate(() => {
+      const emp = window.SENGER.EMPREENDIMENTOS.find((e) => e.id === "quality");
+      return { sobre: emp.localizacao || "", tagline: emp.tagline || "" };
+    });
+    if (!esperado.sobre) { await ctx.close(); return "o Quality esta sem texto do Sobre no cadastro"; }
+    await pagina.locator("#share-emp-prices").click();
+    await pagina.waitForTimeout(800);
+    const texto = await pagina.evaluate(() => window.__share[0]?.texto || "");
+    await ctx.close();
+    if (!texto) return "nao houve envio nenhum";
+    if (!texto.includes(esperado.sobre)) return `a mensagem nao traz o texto do Sobre: ${texto.slice(0, 160)}`;
+    if (esperado.tagline && esperado.tagline !== esperado.sobre && texto.includes(esperado.tagline)) return "a mensagem ainda traz a frase da faixa (tagline)";
+    if (!/Valores a partir de/.test(texto)) return "a mensagem perdeu a linha de valores";
+    return "";
+  });
+
   // v418 — o Compartilhar do topo manda o link do SISTEMA para outro corretor:
   // so texto (regra da v333), com a ponte l/portfolio/, que da a previa com a
   // montagem dos predios e abre o portfolio no modo corretor (sem ?cliente).

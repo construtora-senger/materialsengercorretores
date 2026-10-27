@@ -2761,10 +2761,14 @@
   }
 
   function enterpriseMessage(emp, includePrices) {
+    // v464 — a descricao da mensagem e o TEXTO DO "SOBRE O EMPREENDIMENTO"
+    // (emp.localizacao, editado no painel desde a v459), o mesmo que a pagina
+    // mostra; sem ele, a tagline, como a pagina faz. Pedido do dono (27/10/2026):
+    // "quero q a msg do whats use o texto do sobre".
     const lines = [
       `*${emp.nome} — Construtora Senger*`,
       emp.cidade,
-      emp.tagline || emp.entrega || "",
+      emp.localizacao || emp.tagline || emp.entrega || "",
       "",
     ];
     // v99 — a mensagem NAO diz mais quantas opcoes existem na tabela. Anunciar
