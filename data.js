@@ -2102,11 +2102,11 @@ const EMPREENDIMENTOS = [
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-01-nvriii-logo-colorida.jpg", legenda: "01 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/plantas/muohvgmk-design-sem-nome.pdf", legenda: "Mapa de disponibilidades e preços" },
       { src: "assets/nova-vila-rica-iii/plantas/muohvgml-urbanismo-23-06-12-final3-02-planta-lotes-a3-2-2.pdf", legenda: "Planta Urbanismo Satélite" },
-      { src: "assets/nova-vila-rica-iii/galeria/muohs0ej-02-ruas-loteamento.jpg", legenda: "02 ruas loteamento" },
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-02-nvriii-logo-colorida-2.jpg", legenda: "02 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-04-nvriii-logo-colorida-4.jpg", legenda: "04 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-05-nvriii-logo-colorida-5.jpg", legenda: "05 NVRIII Logo Colorida" },
       { src: "assets/nova-vila-rica-iii/galeria/mvplyijg-03-nvriii-logo-colorida-3.jpg", legenda: "03 NVRIII Logo Colorida" },
+      { src: "assets/nova-vila-rica-iii/galeria/mvqr8uhq-design-sem-nome-13.png", legenda: "Design sem nome (13)" },
     ],
     // Mapa do loteamento (foto aerea com a planta por cima). Cada lote tem a
     // posicao do numero dele no mapa, em fracao da imagem (x da esquerda, y do
