@@ -48,7 +48,7 @@ apartamento) e escolheu o **B**: *"b, pode aplicar"*.
 - **Onde:** na ficha do prédio em 3D (`fichaDoPredio`), o botão **"Enviar
   tela"** ocupa a linha inteira embaixo do Compartilhar e do Selecionar. **Só
   no modo corretor** e só em prédio com `maquete` (o 3D).
-- **A imagem** (`montarImagemDaTela`, 1080 × 1500 px, JPEG): em cima, o prédio
+- **A imagem** (`montarImagemDaTela`, 1080 × 1600 px, JPEG): em cima, o prédio
   **do jeito que está girado na tela**, com o apartamento escolhido pintado e a
   legenda; embaixo, a ficha — "Ficha da unidade", nome, tipologia e final,
   m², a etiqueta da garagem com os carrinhos e o valor — e a logo da Senger.
@@ -61,6 +61,12 @@ apartamento) e escolheu o **B**: *"b, pode aplicar"*.
   arquivo): lá o problema era a legenda sumir junto da foto, e aqui não há
   legenda. **Os outros envios não mudaram** — *"compartilhar empreendimento e
   unidade, deixa como está"*.
+
+- **Nome do empreendimento e prazo de entrega (v469).** Com a v468 no ar o
+  dono mandou: *"faltou nome do empreendimento e prazo de entrega"*. O nome
+  entra logo acima do apartamento, na cor da marca; o prazo (`emp.entrega`,
+  ou o `statusLabel`) entra antes do valor, como "PRAZO DE ENTREGA" e o texto
+  embaixo, no mesmo feitio do "VALOR".
 
 Teste: *"o Enviar tela da ficha do prédio monta a imagem em pé, e o cliente
 não tem o botão"*.
