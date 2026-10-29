@@ -1673,3 +1673,8 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
   .predio-3d-giro { left: 10px; bottom: 10px; padding: 8px 12px 8px 10px; font-size: 13px; }
   .predio-3d-giro svg { width: 20px; height: 20px; }
 }
+
+/* v468 — "Enviar tela" na ficha do predio: a imagem do predio com a ficha,
+   so para a equipe. Ocupa a linha inteira embaixo do Compartilhar/Selecionar. */
+.predio-ficha-botoes .botao-enviar-tela { grid-column: 1 / -1; }
+.botao-enviar-tela svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
