@@ -36,6 +36,35 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## "Enviar tela" na ficha do prédio em 3D: só a imagem, modelo B (v468)
+
+Pedido do dono (29/10/2026), com o print do 201A do Quality no prédio em 3D:
+*"um botão tipo 'enviar tela' onde o cliente receberia essas informações e
+imagem do prédio selecionado bem como está no meu print"* — e, depois:
+*"não precisa link, somente a imagem printada como te mandei"*. Viu quatro
+modelos (A igual ao print, deitado; B em pé; C faixa escura; D balão no
+apartamento) e escolheu o **B**: *"b, pode aplicar"*.
+
+- **Onde:** na ficha do prédio em 3D (`fichaDoPredio`), o botão **"Enviar
+  tela"** ocupa a linha inteira embaixo do Compartilhar e do Selecionar. **Só
+  no modo corretor** e só em prédio com `maquete` (o 3D).
+- **A imagem** (`montarImagemDaTela`, 1080 × 1500 px, JPEG): em cima, o prédio
+  **do jeito que está girado na tela**, com o apartamento escolhido pintado e a
+  legenda; embaixo, a ficha — "Ficha da unidade", nome, tipologia e final,
+  m², a etiqueta da garagem com os carrinhos e o valor — e a logo da Senger.
+  O prédio é desenhado de novo no tamanho da imagem (`foto(largura, altura)`,
+  em `criarPredio3d`), sem recorte, e volta ao tamanho da tela.
+- **O envio é só a imagem — sem texto e sem link** (`enviarTela`). No celular,
+  `navigator.share({ files })` (o dono escolhe o WhatsApp e o contato); no
+  computador, a imagem é copiada para colar no WhatsApp, e sem como copiar é
+  baixada. **É exceção pedida por ele à regra da v333** (nenhum envio com
+  arquivo): lá o problema era a legenda sumir junto da foto, e aqui não há
+  legenda. **Os outros envios não mudaram** — *"compartilhar empreendimento e
+  unidade, deixa como está"*.
+
+Teste: *"o Enviar tela da ficha do prédio monta a imagem em pé, e o cliente
+não tem o botão"*.
+
 ## A grade de fotos é só a galeria, sem a capa; o Sobre respeita as quebras de linha (v462)
 
 Pedido do dono (26/10/2026), com o Nova Vila Rica III: *"o painel tem 6 fotos

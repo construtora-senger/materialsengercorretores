@@ -1694,6 +1694,30 @@ async function teste(nome, fn) {
     return marcado === "Selecionado" ? "" : `o Selecionar da ficha deixou "${marcado}"`;
   });
 
+  // v468 — o "Enviar tela": a imagem do predio com a ficha (modelo B, em pe),
+  // so para a equipe. Vai so a imagem, sem texto e sem link.
+  await teste("o Enviar tela da ficha do prédio monta a imagem em pé, e o cliente não tem o botão", async () => {
+    const p = await abrir3d("/#emp-quality");
+    await tocarNo3d(p, "201A");
+    const botao = p.locator(".predio-ficha [data-enviar-tela]");
+    if (!(await botao.count())) { await p.close(); return "a ficha do prédio não tem o Enviar tela"; }
+    const r = await p.evaluate(async () => {
+      const k = document.querySelector(".predio-ficha [data-enviar-tela]").dataset.enviarTela;
+      const blob = await window.__montarImagemDaTela(k);
+      if (!blob) return null;
+      const img = await createImageBitmap(blob);
+      return { tipo: blob.type, w: img.width, h: img.height };
+    });
+    await p.close();
+    if (!r) return "a imagem da tela não foi montada";
+    if (r.tipo !== "image/jpeg" || r.w !== 1080 || r.h !== 1500) return `a imagem saiu ${r.tipo} ${r.w}×${r.h}`;
+    const c = await abrir3d("/?cliente#emp-quality");
+    await tocarNo3d(c, "201A");
+    const noCliente = await c.locator("[data-enviar-tela]").count();
+    await c.close();
+    return noCliente ? "o cliente vê o Enviar tela" : "";
+  });
+
   await teste("no 3D, o vendido não abre ficha e arrastar gira o prédio", async () => {
     const p = await abrir3d("/#emp-renaissance");
     // O 803 e vendido e fica nos fundos.

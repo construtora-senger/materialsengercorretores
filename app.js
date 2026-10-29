@@ -2071,30 +2071,27 @@
     return t;
   }
 
-  // Os dados da ficha, de cima para baixo, a partir de (x, y). Devolve o y final.
-  function desenharFicha(g, item, x, y, larg, fonte, s = 1, opcoes = {}) {
+  // Os dados da ficha, de cima para baixo, a partir de (x, y).
+  function desenharFicha(g, item, x, y, larg, fonte, s = 1) {
     const { tipo, tamanho, garagem } = textosDaFicha(item);
-    const claro = opcoes.escuro;
-    if (!opcoes.semEtiqueta) {
-      g.font = `700 ${17 * s}px ${fonte}`;
-      const tag = "FICHA DA UNIDADE";
-      const tw = g.measureText(tag).width + 30 * s;
-      g.fillStyle = claro ? "rgba(255,255,255,.14)" : TELA.marcaClara; retanguloRedondo(g, x, y, tw, 38 * s, 19 * s); g.fill();
-      g.fillStyle = claro ? "#bfe6ec" : TELA.marca; g.textBaseline = "middle"; g.fillText(tag, x + 15 * s, y + 20 * s);
-      y += 38 * s;
-    }
-    y += 58 * s; escrever(g, itemLabel(item), x, y, larg, 700, 46 * s, fonte, claro ? "#fff" : TELA.tinta);
-    if (tipo) { y += 38 * s; escrever(g, tipo, x, y, larg, 400, 26 * s, fonte, claro ? "#d5dee2" : TELA.apagado); }
-    if (tamanho) { y += 40 * s; escrever(g, tamanho, x, y, larg, 400, 28 * s, fonte, claro ? "#8fd6e0" : TELA.marcaEscura); }
+    g.font = `700 ${17 * s}px ${fonte}`;
+    const tag = "FICHA DA UNIDADE";
+    const tagW = g.measureText(tag).width + 30 * s;
+    g.fillStyle = TELA.marcaClara; retanguloRedondo(g, x, y, tagW, 38 * s, 19 * s); g.fill();
+    g.fillStyle = TELA.marca; g.textBaseline = "middle"; g.fillText(tag, x + 15 * s, y + 20 * s);
+    y += 38 * s;
+    y += 58 * s; escrever(g, itemLabel(item), x, y, larg, 700, 46 * s, fonte, TELA.tinta);
+    if (tipo) { y += 38 * s; escrever(g, tipo, x, y, larg, 400, 26 * s, fonte, TELA.apagado); }
+    if (tamanho) { y += 40 * s; escrever(g, tamanho, x, y, larg, 400, 28 * s, fonte, TELA.marcaEscura); }
     if (garagem) {
       y += 22 * s;
       const vagas = vagasDaGaragem(garagem);
       g.font = `600 ${25 * s}px ${fonte}`;
       const carroW = 36 * s, tw = g.measureText(garagem).width;
       const w = 28 * s + vagas * (carroW + 4 * s) + 8 * s + tw;
-      g.fillStyle = claro ? "rgba(255,255,255,.14)" : TELA.garagem; retanguloRedondo(g, x, y, w, 46 * s, 23 * s); g.fill();
+      g.fillStyle = TELA.garagem; retanguloRedondo(g, x, y, w, 46 * s, 23 * s); g.fill();
       const carro = new Path2D(CARRO_PATH);
-      g.fillStyle = claro ? "#bfe6ec" : TELA.marcaEscura;
+      g.fillStyle = TELA.marcaEscura;
       for (let i = 0; i < vagas; i++) {
         g.save(); g.translate(x + 16 * s + i * (carroW + 4 * s), y + 11 * s); g.scale(carroW / 24, carroW / 24); g.fill(carro); g.restore();
       }
@@ -2102,93 +2099,33 @@
       g.fillText(garagem, x + 16 * s + vagas * (carroW + 4 * s) + 8 * s, y + 24 * s);
       y += 46 * s;
     }
-    if (!opcoes.semValor) {
-      y += 52 * s; escrever(g, "VALOR", x, y, larg, 600, 20 * s, fonte, claro ? "#aab6bc" : TELA.apagado);
-      y += 56 * s; escrever(g, money(item.price), x, y, larg, 700, 52 * s, fonte, claro ? "#fff" : TELA.tinta);
-    }
-    return y;
+    y += 52 * s; escrever(g, "VALOR", x, y, larg, 600, 20 * s, fonte, TELA.apagado);
+    y += 56 * s; escrever(g, money(item.price), x, y, larg, 700, 52 * s, fonte, TELA.tinta);
   }
 
   const LOGO_SENGER = "assets/senger-logo.webp";
 
-  // Os quatro modelos mostrados ao dono (A igual ao print, B em pe, C com a
-  // faixa escura, D com o balao no apartamento). O escolhido fica como padrao.
-  async function montarImagemDaTela(item, modelo = "A") {
+  // Modelo B, escolhido pelo dono entre quatro: em pe, do tamanho da tela do
+  // celular — o predio em cima, com a legenda, e a ficha embaixo.
+  async function montarImagemDaTela(item) {
     if (!predio3dNaTela?.palco?.isConnected) return null;
-    // O tamanho do predio em cada modelo: desenhado ja nesse formato.
-    const [fw, fh] = { A: [1040, 920], B: [1008, 900], C: [1600, 880], D: [1200, 1200] }[modelo] || [1040, 920];
-    const foto = predio3dNaTela.foto(fw, fh);
+    const foto = predio3dNaTela.foto(1008, 900);
     const fonte = getComputedStyle(document.body).fontFamily || "system-ui, sans-serif";
-    const legenda = itensDaLegenda(item);
     const logo = await carregarImagem(assetUrl(LOGO_SENGER)).catch(() => null);
     const c = document.createElement("canvas");
+    c.width = 1080; c.height = 1500;
     const g = c.getContext("2d");
-    const ponto = predio3dNaTela.pontoNaFoto(item.code, fw, fh);
-
-    if (modelo === "A") {
-      // Igual ao print: o predio a esquerda, com a legenda, e a ficha ao lado.
-      c.width = 1800; c.height = 1000;
-      g.fillStyle = "#f4f7f8"; g.fillRect(0, 0, c.width, c.height);
-      desenharPredio(g, foto, 40, 40, 1040, 920);
-      desenharLegenda(g, 1060, 60, legenda, fonte);
-      g.fillStyle = "#fff"; retanguloRedondo(g, 1120, 40, 640, 920, 20); g.fill();
-      g.strokeStyle = TELA.linha; g.lineWidth = 2; g.stroke();
-      desenharFicha(g, item, 1170, 90, 540, fonte);
-      if (logo) { const h = 90, w = logo.naturalWidth * h / logo.naturalHeight; g.drawImage(logo, 1120 + 640 - w - 40, 960 - h - 36, w, h); }
-    } else if (modelo === "B") {
-      // Em pe, do tamanho da tela do celular: o predio em cima, a ficha embaixo.
-      c.width = 1080; c.height = 1500;
-      g.fillStyle = "#f4f7f8"; g.fillRect(0, 0, c.width, c.height);
-      desenharPredio(g, foto, 36, 36, 1008, 900);
-      desenharLegenda(g, 1024, 56, legenda, fonte, 0.9);
-      g.fillStyle = "#fff"; retanguloRedondo(g, 36, 966, 1008, 498, 20); g.fill();
-      g.strokeStyle = TELA.linha; g.lineWidth = 2; g.stroke();
-      desenharFicha(g, item, 84, 1006, 900, fonte, 0.95);
-      if (logo) { const h = 80, w = logo.naturalWidth * h / logo.naturalHeight; g.drawImage(logo, 1044 - w - 40, 1464 - h - 30, w, h); }
-    } else if (modelo === "C") {
-      // O predio grande e, embaixo, a faixa escura da pagina com os dados.
-      c.width = 1600; c.height = 1200;
-      g.fillStyle = TELA.fundo; g.fillRect(0, 0, c.width, c.height);
-      const esc = Math.max(1600 / foto.width, 880 / foto.height);
-      g.drawImage(foto, (1600 - foto.width * esc) / 2, (880 - foto.height * esc) / 2, foto.width * esc, foto.height * esc);
-      desenharLegenda(g, 1570, 30, legenda, fonte);
-      g.fillStyle = "#1f2a31"; g.fillRect(0, 880, 1600, 320);
-      const yFim = desenharFicha(g, item, 60, 892, 900, fonte, 0.9, { escuro: true, semEtiqueta: true, semValor: true });
-      g.textAlign = "right";
-      escrever(g, "VALOR", 1540, 990, 500, 600, 20, fonte, "#aab6bc");
-      escrever(g, money(item.price), 1540, 1060, 560, 700, 60, fonte, "#fff");
-      g.textAlign = "left";
-      escrever(g, item.emp.nome, 60, Math.min(yFim + 60, 1170), 900, 600, 24, fonte, "#8fa0a8");
-    } else {
-      // D: so o predio, com um balao apontando o apartamento escolhido.
-      c.width = 1200; c.height = 1200;
-      g.fillStyle = TELA.fundo; g.fillRect(0, 0, 1200, 1200);
-      const esc = Math.max(1200 / foto.width, 1200 / foto.height);
-      const ox = (1200 - foto.width * esc) / 2, oy = (1200 - foto.height * esc) / 2;
-      g.drawImage(foto, ox, oy, foto.width * esc, foto.height * esc);
-      desenharLegenda(g, 1170, 30, legenda, fonte);
-      const { tamanho, garagem } = textosDaFicha(item);
-      const linhas = [[itemLabel(item), 700, 40, TELA.tinta], [tamanho, 400, 24, TELA.marcaEscura], [garagem, 600, 22, TELA.apagado], [money(item.price), 700, 38, TELA.tinta]].filter((l) => l[0]);
-      g.font = `700 40px ${fonte}`;
-      const bw = Math.max(...linhas.map(([t, p, tam]) => { g.font = `${p} ${tam}px ${fonte}`; return g.measureText(t).width; })) + 56;
-      const bh = linhas.reduce((a, l) => a + l[2] * 1.45, 0) + 34;
-      const px = ponto ? ox + ponto.x * esc : 600, py = ponto ? oy + ponto.y * esc : 600;
-      // O balao fica no ceu, no alto a esquerda (a legenda esta a direita),
-      // e a linha desce ate o apartamento: nao cobre o predio.
-      const bx = 30, by = 30;
-      g.strokeStyle = TELA.marca; g.lineWidth = 5;
-      g.beginPath(); g.moveTo(px, py); g.lineTo(bx + bw * 0.6, by + bh); g.stroke();
-      g.fillStyle = TELA.marca; g.beginPath(); g.arc(px, py, 11, 0, Math.PI * 2); g.fill();
-      g.shadowColor = "rgba(0,0,0,.18)"; g.shadowBlur = 24; g.fillStyle = "#fff";
-      retanguloRedondo(g, bx, by, bw, bh, 18); g.fill(); g.shadowBlur = 0;
-      g.strokeStyle = TELA.marca; g.lineWidth = 4; g.stroke();
-      let y = by + 18;
-      linhas.forEach(([t, p, tam, cor]) => { y += tam * 1.45; escrever(g, t, bx + 28, y - tam * 0.35, bw - 56, p, tam, fonte, cor); });
-      escrever(g, item.emp.nome, 40, 1170, 700, 700, 30, fonte, TELA.tinta);
-    }
+    g.fillStyle = "#f4f7f8"; g.fillRect(0, 0, c.width, c.height);
+    desenharPredio(g, foto, 36, 36, 1008, 900);
+    desenharLegenda(g, 1024, 56, itensDaLegenda(item), fonte, 0.9);
+    g.fillStyle = "#fff"; retanguloRedondo(g, 36, 966, 1008, 498, 20); g.fill();
+    g.strokeStyle = TELA.linha; g.lineWidth = 2; g.stroke();
+    desenharFicha(g, item, 84, 1006, 900, fonte, 0.95);
+    if (logo) { const h = 80, w = logo.naturalWidth * h / logo.naturalHeight; g.drawImage(logo, 1044 - w - 40, 1464 - h - 30, w, h); }
     return new Promise((resolve) => c.toBlob(resolve, "image/jpeg", 0.9));
   }
-  window.__montarImagemDaTela = (key, modelo) => montarImagemDaTela(itemMap.get(key), modelo);
+  // Para os testes: a imagem que o botao monta.
+  window.__montarImagemDaTela = (key) => montarImagemDaTela(itemMap.get(key));
 
   // No celular, a imagem vai sozinha pelo compartilhar do aparelho (escolhe o
   // WhatsApp e o contato). No computador, a imagem e copiada para colar no
@@ -2681,15 +2618,6 @@
         return c;
       },
       // Onde o apartamento aparece nessa foto, em pixels dela.
-      pontoNaFoto: (code, largura, altura) => {
-        const pedaco = clicaveis.find((x) => x.userData.code === code);
-        if (!pedaco) return null;
-        const antes = camera.aspect;
-        camera.aspect = largura / altura; camera.updateProjectionMatrix();
-        const p = pedaco.position.clone().project(camera);
-        camera.aspect = antes; camera.updateProjectionMatrix();
-        return { x: (p.x + 1) / 2 * largura, y: (1 - p.y) / 2 * altura };
-      },
       desmontar: () => {
         observador.disconnect(); controls.dispose(); cancelAnimationFrame(pedido);
         scene.traverse((o) => { o.geometry?.dispose(); if (o.material) { o.material.map?.dispose(); o.material.dispose(); } });
