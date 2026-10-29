@@ -1431,7 +1431,9 @@ async function teste(nome, fn) {
     if (!secaoVisivel) return "a seção Sobre não apareceu em Materiais";
     const campo = admin.locator('#materiais textarea[data-material-texto="localizacao"][data-emp="nova-vila-rica-iii"]');
     const antes = await campo.inputValue();
-    if (!/Laranjeira/.test(antes)) return `o campo não trouxe o texto atual: "${antes}"`;
+    // O texto e o que o dono escreveu pelo painel: confere contra o data.js de agora.
+    const primeiraLinha = antes.split("\n")[0].trim();
+    if (!primeiraLinha || !fs.readFileSync(path.join(RAIZ, "data.js"), "utf8").includes(JSON.stringify(primeiraLinha).slice(1, -1))) return `o campo não trouxe o texto atual: "${antes}"`;
     await campo.evaluate((el) => {
       el.value = "Texto novo do Sobre — escrito pelo painel, com acento e \"aspas\".";
       el.dispatchEvent(new Event("input", { bubbles: true }));
