@@ -1731,7 +1731,9 @@ async function teste(nome, fn) {
     const meio = { x: caixa.x + caixa.width / 2, y: caixa.y + caixa.height / 2 };
     await p.mouse.move(meio.x, meio.y);
     await p.mouse.down();
-    await p.mouse.move(meio.x - 160, meio.y, { steps: 12 });
+    // Visto dos fundos (204°) o 1102 fica perto do eixo do giro: um arraste
+    // curto quase nao o tira do lugar na tela (dava 15 a 20 px, no limite).
+    await p.mouse.move(meio.x - 400, meio.y, { steps: 20 });
     await p.mouse.up();
     await p.waitForTimeout(800);
     const depois = await p.evaluate(() => document.querySelector(".predio-3d").predio3d.pontoDe("1102"));
