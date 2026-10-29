@@ -1712,7 +1712,7 @@ async function teste(nome, fn) {
     });
     await p.close();
     if (!r) return "a imagem da tela não foi montada";
-    if (r.tipo !== "image/jpeg" || r.w !== 1080 || r.h !== 1500) return `a imagem saiu ${r.tipo} ${r.w}×${r.h}`;
+    if (r.tipo !== "image/jpeg" || r.w !== 1080 || r.h !== 1600) return `a imagem saiu ${r.tipo} ${r.w}×${r.h}`;
     const c = await abrir3d("/?cliente#emp-quality");
     await tocarNo3d(c, "201A");
     const noCliente = await c.locator("[data-enviar-tela]").count();

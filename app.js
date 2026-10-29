@@ -2080,7 +2080,10 @@
     g.fillStyle = TELA.marcaClara; retanguloRedondo(g, x, y, tagW, 38 * s, 19 * s); g.fill();
     g.fillStyle = TELA.marca; g.textBaseline = "middle"; g.fillText(tag, x + 15 * s, y + 20 * s);
     y += 38 * s;
-    y += 58 * s; escrever(g, itemLabel(item), x, y, larg, 700, 46 * s, fonte, TELA.tinta);
+    // v469 — o nome do empreendimento logo acima do apartamento, a pedido
+    // do dono ("faltou nome do empreendimento e prazo de entrega").
+    y += 48 * s; escrever(g, item.emp.nome, x, y, larg, 600, 30 * s, fonte, TELA.marcaEscura);
+    y += 54 * s; escrever(g, itemLabel(item), x, y, larg, 700, 46 * s, fonte, TELA.tinta);
     if (tipo) { y += 38 * s; escrever(g, tipo, x, y, larg, 400, 26 * s, fonte, TELA.apagado); }
     if (tamanho) { y += 40 * s; escrever(g, tamanho, x, y, larg, 400, 28 * s, fonte, TELA.marcaEscura); }
     if (garagem) {
@@ -2099,6 +2102,12 @@
       g.fillText(garagem, x + 16 * s + vagas * (carroW + 4 * s) + 8 * s, y + 24 * s);
       y += 46 * s;
     }
+    // v469 — o prazo de entrega, no mesmo feitio do valor.
+    const prazo = semPonto(item.emp.entrega || item.emp.statusLabel || "");
+    if (prazo) {
+      y += 52 * s; escrever(g, "PRAZO DE ENTREGA", x, y, larg, 600, 20 * s, fonte, TELA.apagado);
+      y += 40 * s; escrever(g, prazo, x, y, larg, 600, 30 * s, fonte, TELA.tinta);
+    }
     y += 52 * s; escrever(g, "VALOR", x, y, larg, 600, 20 * s, fonte, TELA.apagado);
     y += 56 * s; escrever(g, money(item.price), x, y, larg, 700, 52 * s, fonte, TELA.tinta);
   }
@@ -2113,15 +2122,15 @@
     const fonte = getComputedStyle(document.body).fontFamily || "system-ui, sans-serif";
     const logo = await carregarImagem(assetUrl(LOGO_SENGER)).catch(() => null);
     const c = document.createElement("canvas");
-    c.width = 1080; c.height = 1500;
+    c.width = 1080; c.height = 1600;
     const g = c.getContext("2d");
     g.fillStyle = "#f4f7f8"; g.fillRect(0, 0, c.width, c.height);
     desenharPredio(g, foto, 36, 36, 1008, 900);
     desenharLegenda(g, 1024, 56, itensDaLegenda(item), fonte, 0.9);
-    g.fillStyle = "#fff"; retanguloRedondo(g, 36, 966, 1008, 498, 20); g.fill();
+    g.fillStyle = "#fff"; retanguloRedondo(g, 36, 966, 1008, 598, 20); g.fill();
     g.strokeStyle = TELA.linha; g.lineWidth = 2; g.stroke();
     desenharFicha(g, item, 84, 1006, 900, fonte, 0.95);
-    if (logo) { const h = 80, w = logo.naturalWidth * h / logo.naturalHeight; g.drawImage(logo, 1044 - w - 40, 1464 - h - 30, w, h); }
+    if (logo) { const h = 80, w = logo.naturalWidth * h / logo.naturalHeight; g.drawImage(logo, 1044 - w - 40, 1564 - h - 30, w, h); }
     return new Promise((resolve) => c.toBlob(resolve, "image/jpeg", 0.9));
   }
   // Para os testes: a imagem que o botao monta.
