@@ -1431,7 +1431,9 @@ async function teste(nome, fn) {
     if (!secaoVisivel) return "a seção Sobre não apareceu em Materiais";
     const campo = admin.locator('#materiais textarea[data-material-texto="localizacao"][data-emp="nova-vila-rica-iii"]');
     const antes = await campo.inputValue();
-    if (!/Laranjeira/.test(antes)) return `o campo não trouxe o texto atual: "${antes}"`;
+    // O texto e o que o dono escreveu pelo painel: confere contra o data.js de agora.
+    const primeiraLinha = antes.split("\n")[0].trim();
+    if (!primeiraLinha || !fs.readFileSync(path.join(RAIZ, "data.js"), "utf8").includes(JSON.stringify(primeiraLinha).slice(1, -1))) return `o campo não trouxe o texto atual: "${antes}"`;
     await campo.evaluate((el) => {
       el.value = "Texto novo do Sobre — escrito pelo painel, com acento e \"aspas\".";
       el.dispatchEvent(new Event("input", { bubbles: true }));
@@ -1694,6 +1696,30 @@ async function teste(nome, fn) {
     return marcado === "Selecionado" ? "" : `o Selecionar da ficha deixou "${marcado}"`;
   });
 
+  // v468 — o "Enviar tela": a imagem do predio com a ficha (modelo B, em pe),
+  // so para a equipe. Vai so a imagem, sem texto e sem link.
+  await teste("o Enviar tela da ficha do prédio monta a imagem em pé, e o cliente não tem o botão", async () => {
+    const p = await abrir3d("/#emp-quality");
+    await tocarNo3d(p, "201A");
+    const botao = p.locator(".predio-ficha [data-enviar-tela]");
+    if (!(await botao.count())) { await p.close(); return "a ficha do prédio não tem o Enviar tela"; }
+    const r = await p.evaluate(async () => {
+      const k = document.querySelector(".predio-ficha [data-enviar-tela]").dataset.enviarTela;
+      const blob = await window.__montarImagemDaTela(k);
+      if (!blob) return null;
+      const img = await createImageBitmap(blob);
+      return { tipo: blob.type, w: img.width, h: img.height };
+    });
+    await p.close();
+    if (!r) return "a imagem da tela não foi montada";
+    if (r.tipo !== "image/jpeg" || r.w !== 1080 || r.h !== 1500) return `a imagem saiu ${r.tipo} ${r.w}×${r.h}`;
+    const c = await abrir3d("/?cliente#emp-quality");
+    await tocarNo3d(c, "201A");
+    const noCliente = await c.locator("[data-enviar-tela]").count();
+    await c.close();
+    return noCliente ? "o cliente vê o Enviar tela" : "";
+  });
+
   await teste("no 3D, o vendido não abre ficha e arrastar gira o prédio", async () => {
     const p = await abrir3d("/#emp-renaissance");
     // O 803 e vendido e fica nos fundos.
@@ -1705,7 +1731,9 @@ async function teste(nome, fn) {
     const meio = { x: caixa.x + caixa.width / 2, y: caixa.y + caixa.height / 2 };
     await p.mouse.move(meio.x, meio.y);
     await p.mouse.down();
-    await p.mouse.move(meio.x - 160, meio.y, { steps: 12 });
+    // Visto dos fundos (204°) o 1102 fica perto do eixo do giro: um arraste
+    // curto quase nao o tira do lugar na tela (dava 15 a 20 px, no limite).
+    await p.mouse.move(meio.x - 400, meio.y, { steps: 20 });
     await p.mouse.up();
     await p.waitForTimeout(800);
     const depois = await p.evaluate(() => document.querySelector(".predio-3d").predio3d.pontoDe("1102"));

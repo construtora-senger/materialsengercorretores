@@ -1931,13 +1931,9 @@
     return vagas || 1;
   }
 
-  function fichaDoPredio(item) {
-    if (!item) {
-      return `
-        <p class="predio-ficha-tag">Ficha da unidade</p>
-        <p class="predio-ficha-vazia">Toque num apartamento do desenho para ver o valor, as áreas, a garagem e a planta.</p>
-      `;
-    }
+  // Os textos de cima da ficha: a ficha da tela e a imagem do "Enviar tela"
+  // (v468) escrevem os mesmos.
+  function textosDaFicha(item) {
     const sufixoDoGrupo = item.group?.sufixo || "";
     const final = finalDoCodigo(item.code);
     const sufixo = /\bfinal\b/i.test(sufixoDoGrupo) || !final ? sufixoDoGrupo : [sufixoDoGrupo, `final ${final}`].filter(Boolean).join(" · ");
@@ -1950,6 +1946,17 @@
       .filter(Boolean).join(" · ") || areas.solta || "";
     // "Box opcional (consultar)" nao e garagem incluida (mesma regra da ficha).
     const garagem = item.garage && !/opcional|consultar/i.test(item.garage) ? item.garage : "";
+    return { tipo, tamanho, garagem };
+  }
+
+  function fichaDoPredio(item) {
+    if (!item) {
+      return `
+        <p class="predio-ficha-tag">Ficha da unidade</p>
+        <p class="predio-ficha-vazia">Toque num apartamento do desenho para ver o valor, as áreas, a garagem e a planta.</p>
+      `;
+    }
+    const { tipo, tamanho, garagem } = textosDaFicha(item);
     // v449 — a garagem embaixo do tamanho, na etiqueta do painel, com um
     // carrinho por vaga (box simples = 1, box duplo = 2): modelo B que o dono
     // escolheu. A linha "Garagem" da lista saiu na v450, a pedido dele ("ja
@@ -1968,7 +1975,7 @@
       ${garagem ? `<p class="predio-ficha-garagem">${carros}${escapeHtml(garagem)}</p>` : ""}
       <div class="predio-ficha-valor"><span>Valor</span><strong class="price-value">${money(item.price)}</strong></div>
       ${plantas.length ? `<div class="predio-ficha-plantas">${plantas.join("")}</div>` : ""}
-      ${CLIENT_MODE ? "" : `<div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>`}
+      ${CLIENT_MODE ? "" : `<div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}${item.emp?.mapaPredio?.maquete ? botaoEnviarTela(item) : ""}</div>`}
     `;
   }
 
@@ -1993,6 +2000,166 @@
       ? `<img class="planta-tecnica-mini" src="${escapeHtml(assetUrl(tecnica.miniatura))}" alt="" loading="lazy">`
       : `<span class="planta-tecnica-icone">${ICONE_PDF}<b>PDF</b></span>`;
     return `<a class="planta-tecnica" href="${escapeHtml(assetUrl(tecnica.pdf))}" target="_blank" rel="noopener">${imagem}<span class="planta-tecnica-texto"><strong>Planta técnica em PDF</strong><small>${escapeHtml(tecnica.legenda)}</small></span></a>`;
+  }
+
+  // v468 — "ENVIAR TELA". Pedido do dono (29/10/2026), com o print do 201A do
+  // Quality: um botao na ficha do predio que manda ao cliente a IMAGEM da tela
+  // — o predio do jeito que esta girado, com o apartamento escolhido pintado,
+  // e a ficha dele ao lado. So a imagem: sem texto e sem link ("nao precisa
+  // link, somente a imagem printada"). O Compartilhar da unidade e o do
+  // empreendimento nao mudaram.
+  const ICONE_TELA = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>';
+  const CARRO_PATH = "M5 6l2-4.2C7.3 1.3 7.8 1 8.4 1h7.2c.6 0 1.1.3 1.4.8L19 6h1.5c1.4 0 2.5 1.1 2.5 2.5V12c0 .6-.4 1-1 1h-1.2a2.5 2.5 0 01-4.9 0H8.1a2.5 2.5 0 01-4.9 0H2c-.6 0-1-.4-1-1V8.5C1 7.1 2.1 6 3.5 6H5zm2.2 0h9.6l-1.5-3.2H8.7L7.2 6z";
+
+  function botaoEnviarTela(item) {
+    return `<button class="unit-action botao-linha botao-enviar-tela" type="button" data-enviar-tela="${item.key}">${ICONE_TELA}<span>Enviar tela</span></button>`;
+  }
+
+  const TELA = { marca: "#178fa0", marcaEscura: "#107687", marcaClara: "#e6f2f4", tinta: "#202a32", apagado: "#66727b", linha: "#d9e1e4", fundo: "#eef5f7", garagem: "#e3f1f3" };
+
+  function retanguloRedondo(g, x, y, w, h, r) {
+    g.beginPath();
+    g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+  }
+
+  // O predio recortado para caber em w x h, sem deformar (cobre a area toda).
+  function desenharPredio(g, foto, x, y, w, h, raio = 20) {
+    g.save();
+    retanguloRedondo(g, x, y, w, h, raio); g.clip();
+    g.fillStyle = TELA.fundo; g.fillRect(x, y, w, h);
+    const esc = Math.max(w / foto.width, h / foto.height);
+    const fw = foto.width * esc, fh = foto.height * esc;
+    g.drawImage(foto, x + (w - fw) / 2, y + (h - fh) / 2, fw, fh);
+    g.restore();
+    g.lineWidth = 2; g.strokeStyle = TELA.linha;
+    retanguloRedondo(g, x, y, w, h, raio); g.stroke();
+    return { esc, ox: x + (w - fw) / 2, oy: y + (h - fh) / 2 };
+  }
+
+  function desenharLegenda(g, x, y, itens, fonte, s = 1) {
+    g.font = `400 ${22 * s}px ${fonte}`;
+    const larg = Math.max(...itens.map((i) => g.measureText(i.nome).width)) + 70 * s;
+    const alt = itens.length * 38 * s + 22 * s;
+    const x0 = x - larg;
+    g.fillStyle = "rgba(255,255,255,.94)"; retanguloRedondo(g, x0, y, larg, alt, 14 * s); g.fill();
+    itens.forEach((i, n) => {
+      const cy = y + 30 * s + n * 38 * s;
+      g.fillStyle = i.cor; retanguloRedondo(g, x0 + 18 * s, cy - 9 * s, 18 * s, 18 * s, 4 * s); g.fill();
+      if (i.borda) { g.strokeStyle = i.borda; g.lineWidth = 2 * s; g.stroke(); }
+      g.fillStyle = TELA.tinta; g.textBaseline = "middle"; g.fillText(i.nome, x0 + 48 * s, cy + 1);
+    });
+  }
+
+  function itensDaLegenda(item) {
+    const temAlugado = unidadesDoPredio(item.emp).some((u) => u.item?.status === "alugado");
+    return [
+      { nome: "Disponível", cor: "#ffffff", borda: "#1f9e7a" },
+      { nome: "Vendido", cor: "#5d6870" },
+      ...(temAlugado ? [{ nome: "Alugado · venda para investidor", cor: "#cfe3f6", borda: "#2f6fb0" }] : []),
+      { nome: "Escolhido", cor: TELA.marca },
+    ];
+  }
+
+  // Texto que nao cabe na largura diminui ate caber.
+  function escrever(g, texto, x, y, larg, peso, tamanho, fonte, cor) {
+    g.fillStyle = cor; g.textBaseline = "alphabetic";
+    let t = tamanho;
+    g.font = `${peso} ${t}px ${fonte}`;
+    while (t > 12 && g.measureText(texto).width > larg) { t -= 1; g.font = `${peso} ${t}px ${fonte}`; }
+    g.fillText(texto, x, y);
+    return t;
+  }
+
+  // Os dados da ficha, de cima para baixo, a partir de (x, y).
+  function desenharFicha(g, item, x, y, larg, fonte, s = 1) {
+    const { tipo, tamanho, garagem } = textosDaFicha(item);
+    g.font = `700 ${17 * s}px ${fonte}`;
+    const tag = "FICHA DA UNIDADE";
+    const tagW = g.measureText(tag).width + 30 * s;
+    g.fillStyle = TELA.marcaClara; retanguloRedondo(g, x, y, tagW, 38 * s, 19 * s); g.fill();
+    g.fillStyle = TELA.marca; g.textBaseline = "middle"; g.fillText(tag, x + 15 * s, y + 20 * s);
+    y += 38 * s;
+    y += 58 * s; escrever(g, itemLabel(item), x, y, larg, 700, 46 * s, fonte, TELA.tinta);
+    if (tipo) { y += 38 * s; escrever(g, tipo, x, y, larg, 400, 26 * s, fonte, TELA.apagado); }
+    if (tamanho) { y += 40 * s; escrever(g, tamanho, x, y, larg, 400, 28 * s, fonte, TELA.marcaEscura); }
+    if (garagem) {
+      y += 22 * s;
+      const vagas = vagasDaGaragem(garagem);
+      g.font = `600 ${25 * s}px ${fonte}`;
+      const carroW = 36 * s, tw = g.measureText(garagem).width;
+      const w = 28 * s + vagas * (carroW + 4 * s) + 8 * s + tw;
+      g.fillStyle = TELA.garagem; retanguloRedondo(g, x, y, w, 46 * s, 23 * s); g.fill();
+      const carro = new Path2D(CARRO_PATH);
+      g.fillStyle = TELA.marcaEscura;
+      for (let i = 0; i < vagas; i++) {
+        g.save(); g.translate(x + 16 * s + i * (carroW + 4 * s), y + 11 * s); g.scale(carroW / 24, carroW / 24); g.fill(carro); g.restore();
+      }
+      g.textBaseline = "middle"; g.font = `600 ${25 * s}px ${fonte}`;
+      g.fillText(garagem, x + 16 * s + vagas * (carroW + 4 * s) + 8 * s, y + 24 * s);
+      y += 46 * s;
+    }
+    y += 52 * s; escrever(g, "VALOR", x, y, larg, 600, 20 * s, fonte, TELA.apagado);
+    y += 56 * s; escrever(g, money(item.price), x, y, larg, 700, 52 * s, fonte, TELA.tinta);
+  }
+
+  const LOGO_SENGER = "assets/senger-logo.webp";
+
+  // Modelo B, escolhido pelo dono entre quatro: em pe, do tamanho da tela do
+  // celular — o predio em cima, com a legenda, e a ficha embaixo.
+  async function montarImagemDaTela(item) {
+    if (!predio3dNaTela?.palco?.isConnected) return null;
+    const foto = predio3dNaTela.foto(1008, 900);
+    const fonte = getComputedStyle(document.body).fontFamily || "system-ui, sans-serif";
+    const logo = await carregarImagem(assetUrl(LOGO_SENGER)).catch(() => null);
+    const c = document.createElement("canvas");
+    c.width = 1080; c.height = 1500;
+    const g = c.getContext("2d");
+    g.fillStyle = "#f4f7f8"; g.fillRect(0, 0, c.width, c.height);
+    desenharPredio(g, foto, 36, 36, 1008, 900);
+    desenharLegenda(g, 1024, 56, itensDaLegenda(item), fonte, 0.9);
+    g.fillStyle = "#fff"; retanguloRedondo(g, 36, 966, 1008, 498, 20); g.fill();
+    g.strokeStyle = TELA.linha; g.lineWidth = 2; g.stroke();
+    desenharFicha(g, item, 84, 1006, 900, fonte, 0.95);
+    if (logo) { const h = 80, w = logo.naturalWidth * h / logo.naturalHeight; g.drawImage(logo, 1044 - w - 40, 1464 - h - 30, w, h); }
+    return new Promise((resolve) => c.toBlob(resolve, "image/jpeg", 0.9));
+  }
+  // Para os testes: a imagem que o botao monta.
+  window.__montarImagemDaTela = (key) => montarImagemDaTela(itemMap.get(key));
+
+  // No celular, a imagem vai sozinha pelo compartilhar do aparelho (escolhe o
+  // WhatsApp e o contato). No computador, a imagem e copiada para colar no
+  // WhatsApp; sem como copiar, ela e baixada.
+  async function enviarTela(item, botao) {
+    if (!item) return;
+    const rotulo = botao.querySelector("span");
+    const antes = rotulo.textContent;
+    rotulo.textContent = "Preparando…";
+    try {
+      const blob = await montarImagemDaTela(item);
+      if (!blob) throw new Error("sem imagem");
+      const nome = `${item.emp.id}-${codigoSlug(item.code) || "unidade"}.jpg`;
+      const arquivo = new File([blob], nome, { type: "image/jpeg" });
+      if (aparelhoMovel() && navigator.canShare?.({ files: [arquivo] })) {
+        try { await navigator.share({ files: [arquivo] }); } catch (e) { if (e?.name !== "AbortError") throw e; }
+      } else if (canCopyImage()) {
+        const png = await new Promise((resolve) => { const img = new Image(); img.onload = () => { const c = document.createElement("canvas"); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext("2d").drawImage(img, 0, 0); URL.revokeObjectURL(img.src); c.toBlob(resolve, "image/png"); }; img.src = URL.createObjectURL(blob); });
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);
+        showToast("Imagem da tela copiada. Cole no WhatsApp.");
+      } else {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url; link.download = nome;
+        document.body.appendChild(link); link.click(); link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        showToast("Imagem da tela baixada. Anexe no WhatsApp.");
+      }
+      registrar("enviou", item.emp.id);
+    } catch (_) {
+      showToast("Não foi possível montar a imagem da tela.");
+    } finally {
+      rotulo.textContent = antes;
+    }
   }
 
   function escolherNoPredio(botao) {
@@ -2427,6 +2594,30 @@
 
     return {
       palco,
+      // v468 — o "Enviar tela": o predio do jeito que esta na tela agora. O
+      // desenho e copiado logo depois de desenhar, antes de o navegador
+      // limpar o quadro.
+      // Com largura e altura, desenha nesse formato (o predio inteiro, sem
+      // recorte) e depois volta ao tamanho da tela.
+      foto: (largura, altura) => {
+        const antes = camera.aspect, pr = renderer.getPixelRatio();
+        if (largura && altura) {
+          renderer.setPixelRatio(1); renderer.setSize(largura, altura, false);
+          camera.aspect = largura / altura; camera.updateProjectionMatrix();
+        }
+        controls.update();
+        renderer.render(scene, camera);
+        const c = document.createElement("canvas");
+        c.width = renderer.domElement.width; c.height = renderer.domElement.height;
+        c.getContext("2d").drawImage(renderer.domElement, 0, 0);
+        if (largura && altura) {
+          renderer.setPixelRatio(pr);
+          camera.aspect = antes; camera.updateProjectionMatrix();
+          medir();
+        }
+        return c;
+      },
+      // Onde o apartamento aparece nessa foto, em pixels dela.
       desmontar: () => {
         observador.disconnect(); controls.dispose(); cancelAnimationFrame(pedido);
         scene.traverse((o) => { o.geometry?.dispose(); if (o.material) { o.material.map?.dispose(); o.material.dispose(); } });
@@ -2705,6 +2896,7 @@
     root.querySelectorAll("[data-map-item]").forEach((button) => button.addEventListener("click", () => abrirMapaDoLote(itemMap.get(button.dataset.mapItem))));
     root.querySelectorAll("[data-planta-item]").forEach((button) => button.addEventListener("click", () => abrirPlantaDaUnidade(itemMap.get(button.dataset.plantaItem))));
     root.querySelectorAll("[data-vista-unidades]").forEach((button) => button.addEventListener("click", () => mostrarVistaDeUnidades(button.closest("#unidades"), button.dataset.vistaUnidades)));
+    root.querySelectorAll("[data-enviar-tela]").forEach((button) => button.addEventListener("click", () => enviarTela(itemMap.get(button.dataset.enviarTela), button)));
     root.querySelectorAll("[data-predio-item]").forEach((button) => button.addEventListener("click", () => escolherNoPredio(button)));
     root.querySelectorAll("[data-aba-predio]").forEach((button) => button.addEventListener("click", () => mostrarAbaDoPredio(button.closest(".vista-predio"), button.dataset.abaPredio)));
   }
