@@ -72,18 +72,18 @@
     "video2": "",
     "video3": "",
     "mapa": "",
-    "galeria": 14,
+    "galeria": 6,
     "diferenciais": 6,
     "plantas": 8
   },
   "nova-vila-rica-iii": {
-    "hero": "assets/nova-vila-rica-iii/capa.jpg",
+    "hero": "assets/nova-vila-rica-iii/capa.png",
     "folder": "",
     "video": "assets/nova-vila-rica-iii/video.mp4",
     "video2": "",
     "video3": "",
     "mapa": "",
-    "galeria": 7,
+    "galeria": 8,
     "diferenciais": 0,
     "plantas": 0
   },
