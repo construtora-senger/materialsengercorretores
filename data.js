@@ -1884,7 +1884,7 @@ const EMPREENDIMENTOS = [
         area: "57 m² global · 43 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-57",
-        unidades: [{ apto: "802A", preco: 432600, status: "disponivel" }],
+        unidades: [{ apto: "802A", preco: 462600, status: "disponivel" }],
       },
       {
         tipo: "2 dormitórios c/ móveis",
