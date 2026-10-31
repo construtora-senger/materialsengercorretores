@@ -1865,17 +1865,9 @@ const EMPREENDIMENTOS = [
       { src: "assets/qual-2.webp", legenda: "Piscina" },
       { src: "assets/qual-3.webp", legenda: "Academia" },
       { src: "assets/qual-9.webp", legenda: "Apartamento — living com móveis" },
-      { src: "assets/qual-10.webp", legenda: "Dormitório" },
-      { src: "assets/qual-4.webp", legenda: "Área social" },
-      { src: "assets/qual-5.webp", legenda: "Área social" },
-      { src: "assets/qual-6.webp", legenda: "Área social" },
-      { src: "assets/qual-7.webp", legenda: "Salão de festas" },
-      { src: "assets/qual-8.webp", legenda: "Salão de festas" },
       { src: "assets/qual-planta-57.webp", legenda: "Planta — 2 dormitórios (57m² global)" },
       { src: "assets/qual-planta-69.webp", legenda: "Planta — 2 dormitórios (69m² global)" },
       { src: "assets/qual-planta-3d.webp", legenda: "Planta — 3 dormitórios (1 suíte)" },
-      { src: "assets/int-cozinha-1.webp", legenda: "Cozinha com móveis planejados" },
-      { src: "assets/qual-map.webp", legenda: "Localização" },
     ],
     grupos: [
       {
