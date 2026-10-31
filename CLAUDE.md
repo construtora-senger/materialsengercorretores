@@ -36,6 +36,16 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Foto da galeria não tem legenda (v476)
+
+Ordem do dono (31/10/2026), depois das fotos novas do Quality: *"tire
+legenda, não quero, nunca será preciso legenda nas galerias de nenhum
+produto"*. Em todo empreendimento, a foto da galeria abre em tela cheia **sem
+legenda** (`photoMedia` vai ao visor sem o campo `legenda`), e o PDF do
+empreendimento mostra as fotos **sem a legenda embaixo**. O campo `legenda`
+continua no `data.js` e no painel — as **plantas** dependem dele ("Ver
+planta", "Planta humanizada"), e elas continuam com o nome.
+
 ## "Enviar tela" na ficha do prédio em 3D: só a imagem, modelo B (v468)
 
 Pedido do dono (29/10/2026), com o print do 201A do Quality no prédio em 3D:
