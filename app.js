@@ -1552,7 +1552,8 @@
     // Cada miniatura abre o visor em tela cheia, ja na foto tocada.
     detail.querySelectorAll("[data-gallery-index]").forEach((botao) => {
       const indice = Number(botao.dataset.galleryIndex);
-      botao.addEventListener("click", () => abrirVisor(photoMedia, indice, AVISO_FOTOS));
+      // v476 — pedido do dono: foto da galeria sem legenda, em todo produto.
+      botao.addEventListener("click", () => abrirVisor(photoMedia.map(({ legenda, ...foto }) => foto), indice, AVISO_FOTOS));
     });
     const plantPreviewImage = detail.querySelector("[data-plant-preview-image]");
     let plantIndex = 0;
@@ -3912,7 +3913,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     const photoRows = [];
     for (let i = 0; i < photos.length; i += 2) {
       photoRows.push(`<div class="ps-row">${photos.slice(i, i + 2).map((item) => `
-        <figure class="ps-photo"><img src="${escapeHtml(assetUrl(item.src))}" alt="">${item.legenda ? `<figcaption>${escapeHtml(item.legenda)}</figcaption>` : ""}</figure>
+        <figure class="ps-photo"><img src="${escapeHtml(assetUrl(item.src))}" alt=""></figure>
       `).join("")}</div>`);
     }
 
