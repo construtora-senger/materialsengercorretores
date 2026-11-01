@@ -1678,3 +1678,9 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
    so para a equipe. Ocupa a linha inteira embaixo do Compartilhar/Selecionar. */
 .predio-ficha-botoes .botao-enviar-tela { grid-column: 1 / -1; }
 .botao-enviar-tela svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* v477 — visor das fotos da galeria no modelo C (escolha do dono): todas em pe,
+   do mesmo tamanho; a foto deitada perde as laterais. Planta e mapa seguem
+   inteiros (abrem sem a classe .em-pe). */
+.lightbox-stage.em-pe img { width: auto; height: 100%; max-width: 100%; aspect-ratio: 9 / 16; object-fit: cover; margin: auto; }
+.lightbox-stage.em-pe.zoom img { width: 200%; max-width: none; height: auto; }
