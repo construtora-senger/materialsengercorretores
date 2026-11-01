@@ -1862,9 +1862,9 @@ const EMPREENDIMENTOS = [
       { titulo: "Segurança", desc: "Hall de entrada e estrutura com segurança." },
     ],
     galeria: [
+      { src: "assets/quality/galeria/v481-24-hall-de-entrada.jpg", legenda: "Hall de entrada" },
       { src: "assets/quality/galeria/v481-22-area-da-piscina.jpg", legenda: "Área da piscina" },
       { src: "assets/quality/galeria/v481-23-piscina.jpg", legenda: "Piscina" },
-      { src: "assets/quality/galeria/v481-24-hall-de-entrada.jpg", legenda: "Hall de entrada" },
       { src: "assets/quality/galeria/v481-01-living.jpg", legenda: "Living" },
       { src: "assets/quality/galeria/v481-10-living.jpg", legenda: "Living" },
       { src: "assets/quality/galeria/v481-09-mesa-de-jantar.jpg", legenda: "Mesa de jantar" },
