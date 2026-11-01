@@ -36,6 +36,20 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## As fotos da galeria abrem todas em pé, modelo C (v477)
+
+O dono, com três prints do visor do Quality (foto em pé, quadrada e
+deitada): *"veja a quantidade de formato diferente na mesma galeria"*. Viu
+quatro modelos (A moldura fixa com fundo escuro, B moldura fixa com fundo
+borrado, C todas em pé, D todas deitadas) e escolheu: *"quero a C"*.
+
+- Em todo empreendimento, a foto da galeria abre no visor **em pé, 9:16, do
+  mesmo tamanho**, cobrindo o quadro: a foto deitada **perde as laterais**
+  (`abrirVisor(…, emPe)` põe a classe `.em-pe` no palco; CSS no bloco "v477"
+  do fim do `styles.css`). O **Aproximar** continua.
+- **Planta, mapa do lote e planta da unidade não mudaram** — abrem inteiros,
+  sem a classe. A grade de miniaturas também não mudou.
+
 ## Foto da galeria não tem legenda (v476)
 
 Ordem do dono (31/10/2026), depois das fotos novas do Quality: *"tire

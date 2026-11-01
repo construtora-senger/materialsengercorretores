@@ -392,8 +392,11 @@
     visor.proximo.hidden = !varias;
   }
 
-  function abrirVisor(itens, indice, recado) {
+  function abrirVisor(itens, indice, recado, emPe) {
     if (!montarVisor()) return;
+    // v477 — modelo C, escolha do dono: as fotos da galeria abrem todas em pe,
+    // do mesmo tamanho (a deitada perde as laterais). Planta e mapa, nao.
+    visor.palco.classList.toggle("em-pe", !!emPe);
     visor.itens = (itens || []).filter((item) => item && item.src);
     if (!visor.itens.length) return;
     visor.recado.textContent = recado || "";
@@ -1553,7 +1556,7 @@
     detail.querySelectorAll("[data-gallery-index]").forEach((botao) => {
       const indice = Number(botao.dataset.galleryIndex);
       // v476 — pedido do dono: foto da galeria sem legenda, em todo produto.
-      botao.addEventListener("click", () => abrirVisor(photoMedia.map(({ legenda, ...foto }) => foto), indice, AVISO_FOTOS));
+      botao.addEventListener("click", () => abrirVisor(photoMedia.map(({ legenda, ...foto }) => foto), indice, AVISO_FOTOS, true));
     });
     const plantPreviewImage = detail.querySelector("[data-plant-preview-image]");
     let plantIndex = 0;
