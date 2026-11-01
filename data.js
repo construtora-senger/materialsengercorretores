@@ -1862,9 +1862,6 @@ const EMPREENDIMENTOS = [
       { titulo: "Segurança", desc: "Hall de entrada e estrutura com segurança." },
     ],
     galeria: [
-      { src: "assets/qual-2.webp", legenda: "Piscina" },
-      { src: "assets/qual-3.webp", legenda: "Academia" },
-      { src: "assets/qual-9.webp", legenda: "Apartamento — living com móveis" },
       { src: "assets/quality/galeria/v478-01-living.jpg", legenda: "Living" },
       { src: "assets/quality/galeria/v478-02-corredor.jpg", legenda: "Corredor" },
       { src: "assets/quality/galeria/v478-03-living.jpg", legenda: "Living" },
