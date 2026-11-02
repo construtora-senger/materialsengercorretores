@@ -36,6 +36,16 @@ que **já demonstrou interesse**. Daí decorre tudo:
 - modo corretor = eficiência. Modo cliente = clareza, confiança e informação.
   Não é a mesma interface servindo aos dois.
 
+## Quality 802A: "Financiamento bancário", sem o "Entrada +" (v485)
+
+Ordem do dono (02/11/2026), com o print da mensagem do 802A: *"retire a
+palavra 'entrada +', deixe apenas financiamento bancário, e somente no Quality
+802A — os demais mantenha a palavra entrada"*. A unidade 802A tem
+**`pagamento: "Financiamento bancário"`** no `data.js`; `itemMessage` usa o
+`pagamento` da unidade quando há, senão `condicoesDe(emp)`. **Só a mensagem
+de envio da unidade mudou** — a ficha do link (`?u=802A`), o PDF e a mensagem
+do empreendimento seguem com "Entrada + financiamento bancário".
+
 ## As fotos da galeria abrem todas em pé, modelo C (v477)
 
 O dono, com três prints do visor do Quality (foto em pé, quadrada e

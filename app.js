@@ -533,6 +533,9 @@
             garage: garagemDaUnidade(emp, group, unit),
             tags: unit.tags || [],
             notes: unit.obs || group.obs || "",
+            // v485 — forma de pagamento propria da unidade (so o Quality 802A
+            // tem): vale so na mensagem do envio; o resto segue condicoesDe.
+            pagamento: unit.pagamento || "",
             // v96 — planta propria da unidade (ex.: Casa Suspensa tem uma por apto);
             // sem ela, vale a planta da tipologia.
             planta: unit.planta || group.planta || "",
@@ -3232,7 +3235,8 @@
     if (includePrice) lines.push(`💰 *${money(item.price)}*`);
     else lines.push("💰 Valor sob consulta.");
 
-    if (condicoesDe(emp)) lines.push(`${condicoesDe(emp)}.`);
+    const pagamento = item.pagamento || condicoesDe(emp);
+    if (pagamento) lines.push(`${pagamento}.`);
     if (item.notes) lines.push(semPonto(item.notes) + ".");
     lines.push("", `Tabela ${META.mesTabela || ""}. Valores e disponibilidade sujeitos a alteração.`);
     return lines.join("\n");
