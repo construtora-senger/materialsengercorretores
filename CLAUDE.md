@@ -46,6 +46,19 @@ palavra 'entrada +', deixe apenas financiamento bancário, e somente no Quality
 de envio da unidade mudou** — a ficha do link (`?u=802A`), o PDF e a mensagem
 do empreendimento seguem com "Entrada + financiamento bancário".
 
+## A foto em pé (9:16) é só no Quality (v486)
+
+Ordem do dono (03/11/2026), com o print do mapa do Nova Vila Rica III cortado
+no visor: *"todas fotos da galeria estão cortando nesse tamanho, não pode isso
+— nesse tamanho somente do Quality 802A eu mandei; os demais produtos devem
+ficar apresentando no tamanho que é enviado pra galeria"*. A classe `.em-pe`
+do visor (v477) só vai na galeria do **Quality** (`emp.id === "quality"`); em
+todos os outros empreendimentos a foto da galeria abre **inteira, no formato
+em que foi enviada**, sem corte.
+
+> **REGRA ANTIGA em parte — substituída pela de cima:** a v477 abaixo dizia
+> "em todo empreendimento".
+
 ## As fotos da galeria abrem todas em pé, modelo C (v477)
 
 O dono, com três prints do visor do Quality (foto em pé, quadrada e

@@ -1559,7 +1559,9 @@
     detail.querySelectorAll("[data-gallery-index]").forEach((botao) => {
       const indice = Number(botao.dataset.galleryIndex);
       // v476 — pedido do dono: foto da galeria sem legenda, em todo produto.
-      botao.addEventListener("click", () => abrirVisor(photoMedia.map(({ legenda, ...foto }) => foto), indice, AVISO_FOTOS, true));
+      // v486 — a foto em pé (9:16, modelo C da v477) é só no Quality; os
+      // demais abrem a foto no formato em que foi enviada.
+      botao.addEventListener("click", () => abrirVisor(photoMedia.map(({ legenda, ...foto }) => foto), indice, AVISO_FOTOS, emp.id === "quality"));
     });
     const plantPreviewImage = detail.querySelector("[data-plant-preview-image]");
     let plantIndex = 0;
