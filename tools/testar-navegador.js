@@ -379,7 +379,7 @@ async function teste(nome, fn) {
 
   await teste("o cabeçalho da tipologia traz o \"a partir de\" ao lado do Ver unidades", async () => {
     const texto = await pg.locator(".painel-tipologia:not([hidden]) .unit-group-aside").first().innerText();
-    return /a partir de\s*R\$\s*1\.142\.900/.test(texto) ? "" : `o canto diz: ${texto.replace(/\s+/g, " ")}`;
+    return /a partir de\s*R\$\s*1\.146\.900/.test(texto) ? "" : `o canto diz: ${texto.replace(/\s+/g, " ")}`;
   });
 
   // v429 — o mapa do predio, pedido do dono (16/10/2026): o Renaissance abre
