@@ -1573,6 +1573,16 @@ const EMPREENDIMENTOS = [
       { titulo: "Conforto", desc: "Acabamento refinado, aquecimento a gás, 2 elevadores, persianas elétricas e fechadura biométrica." },
     ],
     galeria: [
+      { src: "assets/prime/galeria/imagem-01.jpg", legenda: "Imagem 01" },
+      { src: "assets/prime/galeria/imagem-02.jpg", legenda: "Imagem 02" },
+      { src: "assets/prime/galeria/imagem-03.jpg", legenda: "Imagem 03" },
+      { src: "assets/prime/galeria/imagem-04.jpg", legenda: "Imagem 04" },
+      { src: "assets/prime/galeria/imagem-05.jpg", legenda: "Imagem 05" },
+      { src: "assets/prime/galeria/imagem-06.jpg", legenda: "Imagem 06" },
+      { src: "assets/prime/galeria/imagem-07.jpg", legenda: "Imagem 07" },
+      { src: "assets/prime/galeria/imagem-08.jpg", legenda: "Imagem 08" },
+      { src: "assets/prime/galeria/imagem-09.jpg", legenda: "Imagem 09" },
+      { src: "assets/prime/galeria/imagem-10.jpg", legenda: "Imagem 10" },
       { src: "assets/prime-planta.webp", legenda: "Planta — 3 dormitórios (2 suítes)" },
     ],
     grupos: [
