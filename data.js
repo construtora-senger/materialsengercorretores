@@ -2366,7 +2366,7 @@ const EMPREENDIMENTOS = [
           "Apto 604 — 2 dormitórios, sala de estar com sacada, cozinha integrada com lavanderia, churrasqueira e box de garagem nº 38. Posição lateral com sol da manhã.",
         area: "82 m² global · 60 m² privativo",
         precoPrefixo: "de",
-        status: "disponivel",
+        status: "vendido",
       },
       {
         nome: "Edifício Campos Elísios",
