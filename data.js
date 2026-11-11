@@ -2355,7 +2355,7 @@ const EMPREENDIMENTOS = [
     statusLabel: "Disponível",
     entrega: "Pronto",
     ri: [],
-    hero: "assets/gabro-predio.webp",
+    hero: "assets/outros/capa-terreno.webp",
     galeria: [],
     outros: [
       {

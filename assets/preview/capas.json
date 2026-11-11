@@ -16,8 +16,8 @@
     "sha256": "906125c024debb3d908fc28ce90243ddb2c89407d7b08917b3928d4f8d2f0543"
   },
   "outros": {
-    "capa": "assets/gabro-predio.webp",
-    "sha256": "184bc4d24b6a78779c5afd532add7c6772f018d5bb1761d2cc3380564e143472"
+    "capa": "assets/outros/capa-terreno.webp",
+    "sha256": "08840af0336fe5169a8f8e600a65ed3741c05bddb9bdab500055bc321447ebc7"
   },
   "personalite": {
     "capa": "assets/personalite/capa.jpg",
