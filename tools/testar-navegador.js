@@ -1497,10 +1497,15 @@ async function teste(nome, fn) {
   await teste("o loteamento aceita planta em PDF e dá para remover", async () => {
     const input = admin.locator("input[data-arquivo-planta-livre]").first();
     if (!(await input.count())) return "loteamento sem campo de planta";
-    const antes = await admin.locator("button[data-planta-livre-remover]").count();
+    // v492 — remove dentro do MESMO loteamento em que inseriu: o ultimo botao
+    // da tela inteira passou a ser o mapa em PDF do Nova Vila Rica I & II, e o
+    // teste o tirava do cadastro (a publicacao seguinte pedia confirmacao).
+    const empId = await input.getAttribute("data-emp");
+    const remover = admin.locator(`button[data-planta-livre-remover][data-emp="${empId}"]`);
+    const antes = await remover.count();
     await input.setInputFiles({ name: "planta-lote.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n%%EOF") });
     await admin.waitForTimeout(500);
-    const depois = await admin.locator("button[data-planta-livre-remover]").count();
+    const depois = await remover.count();
     if (depois !== antes + 1) return `a planta nao entrou na lista (${antes} -> ${depois})`;
     // o nome da planta e editavel e fica guardado na lista de alteracoes
     const campo = admin.locator('.planta-item input[data-galeria-legenda]').last();
@@ -1508,9 +1513,9 @@ async function teste(nome, fn) {
     await admin.waitForTimeout(200);
     const guardado = await admin.evaluate(() => document.body.innerText.length > 0 && true);
     if (!guardado) return "painel quebrou ao editar o nome";
-    await admin.locator("button[data-planta-livre-remover]").last().evaluate((b) => b.click());
+    await remover.last().evaluate((b) => b.click());
     await admin.waitForTimeout(300);
-    return (await admin.locator("button[data-planta-livre-remover]").count()) === antes ? "" : "nao removeu";
+    return (await remover.count()) === antes ? "" : "nao removeu";
   });
 
   // v427 — duas tipologias com o mesmo nome (finais 01 e 02 do Boulevard,
