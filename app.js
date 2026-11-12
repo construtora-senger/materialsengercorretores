@@ -591,6 +591,8 @@
           // dele, no lugar da galeria do grupo.
           fotos: Array.isArray(other.fotos) ? other.fotos.filter((f) => f && f.src) : [],
           capa: other.capa || "",
+          // v504 — o link do Google Maps do proprio imovel avulso.
+          mapsUrl: other.mapsUrl || "",
         };
         items.push(item);
         itemMap.set(item.key, item);
@@ -1504,8 +1506,11 @@
     // Material comercial: so aparece quando existe mesmo. Sem folder nao ha
     // link de folder — nada de "em breve" ocupando lugar. v385: viraram links
     // discretos na faixa escura, como no modelo E.
+    // v504 — na ficha do imovel avulso, o "Ver localizacao" e o do proprio
+    // imovel (cada um fica num lugar); o grupo "Outros" nao tem um so.
+    const mapsUrl = (focusItem && focusItem.kind === "other") ? focusItem.mapsUrl : local.mapsUrl;
     const acoesDeMaterial = [
-      local.mapsUrl ? `<a class="faixa-link" href="${escapeHtml(local.mapsUrl)}" target="_blank" rel="noopener">Ver localização →</a>` : "",
+      mapsUrl ? `<a class="faixa-link" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">Ver localização →</a>` : "",
       videosDoEmp(emp).length ? `<button class="faixa-link" type="button" id="watch-video">${videosDoEmp(emp).length > 1 ? "Assistir vídeos" : "Assistir vídeo"} →</button>` : "",
       emp.folder ? `<a class="faixa-link" href="${escapeHtml(assetUrl(emp.folder))}" target="_blank" rel="noopener">${CLIENT_MODE ? "Ver apresentação completa" : "Baixar folder"} →</a>` : "",
     ].filter(Boolean).join("");

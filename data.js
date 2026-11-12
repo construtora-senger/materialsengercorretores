@@ -2382,6 +2382,8 @@ const EMPREENDIMENTOS = [
         // v503 — a capa da ficha e a foto da sacada com vista (pedido do
         // dono); sem `capa`, vale a primeira da lista.
         capa: "assets/outros/campos-elisios/02-sacada-vista.webp",
+        // v504 — localizacao no Google Maps, mandada pelo dono em 12/11/2026.
+        mapsUrl: "https://maps.app.goo.gl/UrCxtPm7HEZreUQo9",
         fotos: [
           { src: "assets/outros/campos-elisios/01-sala.webp" },
           { src: "assets/outros/campos-elisios/02-sacada-vista.webp" },
