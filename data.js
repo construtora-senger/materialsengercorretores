@@ -2442,6 +2442,8 @@ const LOCAIS = {
   evolutti: { mapsUrl: "https://www.google.com/maps?q=-28.282806,-52.784389" },
   boulevard: { mapsUrl: "https://www.google.com/maps?q=Pra%C3%A7a%20General%20Os%C3%B3rio%2C%20Ibirub%C3%A1%20-%20RS" },
   "premium-office": { mapsUrl: "https://www.google.com/maps?q=-28.283750,-52.796917" },
+  // v504 — links do Maps mandados pelo dono em 12/11/2026.
+  "nova-vila-rica-iii": { mapsUrl: "https://maps.app.goo.gl/R2DHMckzsoBLvcBL9" },
 };
 
 window.SENGER = { META, EMPREENDIMENTOS, LOCAIS };
