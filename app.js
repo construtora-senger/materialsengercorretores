@@ -1246,7 +1246,7 @@
     if (!c || c.some((n) => !Number.isFinite(n))) return "";
     const [lat, lng] = c;
     const ponto = `${lat.toFixed(6)},${lng.toFixed(6)}`;
-    const embed = `https://www.google.com/maps?q=${ponto}&z=17&hl=pt-BR&output=embed`;
+    const embed = `https://www.google.com/maps?q=${ponto}&z=15&hl=pt-BR&output=embed`;
     const abrir = item.mapsUrl || `https://www.google.com/maps?q=${ponto}`;
     return `
         <div class="ficha-mapa">
