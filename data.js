@@ -2382,6 +2382,8 @@ const EMPREENDIMENTOS = [
         // v503 — a capa da ficha e a foto da sacada com vista (pedido do
         // dono); sem `capa`, vale a primeira da lista.
         capa: "assets/outros/campos-elisios/02-sacada-vista.webp",
+        // v504 — localizacao no Google Maps, mandada pelo dono em 12/11/2026.
+        mapsUrl: "https://maps.app.goo.gl/UrCxtPm7HEZreUQo9",
         fotos: [
           { src: "assets/outros/campos-elisios/01-sala.webp" },
           { src: "assets/outros/campos-elisios/02-sacada-vista.webp" },
@@ -2411,6 +2413,7 @@ const EMPREENDIMENTOS = [
         nome: "Terreno loteamento Jardim América",
         preco: 148900,
         local: "Não-Me-Toque/RS",
+        mapsUrl: "https://maps.app.goo.gl/8EhCaLZCV7BQwSkV7",
         descricao:
           "Em frente à Stara, saída para Lagoa dos 3 Cantos. Na 2ª quadra, com linda vista do alto do loteamento. Quadra 490, Lote 241, 16m x 24,75m.",
         area: "396 m²",
@@ -2420,6 +2423,7 @@ const EMPREENDIMENTOS = [
         nome: "Terreno bairro Vila Aurora",
         preco: 135800,
         local: "Carazinho/RS",
+        mapsUrl: "https://maps.app.goo.gl/TLbY1uuvG2ZLLi1B7",
         descricao:
           "Altos da Princesa com Vila Rica, a uma quadra da Siqueira Campos, perto do posto de combustível. Fundos e uma das laterais já com muro. Rua do Carmo, 13m x 33m.",
         area: "429 m²",
@@ -2439,6 +2443,9 @@ const LOCAIS = {
   evolutti: { mapsUrl: "https://www.google.com/maps?q=-28.282806,-52.784389" },
   boulevard: { mapsUrl: "https://www.google.com/maps?q=Pra%C3%A7a%20General%20Os%C3%B3rio%2C%20Ibirub%C3%A1%20-%20RS" },
   "premium-office": { mapsUrl: "https://www.google.com/maps?q=-28.283750,-52.796917" },
+  // v504 — links do Maps mandados pelo dono em 12/11/2026.
+  "nova-vila-rica-iii": { mapsUrl: "https://maps.app.goo.gl/R2DHMckzsoBLvcBL9" },
+  "nova-vila-rica": { mapsUrl: "https://maps.app.goo.gl/yFy76X9C9btj5Dn29" },
 };
 
 window.SENGER = { META, EMPREENDIMENTOS, LOCAIS };
