@@ -2384,6 +2384,8 @@ const EMPREENDIMENTOS = [
         capa: "assets/outros/campos-elisios/02-sacada-vista.webp",
         // v504 — localizacao no Google Maps, mandada pelo dono em 12/11/2026.
         mapsUrl: "https://maps.app.goo.gl/UrCxtPm7HEZreUQo9",
+        // v507 — pino exato (latitude, longitude), lido pelo dono no Maps.
+        coordenadas: [-28.288980, -52.796434],
         fotos: [
           { src: "assets/outros/campos-elisios/01-sala.webp" },
           { src: "assets/outros/campos-elisios/02-sacada-vista.webp" },
