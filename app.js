@@ -609,6 +609,24 @@
     return itemsFor(emp).filter((item) => isMarketable(item.status));
   }
 
+  // v495 — a cidade de "Outros imoveis" sai dos imoveis que ainda estao a
+  // venda, nao do texto fixo do cadastro: o Residencial Gabro (Santa Maria)
+  // foi vendido e o cartao seguia dizendo "Santa Maria/RS". Pedido do dono,
+  // 12/11/2026. Cada item diz onde fica em `local` ("Centro de Santa
+  // Maria/RS", "Nao-Me-Toque/RS"); daqui sai so "Cidade/UF", sem repetir, na
+  // ordem dos itens. Os outros empreendimentos seguem com `emp.cidade`.
+  function cidadeDoLocal(local) {
+    const m = String(local || "").match(/([^\/,]+\/[A-Z]{2})\s*$/);
+    return m ? m[1].replace(/^.*\bde\s+/i, "").trim() : "";
+  }
+
+  function cidadeDe(emp) {
+    if (!emp) return "";
+    if (emp.id !== "outros" || !(emp.outros || []).length) return emp.cidade || "";
+    const cidades = unique(marketableItems(emp).map((item) => cidadeDoLocal(item.local)).filter(Boolean));
+    return cidades.length ? cidades.join(" · ") : (emp.cidade || "");
+  }
+
   function minPrice(emp) {
     const priced = marketableItems(emp).map((item) => item.price).filter((price) => price > 0);
     return priced.length ? Math.min(...priced) : 0;
@@ -638,7 +656,7 @@
   function empSearchText(emp) {
     if (!empSearchCache.has(emp.id)) {
       empSearchCache.set(emp.id, normalizeText([
-        emp.nome, emp.cidade, emp.categoria, emp.statusLabel, emp.entrega,
+        emp.nome, cidadeDe(emp), emp.categoria, emp.statusLabel, emp.entrega,
         emp.tagline, emp.localizacao, condicoesDe(emp),
         ...(emp.diferenciais || []).flatMap((d) => [d.titulo, d.desc]),
       ].join(" ")));
@@ -710,7 +728,7 @@
 
   function renderFilters() {
     const citySelect = document.getElementById("city-filter");
-    const cities = unique(EMPREENDIMENTOS.flatMap((emp) => emp.cidade.split(" · "))).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    const cities = unique(EMPREENDIMENTOS.flatMap((emp) => cidadeDe(emp).split(" · "))).sort((a, b) => a.localeCompare(b, "pt-BR"));
     citySelect.innerHTML = `<option value="todos">Todas as cidades</option>${cities.map((city) => `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("")}`;
 
     // v106 — o filtro tem duas opcoes fixas, 2 e 3 dormitorios. Decisao do dono: o
@@ -759,7 +777,7 @@
     const query = normalizeText(state.query);
     const result = EMPREENDIMENTOS.filter((emp) => {
       if (CLIENT_LIST_IDS && !CLIENT_LIST_IDS.includes(emp.id)) return false;
-      if (state.city !== "todos" && !emp.cidade.split(" · ").includes(state.city)) return false;
+      if (state.city !== "todos" && !cidadeDe(emp).split(" · ").includes(state.city)) return false;
       if (state.stage !== "todos" && emp.status !== state.stage) return false;
       // Antes cada filtro era conferido por conta propria: bastava existir
       // ALGUMA unidade de 2 dormitorios e ALGUMA na faixa de preco, ainda que
@@ -879,7 +897,7 @@
             <img src="${escapeHtml(assetUrl(cardImage(item.emp)))}" alt="" loading="lazy">
           </a>
           <div class="unit-result-body">
-            <span class="unit-result-emp">${escapeHtml(item.emp.nome)} · ${escapeHtml(item.emp.cidade)}</span>
+            <span class="unit-result-emp">${escapeHtml(item.emp.nome)} · ${escapeHtml(cidadeDe(item.emp))}</span>
             <h3><a href="#emp-${item.emp.id}" data-open-unit="${escapeHtml(item.key)}">${escapeHtml(itemLabel(item))}</a>
               ${item.status !== "disponivel" ? `<span class="status-pill status-${item.status}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span>` : ""}
             </h3>
@@ -957,7 +975,7 @@
           <div class="card-outros-corpo">
             <div class="card-outros-topo">
               <div>
-                <span class="card-kicker">${escapeHtml(emp.cidade)}</span>
+                <span class="card-kicker">${escapeHtml(cidadeDe(emp))}</span>
                 <h3 class="card-title">${escapeHtml(emp.nome)}</h3>
               </div>
               ${enviar}
@@ -977,7 +995,7 @@
             <img src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}" loading="lazy">
             ${lista}
             <div class="card-sobre-foto">
-              <span class="card-kicker">${escapeHtml(emp.cidade)}</span>
+              <span class="card-kicker">${escapeHtml(cidadeDe(emp))}</span>
               <h3 class="card-title">${escapeHtml(emp.nome)}</h3>
               ${escolhidas ? "" : `<p class="card-preco"><span>${escapeHtml(rotuloDoPreco)}</span> <strong class="price-value">${valorDoCartao ? money(valorDoCartao) : "Sob consulta"}</strong></p>`}
             </div>
@@ -1472,7 +1490,7 @@
     const fatos = focusItem ? "" : [
       fato("etapa", emp.statusLabel || emp.entrega || ""),
       fato("pagamento", condicoesDe(emp)),
-      fato("local", emp.bairro || "", emp.cidade || ""),
+      fato("local", emp.bairro || "", cidadeDe(emp) || ""),
     ].join("");
 
     const marcaCheck = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
@@ -2977,7 +2995,7 @@
     // "quero q a msg do whats use o texto do sobre".
     const lines = [
       `*${emp.nome} — Construtora Senger*`,
-      emp.cidade,
+      cidadeDe(emp),
       emp.localizacao || emp.tagline || emp.entrega || "",
       "",
     ];
@@ -3188,7 +3206,7 @@
     : `*${item.emp.nome} — ${itemLabel(item)}*`);
 
   // A localizacao ja traz a cidade; usa-la evita repetir "Carazinho" no titulo.
-  const ondeFica = (item) => (item.emp.id === "outros" ? item.local : item.emp.localizacao) || item.emp.cidade;
+  const ondeFica = (item) => (item.emp.id === "outros" ? item.local : item.emp.localizacao) || cidadeDe(item.emp);
 
   function itemBullets(item) {
     const bullets = [];
@@ -3556,7 +3574,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     const url = clientLinkFor(emp);
     const text = [
       `*${emp.nome} — Construtora Senger*`,
-      emp.cidade,
+      cidadeDe(emp),
       "",
       "👇 Clique no link abaixo para ver fotos, plantas, valores e todas as informações:",
       url,
@@ -3615,7 +3633,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
     const url = ponteDaUnidade(item);
     const text = [
       `*${emp.nome} — ${itemLabel(item)}*`,
-      emp.cidade,
+      cidadeDe(emp),
       "",
       "👇 Clique no link abaixo para ver fotos, planta, valores e todas as informações desta unidade:",
       url,
@@ -3824,7 +3842,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
   function buildPrintSheet(enterprises) {
     // O PDF sai assinado por quem gerou; sem dados preenchidos, vale o contato da empresa.
     const contato = [assinaturaTexto() || META.contato?.telefones?.[0], META.contato?.instagram, META.contato?.site].filter(Boolean).join(" · ");
-    const cidades = unique(enterprises.flatMap((emp) => emp.cidade.split(" · ")))
+    const cidades = unique(enterprises.flatMap((emp) => cidadeDe(emp).split(" · ")))
       .map((city) => city.replace("/RS", "")).join(" · ");
 
     // O PDF do portfolio e a LISTA: uma pagina por empreendimento com todas as
@@ -3837,7 +3855,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       return `
         <div class="ps-page ps-lista">
           <h2 class="ps-section">${escapeHtml(emp.nome)}</h2>
-          <p class="ps-group-note">${escapeHtml([emp.cidade, prazo, CATEGORY_LABELS[emp.categoria] || emp.categoria].filter(Boolean).join(" · "))}</p>
+          <p class="ps-group-note">${escapeHtml([cidadeDe(emp), prazo, CATEGORY_LABELS[emp.categoria] || emp.categoria].filter(Boolean).join(" · "))}</p>
           ${groupTables}${landTable}${otherTable}
         </div>
       `;
@@ -3940,7 +3958,7 @@ const canCopyImage = () => Boolean(window.ClipboardItem && navigator.clipboard?.
       <header class="ps-head">
         <img class="ps-logo" src="${escapeHtml(assetUrl("assets/senger-logo.webp"))}" alt="Construtora Senger">
         <div>
-          <p class="ps-eyebrow">${escapeHtml(emp.cidade)} · ${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria)}</p>
+          <p class="ps-eyebrow">${escapeHtml(cidadeDe(emp))} · ${escapeHtml(CATEGORY_LABELS[emp.categoria] || emp.categoria)}</p>
           <h1>${escapeHtml(emp.nome)}</h1>
           <p class="ps-meta">${escapeHtml(prazo)} · Tabela ${escapeHtml(META.mesTabela || "")}</p>
           ${condicoesDe(emp) ? `<p class="ps-meta">Pagamento: ${escapeHtml(condicoesDe(emp))}</p>` : ""}

@@ -71,6 +71,21 @@ const slug = (texto) => String(texto || "")
   .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
   .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
+// v495 — a cidade de "Outros imoveis" sai dos imoveis ainda a venda, como no
+// app.js (cidadeDe): o texto fixo do cadastro continuava dizendo Santa Maria
+// depois de o imovel de la ser vendido.
+const cidadeDoLocal = (local) => {
+  const m = String(local || "").match(/([^\/,]+\/[A-Z]{2})\s*$/);
+  return m ? m[1].replace(/^.*\bde\s+/i, "").trim() : "";
+};
+const cidadeDe = (emp) => {
+  if (emp.id !== "outros" || !(emp.outros || []).length) return emp.cidade || "";
+  const cidades = [...new Set((emp.outros || [])
+    .filter((o) => (o.status || "disponivel") !== "vendido")
+    .map((o) => cidadeDoLocal(o.local)).filter(Boolean))];
+  return cidades.length ? cidades.join(" · ") : (emp.cidade || "");
+};
+
 // Uma frase curta: a chamada do empreendimento, ou o prazo de entrega.
 const resumo = (emp) => {
   const base = emp.tagline || emp.entrega || "Fotos, plantas, valores e disponibilidade.";
@@ -110,7 +125,7 @@ const pagina = ({ emp, titulo, desc, caminho, profundidade, destaque, extra }) =
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(`${emp.nome} — ${emp.cidade || "Construtora Senger"}`)}">
+<meta property="og:image:alt" content="${esc(`${emp.nome} — ${cidadeDe(emp) || "Construtora Senger"}`)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(titulo)}">
 <meta name="twitter:description" content="${esc(desc)}">
@@ -144,7 +159,7 @@ const pagina = ({ emp, titulo, desc, caminho, profundidade, destaque, extra }) =
   <div class="cartao">
     <img src="${acima}${previa}" alt="${esc(emp.nome)}">
     <h1>${esc(destaque)}</h1>
-    <p>${esc(emp.cidade || "")}</p>
+    <p>${esc(cidadeDe(emp))}</p>
     <a id="ir" href="${acima}?cliente#emp-${emp.id}">Ver fotos, plantas e valores</a>
   </div>
   <script>
@@ -222,7 +237,7 @@ function unidadesDe(emp) {
 
 function descricaoDaUnidade(emp, item) {
   const partes = [...item.detalhes, ...item.etiquetas].filter(Boolean);
-  const texto = [partes.join(" · "), emp.cidade].filter(Boolean).join(" — ");
+  const texto = [partes.join(" · "), cidadeDe(emp)].filter(Boolean).join(" — ");
   const base = texto || resumo(emp);
   return base.length > 180 ? `${base.slice(0, 177)}…` : base;
 }
