@@ -371,13 +371,13 @@ img { max-width: 100%; display: block; }
 
 /* Os dados em duas colunas no computador; no celular a grade vira uma coluna
    so e cada dado ocupa a linha inteira — e assim que se le no WhatsApp. */
-.ficha-dados { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 26px; margin: 20px 0 0; }
-.ficha-dados > div {
-  display: flex; align-items: baseline; justify-content: space-between; gap: 14px;
-  padding: 11px 0; border-bottom: 1px solid var(--line); min-width: 0;
-}
-.ficha-dados dt { flex: 0 0 auto; color: var(--muted); font-size: 12px; font-weight: 600; }
-.ficha-dados dd { margin: 0; min-width: 0; font-size: 13.5px; font-weight: 700; text-align: right; }
+/* v506 — modelo B, escolhido pelo dono (12/11/2026): cada dado num
+   quadradinho, nome em cima e valor embaixo. Antes era rotulo a esquerda e
+   valor la no canto direito, dificil de ler. */
+.ficha-dados { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 20px 0 0; }
+.ficha-dados > div { background: #f4f6f8; border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.ficha-dados dt { color: var(--muted); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+.ficha-dados dd { margin: 4px 0 0; min-width: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
 .ficha-obs { margin: 16px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
 
 /* Uma planta so (o caso do link de unidade): o visor ocupa a largura toda em
@@ -1048,7 +1048,9 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
    continuar empilhado depois de uma primeira tentativa.
    ============================================================ */
 @media (max-width: 720px) {
-  .ficha-dados { grid-template-columns: 1fr; gap: 0; }
+  .ficha-dados { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .ficha-dados > div { padding: 10px 12px; }
+  .ficha-dados dd { font-size: 15px; }
   .ficha-valor { padding: 14px 16px; }
   .ficha-valor strong { font-size: 26px; }
   .ficha-unidade h2 { font-size: 22px; }
