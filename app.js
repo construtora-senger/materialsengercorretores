@@ -277,8 +277,18 @@
   const isMarketable = (status) => (status || "disponivel") !== "vendido";
   const safeUrl = (url) => /^https?:\/\//i.test(url || "") ? url : `https://${url}`;
 
+  // v509 — foto NAO leva mais a versao do site no endereco. Com o "?v=508"
+  // cada publicacao mudava o endereco de todas as fotos, e o navegador as
+  // baixava de novo do zero (o dono: "pq demora pra carregar as imagens das
+  // capas?"). Foto nova entra sempre com nome novo (galeria, planta e, desde
+  // a v509, a capa levam carimbo de hora), entao o nome ja basta. Seguem com
+  // a versao: PDF, video e as previas do link (assets/preview/), que o painel
+  // regrava com o mesmo nome.
   const assetUrl = (path) => {
     if (!path) return path;
+    if (/^(https?:|data:|blob:)/i.test(path)) return path;
+    const semQuery = path.split(/[?#]/)[0];
+    if (/\.(webp|jpe?g|png|gif|svg)$/i.test(semQuery) && !/^assets\/preview\//.test(semQuery)) return path;
     const sep = path.includes("?") ? "&" : "?";
     return `${path}${sep}v=${APP_VERSION.replace(/^v/, "")}`;
   };
@@ -846,6 +856,22 @@
     return emp.hero || "assets/fachada.webp";
   }
 
+  // v509 — a vitrine usa uma copia leve da capa (900 px, webp), feita ao lado
+  // dela: "assets/x/capa.jpg" -> "assets/x/capa-vitrine.webp". A capa inteira
+  // (1600 px, ate 2,6 MB) fica para o alto da pagina do empreendimento. Se a
+  // copia leve faltar, o onerror do <img> volta para a capa inteira.
+  function capaDaVitrine(emp) {
+    const capa = cardImage(emp);
+    return emp.hero ? capa.replace(/\.[a-z0-9]+$/i, "-vitrine.webp") : capa;
+  }
+
+  function imgDaVitrine(emp, alt) {
+    const leve = assetUrl(capaDaVitrine(emp));
+    const cheia = assetUrl(cardImage(emp));
+    const reserva = leve === cheia ? "" : ` onerror="this.onerror=null;this.src='${escapeHtml(cheia)}'"`;
+    return `<img src="${escapeHtml(leve)}" alt="${escapeHtml(alt)}" loading="lazy"${reserva}>`;
+  }
+
   const plural = (n, um, muitos) => `${n} ${n === 1 ? um : muitos}`;
 
   // A visao de unidades e ferramenta do corretor: no link do cliente a vitrine
@@ -902,7 +928,7 @@
       return `
         <article class="unit-result">
           <a class="unit-result-media" href="#emp-${item.emp.id}" data-open-unit="${escapeHtml(item.key)}" aria-hidden="true" tabindex="-1">
-            <img src="${escapeHtml(assetUrl(cardImage(item.emp)))}" alt="" loading="lazy">
+            ${imgDaVitrine(item.emp, "")}
           </a>
           <div class="unit-result-body">
             <span class="unit-result-emp">${escapeHtml(item.emp.nome)} · ${escapeHtml(cidadeDe(item.emp))}</span>
@@ -977,7 +1003,7 @@
         return `
         <article class="portfolio-card card-outros${filtrando && !napista ? " is-unpicked" : ""}">
           <div class="card-media">
-            <img src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}" loading="lazy">
+            ${imgDaVitrine(emp, emp.nome)}
             ${lista}
           </div>
           <div class="card-outros-corpo">
@@ -1011,7 +1037,7 @@
       return `
         <article class="portfolio-card${filtrando && !napista ? " is-unpicked" : ""}">
           <div class="card-media">
-            <img src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}" loading="lazy">
+            ${imgDaVitrine(emp, emp.nome)}
             ${lista}
             <div class="card-sobre-foto">
               <span class="card-kicker">${escapeHtml(cidadeDe(emp))}</span>

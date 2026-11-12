@@ -1585,7 +1585,7 @@
   // A versao DESTA pagina. O numero que aparecia no alto vinha do site, entao
   // uma pagina velha guardada pelo navegador se anunciava como nova — e o dono
   // ficou horas mexendo numa tela antiga achando que o sistema nao obedecia.
-  const VERSAO_PAINEL = 494;
+  const VERSAO_PAINEL = 509;
 
   const CUSTOS_ITEM = "senger-admin-custos-v1"; // legado v171
   const FINANCEIRO_ITEM = "senger-admin-financeiro-v2";
@@ -2976,7 +2976,7 @@
   function removerUploadCampo(empId, campo) {
     estado.ops = estado.ops.filter((op) => !(op.tipoOp === "upload" && op.empId === empId && op.campo === campo));
     // v456 — a previa do link so existe por causa da capa: sai com ela.
-    if (campo === "hero") removerUploadCampo(empId, "previa");
+    if (campo === "hero") { removerUploadCampo(empId, "previa"); removerUploadCampo(empId, "vitrine"); }
   }
 
   function removerUploadPath(path) {
@@ -3001,7 +3001,10 @@
     const ext = extensaoDoArquivo(arquivo?.name);
     if (campo === "folder") return `assets/${emp.id}/folder.pdf`;
     if (emVideo(campo)) return `assets/${emp.id}/${campo}.${ext || "mp4"}`;
-    if (campo === "hero") return `assets/${emp.id}/capa.${ext || "webp"}`;
+    // v509 — a capa nova ganha carimbo de hora no nome: o site nao poe mais
+    // a versao no endereco das fotos, entao nome repetido mostraria a capa
+    // antiga guardada no aparelho.
+    if (campo === "hero") return `assets/${emp.id}/capa-${Date.now().toString(36)}.${ext || "webp"}`;
     throw new Error(`Tipo de material desconhecido: ${campo}.`);
   }
 
@@ -3040,6 +3043,39 @@
 
   function caminhoDaPrevia(emp) {
     return `assets/preview/${emp.id}.jpg`;
+  }
+
+  // v509 — a copia leve da capa para a vitrine (900 px de largura, webp),
+  // gravada ao lado dela: "assets/x/capa-k3.jpg" -> "assets/x/capa-k3-vitrine.webp".
+  // O site deduz o nome da copia pelo da capa (capaDaVitrine, no app.js).
+  const VITRINE = { largura: 900, qualidade: 0.8 };
+  function caminhoDaVitrine(pathDaCapa) {
+    return pathDaCapa.replace(/\.[a-z0-9]+$/i, "-vitrine.webp");
+  }
+
+  async function gerarCapaDaVitrine(arquivo, nome) {
+    const url = URL.createObjectURL(arquivo);
+    try {
+      const img = await new Promise((resolve, reject) => {
+        const i = new Image();
+        i.onload = () => resolve(i);
+        i.onerror = () => reject(new Error("a imagem não abriu"));
+        i.src = url;
+      });
+      const s = Math.min(1, VITRINE.largura / img.naturalWidth);
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+      const ctx = c.getContext("2d");
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      const blob = await new Promise((resolve) => c.toBlob(resolve, "image/webp", VITRINE.qualidade));
+      // Navegador que nao grava webp devolve PNG: sem copia leve, a vitrine
+      // usa a capa inteira (o onerror do site cobre).
+      if (!blob || blob.type !== "image/webp") return null;
+      return new File([blob], nome, { type: "image/webp" });
+    } finally {
+      URL.revokeObjectURL(url);
+    }
   }
 
   async function gerarPreviaDaCapa(arquivo, nome) {
@@ -3845,6 +3881,7 @@
         try {
           input.disabled = true;
           previa = { arquivo: await gerarPreviaDaCapa(arquivo, `${emp.id}.jpg`), sha256: await sha256DoArquivo(arquivo) };
+          previa.vitrine = await gerarCapaDaVitrine(arquivo, "capa-vitrine.webp").catch(() => null);
         } catch (e) {
           aviso(`Não consegui montar a prévia do link a partir desta capa: ${e.message || e}`, "falha");
           input.value = "";
@@ -3854,6 +3891,7 @@
         }
         anotarUpload(emp.id, campo, path, arquivo, "capa");
         anotarUpload(emp.id, "previa", caminhoDaPrevia(emp), previa.arquivo, "prévia do link");
+        if (previa.vitrine) anotarUpload(emp.id, "vitrine", caminhoDaVitrine(path), previa.vitrine, "capa da vitrine");
         const opPrevia = estado.ops.find((op) => op.tipoOp === "upload" && op.empId === emp.id && op.campo === "previa");
         opPrevia.capa = path;
         opPrevia.sha256 = previa.sha256;
