@@ -2422,6 +2422,7 @@ const EMPREENDIMENTOS = [
         nome: "Terreno bairro Vila Aurora",
         preco: 135800,
         local: "Carazinho/RS",
+        mapsUrl: "https://maps.app.goo.gl/TLbY1uuvG2ZLLi1B7",
         descricao:
           "Altos da Princesa com Vila Rica, a uma quadra da Siqueira Campos, perto do posto de combustível. Fundos e uma das laterais já com muro. Rua do Carmo, 13m x 33m.",
         area: "429 m²",
