@@ -2384,6 +2384,8 @@ const EMPREENDIMENTOS = [
         capa: "assets/outros/campos-elisios/02-sacada-vista.webp",
         // v504 — localizacao no Google Maps, mandada pelo dono em 12/11/2026.
         mapsUrl: "https://maps.app.goo.gl/UrCxtPm7HEZreUQo9",
+        // v507 — pino exato (latitude, longitude), lido pelo dono no Maps.
+        coordenadas: [-28.288980, -52.796434],
         fotos: [
           { src: "assets/outros/campos-elisios/01-sala.webp" },
           { src: "assets/outros/campos-elisios/02-sacada-vista.webp" },
@@ -2414,6 +2416,8 @@ const EMPREENDIMENTOS = [
         preco: 148900,
         local: "Não-Me-Toque/RS",
         mapsUrl: "https://maps.app.goo.gl/8EhCaLZCV7BQwSkV7",
+        // v507 — pino exato (latitude, longitude), do proprio link do Maps.
+        coordenadas: [-28.480423, -52.810649],
         // v505 — fotos mandadas pelo dono em 12/11/2026; a primeira e a capa.
         fotos: [
           { src: "assets/outros/jardim-america/01-terreno-ceu-azul.webp" },
@@ -2432,6 +2436,8 @@ const EMPREENDIMENTOS = [
         preco: 135800,
         local: "Carazinho/RS",
         mapsUrl: "https://maps.app.goo.gl/TLbY1uuvG2ZLLi1B7",
+        // v507 — pino exato (latitude, longitude), do proprio link do Maps.
+        coordenadas: [-28.298975, -52.786830],
         // v505 — fotos mandadas pelo dono em 12/11/2026; a primeira e a capa.
         fotos: [
           { src: "assets/outros/vila-aurora/01-rua-e-frente.webp" },
