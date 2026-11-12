@@ -2413,6 +2413,7 @@ const EMPREENDIMENTOS = [
         nome: "Terreno loteamento Jardim América",
         preco: 148900,
         local: "Não-Me-Toque/RS",
+        mapsUrl: "https://maps.app.goo.gl/8EhCaLZCV7BQwSkV7",
         descricao:
           "Em frente à Stara, saída para Lagoa dos 3 Cantos. Na 2ª quadra, com linda vista do alto do loteamento. Quadra 490, Lote 241, 16m x 24,75m.",
         area: "396 m²",
