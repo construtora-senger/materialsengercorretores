@@ -1249,8 +1249,13 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 .card-outros .card-kicker { color: #9fdbe3; font-size: 11px; }
 .card-outros .card-title { margin: 3px 0 0; font-size: 22px; color: #fff; }
 .card-outros .card-share { position: relative; z-index: 6; background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
-.card-outros-lista { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 30px; }
-.card-outros-lista li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.14); font-size: 15px; }
+/* v496 — modelo C: um quadrinho por imovel, empilhados (antes, duas colunas). */
+.card-outros-lista { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 8px; }
+.card-outros-lista li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; font-size: 15px; }
+.card-outros-nome { font-weight: 600; min-width: 0; }
+.card-outros-nome small { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: #9fb2bd; }
+.card-outros-fim { display: flex; align-items: center; gap: 14px; flex: none; }
+.card-outros-seta { color: #9fdbe3; font-size: 18px; line-height: 1; }
 .card-outros-lista .price-value { color: #fff; }
 
 @media (max-width: 1080px) {
@@ -1297,9 +1302,9 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .card-outros .card-media { min-height: 0; height: 170px; }
   .card-outros-corpo { padding: 14px 16px 8px; }
   .card-outros .card-title { font-size: 20px; }
-  .card-outros-lista { grid-template-columns: 1fr; margin-top: 8px; }
-  .card-outros-lista li { font-size: 14px; }
-  .card-outros-lista li:last-child { border-bottom: 0; }
+  .card-outros-lista { margin-top: 10px; gap: 6px; }
+  .card-outros-lista li { font-size: 14px; padding: 10px 12px; }
+  .card-outros-corpo { padding-bottom: 14px; }
 }
 
 /* v401 — os botoes da equipe na faixa escura do empreendimento, no modelo C
