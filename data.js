@@ -2379,6 +2379,9 @@ const EMPREENDIMENTOS = [
         garagem: "2 box de garagem",
         // As fotos deste imovel, na ordem em que aparecem na ficha dele
         // (as mais bonitas primeiro, a pedido do dono).
+        // v503 — a capa da ficha e a foto da sacada com vista (pedido do
+        // dono); sem `capa`, vale a primeira da lista.
+        capa: "assets/outros/campos-elisios/02-sacada-vista.webp",
         fotos: [
           { src: "assets/outros/campos-elisios/01-sala.webp" },
           { src: "assets/outros/campos-elisios/02-sacada-vista.webp" },

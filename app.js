@@ -590,6 +590,7 @@
           // v500 — fotos do proprio imovel avulso (Outros): aparecem na ficha
           // dele, no lugar da galeria do grupo.
           fotos: Array.isArray(other.fotos) ? other.fotos.filter((f) => f && f.src) : [],
+          capa: other.capa || "",
         };
         items.push(item);
         itemMap.set(item.key, item);
@@ -1583,7 +1584,7 @@
 
     detail.innerHTML = `
       <section class="detail-hero">
-        <img class="detail-hero-image" src="${escapeHtml(assetUrl(fotosDoFoco ? fotosDoFoco[0].src : cardImage(emp)))}" alt="${escapeHtml(emp.nome)}">
+        <img class="detail-hero-image" src="${escapeHtml(assetUrl(fotosDoFoco ? (focusItem.capa || fotosDoFoco[0].src) : cardImage(emp)))}" alt="${escapeHtml(emp.nome)}">
         ${podeVoltar ? `<div class="shell detail-hero-content"><button class="button detail-back" type="button" id="detail-back">← ${CLIENT_MODE ? "Voltar aos imóveis" : "Voltar ao portfólio"}</button></div>` : ""}
       </section>
       <section class="detail-faixa">
