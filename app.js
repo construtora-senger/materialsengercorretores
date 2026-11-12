@@ -1192,6 +1192,9 @@
     if (item.garage && !/opcional|consultar/i.test(item.garage)) linha("Garagem", item.garage);
     const andar = item.kind === "unit" ? andarDe(item.code) : null;
     if (andar) linha("Andar", `${andar}º`);
+    // v499 — o avulso diz onde fica (o Campos Elisios no Centro, o terreno
+    // em Nao-Me-Toque): e a linha "Local" da lista, que a ficha nao tinha.
+    if (item.kind === "other") linha("Local", item.local);
     linha("Entrega", emp.id === "outros" ? "" : (emp.entrega || emp.statusLabel || ""));
     linha("Pagamento", condicoesDe(emp));
     linha("Registro", (emp.ri || []).join(" · "));
@@ -1212,6 +1215,7 @@
           ${linhas.map(({ rotulo, valor }) => `<div><dt>${escapeHtml(rotulo)}</dt><dd>${escapeHtml(valor)}</dd></div>`).join("")}
         </dl>
         ${observacao ? `<p class="ficha-obs">${escapeHtml(observacao)}</p>` : ""}
+        ${CLIENT_MODE ? "" : `<div class="unit-actions ficha-acoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>`}
       </article>
     `;
   }
@@ -1278,7 +1282,15 @@
     const unitParam = new URLSearchParams(location.search).get("u");
     // v94 — o foco pode ser UMA unidade (?u=) ou a SELECAO (?sel=): sempre uma lista.
     const focusItems = (() => {
-      if (!CLIENT_MODE) return null;
+      // v499 — no modo corretor, o imovel de "Outros" tocado no cartao da
+      // vitrine abre sozinho, na ficha dele (a mesma do link do cliente), e
+      // nao a lista com todos. Pedido do dono (12/11/2026): "eu clico num
+      // desses outros e vai pra uma lista com todos eles". So vale para os
+      // avulsos: apartamento e lote continuam abrindo a lista, na linha.
+      if (!CLIENT_MODE) {
+        const tocado = state.foco ? itemMap.get(state.foco) : null;
+        return tocado && tocado.kind === "other" && tocado.emp.id === emp.id ? [tocado] : null;
+      }
       if (unitParam) {
         const unico = itemsFor(emp).find((it) => String(it.code).toLowerCase() === unitParam.toLowerCase());
         return unico ? [unico] : null;
