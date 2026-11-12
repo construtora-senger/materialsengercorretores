@@ -2414,6 +2414,14 @@ const EMPREENDIMENTOS = [
         preco: 148900,
         local: "Não-Me-Toque/RS",
         mapsUrl: "https://maps.app.goo.gl/8EhCaLZCV7BQwSkV7",
+        // v505 — fotos mandadas pelo dono em 12/11/2026; a primeira e a capa.
+        fotos: [
+          { src: "assets/outros/jardim-america/01-terreno-ceu-azul.webp" },
+          { src: "assets/outros/jardim-america/02-vista-do-loteamento.webp" },
+          { src: "assets/outros/jardim-america/03-por-do-sol.webp" },
+          { src: "assets/outros/jardim-america/04-por-do-sol-calcada.webp" },
+          { src: "assets/outros/jardim-america/05-terreno-e-rua.webp" },
+        ],
         descricao:
           "Em frente à Stara, saída para Lagoa dos 3 Cantos. Na 2ª quadra, com linda vista do alto do loteamento. Quadra 490, Lote 241, 16m x 24,75m.",
         area: "396 m²",
@@ -2424,6 +2432,14 @@ const EMPREENDIMENTOS = [
         preco: 135800,
         local: "Carazinho/RS",
         mapsUrl: "https://maps.app.goo.gl/TLbY1uuvG2ZLLi1B7",
+        // v505 — fotos mandadas pelo dono em 12/11/2026; a primeira e a capa.
+        fotos: [
+          { src: "assets/outros/vila-aurora/01-rua-e-frente.webp" },
+          { src: "assets/outros/vila-aurora/02-terreno.webp" },
+          { src: "assets/outros/vila-aurora/03-terreno-arvores.webp" },
+          { src: "assets/outros/vila-aurora/04-terreno-fundos.webp" },
+          { src: "assets/outros/vila-aurora/05-muro-dos-fundos.webp" },
+        ],
         descricao:
           "Altos da Princesa com Vila Rica, a uma quadra da Siqueira Campos, perto do posto de combustível. Fundos e uma das laterais já com muro. Rua do Carmo, 13m x 33m.",
         area: "429 m²",
