@@ -2372,9 +2372,20 @@ const EMPREENDIMENTOS = [
         nome: "Edifício Campos Elísios",
         preco: 498000,
         local: "Centro de Carazinho/RS",
+        // v500 — descritivo e fotos mandados pelo dono em 12/11/2026.
         descricao:
-          "3 dormitórios (1 suíte com closet), 2 banheiros, 3 sacadas, copa, cozinha, churrasqueira e despensa. Edifício de esquina, excelente localização, a uma quadra da avenida. Box duplo.",
-        area: "145 m² privativo",
+          "Apto 401 — 3 dormitórios, sendo 1 suíte; 3 banheiros; 3 sacadas; copa e cozinha mobiliadas; churrasqueira; dependência de empregada; 2 box de garagem. Edifício de esquina, excelente localização, a uma quadra da avenida — esquina da Rua Presidente Vargas com Rodrigues Alves.",
+        area: "204 m² global · 158 m² privativo",
+        garagem: "2 box de garagem",
+        // As fotos deste imovel, na ordem em que aparecem na ficha dele
+        // (as mais bonitas primeiro, a pedido do dono).
+        fotos: [
+          { src: "assets/outros/campos-elisios/01-sala.webp" },
+          { src: "assets/outros/campos-elisios/02-dormitorio.webp" },
+          { src: "assets/outros/campos-elisios/03-sala-sacada.webp" },
+          { src: "assets/outros/campos-elisios/04-garagem.webp" },
+          { src: "assets/outros/campos-elisios/05-banheiro.webp" },
+        ],
         status: "alugado",
         obs: "Alugado por R$ 2.400,00.",
         // v335 — fica na vitrine, nas mensagens e no PDF como sempre, mas

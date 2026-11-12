@@ -584,9 +584,12 @@
           pricePrefix: other.precoPrefixo || "",
           status: other.status || "disponivel",
           area: other.area || "",
-          garage: "",
+          garage: other.garagem || "",
           tags: [],
           notes: other.obs || "",
+          // v500 — fotos do proprio imovel avulso (Outros): aparecem na ficha
+          // dele, no lugar da galeria do grupo.
+          fotos: Array.isArray(other.fotos) ? other.fotos.filter((f) => f && f.src) : [],
         };
         items.push(item);
         itemMap.set(item.key, item);
@@ -1200,7 +1203,9 @@
     linha("Registro", (emp.ri || []).join(" · "));
 
     const caracteristicas = caracteristicasDe(item);
-    const observacao = item.notes || item.description || "";
+    // v500 — descritivo E observacao, um embaixo do outro: antes a obs
+    // ("Alugado por R$ 2.400,00") escondia o descritivo inteiro do avulso.
+    const textos = [item.description, item.notes].filter(Boolean);
 
     return `
       <article class="info-card ficha-unidade">
@@ -1214,7 +1219,7 @@
         <dl class="ficha-dados">
           ${linhas.map(({ rotulo, valor }) => `<div><dt>${escapeHtml(rotulo)}</dt><dd>${escapeHtml(valor)}</dd></div>`).join("")}
         </dl>
-        ${observacao ? `<p class="ficha-obs">${escapeHtml(observacao)}</p>` : ""}
+        ${textos.map((t) => `<p class="ficha-obs">${escapeHtml(t)}</p>`).join("")}
         ${CLIENT_MODE ? "" : `<div class="unit-actions ficha-acoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>`}
       </article>
     `;
@@ -1301,6 +1306,9 @@
       return escolhidos.length ? escolhidos : null;
     })();
     const focusItem = focusItems && focusItems.length === 1 ? focusItems[0] : null;
+    // v500 — o imovel avulso com fotos proprias: a ficha dele usa essas fotos
+    // (capa e grade), nao a capa do grupo "Outros imoveis".
+    const fotosDoFoco = focusItem && focusItem.fotos && focusItem.fotos.length ? focusItem.fotos : null;
     // v98 — com 2+ unidades escolhidas o resumo fala DA SELECAO, nao do predio:
     // antes sobravam ali "opcoes ativas" e "preco inicial" do empreendimento
     // inteiro, contradizendo as unidades que o corretor tinha escolhido mandar.
@@ -1330,7 +1338,7 @@
     // primeira foto da grade, e no Nova Vila Rica III (capa igual a uma foto
     // da galeria) a mesma foto saia duas vezes. A grade mostra exatamente as
     // fotos da galeria do painel, cada uma uma vez.
-    const photoMedia = media.filter((item) => !isPlantMedia(item) && item.src !== emp.hero).slice(0, 50);
+    const photoMedia = (fotosDoFoco || media).filter((item) => !isPlantMedia(item) && item.src !== emp.hero).slice(0, 50);
     // Planta que abre no visor (imagem) e planta que so se baixa (PDF). A
     // planta marcada como tecnica no data.js abre no visor do mesmo jeito, mas
     // fica sob o titulo certo: planta baixa de obra nao e planta humanizada.
@@ -1567,7 +1575,7 @@
 
     detail.innerHTML = `
       <section class="detail-hero">
-        <img class="detail-hero-image" src="${escapeHtml(assetUrl(cardImage(emp)))}" alt="${escapeHtml(emp.nome)}">
+        <img class="detail-hero-image" src="${escapeHtml(assetUrl(fotosDoFoco ? fotosDoFoco[0].src : cardImage(emp)))}" alt="${escapeHtml(emp.nome)}">
         ${podeVoltar ? `<div class="shell detail-hero-content"><button class="button detail-back" type="button" id="detail-back">← ${CLIENT_MODE ? "Voltar aos imóveis" : "Voltar ao portfólio"}</button></div>` : ""}
       </section>
       <section class="detail-faixa">
