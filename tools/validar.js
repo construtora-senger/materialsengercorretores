@@ -166,6 +166,8 @@ for (const emp of EMPREENDIMENTOS) {
     if (emp[campoVideo] && !/^https?:\/\//i.test(emp[campoVideo])) conferirArquivo(`${emp.id}.${campoVideo}`, emp[campoVideo]);
   }
   (emp.galeria || []).forEach((g, i) => conferirArquivo(`${emp.id}.galeria[${i}]`, g && g.src));
+  // v500 — as fotos proprias de cada imovel avulso (Outros).
+  (emp.outros || []).forEach((o, oi) => (o.fotos || []).forEach((f, i) => conferirArquivo(`${emp.id}.outros[${oi}].fotos[${i}]`, f && f.src)));
 
   const apelidos = new Set((emp.galeria || []).map((g) => nomeDaMidia(g && g.src)));
   (emp.grupos || []).forEach((g, gi) => {
