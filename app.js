@@ -981,7 +981,14 @@
               ${enviar}
             </div>
             <ul class="card-outros-lista">
-              ${itens.map((it) => `<li><span>${escapeHtml(itemLabel(it))}</span><strong class="price-value">${money(it.price)}</strong></li>`).join("")}
+              ${itens.map((it) => {
+                // v496 — modelo C, escolhido pelo dono (12/11/2026): cada
+                // imovel num quadrinho proprio, um embaixo do outro, com o
+                // lugar e a metragem em letra miuda e a setinha de abrir.
+                // Antes eram duas colunas, e o da direita passava batido.
+                const sub = [it.local, it.area].filter(Boolean).join(" · ");
+                return `<li><span class="card-outros-nome">${escapeHtml(itemLabel(it))}${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</span><span class="card-outros-fim"><strong class="price-value">${money(it.price)}</strong><span class="card-outros-seta" aria-hidden="true">›</span></span></li>`;
+              }).join("")}
             </ul>
           </div>
           ${abrir}
