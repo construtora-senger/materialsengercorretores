@@ -1251,7 +1251,9 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
 .card-outros .card-share { position: relative; z-index: 6; background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
 /* v496 — modelo C: um quadrinho por imovel, empilhados (antes, duas colunas). */
 .card-outros-lista { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 8px; }
-.card-outros-lista li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; font-size: 15px; }
+.card-outros-lista li { position: relative; z-index: 6; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; font-size: 15px; }
+.card-outros-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 16px; color: inherit; text-decoration: none; border-radius: 12px; }
+.card-outros-item:hover, .card-outros-item:focus-visible { background: rgba(255,255,255,.07); }
 .card-outros-nome { font-weight: 600; min-width: 0; }
 .card-outros-nome small { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: #9fb2bd; }
 .card-outros-fim { display: flex; align-items: center; gap: 14px; flex: none; }
@@ -1303,7 +1305,8 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
   .card-outros-corpo { padding: 14px 16px 8px; }
   .card-outros .card-title { font-size: 20px; }
   .card-outros-lista { margin-top: 10px; gap: 6px; }
-  .card-outros-lista li { font-size: 14px; padding: 10px 12px; }
+  .card-outros-lista li { font-size: 14px; }
+  .card-outros-item { padding: 10px 12px; }
   .card-outros-corpo { padding-bottom: 14px; }
 }
 

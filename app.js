@@ -987,7 +987,11 @@
                 // lugar e a metragem em letra miuda e a setinha de abrir.
                 // Antes eram duas colunas, e o da direita passava batido.
                 const sub = [it.local, it.area].filter(Boolean).join(" · ");
-                return `<li><span class="card-outros-nome">${escapeHtml(itemLabel(it))}${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</span><span class="card-outros-fim"><strong class="price-value">${money(it.price)}</strong><span class="card-outros-seta" aria-hidden="true">›</span></span></li>`;
+                // v498 — o toque no quadrinho abre a pagina de Outros ja
+                // descendo ate aquele imovel, destacado, com a descricao
+                // completa (mesmo caminho do data-open-unit da lista de
+                // unidades: state.foco + renderDetail). Pedido do dono.
+                return `<li><a class="card-outros-item" href="#emp-${emp.id}" data-open-unit="${escapeHtml(it.key)}"><span class="card-outros-nome">${escapeHtml(itemLabel(it))}${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</span><span class="card-outros-fim"><strong class="price-value">${money(it.price)}</strong><span class="card-outros-seta" aria-hidden="true">›</span></span></a></li>`;
               }).join("")}
             </ul>
           </div>
@@ -1030,6 +1034,12 @@
       event.preventDefault();
       event.stopPropagation();
       togglePick(button.dataset.pickEmp);
+    }));
+
+    // v498 — o imovel tocado no cartao de Outros vira o foco: a pagina rola
+    // ate a linha dele e a destaca (como a lista de unidades, v160).
+    grid.querySelectorAll("[data-open-unit]").forEach((link) => link.addEventListener("click", () => {
+      state.foco = link.dataset.openUnit;
     }));
 
     updatePicksUi();

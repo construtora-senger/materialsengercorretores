@@ -677,7 +677,9 @@ async function teste(nome, fn) {
     // Abre um empreendimento pelo cartao, como o corretor faz. v400 — sem o
     // banner, o primeiro cartao fica no alto da pagina: clicar nele faria o
     // navegador rolar ate la antes do clique. O ultimo esta na tela.
-    await pg.locator("#portfolio-grid .card-open-overlay").last().click();
+    // v498 — o ultimo e o de Outros, e o meio dele agora e um quadrinho de
+    // imovel (que tambem abre a ficha): clica no canto do cartao, na foto.
+    await pg.locator("#portfolio-grid .card-open-overlay").last().click({ position: { x: 20, y: 20 } });
     await pg.waitForTimeout(500);
     if (await pg.locator("#detail-view").isHidden()) return "o cartao nao abriu a ficha";
     await pg.locator("#detail-back").click();
