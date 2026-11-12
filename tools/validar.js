@@ -169,6 +169,13 @@ for (const emp of EMPREENDIMENTOS) {
   // v500 — as fotos proprias de cada imovel avulso (Outros).
   (emp.outros || []).forEach((o, oi) => (o.fotos || []).forEach((f, i) => conferirArquivo(`${emp.id}.outros[${oi}].fotos[${i}]`, f && f.src)));
   (emp.outros || []).forEach((o, oi) => { if (o.capa) conferirArquivo(`${emp.id}.outros[${oi}].capa`, o.capa); });
+  // v507 — coordenadas do pino: [latitude, longitude], numeros validos.
+  (emp.outros || []).forEach((o, oi) => {
+    if (o.coordenadas === undefined) return;
+    const c = o.coordenadas;
+    const ok = Array.isArray(c) && c.length === 2 && c.every(Number.isFinite) && Math.abs(c[0]) <= 90 && Math.abs(c[1]) <= 180;
+    if (!ok) erro(`${emp.id}.outros[${oi}] ("${o.nome}"): coordenadas invalidas — use [latitude, longitude]`);
+  });
 
   const apelidos = new Set((emp.galeria || []).map((g) => nomeDaMidia(g && g.src)));
   (emp.grupos || []).forEach((g, gi) => {

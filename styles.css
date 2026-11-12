@@ -379,6 +379,12 @@ img { max-width: 100%; display: block; }
 .ficha-dados dt { color: var(--muted); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
 .ficha-dados dd { margin: 4px 0 0; min-width: 0; font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
 .ficha-obs { margin: 16px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+/* v507 — modelo B: o mapa com o pino ao lado dos dados, dentro da ficha. */
+.ficha-com-mapa { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }
+.ficha-com-mapa .ficha-texto { min-width: 0; }
+.ficha-mapa { display: grid; gap: 10px; }
+.ficha-mapa iframe { width: 100%; height: 300px; border: 0; border-radius: 12px; background: #e9eef1; display: block; }
+.ficha-mapa .ficha-mapa-abrir { justify-self: start; }
 
 /* Uma planta so (o caso do link de unidade): o visor ocupa a largura toda em
    vez de dividir a linha com uma lista de um botao. A LEGENDA CONTINUA — a
@@ -1049,6 +1055,8 @@ tr.unit-highlight td:first-child { box-shadow: inset 4px 0 0 var(--brand); }
    ============================================================ */
 @media (max-width: 720px) {
   .ficha-dados { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .ficha-com-mapa { grid-template-columns: 1fr; }
+  .ficha-mapa iframe { height: 240px; }
   .ficha-dados > div { padding: 10px 12px; }
   .ficha-dados dd { font-size: 15px; }
   .ficha-valor { padding: 14px 16px; }

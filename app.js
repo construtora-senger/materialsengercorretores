@@ -593,6 +593,8 @@
           capa: other.capa || "",
           // v504 — o link do Google Maps do proprio imovel avulso.
           mapsUrl: other.mapsUrl || "",
+          // v507 — [latitude, longitude] do pino exato, para o mapa da ficha.
+          coordenadas: Array.isArray(other.coordenadas) && other.coordenadas.length === 2 ? other.coordenadas.map(Number) : null,
         };
         items.push(item);
         itemMap.set(item.key, item);
@@ -1210,8 +1212,15 @@
     // ("Alugado por R$ 2.400,00") escondia o descritivo inteiro do avulso.
     const textos = [item.description, item.notes].filter(Boolean);
 
+    // v507 — modelo B, escolhido pelo dono (12/11/2026): o mapa do Google com
+    // o pino exato dentro do cartao da ficha, ao lado dos dados, e o botao
+    // "Abrir no Google Maps". So no imovel que tem `coordenadas` no cadastro
+    // (hoje os avulsos de Outros); sem elas a ficha fica como era.
+    const mapa = mapaDaFicha(item);
+
     return `
-      <article class="info-card ficha-unidade">
+      <article class="info-card ficha-unidade${mapa ? " ficha-com-mapa" : ""}">
+        <div class="ficha-texto">
         <p class="eyebrow dark">${emp.id === "outros" ? "Seu imóvel" : "Sua unidade"}</p>
         <h2>${escapeHtml(emp.id === "outros" ? itemLabel(item) : `${emp.nome} — ${itemLabel(item)}`)}</h2>
         ${caracteristicas.length ? `<p class="ficha-marcas">${caracteristicas.map((t) => `<span>${escapeHtml(t)}</span>`).join("")}</p>` : ""}
@@ -1224,8 +1233,26 @@
         </dl>
         ${textos.map((t) => `<p class="ficha-obs">${escapeHtml(t)}</p>`).join("")}
         ${CLIENT_MODE ? "" : `<div class="unit-actions ficha-acoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}</div>`}
+        </div>
+        ${mapa}
       </article>
     `;
+  }
+
+  // v507 — o mapa do Google embutido (sem chave), centrado no pino do imovel.
+  // Volta "" quando o cadastro nao tem coordenadas.
+  function mapaDaFicha(item) {
+    const c = item && item.coordenadas;
+    if (!c || c.some((n) => !Number.isFinite(n))) return "";
+    const [lat, lng] = c;
+    const ponto = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+    const embed = `https://www.google.com/maps?q=${ponto}&z=17&hl=pt-BR&output=embed`;
+    const abrir = item.mapsUrl || `https://www.google.com/maps?q=${ponto}`;
+    return `
+        <div class="ficha-mapa">
+          <iframe src="${escapeHtml(embed)}" title="Mapa — ${escapeHtml(itemLabel(item))}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+          <a class="button button-outline ficha-mapa-abrir" href="${escapeHtml(abrir)}" target="_blank" rel="noopener">Abrir no Google Maps →</a>
+        </div>`;
   }
 
   let ultimoAberto = null;
