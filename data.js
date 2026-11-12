@@ -2444,6 +2444,7 @@ const LOCAIS = {
   "premium-office": { mapsUrl: "https://www.google.com/maps?q=-28.283750,-52.796917" },
   // v504 — links do Maps mandados pelo dono em 12/11/2026.
   "nova-vila-rica-iii": { mapsUrl: "https://maps.app.goo.gl/R2DHMckzsoBLvcBL9" },
+  "nova-vila-rica": { mapsUrl: "https://maps.app.goo.gl/yFy76X9C9btj5Dn29" },
 };
 
 window.SENGER = { META, EMPREENDIMENTOS, LOCAIS };
