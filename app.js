@@ -994,7 +994,7 @@
                 // descendo ate aquele imovel, destacado, com a descricao
                 // completa (mesmo caminho do data-open-unit da lista de
                 // unidades: state.foco + renderDetail). Pedido do dono.
-                return `<li><a class="card-outros-item" href="#emp-${emp.id}" data-open-unit="${escapeHtml(it.key)}"><span class="card-outros-nome">${escapeHtml(itemLabel(it))}${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</span><span class="card-outros-fim"><strong class="price-value">${money(it.price)}</strong><span class="card-outros-seta" aria-hidden="true">›</span></span></a></li>`;
+                return `<li><a class="card-outros-item" href="#emp-${emp.id}&u=${encodeURIComponent(String(it.code))}" data-open-unit="${escapeHtml(it.key)}"><span class="card-outros-nome">${escapeHtml(itemLabel(it))}${sub ? `<small>${escapeHtml(sub)}</small>` : ""}</span><span class="card-outros-fim"><strong class="price-value">${money(it.price)}</strong><span class="card-outros-seta" aria-hidden="true">›</span></span></a></li>`;
               }).join("")}
             </ul>
           </div>
@@ -1293,7 +1293,13 @@
       // desses outros e vai pra uma lista com todos eles". So vale para os
       // avulsos: apartamento e lote continuam abrindo a lista, na linha.
       if (!CLIENT_MODE) {
-        const tocado = state.foco ? itemMap.get(state.foco) : null;
+        // v502 — o imovel vai no endereco (#emp-outros&u=<nome>): recarregar
+        // a pagina, ou abrir o link copiado, cai na ficha dele e nao na
+        // lista. O dono recarregou com Ctrl+Shift+R e voltou para a lista.
+        const uDoHash = (location.hash.match(/[&?]u=([^&]+)/) || [])[1];
+        const tocado = state.foco
+          ? itemMap.get(state.foco)
+          : (uDoHash ? itemsFor(emp).find((it) => String(it.code).toLowerCase() === decodeURIComponent(uDoHash).toLowerCase()) : null);
         return tocado && tocado.kind === "other" && tocado.emp.id === emp.id ? [tocado] : null;
       }
       if (unitParam) {
@@ -1557,13 +1563,15 @@
     // repetia o que a ficha ja diz melhor. O link do empreendimento inteiro
     // continua exploratorio. v385 — ordem do modelo E: unidades e valores logo
     // depois da faixa, depois imagens e planta, o "Sobre", o video e o RI.
+    // v502 — na ficha do imovel avulso (Outros) o "Sobre o empreendimento"
+    // so repetia uma frase generica: o descritivo ja esta na ficha. Sai.
     const miolo = focusItem ? `
         <div class="detail-summary-grid ficha-grid">
           ${fichaDaUnidade(emp, focusItem)}
         </div>
         ${plantSection}
         ${gallery}
-        ${apresentacao}
+        ${focusItem.kind === "other" ? "" : apresentacao}
         ${videoSection}
     ` : `
         ${inventory}
