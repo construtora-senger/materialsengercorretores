@@ -166,6 +166,12 @@ for (const emp of EMPREENDIMENTOS) {
     if (emp[campoVideo] && !/^https?:\/\//i.test(emp[campoVideo])) conferirArquivo(`${emp.id}.${campoVideo}`, emp[campoVideo]);
   }
   (emp.galeria || []).forEach((g, i) => conferirArquivo(`${emp.id}.galeria[${i}]`, g && g.src));
+  // v509 — a copia leve da capa para a vitrine, ao lado dela. Sem ela a
+  // vitrine baixa a capa inteira (lento no 4G), mas funciona: e aviso.
+  if (emp.hero && /\.(webp|jpe?g|png)$/i.test(emp.hero)) {
+    const leve = emp.hero.replace(/\.[a-z0-9]+$/i, "-vitrine.webp");
+    if (!fs.existsSync(path.join(RAIZ, leve))) aviso(`${emp.id}: sem a capa leve da vitrine (${leve})`);
+  }
   // v500 — as fotos proprias de cada imovel avulso (Outros).
   (emp.outros || []).forEach((o, oi) => (o.fotos || []).forEach((f, i) => conferirArquivo(`${emp.id}.outros[${oi}].fotos[${i}]`, f && f.src)));
   (emp.outros || []).forEach((o, oi) => { if (o.capa) conferirArquivo(`${emp.id}.outros[${oi}].capa`, o.capa); });

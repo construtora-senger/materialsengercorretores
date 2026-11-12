@@ -1597,7 +1597,11 @@ async function teste(nome, fn) {
     await admin.waitForTimeout(3500);
     const arvore = gravacoes.filter((g) => /git\/trees/.test(g.path)).map((g) => { try { return JSON.parse(g.corpo).tree.map((f) => f.path); } catch (e) { return []; } }).flat();
     if (!arvore.length) return "a publicacao nao montou a arvore do commit";
-    if (!arvore.includes("assets/boulevard/capa.png")) return `a capa nova nao foi no commit: ${arvore.join(", ")}`;
+    // v509 — a capa nova leva carimbo de hora no nome, e a copia leve da
+    // vitrine vai junto, ao lado dela.
+    const capaNova = arvore.find((p) => /^assets\/boulevard\/capa-[a-z0-9]+\.png$/.test(p));
+    if (!capaNova) return `a capa nova nao foi no commit: ${arvore.join(", ")}`;
+    if (!arvore.includes(capaNova.replace(/\.png$/, "-vitrine.webp"))) return `a capa leve da vitrine nao foi no commit: ${arvore.join(", ")}`;
     if (!arvore.includes("assets/preview/boulevard.jpg")) return `a previa do link nao foi no mesmo commit: ${arvore.join(", ")}`;
     if (!arvore.includes("assets/preview/capas.json")) return "o manifesto assets/preview/capas.json nao foi no commit";
     const blobs = gravacoes.filter((g) => /git\/blobs/.test(g.path)).map((g) => { try { return JSON.parse(g.corpo); } catch (e) { return {}; } });
@@ -1617,7 +1621,7 @@ async function teste(nome, fn) {
     if (!manifesto) return "o manifesto nao traz o Boulevard";
     const sha = require("crypto").createHash("sha256").update(Buffer.from(png, "base64")).digest("hex");
     let json; try { json = JSON.parse(manifesto); } catch (e) { return "o manifesto nao e JSON valido"; }
-    if (json.boulevard?.capa !== "assets/boulevard/capa.png") return `o manifesto aponta para ${json.boulevard?.capa}`;
+    if (json.boulevard?.capa !== capaNova) return `o manifesto aponta para ${json.boulevard?.capa}`;
     if (json.boulevard?.sha256 !== sha) return "o SHA-256 do manifesto nao e o da capa enviada";
     if (!json.renaissance) return "o manifesto perdeu os outros empreendimentos ao ser regravado";
     // v457 — as pontes do empreendimento passam a apontar para a previa nova
