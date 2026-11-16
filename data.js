@@ -987,7 +987,7 @@ const EMPREENDIMENTOS = [
     // vagas fecham com o que ha em estoque. O site nao le este campo.
     vagasPorTipologia: {
       "3 suítes + lavabo": { duplo: 1 },
-      "2 suítes + lavabo": { duplo: 1 },
+      "2 suítes + lavabo": { simples: 1 },
       "2 dormitórios (1 suíte)": { simples: 1 },
     },
     // v435 — o predio em 3D, como o do Renaissance. Medidas em metros tiradas
@@ -1108,7 +1108,7 @@ const EMPREENDIMENTOS = [
         aba: "2 dormitórios",
         sufixo: "final 04",
         area: "131 m² global · 93 m² privativo",
-        garagem: "1 box duplo",
+        garagem: "1 box simples",
         planta: "2-suites-lavabo",
         unidades: [
           { apto: "304", preco: 875200, status: "disponivel", tags: ["Casa suspensa"], areaUnit: "165 m² global · 121 m² privativo" },
