@@ -1027,7 +1027,7 @@ const EMPREENDIMENTOS = [
     },
     hero: "assets/boulevard/capa.jpg",
     folder: "assets/boulevard/folder.pdf",
-    video: "",
+    video: "assets/boulevard/video.mp4",
     destaque: true,
     tagline: "Onde morar é sinônimo de bem-estar.",
     localizacao: "Rua Getúlio Vargas — em frente à Praça Gen. Osório, Ibirubá/RS.",
