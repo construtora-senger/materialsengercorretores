@@ -1852,7 +1852,7 @@ const EMPREENDIMENTOS = [
     },
     hero: "assets/quality/capa.jpg",
     folder: "assets/quality/folder.pdf",
-    video: "",
+    video: "assets/quality/video.mp4",
     destaque: true,
     tagline: "Piscina, academia e 3 salões de festas — pronto para morar e financiável.",
     localizacao: "Rua Carlos Barbosa, Carazinho/RS.",
