@@ -1737,7 +1737,6 @@ const EMPREENDIMENTOS = [
     // Quantos box cada tipologia leva. O painel usa isso para conferir se as
     // vagas fecham com o que ha em estoque. O site nao le este campo.
     vagasPorTipologia: {
-      "2 dormitórios c/ móveis": { simples: 1 },
       "2 dormitórios — já alugados": { simples: 1 },
       "3 dormitórios — já alugados": { simples: 1 },
       "3 dormitórios (1 suíte)": { simples: 1 },
@@ -1889,20 +1888,23 @@ const EMPREENDIMENTOS = [
     ],
     grupos: [
       {
-        tipo: "2 dormitórios c/ móveis",
+        tipo: "2 dormitórios",
         aba: "2 dormitórios",
         area: "57 m² global · 43 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-57",
-        unidades: [{ apto: "802A", preco: 462600, status: "disponivel", pagamento: "Financiamento bancário" }],
+        unidades: [{ apto: "802A", preco: 462600, status: "disponivel", pagamento: "Financiamento bancário", tags: ["Semimobiliado"] }],
       },
       {
-        tipo: "2 dormitórios c/ móveis",
+        tipo: "2 dormitórios",
         aba: "2 dormitórios",
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-69",
-        unidades: [{ apto: "701B", preco: 513100, status: "disponivel", tags: ["Semimobiliado"] }],
+        unidades: [
+          { apto: "301B", preco: 472800, status: "disponivel", tags: ["Semimobiliado"] },
+          { apto: "701B", preco: 513100, status: "disponivel", tags: ["Semimobiliado"] },
+        ],
       },
       {
         tipo: "2 dormitórios — já alugados",
@@ -1914,14 +1916,6 @@ const EMPREENDIMENTOS = [
         unidades: [
           { apto: "601B", preco: 492900, status: "alugado" },
         ],
-      },
-      {
-        tipo: "2 dormitórios",
-        aba: "2 dormitórios",
-        area: "69 m² global · 53 m² privativo",
-        garagem: "1 box simples",
-        planta: "qual-planta-69",
-        unidades: [{ apto: "301B", preco: 472800, status: "disponivel", tags: ["Semimobiliado"] }],
       },
       {
         tipo: "3 dormitórios — já alugados",
