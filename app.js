@@ -2098,12 +2098,17 @@
     // v452 — a planta e a planta tecnica lado a lado, em dois quadros
     // pequenos (opcao 4 do modelo C, escolhida pelo dono).
     const plantas = [miniaturaDaPlanta(item, true), botaoDaPlantaTecnica(item)].filter(Boolean);
+    // v514 — as etiquetas da unidade (Semimobiliado e afins) na ficha do
+    // predio em 3D. Pedido do dono (24/11/2026): o 401A e "semimobiliado" e a
+    // ficha do mapa nao dizia.
+    const etiquetas = otherTags(item);
     return `
       <p class="predio-ficha-tag">Ficha da unidade</p>
       <h3>${escapeHtml(itemLabel(item))}</h3>
       ${tipo ? `<p class="predio-ficha-tipo">${escapeHtml(tipo)}</p>` : ""}
       ${tamanho ? `<p class="predio-ficha-areas">${escapeHtml(tamanho)}</p>` : ""}
       ${garagem ? `<p class="predio-ficha-garagem">${carros}${escapeHtml(garagem)}</p>` : ""}
+      ${etiquetas.length ? `<p class="predio-ficha-tags">${escapeHtml(etiquetas.join(" · "))}</p>` : ""}
       <div class="predio-ficha-valor"><span>Valor</span><strong class="price-value">${money(item.price)}</strong></div>
       ${plantas.length ? `<div class="predio-ficha-plantas">${plantas.join("")}</div>` : ""}
       ${CLIENT_MODE ? "" : `<div class="predio-ficha-botoes">${botaoCompartilharDaLinha(item)}${botaoSelecionarDaLinha(item, state.selected.has(item.key), isMarketable(item.status))}${item.emp?.mapaPredio?.maquete ? botaoEnviarTela(item) : ""}</div>`}

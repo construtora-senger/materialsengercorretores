@@ -1667,6 +1667,8 @@ button.predio-u:focus-visible { outline: 3px solid var(--brand-dark); outline-of
 .predio-ficha-garagem { display: flex; width: fit-content; align-items: center; gap: 6px; margin: 8px 0 0; padding: 4px 12px; border-radius: 999px; background: #e3f1f3; color: var(--brand-dark); font-size: 14.5px; font-weight: 600; }
 .predio-ficha-garagem .carros { display: inline-flex; gap: 2px; }
 .predio-ficha-garagem svg { width: 22px; height: 15px; fill: currentColor; flex: none; }
+/* v514 — as etiquetas da unidade (Semimobiliado) na ficha do predio em 3D. */
+.predio-ficha-tags { width: fit-content; margin: 8px 0 0; padding: 4px 12px; border-radius: 999px; background: var(--brand-soft, #e3f1f3); color: var(--brand-dark); font-size: 14.5px; font-weight: 600; }
 
 /* v452 — a planta e a planta tecnica lado a lado na ficha do predio, em dois
    quadros pequenos: miniatura de 64 px e o nome ao lado (opcao 4 do modelo C,

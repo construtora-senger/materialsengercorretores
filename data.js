@@ -1902,7 +1902,7 @@ const EMPREENDIMENTOS = [
         area: "69 m² global · 53 m² privativo",
         garagem: "1 box simples",
         planta: "qual-planta-69",
-        unidades: [{ apto: "701B", preco: 513100, status: "disponivel" }],
+        unidades: [{ apto: "701B", preco: 513100, status: "disponivel", tags: ["Semimobiliado"] }],
       },
       {
         tipo: "2 dormitórios — já alugados",
@@ -1912,9 +1912,16 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-69",
         obs: "Aluguel R$ 1.400,00 · condomínio e IPTU por conta do inquilino.",
         unidades: [
-          { apto: "301B", preco: 472800, status: "disponivel" },
           { apto: "601B", preco: 492900, status: "alugado" },
         ],
+      },
+      {
+        tipo: "2 dormitórios",
+        aba: "2 dormitórios",
+        area: "69 m² global · 53 m² privativo",
+        garagem: "1 box simples",
+        planta: "qual-planta-69",
+        unidades: [{ apto: "301B", preco: 472800, status: "disponivel", tags: ["Semimobiliado"] }],
       },
       {
         tipo: "3 dormitórios — já alugados",
@@ -1925,7 +1932,6 @@ const EMPREENDIMENTOS = [
         obs: "Aluguel R$ 1.600,00 · condomínio e IPTU por conta do inquilino.",
         unidades: [
           { apto: "501A", preco: 583500, status: "alugado" },
-          { apto: "601A", preco: 593500, status: "disponivel" },
           { apto: "801A", preco: 613700, status: "alugado" },
         ],
       },
@@ -1939,6 +1945,7 @@ const EMPREENDIMENTOS = [
           { apto: "201A", preco: 553300, status: "disponivel" },
           { apto: "301A", status: "vendido" },
           { apto: "401A", preco: 583500, status: "disponivel", tags: ["Semimobiliado"] },
+          { apto: "601A", preco: 593500, status: "disponivel", tags: ["Semimobiliado"] },
           { apto: "701A", preco: 593500, status: "disponivel" },
         ],
       },
