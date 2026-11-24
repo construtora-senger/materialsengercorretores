@@ -1912,7 +1912,7 @@ const EMPREENDIMENTOS = [
         planta: "qual-planta-69",
         obs: "Aluguel R$ 1.400,00 · condomínio e IPTU por conta do inquilino.",
         unidades: [
-          { apto: "301B", preco: 472800, status: "alugado" },
+          { apto: "301B", preco: 472800, status: "disponivel" },
           { apto: "601B", preco: 492900, status: "alugado" },
         ],
       },
@@ -1925,7 +1925,7 @@ const EMPREENDIMENTOS = [
         obs: "Aluguel R$ 1.600,00 · condomínio e IPTU por conta do inquilino.",
         unidades: [
           { apto: "501A", preco: 583500, status: "alugado" },
-          { apto: "601A", preco: 593500, status: "alugado" },
+          { apto: "601A", preco: 593500, status: "disponivel" },
           { apto: "801A", preco: 613700, status: "alugado" },
         ],
       },
